@@ -180,3 +180,9 @@ PHPMailer code is not included to keep the endpoint dependency-free by default.
 - [ ] Hero shows without video (ambient mode) if video not yet ready
 - [ ] GA4 ID configured in `site.ts` if analytics required
 - [ ] DNS pointing to Hostinger (propagation can take 24–48h)
+
+---
+
+## Appendix: admin panel and enquiry inbox
+
+`public/admin/` (admin app) and `public/data/` (runtime JSON) are copied into `out/` by the build and uploaded with the rest. `api/enquiry.php` now also stores every valid submission for the inbox. Setup, security notes and the redeploy rules (never wipe `admin/config.php`, the private data folder or `data/*.json`) are in `docs/admin-panel.md`.

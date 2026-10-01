@@ -9,6 +9,10 @@
  * Config: copy config.php.example → config.php and fill in SMTP credentials.
  *         config.php is NOT committed to git (.gitignore).
  *
+ * Inbox: every valid submission is ALSO stored (SQLite if available, else JSON lines) in the
+ *        private admin data folder so the owner can manage it at /admin/. Storage is best-effort
+ *        and never blocks the e-mail; the e-mail never blocks storage. See docs/admin-panel.md.
+ *
  * Security measures:
  * - CSRF via Origin/Referer check
  * - Honeypot field (_honey must be empty)
@@ -94,7 +98,8 @@ file_put_contents($lockFile, (string) $now, LOCK_EX);
 
 $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
 if (str_contains($contentType, 'application/json')) {
-    $body = json_decode(file_get_contents('php://input'), true) ?? [];
+    $decoded = json_decode((string) file_get_contents('php://input'), true);
+    $body = is_array($decoded) ? $decoded : [];
 } else {
     $body = $_POST;
 }
@@ -111,8 +116,17 @@ if (!empty($body['_honey'])) {
 
 $errors = [];
 
-function sanitize(string $value): string {
-    return trim(htmlspecialchars(strip_tags($value), ENT_QUOTES, 'UTF-8'));
+/**
+ * Plain-text clean-up: strip tags and control characters, collapse CR/LF in single-line fields.
+ * Values are NOT HTML-escaped here: the e-mail is plain text and the admin panel escapes on output.
+ */
+function sanitize(string $value, bool $multiline = false): string {
+    $value = strip_tags($value);
+    $value = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', '', $value) ?? '';
+    if (!$multiline) {
+        $value = preg_replace('/\s+/u', ' ', $value) ?? '';
+    }
+    return trim($value);
 }
 
 function validatePhone(string $phone): bool {
@@ -134,7 +148,7 @@ function validateEmail(string $email): bool {
 $name    = sanitize((string) ($body['name'] ?? ''));
 $company = sanitize((string) ($body['company'] ?? ''));
 $phone   = sanitize((string) ($body['phone'] ?? ''));
-$message = sanitize((string) ($body['message'] ?? ''));
+$message = sanitize((string) ($body['message'] ?? ''), true);
 
 if (mb_strlen($name) < 2)    $errors['name']    = 'Name is required (min 2 characters).';
 if (mb_strlen($company) < 2) $errors['company'] = 'Company name is required.';
@@ -145,12 +159,17 @@ if (!validatePhone($phone))   $errors['phone']   = 'Enter a valid phone number.'
 $email     = sanitize((string) ($body['email'] ?? ''));
 $product   = sanitize((string) ($body['product'] ?? 'Not specified'));
 $quantity  = (int) ($body['quantity'] ?? 0);
-$unit      = in_array($body['quantityUnit'] ?? '', ['pcs', 'sets']) ? $body['quantityUnit'] : 'pcs';
+$unit      = in_array($body['quantityUnit'] ?? '', ['pcs', 'sets'], true) ? $body['quantityUnit'] : 'pcs';
 $city      = sanitize((string) ($body['city'] ?? ''));
 $state     = sanitize((string) ($body['state'] ?? ''));
 $gstin     = strtoupper(sanitize((string) ($body['gstin'] ?? '')));
 $buyerType = sanitize((string) ($body['buyerType'] ?? 'other'));
-$source    = sanitize((string) ($body['_source'] ?? 'unknown'));
+if (!in_array($buyerType, ['oem', 'dealer', 'distributor', 'repair-workshop', 'other'], true)) {
+    $buyerType = 'other';
+}
+$source    = mb_substr(sanitize((string) ($body['_source'] ?? 'unknown')), 0, 40);
+$product   = mb_substr($product, 0, 600);
+$quantity  = max(0, min($quantity, 9999999));
 
 if ($email !== '' && !validateEmail($email)) {
     $errors['email'] = 'Enter a valid email address.';
@@ -171,7 +190,7 @@ if (!empty($errors)) {
 
 // ── Build email ───────────────────────────────────────────────────────────────
 
-$subject = "New Enquiry from {$name} ({$company}) — Alok Plastics";
+$subject = preg_replace('/[\r\n]+/', ' ', "New Enquiry from {$name} ({$company}) — Alok Plastics");
 
 $emailBody  = "New enquiry received via the Alok Plastics website.\n\n";
 $emailBody .= "─────────────────────────────────────────\n";
@@ -194,7 +213,7 @@ if ($message !== '') $emailBody .= "\nMessage:\n{$message}\n";
 $emailBody .= "\n";
 $emailBody .= "─────────────────────────────────────────\n";
 $emailBody .= "Source: {$source}\n";
-$emailBody .= "Submitted: " . date('d M Y H:i:s') . " IST\n";
+$emailBody .= "Submitted: " . (new DateTimeImmutable('now', new DateTimeZone('Asia/Kolkata')))->format('d M Y H:i:s') . " IST\n";
 
 // Email headers — prevent header injection via sanitized values
 $fromDisplay = preg_replace('/[^\w\s]/', '', $name);
@@ -211,20 +230,63 @@ $headers .= "X-Mailer: Alok-Plastics-PHP-Mailer/1.0\r\n";
 // For SMTP: install PHPMailer via Composer and use $ALOK_SMTP_* constants.
 // See docs/deploy-hostinger.md for SMTP setup instructions.
 
-$sent = mail(
+$sent = @mail(
     $ALOK_TO_EMAIL,
     mb_encode_mimeheader($subject, 'UTF-8'),
     $emailBody,
     $headers,
 );
 
-if (!$sent) {
-    // Mail failed — don't expose details; WhatsApp fallback is primary channel
+// ── Store in the admin inbox (best effort) ────────────────────────────────────
+// Done after the mail attempt so the record knows whether the notification went out.
+// Any storage problem is logged and swallowed: it must never turn a good enquiry into an error.
+
+$stored = false;
+$storeLib = __DIR__ . '/../admin/lib/core.php';
+if (is_file($storeLib)) {
+    try {
+        if (!defined('ALOK_ADMIN')) {
+            define('ALOK_ADMIN', true);
+        }
+        require_once $storeLib;
+        $store = AlokStore::open();
+        $store->insert([
+            'created_at'  => time(),
+            'updated_at'  => time(),
+            'name'        => $name,
+            'company'     => $company,
+            'phone'       => $phone,
+            'email'       => $email,
+            'city'        => $city,
+            'state'       => $state,
+            'gstin'       => $gstin,
+            'buyer_type'  => $buyerType,
+            'product'     => $product === 'Not specified' ? '' : $product,
+            'products'    => alok_parse_products($product),
+            'quantity'    => $quantity,
+            'unit'        => $unit,
+            'message'     => $message,
+            'source'      => $source,
+            'ip_hash'     => $store->ipHash((string) ($_SERVER['REMOTE_ADDR'] ?? '')),
+            'mail_ok'     => $sent ? 1 : 0,
+            'status'      => 'new',
+        ]);
+        $stored = true;
+    } catch (Throwable $e) {
+        error_log('[alok-enquiry] could not store enquiry: ' . $e->getMessage());
+    }
+}
+
+if (!$sent && !$stored) {
+    // Neither e-mail nor inbox worked — don't expose details; WhatsApp fallback is primary channel
     http_response_code(500);
     die(json_encode([
         'ok' => false,
         'error' => 'Email delivery failed. Please use WhatsApp or call us directly.',
     ]));
+}
+if (!$sent) {
+    error_log('[alok-enquiry] mail() failed; enquiry is safe in the admin inbox.');
 }
 
 // ── Success ───────────────────────────────────────────────────────────────────

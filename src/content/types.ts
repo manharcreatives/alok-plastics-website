@@ -61,6 +61,15 @@ export type Industry = {
   slug: string;
   line: string;                     // verbatim from §5.9
   pictogram: string;                // pictogram component name
+  scene?: string;                   // drawn illustration id (src/components/art/IndustryScenes.tsx)
+  image?: IndustryImage;            // TODO(client): real photo — when set it replaces the drawn scene automatically
+};
+
+export type IndustryImage = {
+  src: string;                      // e.g. /images/industries/automotive.jpg
+  alt: string;
+  w: number;
+  h: number;
 };
 
 export type IndustriesConfig = {
@@ -74,7 +83,8 @@ export type JourneyMarker = {
   year: string;                     // '1998', '2000s', 'Today', 'The Future', etc.
   title: string;
   line: string;
-  isFuture?: boolean;               // dashed on the dial, not yet reached
+  isFuture?: boolean;               // drawn dashed — not yet reached
+  stat?: { value: number; suffix: string; label: string }; // verified proof number shown with an odometer
 };
 
 // ─── Navigation ──────────────────────────────────────────────────────────────
@@ -173,7 +183,6 @@ export type SiteConfig = {
     sub: string;
     ctas: {
       primary: string;
-      secondary: string;
       tertiary: string;
     };
   };

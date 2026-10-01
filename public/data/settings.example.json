@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-01-01T00:00:00Z",
+  "contact": {
+    "phone": "+91 00000 00000",
+    "whatsapp": "910000000000",
+    "email": "name@example.com",
+    "mapsUrl": "https://maps.app.goo.gl/EXAMPLE",
+    "gstin": null
+  },
+  "social": { "instagram": null, "linkedin": "https://www.linkedin.com/company/EXAMPLE", "facebook": null, "youtube": null },
+  "replyTime": null,
+  "hours": {
+    "mon": { "closed": false, "open": "09:00", "close": "18:00" },
+    "tue": { "closed": false, "open": null, "close": null },
+    "wed": { "closed": false, "open": null, "close": null },
+    "thu": { "closed": false, "open": null, "close": null },
+    "fri": { "closed": false, "open": null, "close": null },
+    "sat": { "closed": false, "open": null, "close": null },
+    "sun": { "closed": true, "open": null, "close": null }
+  },
+  "hoursNote": null,
+  "banner": { "enabled": false, "text": "", "href": null }
+}

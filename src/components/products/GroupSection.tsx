@@ -1,28 +1,43 @@
-/** One taxonomy group: heading, tagline, part grid. Used on /products and group pages. */
+/**
+ * One taxonomy group on /products: a sticky side column (name, what it does, link) beside the part
+ * grid. Alternates canvas / surface-alt and, from the second group on, tucks under the previous
+ * section with the logo's folded diagonal. Group ids are internal — never shown.
+ */
 import Link from 'next/link';
+import { ArrowUpRight } from '@phosphor-icons/react/dist/ssr/ArrowUpRight';
+import Pictogram from '@/components/brand/Pictogram';
+import FoldEdge, { FOLD_SECTION_CSS } from '@/components/sections/FoldEdge';
 import { productsByGroup } from '@/content/products';
 import type { ProductGroup } from '@/content/types';
-import { PartGrid } from './PartCard';
+import { PartGrid, pictogramFor } from './PartCard';
 import './products.css';
 
-const ARROW = '↗︎';
+interface Props {
+  group: ProductGroup;
+  tone?: 'canvas' | 'alt';
+  fold?: boolean;
+}
 
-export default function GroupSection({ group, linkToGroup = true }: { group: ProductGroup; linkToGroup?: boolean }) {
+export default function GroupSection({ group, tone = 'canvas', fold = false }: Props) {
   const items = productsByGroup(group.id);
   const hid = `grp-${group.slug}-h`;
+  const glyph = items.map(p => pictogramFor(p.slug)).find(Boolean);
   return (
-    <section aria-labelledby={hid} className="p-section">
-      <div className="pw">
-        <div className="p-head">
-          <div>
-            <p className="p-eyebrow"><span className="p-eyebrow__num">{group.id}</span><span>Group</span></p>
-            <h2 id={hid} className="p-h2">{group.name}</h2>
-            <p className="p-lead">{group.tagline}</p>
+    <section aria-labelledby={hid} className={`p-grp p-grp--${tone}${fold ? ' fold-sec' : ''}`}>
+      {fold && (<><style>{FOLD_SECTION_CSS}</style><FoldEdge /></>)}
+      <div className="pw p-grp__in">
+        <header className="p-grp__side">
+          <p className="p-eyebrow">Part group</p>
+          <h2 id={hid} className="p-h2">{group.name}</h2>
+          <p className="p-lead">{group.tagline}</p>
+          <span className="p-grp__count">{items.length} {items.length === 1 ? 'part' : 'parts'}</span>
+          <div className="p-grp__cta">
+            <Link className="p-link" href={`/products/${group.slug}/`} aria-label={`View the ${group.name} group`}>
+              View group <ArrowUpRight size={18} weight="light" aria-hidden="true" />
+            </Link>
           </div>
-          {linkToGroup && (
-            <Link className="p-link" href={`/products/${group.slug}/`} aria-label={`View all ${group.name} parts`}>View all parts {ARROW}</Link>
-          )}
-        </div>
+          {glyph && <div className="p-grp__glyph" aria-hidden="true"><Pictogram name={glyph} size={48} strokeWidth={0.5} /></div>}
+        </header>
         <PartGrid items={items} level={3} />
       </div>
     </section>

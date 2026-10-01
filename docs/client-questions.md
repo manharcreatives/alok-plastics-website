@@ -80,3 +80,6 @@ _All items above are flagged `// COPY: drafted, needs client approval` in the so
 | 28 | Business hours, geo-coordinates | LocalBusiness JSON-LD |
 | 29 | Old WordPress URL list for 301s | `.htaccess` redirect block |
 | 30 | Is Company a required field in the enquiry form? | enquiry schema |
+
+| 31 | Which regions/countries do you ship to? Confirm before we label the world arcs as dispatch (today they are illustrative ambition only) | `PanIndiaMap.tsx` |
+| 32 | Photos for the 7 industries (replace the drawn scenes via `industries.ts` `image`) | `IndustriesBento.tsx` |

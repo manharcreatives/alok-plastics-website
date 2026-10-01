@@ -1,15 +1,18 @@
 /**
- * /enquiry — Full bulk enquiry page (§8.2, §14.2)
- * Full Zod-validated form with multi-line product selection.
- * WhatsApp block beside the form on desktop.
- * Breadcrumb: Home → Enquiry
+ * /enquiry: full bulk enquiry page (§8.2, §14.2).
+ * Full Zod-validated form with multi-line product selection. Beside it: what helps us quote
+ * faster, and the contact details that exist. No WhatsApp CTA (it lives in the floating button).
  */
-
 import type { Metadata } from 'next';
-import Link from 'next/link';
+import { MapPin } from '@phosphor-icons/react/dist/ssr/MapPin';
+import { Phone } from '@phosphor-icons/react/dist/ssr/Phone';
+import { EnvelopeSimple } from '@phosphor-icons/react/dist/ssr/EnvelopeSimple';
 import EnquiryFormPrefilled from '@/components/products/EnquiryFormPrefilled';
-import { site, formatAddressLines, telHref } from '@/content/site';
-import { waGeneral } from '@/lib/whatsapp';
+import PageHero from '@/components/page/PageHero';
+import { EnquiryArt } from '@/components/page/art';
+import Reveal from '@/components/ui/Reveal';
+import { Eyebrow, SECTION_CSS, WRAP_STYLE } from '@/components/about/parts';
+import { site, formatAddressLines, mapsHref, telHref, MAPS_ARIA_LABEL } from '@/content/site';
 
 export const metadata: Metadata = {
   title: 'Get a Quote',
@@ -19,214 +22,103 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-/* U+2197 + U+FE0E (text presentation) */
-const ARROW_NE = '\u2197\uFE0E';
-
 const PAGE_CSS = `
-.enq-page-grid {
-  display: grid; grid-template-columns: minmax(0, 1fr) 340px;
-  gap: var(--space-xl); align-items: flex-start;
+${SECTION_CSS}
+.eq-sec { background: var(--surface-alt); padding-top: var(--section-y); padding-bottom: calc(var(--section-y) + var(--space-lg)); }
+.eq-grid { display: grid; gap: var(--space-xl); align-items: start; }
+.eq-panel { background: var(--surface); border: 1px solid var(--grey-metal); padding: var(--space-lg); position: relative; min-width: 0; }
+.eq-panel::before { content: ''; position: absolute; left: -1px; top: -1px; width: 72px; height: 3px; background: var(--burgundy); }
+.eq-side { display: flex; flex-direction: column; gap: var(--space-lg); min-width: 0; }
+.eq-side h2 { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(1.25rem, 2.2vw, 1.75rem); font-weight: 650; letter-spacing: -0.02em; line-height: 1.15; color: var(--ink); margin: 0 0 var(--space-sm); }
+.eq-list { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--ink); }
+.eq-list li { display: grid; grid-template-columns: 12px minmax(0, 1fr); gap: var(--space-sm); padding: var(--space-sm) 0; border-bottom: 1px solid var(--grey-warm); color: var(--body); line-height: 1.55; font-size: 0.9375rem; }
+.eq-list li::before { content: ''; width: 12px; height: 2px; background: var(--burgundy); margin-top: 0.7em; }
+.eq-list b { color: var(--ink); font-weight: 650; }
+.eq-contact { background: var(--surface); border: 1px solid var(--grey-warm); }
+.eq-contact a.row, .eq-contact div.row { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--space-sm); align-items: start; padding: var(--space-sm) var(--space-md); border-bottom: 1px solid var(--grey-warm); text-decoration: none; color: var(--body); font-size: 0.9375rem; line-height: 1.55; overflow-wrap: anywhere; }
+.eq-contact .row:last-child { border-bottom: 0; }
+.eq-contact a.row:hover { background: var(--blush); }
+.eq-contact a.row:focus-visible { outline: 2px solid var(--burgundy); outline-offset: -2px; }
+.eq-contact svg { color: var(--burgundy); margin-top: 2px; }
+.eq-contact b { color: var(--ink); font-weight: 650; display: block; }
+@media (max-width: 639px) { .eq-panel { padding: var(--space-md) var(--space-sm); } }
+@media (min-width: 1024px) {
+  .eq-grid { grid-template-columns: minmax(0, 7fr) minmax(0, 4fr); gap: var(--space-xl); }
+  .eq-side { position: sticky; top: 112px; }
 }
-@media (max-width: 1023px) {
-  .enq-page-grid { grid-template-columns: minmax(0, 1fr); gap: var(--space-lg); }
-}
-.enq-page-panel { padding: var(--space-lg); }
-@media (max-width: 639px) { .enq-page-panel { padding: var(--space-sm); } }
 `;
 
 export default function EnquiryPage() {
-  const waHref = waGeneral();
-  const [addrLine1, addrLine2] = formatAddressLines(site.contact);
+  const c = site.contact;
+  const [addrLine1, addrLine2] = formatAddressLines(c);
 
   return (
     <>
-      {/* ── Page header ─────────────────────────────────────────── */}
-      <div style={{
-        background: 'var(--canvas)',
-        borderBottom: '1px solid var(--grey-cloud)',
-        padding: 'var(--space-xl) var(--grid-page-padding)',
-      }}>
-        <div style={{ maxWidth: 'calc(var(--grid-max) + 2 * var(--grid-page-padding))', margin: '0 auto' }}>
-          {/* Breadcrumb */}
-          <nav aria-label="Breadcrumb" style={{ marginBottom: 'var(--space-md)' }}>
-            <ol style={{
-              listStyle: 'none', padding: 0, margin: 0,
-              display: 'flex', alignItems: 'center', gap: 8,
-              fontSize: '0.8125rem', color: 'var(--muted)',
-            }}>
-              <li><Link href="/" style={{ color: 'var(--burgundy)', textDecoration: 'none' }}>Home</Link></li>
-              <li aria-hidden="true" style={{ color: 'var(--silver)' }}>/</li>
-              <li aria-current="page" style={{ color: 'var(--ink)' }}>Get a Quote</li>
-            </ol>
-          </nav>
-
-          {/* Eyebrow */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-            <span aria-hidden="true" style={{ width: 24, height: 2, background: 'var(--burgundy)', display: 'inline-block' }} />
-            <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.16em', color: 'var(--muted)', fontWeight: 600 }}>
-              Enquiry
-            </span>
-          </div>
-
-          <h1 style={{
-            fontFamily: 'var(--font-archivo)',
-            fontVariationSettings: '"wdth" 125',
-            fontSize: 'clamp(1.75rem, 4vw, 3rem)',
-            fontWeight: 650,
-            lineHeight: 1.1,
-            letterSpacing: '-0.03em',
-            color: 'var(--ink)',
-            marginBottom: 'var(--space-sm)',
-          }}>
-            Tell us the part.<br />
-            <span style={{
-              background: 'var(--metal-gradient)',
-              WebkitBackgroundClip: 'text',
-              backgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              color: 'transparent',
-            }}>
+      <style>{PAGE_CSS}</style>
+      <PageHero
+        crumbs={[{ label: 'Get a Quote' }]}
+        label="Enquiry"
+        title={
+          <>
+            Tell us the part.{' '}
+            <span style={{ background: 'var(--metal-gradient)', WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent', color: 'transparent' }}>
               We&rsquo;ll take it from there.
             </span>
-          </h1>
+          </>
+        }
+        lead="Share the part name, quantity and any material or size preference, or just describe what the part does in your equipment. We manufacture and supply across India."
+        art={<EnquiryArt />}
+        enter="rise"
+        scrollHint
+      />
 
-          <p style={{
-            fontSize: '1.0625rem',
-            color: 'var(--body)',
-            lineHeight: 1.65,
-            maxWidth: '56ch',
-          }}>
-            {/* COPY: drafted, needs client approval */}
-            Share the part name, quantity and any material or size preference — or just describe what the part does in your equipment.
-            We manufacture and supply across India.
-          </p>
-        </div>
-      </div>
-
-      {/* ── Form + WhatsApp ──────────────────────────────────────── */}
-      <style>{PAGE_CSS}</style>
-      <div style={{
-        background: 'var(--surface-alt)',
-        padding: 'var(--section-y) var(--grid-page-padding)',
-      }}>
-        <div className="enq-page-grid" style={{
-          maxWidth: 'calc(var(--grid-max) + 2 * var(--grid-page-padding))',
-          margin: '0 auto',
-        }}>
-
-          {/* Form panel */}
-          <div className="enq-page-panel" style={{
-            background: 'var(--surface)',
-            border: '1px solid var(--grey-warm)',
-            borderRadius: 'var(--radius-card)',
-            minWidth: 0,
-          }}>
-            <EnquiryFormPrefilled />
-          </div>
-
-          {/* Sidebar */}
-          <aside style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)', minWidth: 0 }}>
-
-            {/* WhatsApp block */}
-            {waHref && (
-              <div style={{
-                background: 'var(--surface)',
-                border: '1px solid var(--grey-warm)',
-                borderRadius: 'var(--radius-card)',
-                                padding: 'var(--space-lg)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 'var(--space-md)',
-              }}>
-                <div style={{
-                  width: 40, height: 40, borderRadius: 'var(--radius-card)',
-                  background: 'var(--whatsapp)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}>
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="white" aria-hidden="true">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
-                    <path d="M12 0C5.373 0 0 5.373 0 12c0 2.115.549 4.1 1.509 5.824L0 24l6.337-1.487A11.953 11.953 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 0 1-5.026-1.376l-.361-.214-3.761.882.936-3.643-.235-.374A9.818 9.818 0 1 1 12 21.818z" />
-                  </svg>
-                </div>
-
-                <p style={{ fontFamily: 'var(--font-archivo)', fontVariationSettings: '"wdth" 110', fontWeight: 650, fontSize: '1rem', color: 'var(--ink)' }}>
-                  Prefer WhatsApp?
-                </p>
-                <p style={{ fontSize: '0.875rem', color: 'var(--body)', lineHeight: 1.6 }}>
-                  Send a photo, drawing, or description of the part. We respond quickly.
-                </p>
-                <a
-                  href={waHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                    padding: '12px 16px',
-                    background: 'var(--whatsapp)', color: 'white',
-                    borderRadius: 'var(--radius-card)',
-                    fontWeight: 650, fontSize: '0.9375rem',
-                    textDecoration: 'none',
-                  }}
-                >
-                  Chat on WhatsApp
-                </a>
+      <section aria-label="Enquiry form" className="cp-section eq-sec">
+        <div style={WRAP_STYLE}>
+          <div className="eq-grid">
+            <Reveal>
+              <div className="eq-panel">
+                <EnquiryFormPrefilled />
               </div>
-            )}
+            </Reveal>
 
-            {/* Contact details */}
-            <div style={{
-              background: 'var(--surface)',
-              border: '1px solid var(--grey-warm)',
-              borderRadius: 'var(--radius-card)',
-                            padding: 'var(--space-lg)',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 12,
-            }}>
-              <p style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.14em', color: 'var(--muted)', fontWeight: 600 }}>
-                Contact
-              </p>
+            <Reveal as="aside" delay={120} className="eq-side">
+              <div>
+                <Eyebrow>For a faster quote</Eyebrow>
+                <h2>What helps us most.</h2>
+                <ul className="eq-list">
+                  <li><span><b>Part name</b> and where it is used in your machine.</span></li>
+                  <li><span><b>Material</b> and size, if you know them.</span></li>
+                  <li><span><b>Quantity</b> you need, in pieces or sets.</span></li>
+                  <li>
+                    <span>
+                      <b>A drawing or photo.</b> Mention it in the message{c.email ? <> or send it to <a href={`mailto:${c.email}`} style={{ color: 'var(--burgundy)', fontWeight: 600 }}>{c.email}</a></> : ''} and we will confirm how to share it.
+                    </span>
+                  </li>
+                </ul>
+              </div>
 
-              <address style={{ fontStyle: 'normal', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                <p style={{ fontSize: '0.875rem', color: 'var(--body)', lineHeight: 1.65 }}>
-                  {addrLine1},<br />
-                  {addrLine2}
-                </p>
-
-                {site.contact.phone && (
-                  <p>
-                    <a href={telHref(site.contact.phone)}
-                       style={{ fontSize: '0.875rem', color: 'var(--burgundy)', textDecoration: 'none', fontWeight: 600 }}>
-                      {site.contact.phone}
-                    </a>
-                  </p>
-                )}
-
-                {site.contact.email && (
-                  <p>
-                    <a href={`mailto:${site.contact.email}`}
-                       style={{ fontSize: '0.875rem', color: 'var(--burgundy)', textDecoration: 'none' }}>
-                      {site.contact.email}
-                    </a>
-                  </p>
-                )}
-              </address>
-
-              {site.contact.mapsUrl && (
-                <a
-                  href={site.contact.mapsUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ fontSize: '0.8125rem', color: 'var(--burgundy)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 6 }}
-                >
-                  View on Google Maps {ARROW_NE}
+              <div className="eq-contact">
+                <a className="row" href={mapsHref(c)} target="_blank" rel="noopener noreferrer" aria-label={MAPS_ARIA_LABEL}>
+                  <MapPin size={22} weight="light" aria-hidden="true" />
+                  <span><b>{site.name}</b>{addrLine1},<br />{addrLine2}</span>
                 </a>
-              )}
-            </div>
-
-          </aside>
+                {c.phone && (
+                  <a className="row" href={telHref(c.phone)}>
+                    <Phone size={22} weight="light" aria-hidden="true" />
+                    <span><b>Phone</b>{c.phone}</span>
+                  </a>
+                )}
+                {c.email && (
+                  <a className="row" href={`mailto:${c.email}`}>
+                    <EnvelopeSimple size={22} weight="light" aria-hidden="true" />
+                    <span><b>Email</b>{c.email}</span>
+                  </a>
+                )}
+              </div>
+            </Reveal>
+          </div>
         </div>
-      </div>
+      </section>
     </>
   );
 }

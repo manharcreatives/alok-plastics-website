@@ -2,6 +2,9 @@ import type { Industry, IndustriesConfig } from './types';
 
 // Alok Plastics — Industries content
 // Verbatim from §5.9 — do not edit the line text without client approval
+// Each industry shows a drawn scene (`scene`). When the client supplies a real photo, add
+//   image: { src: '/images/industries/<slug>.jpg', alt: '…', w: 1200, h: 750 }
+// and it replaces the drawn scene automatically. TODO(client): industry photos.
 
 const industries: Industry[] = [
   {
@@ -10,6 +13,7 @@ const industries: Industry[] = [
     slug: 'oem-manufacturing',
     line: 'Components for OEMs, production lines and manufacturing businesses.',
     pictogram: 'oem',
+    scene: 'oem',
   },
   {
     id: 'engineering-machinery',
@@ -17,6 +21,7 @@ const industries: Industry[] = [
     slug: 'engineering-machinery',
     line: 'Parts for industrial machinery, engineering products and equipment.',
     pictogram: 'engineering',
+    scene: 'engineering',
   },
   {
     id: 'automotive',
@@ -24,6 +29,7 @@ const industries: Industry[] = [
     slug: 'automotive',
     line: 'Plastic components for automotive and auto-component applications.',
     pictogram: 'automotive',
+    scene: 'automotive',
   },
   {
     id: 'electrical-electronics',
@@ -31,6 +37,7 @@ const industries: Industry[] = [
     slug: 'electrical-electronics',
     line: 'Components for electrical products and industrial electrical applications.',
     pictogram: 'electrical',
+    scene: 'electrical',
   },
   {
     id: 'gas-kitchen',
@@ -38,6 +45,7 @@ const industries: Industry[] = [
     slug: 'gas-kitchen',
     line: 'Components for gas equipment, commercial kitchens and related products.',
     pictogram: 'gas-kitchen',
+    scene: 'gas-kitchen',
   },
   {
     id: 'agriculture',
@@ -45,6 +53,7 @@ const industries: Industry[] = [
     slug: 'agriculture',
     line: 'Components used in agricultural equipment and machinery.',
     pictogram: 'agriculture',
+    scene: 'agriculture',
   },
   {
     id: 'packaging',
@@ -52,6 +61,7 @@ const industries: Industry[] = [
     slug: 'packaging',
     line: 'Components for packaging systems and specialized industrial requirements.',
     pictogram: 'packaging',
+    scene: 'packaging',
   },
 ];
 

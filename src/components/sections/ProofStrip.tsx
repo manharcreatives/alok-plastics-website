@@ -1,4 +1,5 @@
 /**
+ * NOTE: not rendered on the home page any more — merged into AboutIntro (ADR-011). Kept compiling.
  * S3 · ProofStrip — §13
  * Canvas bg + 8px technical grid at 3%.
  * 4 primary stats with odometer roll on first view + light sweep.

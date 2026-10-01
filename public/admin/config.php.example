@@ -1,0 +1,37 @@
+<?php
+/**
+ * Alok Plastics admin — configuration.
+ *
+ * 1. Copy this file to config.php (same folder). config.php is git-ignored and is blocked from
+ *    web access by .htaccess. NEVER commit or e-mail it.
+ * 2. Replace each 'hash' with a real hash from:  php admin/hash.php
+ *    No default password exists; until a valid hash is present the admin shows a "set up" page.
+ * 3. Optional but recommended: set 'data_dir' to a folder OUTSIDE public_html (see docs/admin-panel.md).
+ */
+
+return [
+    // username (lowercase) => display name + password hash. Add one block per person.
+    'users' => [
+        'owner' => [
+            'name' => 'Owner',                       // TODO(client): shown in notes / "assigned to"
+            'hash' => 'PASTE_HASH_FROM_hash.php_HERE',
+        ],
+        // 'sales' => ['name' => 'Sales desk', 'hash' => '...'],
+    ],
+
+    // Private folder for enquiries, audit log, sessions, login throttling.
+    // Best: an absolute path above public_html, e.g. '/home/u123456789/alok-private'.
+    // null = use admin/data/ (protected by .htaccess, but inside the web root).
+    'data_dir' => null,
+
+    // Where settings.json / careers.json / product-overrides.json are written.
+    // null = <website root>/data  (served publicly as /data/). Leave as null unless told otherwise.
+    'public_data_dir' => null,
+
+    'timezone'             => 'Asia/Kolkata',
+    'session_idle_minutes' => 30,   // sign out after this long without activity
+    'session_max_hours'    => 12,   // hard limit even if active
+    'max_failed_logins'    => 5,    // per IP and per username
+    'lockout_minutes'      => 15,
+    'per_page'             => 25,
+];

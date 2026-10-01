@@ -2,11 +2,16 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { ArrowUpRight } from '@phosphor-icons/react/dist/ssr/ArrowUpRight';
+import { Phone } from '@phosphor-icons/react/dist/ssr/Phone';
 import PageHero from '@/components/page/PageHero';
 import EnquiryBand from '@/components/page/EnquiryBand';
+import FoldEdge, { FOLD_SECTION_CSS } from '@/components/sections/FoldEdge';
+import Pictogram from '@/components/brand/Pictogram';
 import ProductGallery from '@/components/products/ProductGallery';
 import StickyEnquiryBar from '@/components/products/StickyEnquiryBar';
 import { PartGrid } from '@/components/products/PartCard';
+import { PartSheetArt } from '@/components/products/art';
 import Tag from '@/components/ui/Tag';
 import {
   MACHINE_LABELS,
@@ -18,9 +23,9 @@ import {
   productsByGroup,
   publishedProducts,
 } from '@/content/products';
+import { site, telHref } from '@/content/site';
 import JsonLd from '@/components/seo/JsonLd';
 import { describe, partTitle, productJsonLd } from '@/lib/seo';
-import { waProduct } from '@/lib/whatsapp';
 import '@/components/products/products.css';
 
 export const dynamicParams = false;
@@ -59,15 +64,14 @@ export default async function PartPage({ params }: { params: Promise<{ group: st
   const machines = knownMachines(p);
   const variants = p.variants ?? [];
   const related = productsByGroup(g.id).filter(x => x.slug !== p.slug).slice(0, 4);
-  const wa = waProduct({ productName: p.name });
+  const phone = site.contact.phone;
 
-  const rows: { label: string; value: string }[] = [{ label: 'Category', value: g.name }];
-  if (p.material) rows.push({ label: 'Material', value: MATERIAL_LABELS[p.material] });
-  if (machines.length) rows.push({ label: 'Fits', value: machines.map(m => MACHINE_LABELS[m]).join(', ') });
-  if (p.sku) rows.push({ label: 'SKU', value: p.sku });
-  if (p.hsn) rows.push({ label: 'HSN', value: p.hsn });
-  if (p.moq) rows.push({ label: 'MOQ', value: p.moq });
-  if (p.packing) rows.push({ label: 'Packing', value: p.packing });
+  const cells: { label: string; value: string; wide?: boolean }[] = [{ label: 'Group', value: g.name, wide: true }];
+  if (p.material) cells.push({ label: 'Material', value: MATERIAL_LABELS[p.material] });
+  if (p.sku) cells.push({ label: 'Drg no.', value: p.sku });
+  if (p.hsn) cells.push({ label: 'HSN', value: p.hsn });
+  if (p.moq) cells.push({ label: 'MOQ', value: p.moq });
+  if (p.packing) cells.push({ label: 'Packing', value: p.packing });
 
   return (
     <>
@@ -77,70 +81,92 @@ export default async function PartPage({ params }: { params: Promise<{ group: st
           { label: g.name, href: `/products/${g.slug}/` },
           { label: p.name },
         ]}
-        label={`Part · ${g.name}`}
+        label={g.name}
         title={p.name}
         lead={p.summary}
+        art={<PartSheetArt product={p} />}
+        enter="rise"
       />
 
       <div>
-        <div className="pw">
-          <div className="p-detail">
-            <ProductGallery product={p} />
-            <div className="p-info">
-              {(p.material || machines.length > 0) && (
-                <div className="p-card__tags">
-                  {p.material && <Tag material={p.material} />}
-                  {machines.map(m => <Tag key={m} variant="muted">{MACHINE_LABELS[m]}</Tag>)}
-                </div>
-              )}
-
-              <section aria-labelledby="spec-h">
-                <h2 id="spec-h" className="p-h3">Specifications</h2>
-                <table className="p-spec">
-                  <caption>{p.name}</caption>
-                  <tbody>
-                    {rows.map(r2 => (
-                      <tr key={r2.label}><th scope="row">{r2.label}</th><td>{r2.value}</td></tr>
-                    ))}
-                  </tbody>
-                </table>
-              </section>
-
-              <section aria-labelledby="var-h">
-                <h2 id="var-h" className="p-h3">Sizes and variants</h2>
-                {variants.length > 0 ? (
-                  <ul className="p-list">
-                    {variants.map(v => (
-                      <li key={v.label}><strong>{v.label}</strong>{v.note && <small>{v.note}</small>}</li>
-                    ))}
-                  </ul>
-                ) : (
-                  <div className="p-empty">
-                    <p><strong>Ask us for size &amp; availability.</strong></p>
-                    <p>Tell us what you need and we will confirm the options.</p>
-                    <div className="p-btns">
-                      <Link className="p-btn p-btn--primary" href={`/enquiry/?product=${p.slug}`}>Enquire about {p.name}</Link>
-                    </div>
+        <section aria-labelledby="spec-h" className="p-section p-section--surface">
+          <div className="pw">
+            <div className="p-detail">
+              <div className="p-detail__sheet"><ProductGallery product={p} /></div>
+              <div className="p-info">
+                <div className="tb">
+                  <div className="tb__head">
+                    <h2 id="spec-h" className="tb__name">{p.name}</h2>
+                    {p.material && <Tag material={p.material} />}
                   </div>
+                  <dl className="tb__grid">
+                    {cells.map(c => (
+                      <div key={c.label} className={`tb__cell${c.wide || cells.length === 1 ? ' tb__cell--wide' : ''}`}>
+                        <dt>{c.label}</dt>
+                        <dd>{c.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+
+                {machines.length > 0 && (
+                  <section aria-labelledby="fit-h">
+                    <h2 id="fit-h" className="p-h3">Fits these machines</h2>
+                    <ul className="p-fit">
+                      {machines.map(m => (
+                        <li key={m}><Pictogram name={m} size={32} aria-hidden="true" /> {MACHINE_LABELS[m]}</li>
+                      ))}
+                    </ul>
+                  </section>
                 )}
-              </section>
+
+                <section aria-labelledby="var-h">
+                  <h2 id="var-h" className="p-h3">Sizes and variants</h2>
+                  {variants.length > 0 ? (
+                    <ul className="p-vars">
+                      {variants.map(v => (
+                        <li key={v.label}><strong>{v.label}</strong>{v.note && <small>{v.note}</small>}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <div className="p-ask">
+                      <p><strong>Ask us for size and availability.</strong></p>
+                      <p>Tell us what you need and we will confirm the options.</p>
+                    </div>
+                  )}
+                </section>
+
+                <div className="p-cta">
+                  <Link className="p-btn p-btn--primary" href={`/enquiry/?product=${p.slug}`}>
+                    Get a Quote <ArrowUpRight size={18} weight="light" aria-hidden="true" />
+                  </Link>
+                  {phone && (
+                    <a className="p-btn p-btn--ghost" href={telHref(phone)}>
+                      <Phone size={18} weight="light" aria-hidden="true" /> Call
+                    </a>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+        </section>
 
         {related.length > 0 && (
-          <section aria-labelledby="rel-h" className="p-section" style={{ background: 'var(--canvas)' }}>
+          <section aria-labelledby="rel-h" className="p-section p-section--canvas fold-sec">
+            <style>{FOLD_SECTION_CSS}</style>
+            <FoldEdge />
             <div className="pw">
-              <h2 id="rel-h" className="p-h2" style={{ marginBottom: 'var(--space-md)' }}>Related parts in {g.name}</h2>
+              <p className="p-eyebrow">Same group</p>
+              <h2 id="rel-h" className="p-h2" style={{ marginBottom: 'var(--space-lg)' }}>Related parts</h2>
               <PartGrid items={related} level={3} />
             </div>
           </section>
         )}
 
-        <StickyEnquiryBar name={p.name} slug={p.slug} waHref={wa} />
+        <StickyEnquiryBar name={p.name} slug={p.slug} material={p.material} />
       </div>
 
-      <EnquiryBand heading={`Need ${p.name}?`} text="Share the quantity and use — we reply with a quote." waHref={wa} />
+      <EnquiryBand heading={`Need ${p.name}?`} text="Share the quantity and use — we reply with a quote." />
       <JsonLd data={productJsonLd(p, g)} />
     </>
   );

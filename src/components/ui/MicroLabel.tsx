@@ -1,7 +1,8 @@
 /**
  * MicroLabel — §7.2 / §15.1
  * 0.75rem uppercase, tracking 0.16em, grey-metal, weight 600.
- * Optional: sequential number in burgundy + 24px horizontal rule to the left.
+ * 24px burgundy rule to the left. Numbering was removed site-wide (round 2, ask 9);
+ * the `number` prop is accepted for backwards compatibility but is not rendered.
  * Used as eyebrows for sections and card groups.
  */
 
@@ -14,7 +15,6 @@ interface MicroLabelProps {
 
 export default function MicroLabel({
   children,
-  number,
   showRule = true,
   className = '',
 }: MicroLabelProps) {
@@ -38,21 +38,6 @@ export default function MicroLabel({
             flexShrink: 0,
           }}
         />
-      )}
-      {number !== undefined && (
-        <span
-          aria-hidden="true"
-          style={{
-            fontFamily: 'var(--font-mono, monospace)',
-            fontSize: '0.6875rem',
-            color: 'var(--burgundy)',
-            fontWeight: 600,
-            letterSpacing: '0.08em',
-            minWidth: '1.5ch',
-          }}
-        >
-          {typeof number === 'number' ? String(number).padStart(2, '0') : number}
-        </span>
       )}
       <span
         style={{

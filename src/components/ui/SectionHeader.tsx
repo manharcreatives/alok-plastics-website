@@ -6,6 +6,7 @@
  */
 
 import MicroLabel from './MicroLabel';
+import { ArrowUpRight } from '@phosphor-icons/react/dist/ssr/ArrowUpRight';
 
 interface SectionHeaderProps {
   label: string;
@@ -66,7 +67,7 @@ export default function SectionHeader({
             }}
             className="section-header__link"
           >
-            {link.label} ↗
+            {link.label} <ArrowUpRight size="1em" weight="light" aria-hidden="true" style={{ verticalAlign: '-0.12em' }} />
           </a>
         )}
       </div>

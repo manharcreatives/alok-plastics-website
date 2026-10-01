@@ -9,6 +9,7 @@
  */
 
 import '@/styles/ui.css';
+import { ArrowUpRight } from '@phosphor-icons/react/dist/ssr/ArrowUpRight';
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes } from 'react';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'on-burgundy' | 'whatsapp' | 'ghost';
@@ -35,10 +36,6 @@ type AnchorElementProps = BaseProps &
   };
 
 type ButtonProps = ButtonElementProps | AnchorElementProps;
-
-const ARROW = (
-  <span className="btn__icon" aria-hidden="true">↗</span>
-);
 
 export default function Button({
   variant = 'primary',
@@ -67,7 +64,7 @@ export default function Button({
       {children}
       {/* Primary buttons get the ↗ arrow icon unless a custom icon is provided right */}
       {!loading && !icon && variant === 'primary' && (
-        <span className="btn__icon" aria-hidden="true" style={{ fontSize: '0.8em', marginLeft: -2 }}>↗</span>
+        <span className="btn__icon" aria-hidden="true"><ArrowUpRight size={16} weight="light" /></span>
       )}
       {!loading && icon && iconPosition === 'right' && (
         <span className="btn__icon">{icon}</span>

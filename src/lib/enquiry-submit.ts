@@ -3,11 +3,10 @@
  *
  * The PHP endpoint only exists on the Hostinger deployment. On a static preview
  * (or if PHP/mail is down) the POST 404s, returns HTML, or fails at network level.
- * Every such case maps to kind 'unavailable' so the UI can offer WhatsApp / mailto.
+ * Every such case maps to kind 'unavailable' so the UI can offer mailto / retry.
  */
 
 import { site } from '@/content/site';
-import { waLink } from '@/lib/whatsapp';
 
 export const ENQUIRY_ENDPOINT = '/api/enquiry.php';
 
@@ -41,13 +40,11 @@ export async function postEnquiry(body: FormData): Promise<SubmitResult> {
 
 /** Fallback channels built from the same summary text; each is null if not configured. */
 export function fallbackChannels(summaryLines: string[]): {
-  whatsapp: string | null;
   mailto: string | null;
 } {
-  const text = ['Hello Alok Plastics! Enquiry from the website:', ...summaryLines].join('\n');
+  const text = ['Hello Alok Plastics, enquiry from the website:', ...summaryLines].join('\n');
   const email = site.contact.email;
   return {
-    whatsapp: waLink(text),
     mailto: email
       ? `mailto:${email}?subject=${encodeURIComponent('Website enquiry')}&body=${encodeURIComponent(text)}`
       : null,
