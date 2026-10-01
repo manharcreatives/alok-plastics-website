@@ -1,0 +1,131 @@
+@import "tailwindcss";
+@import "../styles/tokens.css";
+@import "../styles/typography.css";
+@import "../styles/ui.css";
+
+/* ── Tailwind v4 theme — mirrors every token as a Tailwind utility ── */
+@theme inline {
+  /* Colours */
+  --color-burgundy: var(--burgundy);
+  --color-grey-metal: var(--grey-metal);
+
+  --color-burgundy-night: var(--burgundy-night);
+  --color-burgundy-deep: var(--burgundy-deep);
+  --color-burgundy-bright: var(--burgundy-bright);
+  --color-rose: var(--rose);
+  --color-rose-pale: var(--rose-pale);
+  --color-pink-soft: var(--pink-soft);
+  --color-blush: var(--blush);
+
+  --color-surface: var(--surface);
+  --color-canvas: var(--canvas);
+  --color-surface-alt: var(--surface-alt);
+  --color-mist: var(--mist);
+  --color-grey-cloud: var(--grey-cloud);
+  --color-grey-warm: var(--grey-warm);
+  --color-silver: var(--silver);
+
+  --color-ink: var(--ink);
+  --color-body: var(--body);
+  --color-muted: var(--muted);
+
+  --color-whatsapp: var(--whatsapp);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --color-info: var(--info);
+
+  /* Spacing */
+  --spacing-xs: var(--space-xs);
+  --spacing-sm: var(--space-sm);
+  --spacing-md: var(--space-md);
+  --spacing-lg: var(--space-lg);
+  --spacing-xl: var(--space-xl);
+  --spacing-section-y: var(--section-y);
+
+  /* Border radius */
+  --radius-card: var(--radius-card);
+  --radius-pill: var(--radius-pill);
+
+  /* Typography — font family tokens (CSS variables set by next/font in layout.tsx) */
+  --font-family-display: var(--font-archivo), 'Arial Narrow', sans-serif;
+  --font-family-body: var(--font-inter), system-ui, sans-serif;
+  --font-family-devanagari: var(--font-devanagari), 'Noto Sans Devanagari', sans-serif;
+  --font-family-mono: var(--font-mono), 'Courier New', monospace;
+}
+
+/* ── Base styles ──────────────────────────────────────────────── */
+html {
+  /* Smooth scroll is handled by Lenis — do not set scroll-behavior: smooth here */
+  overflow-x: hidden;
+}
+
+body {
+  background-color: var(--canvas);
+  color: var(--ink);
+  /* Font family will be applied in layout.tsx via next/font */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Typography defaults ──────────────────────────────────────── */
+/* Tabular numerals everywhere they matter */
+.tabular-nums,
+[class*="stat"],
+[class*="counter"],
+[class*="odometer"],
+table {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* Inter feature settings for technical look */
+body {
+  font-feature-settings: "ss01", "cv11";
+}
+
+/* ── Skip link ────────────────────────────────────────────────── */
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 1rem;
+  background: var(--burgundy);
+  color: white;
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-card);
+  font-weight: 600;
+  z-index: 9999;
+  transition: top 0.2s;
+}
+.skip-link:focus {
+  top: 1rem;
+}
+
+/* ── Focus ring — global default ─────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--burgundy);
+  outline-offset: 2px;
+}
+
+/* On burgundy backgrounds, focus ring must be white */
+.on-burgundy :focus-visible {
+  outline-color: white;
+}
+
+/* ── Reduced motion — disable all CSS animations/transitions ─── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Preloader guard ──────────────────────────────────────────── */
+/* When preloader is active, the main content is hidden via inert
+   and this class prevents CLS by reserving space */
+html.is-preloading body > *:not(#preloader-overlay) {
+  /* content is hidden visually but SSR-rendered for SEO */
+}

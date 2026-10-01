@@ -1,0 +1,148 @@
+/* Alok Plastics — Typography
+ * §7.2: Fluid type scale. Fluid sizes use clamp() so no media queries needed.
+ * §7.1: Font families (applied via CSS variables set by next/font in layout.tsx)
+ */
+
+/* ── Type scale utilities ─────────────────────────────────────── */
+
+.text-display {
+  font-size: clamp(2.75rem, 7vw, 5.5rem);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  font-weight: 650;
+  font-variation-settings: "wdth" 125; /* Archivo Expanded */
+}
+
+.text-h1-inner {
+  font-size: clamp(2.25rem, 5vw, 4rem);
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  font-weight: 650;
+  font-variation-settings: "wdth" 112;
+}
+
+.text-h2 {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+}
+
+.text-h3 {
+  font-size: clamp(1.375rem, 2vw, 1.75rem);
+  line-height: 1.15;
+  font-weight: 600;
+}
+
+.text-lead {
+  font-size: 1.25rem;
+  line-height: 1.5;
+  color: var(--body);
+  font-weight: 400;
+}
+
+.text-body {
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  color: var(--body);
+  max-width: 68ch;
+}
+
+.text-small {
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+/* Micro-labels: §3 rule 4 — uppercase, tracked, grey-metal, 12px */
+.text-micro {
+  font-size: 0.75rem;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--grey-metal);
+  font-weight: 600;
+}
+
+/* Tagline Devanagari — §7.2 */
+.text-tagline-dev {
+  font-size: clamp(1.5rem, 3.2vw, 3rem);
+  line-height: 1.5; /* Devanagari needs room for matras */
+  font-family: var(--font-devanagari), sans-serif;
+  font-weight: 600;
+}
+
+/* Mono / drawing-sheet detail — §7.1 */
+.text-mono {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.6875rem; /* 11px */
+  line-height: 1.4;
+  letter-spacing: 0.04em;
+}
+
+/* ── Metal gradient text ──────────────────────────────────────── */
+/* §3 rule 5: top-lit metallic gradient on key words/numerals.
+ * Apply .text-metal-gradient to a <span> wrapping the word.
+ * The gradient direction (175deg) follows the logo's top-lit shading. */
+.text-metal-gradient {
+  background: var(--metal-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* ── Section numbered micro-label ─────────────────────────────── */
+/* §3 rule 4: every section opens with `0X — NAME` in micro caps */
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: 0.75rem;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--grey-metal);
+  font-weight: 600;
+  margin-bottom: var(--space-md);
+}
+
+/* The 24px burgundy rule before the label */
+.section-label::before {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--burgundy);
+  flex-shrink: 0;
+}
+
+/* ── Tagline composition — §2.7 ───────────────────────────────── */
+/* Large sizes: first half burgundy, second half grey-metal */
+.tagline-large .tagline-part-1 {
+  color: var(--burgundy);
+}
+.tagline-large .tagline-part-2 {
+  color: var(--grey-metal);
+}
+/* Small sizes (< 20px): whole line in ink */
+.tagline-small {
+  color: var(--ink);
+}
+
+/* ── Blush callout — from brand PDFs ─────────────────────────── */
+.callout-blush {
+  background: var(--blush);
+  border-left: 4px solid var(--burgundy);
+  padding: var(--space-md) var(--space-lg);
+  border-radius: var(--radius-card);
+}
+
+/* ── Prose body text max-width ───────────────────────────────── */
+.prose-body p,
+.prose-body li {
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  color: var(--body);
+  max-width: 68ch;
+}

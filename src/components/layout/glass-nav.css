@@ -1,0 +1,253 @@
+/* Glass navbar — §9.1 (LOCKED — exact spec)
+ *
+ * Critical properties and WHY each one matters:
+ * - saturate(180%): blur alone desaturates; saturate restores video colour bleeding through
+ * - -webkit-backdrop-filter: Safari/iOS need the prefix, otherwise iPhone gets a flat grey box
+ * - inset 0 1px 0 rgba(255,255,255,.9): the "top-lit edge" — gives the glass thickness
+ * - 1px light border: on light, a light border (never dark)
+ * - Never animate backdrop-filter: animate background-color, box-shadow, border-color only
+ * - Must be a sibling of hero media (not nested inside transformed/overflow:hidden parent)
+ *
+ * glass-nav.css is ONE of the two allowed backdrop-filter files (the other is Drawer.tsx inline).
+ */
+
+.glass-nav {
+  position: fixed;
+  top: 40px; /* 32px utility bar + 8px gap */
+  left: 50%;
+  width: min(1360px, calc(100% - 32px));
+  height: 64px;
+  background: rgba(255, 255, 255, 0.55);
+  -webkit-backdrop-filter: blur(14px) saturate(180%);
+          backdrop-filter: blur(14px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  border-radius: 999px; /* pill — the ONE exception to the 2px rule (§3 row 8) */
+  box-shadow: 0 4px 24px rgba(30, 17, 21, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  transform: translate3d(-50%, 0, 0);
+  z-index: 50;
+  /* Transition: only background/shadow/border/geometry — NEVER backdrop-filter */
+  transition:
+    background-color 0.45s ease,
+    box-shadow 0.45s ease,
+    border-color 0.45s ease,
+    border-radius 0.45s ease,
+    top 0.45s ease,
+    width 0.45s ease;
+}
+
+/* Fallback — browsers without backdrop-filter support */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass-nav {
+    background: rgba(248, 247, 247, 0.94);
+    border-color: rgba(30, 17, 21, 0.08);
+  }
+}
+
+/* ── State 2: Docked (scrolled past hero) ─────────────────────── */
+.glass-nav--docked {
+  top: 0;
+  width: 100%;
+  max-width: 100%;
+  border-radius: 0;
+  background: rgba(248, 247, 247, 0.96); /* --canvas at 96% */
+  border-color: transparent;
+  border-bottom: 1px solid var(--grey-warm);
+  box-shadow: 0 2px 8px rgba(30, 17, 21, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+/* ── State 3: Hidden (scrolling down fast past 600px) ─────────── */
+.glass-nav--hidden {
+  transform: translate3d(-50%, -100%, 0);
+}
+
+/* ── Inner layout ─────────────────────────────────────────────── */
+.glass-nav__inner {
+  height: 100%;
+  max-width: var(--grid-max);
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+@media (max-width: 639px) {
+  .glass-nav {
+    width: calc(100% - 16px);
+  }
+  .glass-nav.glass-nav--docked {
+    width: 100%;
+  }
+  .glass-nav__inner {
+    padding: 0 var(--space-sm);
+    gap: var(--space-xs);
+  }
+}
+
+/* Utility bar — in normal flow above the fixed nav, scrolls away */
+.utility-bar__extra {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+@media (max-width: 559px) {
+  .utility-bar__extra {
+    display: none;
+  }
+}
+
+/* Navbar logo stays hidden while the preloader logo is flying to it */
+html.is-preloading .glass-nav__logo svg {
+  visibility: hidden;
+}
+
+.glass-nav__logo {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  /* Minimum width per §2.6 */
+  min-width: 0;
+}
+
+.glass-nav__logo svg {
+  height: 36px;
+  width: auto;
+  max-width: 100%;
+}
+
+.glass-nav__spacer {
+  flex: 1;
+}
+
+/* Primary nav links */
+.glass-nav__links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+@media (max-width: 1023px) {
+  .glass-nav__links {
+    display: none;
+  }
+}
+
+.glass-nav__link {
+  position: relative;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--ink);
+  text-decoration: none;
+  padding: 0.375rem 0.5rem;
+  transition: color 0.2s;
+}
+
+.glass-nav__link:hover,
+.glass-nav__link:focus-visible {
+  color: var(--burgundy);
+}
+
+/* Active link underline — 2px burgundy, 45° cut end (§9.2) */
+.glass-nav__link--active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0.5rem;
+  right: 0.5rem;
+  height: 2px;
+  background: var(--burgundy);
+  /* 45° cut end mimicking the A's peak angle */
+  clip-path: polygon(0 0, calc(100% - 4px) 0, 100% 100%, 0 100%);
+  transform-origin: left center;
+  transform: scaleX(1);
+}
+
+/* Products link with arrow indicator */
+.glass-nav__link--products {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ── CTA buttons ──────────────────────────────────────────────── */
+.glass-nav__ctas {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  flex-shrink: 0;
+}
+
+@media (max-width: 1023px) {
+  .glass-nav__ctas .glass-nav__cta--text {
+    display: none;
+  }
+}
+
+.glass-nav__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.4375rem 1rem;
+  border-radius: var(--radius-card);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.2s, transform 0.15s;
+  cursor: pointer;
+}
+
+.glass-nav__cta:active {
+  transform: translateY(1px);
+}
+
+.glass-nav__cta--primary {
+  background: var(--burgundy);
+  color: white;
+  border: 1px solid transparent;
+}
+
+.glass-nav__cta--primary:hover,
+.glass-nav__cta--primary:focus-visible {
+  background: var(--burgundy-deep);
+}
+
+.glass-nav__cta--whatsapp {
+  background: var(--whatsapp);
+  color: white;
+  border: 1px solid transparent;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.glass-nav__cta--whatsapp:hover {
+  filter: brightness(1.1);
+}
+
+/* ── Mobile menu button ───────────────────────────────────────── */
+.glass-nav__menu-btn {
+  display: none;
+  margin-left: 0;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px solid var(--grey-warm);
+  border-radius: var(--radius-card);
+  cursor: pointer;
+  color: var(--ink);
+  flex-shrink: 0;
+}
+
+@media (max-width: 1023px) {
+  .glass-nav__menu-btn {
+    display: flex;
+  }
+}

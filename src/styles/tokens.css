@@ -1,0 +1,83 @@
+/* Alok Plastics — Design Tokens
+ * §2.1: All HEX values are LOCKED from Brand Colour Guide v1.0 (Manhar Creatives, 1 Oct 2026)
+ * These are the ONLY hex values allowed in the entire src/ directory.
+ * The check-hex.mjs lint script enforces this.
+ *
+ * Derived gradient stops (#C9A0A4, #6E6C6C, #8F8D8D, #BDBBBB) exist ONLY inside
+ * --metal-gradient and --silver-gradient. Never use them as standalone colours.
+ */
+
+:root {
+  /* ── Primary & secondary ─────────────────────────────────────── */
+  --burgundy: #581C25;          /* Alok Burgundy — THE primary */
+  --grey-metal: #737171;        /* Metal Grey — the logo's second colour */
+
+  /* ── Burgundy support shades ─────────────────────────────────── */
+  --burgundy-night: #2E0A0F;    /* very dark panels, deep shadows (rare) */
+  --burgundy-deep: #3E131A;     /* button hover, gradient end, dark footer strip */
+  --burgundy-bright: #8A2C38;   /* link hover, highlights, charts */
+  --rose: #C35A61;              /* accent on dark backgrounds, small highlights */
+  --rose-pale: #E3B5B8;         /* text accent on burgundy, soft outlines */
+  --pink-soft: #F3DFE0;         /* tags, hover panels */
+  --blush: #FAF1F1;             /* callout boxes, note panels, secondary btn hover */
+
+  /* ── Light surfaces ──────────────────────────────────────────── */
+  --surface: #FFFFFF;           /* cards, forms, product photo backgrounds */
+  --canvas: #F8F7F7;            /* Soft White — MAIN CANVAS */
+  --surface-alt: #F1EEEF;       /* Light Grey — alternate sections, table stripes */
+  --mist: #ECE7E8;              /* Mist Grey — header bar, input backgrounds */
+  --grey-cloud: #E1DBDC;        /* Cloud Grey — soft borders and dividers */
+  --grey-warm: #D8D4D0;         /* Warm Silver — fine lines, card borders */
+  --silver: #909090;            /* Silver Grey — DECORATION ONLY, never text */
+
+  /* ── Text ────────────────────────────────────────────────────── */
+  --ink: #1E1115;               /* headings & key text (warm near-black) */
+  --body: #4A3D40;              /* paragraphs */
+  --muted: #6B5F62;             /* helper text, placeholders, footnotes */
+
+  /* ── Functional — never brand colours ───────────────────────── */
+  --whatsapp: #0F7B6C;          /* WhatsApp buttons & links ONLY */
+  --success: #2E7D32;
+  --warning: #8A5A00;
+  --error: #B3261E;
+  --info: #1F5F8B;
+
+  /* ── Derived gradients (LOCKED — these stops exist ONLY here) ── */
+  --metal-gradient: linear-gradient(175deg, #2E0A0F 0%, #581C25 32%, #8A2C38 58%, #C9A0A4 100%);
+  --silver-gradient: linear-gradient(180deg, #6E6C6C 0%, #8F8D8D 45%, #BDBBBB 100%);
+
+  /* ── Spacing tokens — §7.4 base-4 system ───────────────────────
+   * Never use arbitrary values between 28px and 36px (ambiguous spacing).
+   * See: scripts/check-spacing.mjs
+   */
+  --space-xs: 8px;    /* hairline gap inside a group */
+  --space-sm: 16px;   /* label ↔ its value */
+  --space-md: 24px;   /* sibling cards */
+  --space-lg: 40px;   /* padding inside a content block */
+  --space-xl: 72px;   /* between two groups inside one section */
+
+  /* Section vertical padding — varies by breakpoint in globals.css */
+  --section-y: 120px;  /* desktop default */
+
+  /* ── Grid ────────────────────────────────────────────────────── */
+  --grid-max: 1360px;
+  --grid-gutter: 32px;
+  --grid-page-padding: clamp(20px, 5vw, 64px);
+
+  /* ── Layout ──────────────────────────────────────────────────── */
+  --radius-card: 2px;   /* §3 row 8: 2px max, no rounded-xl/2xl */
+  --radius-pill: 999px; /* ONLY for the glass navbar — §9 */
+
+  /* ── Transition ──────────────────────────────────────────────── */
+  --transition-nav: background-color .45s ease, box-shadow .45s ease,
+                    border-color .45s ease, border-radius .45s ease,
+                    top .45s ease, width .45s ease;
+}
+
+/* ── Responsive section padding ──────────────────────────────── */
+@media (max-width: 1024px) {
+  :root { --section-y: 80px; --grid-gutter: 24px; }
+}
+@media (max-width: 768px) {
+  :root { --section-y: 56px; --grid-gutter: 20px; }
+}
