@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "NEXT_PUBLIC_SHOW_LAB=1 next dev --turbopack",
+    "dev": "cross-env NEXT_PUBLIC_SHOW_LAB=1 next dev --turbopack",
     "build": "next build",
     "postbuild": "node scripts/prune-lab.mjs && node scripts/generate-sitemap.mjs && node scripts/generate-llms.mjs",
     "start": "npx serve out",
@@ -16,11 +16,12 @@
     "test": "playwright test",
     "test:a11y": "playwright test tests/a11y.spec.ts",
     "test:screens": "playwright test tests/screens.spec.ts",
-    "analyze": "ANALYZE=true next build",
+    "analyze": "cross-env ANALYZE=true next build",
     "check:seo": "node scripts/check-seo.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
+    "@phosphor-icons/react": "^2.1.10",
     "clsx": "^2.1.1",
     "fuse.js": "^7.5.0",
     "gsap": "^3.15.0",
@@ -39,6 +40,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "cross-env": "^10.1.0",
     "eslint": "^9",
     "eslint-config-next": "16.3.7",
     "prettier": "^3.9.9",

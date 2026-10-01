@@ -6,7 +6,6 @@
 import JsonLd from '@/components/seo/JsonLd';
 import { ENTITY_STATEMENT, faqJsonLd, type FaqItem } from '@/lib/seo';
 import { MATERIAL_LABELS, productGroups, publishedProducts } from '@/content/products';
-import { site } from '@/content/site';
 import '@/components/products/products.css';
 
 function list(xs: string[]): string {
@@ -30,7 +29,7 @@ export function buildCatalogueFaq(): FaqItem[] {
     },
     {
       q: 'How do I ask for a quote?',
-      a: `Use the Get a Quote form on this website${site.contact.whatsapp ? ' or the WhatsApp button' : ''}. Tell us the part name, the quantity and where it will be used, and we will reply with a quote.`,
+      a: `Use the Get a Quote form on this website. Tell us the part name, the quantity and where it will be used, and we will reply with a quote.`,
     },
     {
       q: 'Are prices listed on the website?',

@@ -1,10 +1,13 @@
-/** /products/[group]/ — group intro, part grid, sibling-group nav (§8.2). */
+/** /products/[group]/ — group blueprint hero, part grid, other groups (§8.2). */
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { ArrowUpRight } from '@phosphor-icons/react/dist/ssr/ArrowUpRight';
 import PageHero from '@/components/page/PageHero';
 import EnquiryBand from '@/components/page/EnquiryBand';
+import FoldEdge, { FOLD_SECTION_CSS } from '@/components/sections/FoldEdge';
 import { PartGrid } from '@/components/products/PartCard';
+import { GroupBlueprintArt } from '@/components/products/art';
 import { describe } from '@/lib/seo';
 import { getGroupBySlug, productGroups, productsByGroup } from '@/content/products';
 import '@/components/products/products.css';
@@ -31,38 +34,55 @@ export default async function GroupPage({ params }: { params: Promise<{ group: s
   const g = getGroupBySlug(slug);
   if (!g) notFound();
   const items = productsByGroup(g.id);
+  const others = productGroups.filter(o => o.id !== g.id && productsByGroup(o.id).length > 0);
 
   return (
     <>
       <PageHero
         crumbs={[{ label: 'Products', href: '/products/' }, { label: g.name }]}
-        label={`Group ${g.id}`}
+        label="Part group"
         title={g.name}
         lead={`${g.tagline} ${g.description}`}
+        art={<GroupBlueprintArt group={g} />}
+        enter="draw"
       />
-      <section aria-labelledby="parts-h" className="p-section">
+
+      <section aria-labelledby="parts-h" className="p-section p-section--surface">
         <div className="pw">
-          <div className="p-head">
-            <h2 id="parts-h" className="p-h2">{items.length} {items.length === 1 ? 'part' : 'parts'} in this group</h2>
+          <div className="pg-bar">
+            <div>
+              <p className="p-eyebrow">The range</p>
+              <h2 id="parts-h" className="p-h2">Parts in {g.name}</h2>
+            </div>
+            <span className="pg-meta">{items.length} {items.length === 1 ? 'part' : 'parts'}</span>
           </div>
           <PartGrid items={items} level={3} />
         </div>
       </section>
-      <section aria-labelledby="sib-h" className="p-section" style={{ background: 'var(--canvas)' }}>
-        <div className="pw">
-          <h2 id="sib-h" className="p-h2" style={{ marginBottom: 'var(--space-md)' }}>Other part groups</h2>
-          <ul className="p-gnav">
-            {productGroups.map(o => (
-              <li key={o.id}>
-                <Link href={`/products/${o.slug}/`} aria-current={o.id === g.id ? 'page' : undefined}>
-                  <small>{o.id}</small>
-                  <strong>{o.name}</strong>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
+
+      {others.length > 0 && (
+        <section aria-labelledby="sib-h" className="p-section p-section--canvas fold-sec">
+          <style>{FOLD_SECTION_CSS}</style>
+          <FoldEdge />
+          <div className="pw">
+            <p className="p-eyebrow">Keep looking</p>
+            <h2 id="sib-h" className="p-h2">Other part groups</h2>
+            <ul className="pg-others">
+              {others.map(o => (
+                <li key={o.id}>
+                  <Link href={`/products/${o.slug}/`}>
+                    <span>
+                      <strong>{o.name}</strong>
+                      <small>{o.tagline}</small>
+                    </span>
+                    <ArrowUpRight size={32} weight="light" aria-hidden="true" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
       <EnquiryBand heading={`Need ${g.name.toLowerCase()} parts?`} text="Share the part name, quantity and use — we reply with a quote." />
     </>
   );

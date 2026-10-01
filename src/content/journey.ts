@@ -30,6 +30,7 @@ export const journeyMarkers: JourneyMarker[] = [
     title: '20+ Crore Products Delivered',
     line: 'The company reached the milestone of 20 crore+ successfully delivered products, with deliveries continuing.',
     isFuture: false,
+    stat: { value: 20, suffix: 'Cr+', label: 'products delivered' }, // verified proof point (§5.5) — runs the odometer
   },
   {
     // TODO(client): verify — 'plastic and steel products' product-range claim and 'across India' (Pan Bharat network is verified)

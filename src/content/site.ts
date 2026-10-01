@@ -50,12 +50,11 @@ export const site: SiteConfig = {
       poster: null,        // TODO(client): /media/hero-poster.jpg — see docs/hero-video-brief.md
       tone: 'light',       // 'light' = colour logo in navbar; 'dark' = bright logo
     },
-    eyebrow: '01 — EST. 1998 · CHANDIGARH',
+    eyebrow: 'EST. 1998 · CHANDIGARH',
     headline: ['The small parts that', 'keep big machines running.'],
     sub: 'Moulded plastic and steel spare parts for water coolers, display counters and deep freezers — float valves, F-bushes, connecting bushes, ventilation jalli and more, in nylon, HDPE, PPCP and brass.',
     ctas: {
       primary: 'Enquire Now',
-      secondary: 'WhatsApp Us',
       tertiary: 'Browse products',
     },
   },
@@ -141,3 +140,19 @@ export function formatAddress(c: Contact = site.contact): string {
 export function telHref(phone: string): string {
   return `tel:${phone.replace(/[^\d+]/g, '')}`;
 }
+
+/** True when a Maps URL is an embeddable (iframe) URL rather than a place link. */
+export function isEmbeddableMapsUrl(url: string): boolean {
+  return /\/maps\/embed|[?&]output=embed/.test(url);
+}
+
+/**
+ * Link that opens the location in Google Maps (new tab). Uses site.contact.mapsUrl when it is a
+ * place link; otherwise a Google Maps search URL built from the address (works while mapsUrl is null).
+ */
+export function mapsHref(c: Contact = site.contact): string {
+  if (c.mapsUrl && !isEmbeddableMapsUrl(c.mapsUrl)) return c.mapsUrl;
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(formatAddress(c))}`;
+}
+
+export const MAPS_ARIA_LABEL = 'Open Alok Plastics location in Google Maps';

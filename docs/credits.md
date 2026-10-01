@@ -6,14 +6,7 @@ All open-source assets and libraries used in this project.
 
 ## India SVG Map
 
-**To be sourced from:** Natural Earth (naturalearthdata.com) or datameet/maps (github.com/datameet/maps)
-
-Requirements:
-- Must use the **official Government of India boundary depiction** (includes all states, union territories, and disputed territories as shown in the GOI official maps)
-- Must be an open-licensed source (CC0 / CC-BY)
-- Source licence must be noted here once selected
-
-`TODO: Select and cite the specific India boundary file used.`
+**Source:** Natural Earth 1:10m Admin 0 Countries, India point-of-view edition (`ne_10m_admin_0_countries_ind.geojson`, github.com/nvkelso/natural-earth-vector). **Licence:** public domain (naturalearthdata.com/about/terms-of-use). Depicts India's boundary per the Government of India. Processed by `scripts/gen-world-dots.mjs` into `src/components/sections/worldDots.ts`. Illustrations in `src/components/art/` are original work.
 
 ---
 

@@ -1,70 +1,84 @@
 /**
  * Hero section — §11.5
- * Full-bleed, 100svh (capped at 1000px; grows if content needs it).
- * Type block left-aligned, bottom 14vh.
+ * Exactly one screen (100svh). The glass pill floats on top at top:16px; the
+ * diagonal exit lives inside the hero so nothing from the next section peeks in.
+ * Type block left-aligned, low-left.
  * Ambient mode (default) = light tone, --ink text, colour logo in nav.
  * Video/poster dark mode = white text, bright logo in nav.
  *
- * Entrance animation (post-preloader): SplitText lines, 90ms stagger, expo.out, 900ms.
+ * Exactly two buttons: Enquire Now + Browse Products. WhatsApp lives only in the
+ * floating button (WhatsAppFAB).
  */
 
 'use client';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { ArrowUpRight } from '@phosphor-icons/react/dist/csr/ArrowUpRight';
 import HeroMedia from './HeroMedia';
 import { site } from '@/content/site';
-import { waGeneral } from '@/lib/whatsapp';
 
-/* Layout constants shared with the fixed header: utility bar 32px,
- * floating nav 40 + 64 → content must clear 104px. */
+/* Layout constants shared with the fixed header: floating pill = 16px + 64px →
+ * content must clear 96px. */
 const HERO_STYLES = `
 .hero { position: relative; display: flex; flex-direction: column; overflow: hidden;
-  /* 100svh (§11.5). Minus the 32px utility bar so the diagonal cut lands on the fold. */
-  min-height: min(calc(100svh - 32px), 1000px); }
+  min-height: 100svh; }
 .hero__content { position: relative; z-index: 2; flex: 1; display: flex; flex-direction: column;
   justify-content: flex-end; width: 100%; margin: 0 auto;
   max-width: calc(var(--grid-max) + 2 * var(--grid-page-padding));
-  padding: calc(var(--space-xl) + var(--space-lg)) var(--grid-page-padding) calc(4vw + var(--space-xl)); }
+  padding: 96px var(--grid-page-padding) calc(4vw + var(--space-lg)); }
 .hero__h1 { font-family: var(--font-archivo, sans-serif); font-variation-settings: "wdth" 125;
   font-weight: 650; line-height: 1.05; letter-spacing: -0.03em;
   font-size: clamp(1.875rem, 8.2vw, 2.75rem); text-wrap: balance;
   margin: 0 0 var(--space-md); overflow-wrap: break-word; }
 .hero__line { display: inline; }
-.hero__sub { font-size: 1.0625rem; line-height: 1.65; max-width: 55ch; margin: 0 0 var(--space-lg); text-wrap: pretty; }
-.hero__tagline { margin-bottom: var(--space-lg); max-width: 100%; }
-.hero__tagline-row { display: flex; align-items: center; gap: var(--space-sm); }
-.hero__dev { font-family: var(--font-devanagari, sans-serif); font-size: clamp(0.9375rem, 1.8vw, 1.25rem);
-  font-weight: 600; line-height: 1.5; margin: 0; }
-.hero__rule { flex: 0 0 auto; width: 40px; height: 1px; transform: translateY(0.12em); /* optical: Devanagari body sits below line-box centre */
-  font-size: clamp(0.9375rem, 1.8vw, 1.25rem); }
+.hero__sub { font-size: 1.0625rem; line-height: 1.65; max-width: 55ch; margin: 0 0 var(--space-md); text-wrap: pretty; }
+
+/* Tagline lockup: [hairline][ Devanagari ][hairline] with the English line centred
+   beneath the Devanagari block only (one grid keeps both on the same axis). */
+.hero__tagline { display: grid; width: fit-content; max-width: 100%; margin: 0 0 var(--space-lg);
+  grid-template-columns: minmax(12px, 40px) auto minmax(12px, 40px); column-gap: var(--space-sm);
+  align-items: center; }
+.hero__dev { grid-column: 2; grid-row: 1; margin: 0; white-space: nowrap; text-align: center;
+  font-family: var(--font-devanagari, sans-serif); font-size: clamp(1.0625rem, 1.8vw, 1.25rem);
+  font-weight: 600; line-height: 1.5; }
+.hero__rule { height: 1px; align-self: center; transform: translateY(0.14em); /* optical: Devanagari body sits below line-box centre */ }
+.hero__rule--lead { grid-column: 1; grid-row: 1; }
+.hero__rule--trail { grid-column: 3; grid-row: 1; }
+.hero__en { grid-column: 2; grid-row: 2; margin: 2px 0 0; text-align: center; white-space: nowrap;
+  font-size: 0.75rem; letter-spacing: 0.01em; }
+
 .hero__ctas { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-sm); }
 .hero__btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-xs);
   min-height: 48px; padding: 0 var(--space-md); border-radius: var(--radius-card);
-  color: white; font-weight: 600; font-size: 1rem; line-height: 1; text-decoration: none;
-  transition: background-color .2s, filter .2s; white-space: nowrap; }
-.hero__btn--primary { background: var(--burgundy); }
-.hero__btn--primary:hover, .hero__btn--primary:focus-visible { background: var(--burgundy-deep); }
-.hero__btn--wa { background: var(--whatsapp); }
-.hero__btn--wa:hover, .hero__btn--wa:focus-visible { filter: brightness(1.1); }
-.hero__link { font-size: 0.9375rem; text-decoration: underline; text-underline-offset: 3px;
-  padding: var(--space-xs) var(--space-xs); min-height: 48px; display: inline-flex; align-items: center; }
+  font-weight: 600; font-size: 1rem; line-height: 1; text-decoration: none;
+  transition: background-color .2s, color .2s, border-color .2s; white-space: nowrap; }
+.hero__btn:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 3px; }
+.hero__btn svg { transition: transform .2s cubic-bezier(.16,1,.3,1); }
+.hero__btn:hover svg, .hero__btn:focus-visible svg { transform: translate3d(2px, -2px, 0); }
+.hero__btn--primary { background: var(--burgundy); color: var(--surface); border: 1px solid var(--burgundy); }
+.hero__btn--primary:hover, .hero__btn--primary:focus-visible { background: var(--burgundy-deep); border-color: var(--burgundy-deep); }
+.hero__btn--secondary { background: var(--surface); color: var(--burgundy); border: 1px solid var(--burgundy); }
+.hero__btn--secondary:hover, .hero__btn--secondary:focus-visible { background: var(--blush); }
+.hero__btn--secondary-dark { background: transparent; color: var(--surface); border: 1px solid var(--surface); }
+.hero__btn--secondary-dark:hover, .hero__btn--secondary-dark:focus-visible { background: color-mix(in srgb, var(--surface) 16%, transparent); }
+
 .hero__cue { position: absolute; right: var(--grid-page-padding); bottom: calc(4vw + var(--space-lg));
   display: flex; flex-direction: column; align-items: center; gap: 4px; z-index: 3;
   transition: opacity .4s; pointer-events: none; }
 .hero__cue-dot { animation: hero-scroll-dot 1.5s ease-in-out infinite; }
 @keyframes hero-scroll-dot { 0% { top: 0; opacity: 1; } 80% { top: 36px; opacity: 0; } 100% { top: 0; opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .hero__cue-dot { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .hero__cue-dot { animation: none; } .hero__btn svg { transition: none; } }
 
 @media (min-width: 768px) {
   /* Exactly two balanced lines: each headline half is its own nowrap block.
      Size is conservative against Archivo wdth 125 (~0.66em/char × 26 chars ≈ 17em). */
   .hero__h1 { font-size: clamp(2rem, 4.4vw, 4.5rem); }
   .hero__line { display: block; white-space: nowrap; }
+  .hero__content { padding-bottom: calc(4vw + var(--space-xl)); }
 }
 @media (max-width: 479px) {
-  .hero__rule--lead { display: none; }
-  .hero__btn { flex: 1 1 auto; }
+  .hero__btn { flex: 1 1 auto; padding: 0 var(--space-sm); }
 }
 /* Scroll cue collides with the content on tablets/phones and short screens — drop it */
 @media (max-width: 1023px), (max-height: 760px) { .hero__cue { display: none; } }
@@ -81,10 +95,6 @@ export default function Hero() {
   const mutedColor = onMedia ? 'rgba(255,255,255,0.65)' : 'var(--muted)';
   const hairColor = onMedia ? 'rgba(255,255,255,0.5)' : 'var(--grey-metal)';
 
-  /* WhatsApp: waGeneral() returns null until site.contact.whatsapp is set →
-   * fall back to the enquiry form so the button is never dead. */
-  const waHref = waGeneral();
-
   const [line1, line2] = site.hero.headline;
   const [before, after] = line2.split('big machines');
   const hasAccent = after !== undefined;
@@ -96,12 +106,6 @@ export default function Hero() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const waIcon = (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
-    </svg>
-  );
-
   return (
     <section className="hero" aria-label="Hero">
       <style>{HERO_STYLES}</style>
@@ -110,7 +114,7 @@ export default function Hero() {
       <HeroMedia media={site.hero.media} />
 
       <div className="hero__content">
-        {/* Eyebrow — §11.5 */}
+        {/* Eyebrow — §11.5 (no numbering) */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', marginBottom: 'var(--space-md)' }}>
           <span style={{ width: 24, height: 2, background: 'var(--burgundy)', display: 'inline-block', flexShrink: 0 }} aria-hidden="true" />
           <span style={{
@@ -148,51 +152,36 @@ export default function Hero() {
 
         <p className="hero__sub" style={{ color: subColor }}>{site.hero.sub}</p>
 
-        {/* Tagline — hairlines centred on the Devanagari line */}
+        {/* Tagline — hairlines flank the Devanagari; English centred beneath it */}
         <div className="hero__tagline">
-          <div className="hero__tagline-row">
-            <span
-              className="hero__rule hero__rule--lead"
-              style={{ background: `linear-gradient(to left, ${hairColor}, transparent)` }}
-              aria-hidden="true"
-            />
-            <p lang="sa" className="hero__dev">
-              <span style={{ color: 'var(--burgundy)' }}>भारते शिल्पितम्, </span>
-              <span style={{ color: isAmbient ? 'var(--grey-metal)' : mutedColor }}>विश्वय निर्मितम्</span>
-            </p>
-            <span
-              className="hero__rule"
-              style={{ background: `linear-gradient(to right, ${hairColor}, transparent)` }}
-              aria-hidden="true"
-            />
-          </div>
-          <p lang="en" style={{ fontSize: '0.8125rem', color: mutedColor, marginTop: 2 }}>
+          <span
+            className="hero__rule hero__rule--lead"
+            style={{ background: `linear-gradient(to left, ${hairColor}, transparent)` }}
+            aria-hidden="true"
+          />
+          <p lang="sa" className="hero__dev">
+            <span style={{ color: 'var(--burgundy)' }}>भारते शिल्पितम्, </span>
+            <span style={{ color: isAmbient ? 'var(--grey-metal)' : mutedColor }}>विश्वय निर्मितम्</span>
+          </p>
+          <span
+            className="hero__rule hero__rule--trail"
+            style={{ background: `linear-gradient(to right, ${hairColor}, transparent)` }}
+            aria-hidden="true"
+          />
+          <p lang="en" className="hero__en" style={{ color: isAmbient ? 'var(--body)' : mutedColor }}>
             {site.tagline.english}
           </p>
         </div>
 
-        {/* CTAs — two buttons + tertiary text link (§11.5) */}
+        {/* CTAs — exactly two buttons. WhatsApp lives only in the floating button. */}
         <div className="hero__ctas">
           <Link href="/enquiry" className="hero__btn hero__btn--primary">
             {site.hero.ctas.primary}
+            <ArrowUpRight weight="light" size={20} aria-hidden="true" />
           </Link>
-
-          {waHref ? (
-            <a href={waHref} target="_blank" rel="noopener noreferrer" className="hero__btn hero__btn--wa">
-              {waIcon}
-              {site.hero.ctas.secondary}
-            </a>
-          ) : (
-            /* No WhatsApp number configured yet → same slot, routes to the enquiry form */
-            <Link href="/enquiry" className="hero__btn hero__btn--wa">
-              {waIcon}
-              {site.hero.ctas.secondary}
-            </Link>
-          )}
-
-          <Link href="/products" className="hero__link" style={{ color: onMedia ? 'white' : 'var(--burgundy)' }}>
-            {/* U+FE0E forces text presentation — no emoji box */}
-            {site.hero.ctas.tertiary}&nbsp;{'↗︎'}
+          <Link href="/products" className={`hero__btn ${onMedia ? 'hero__btn--secondary-dark' : 'hero__btn--secondary'}`}>
+            Browse Products
+            <ArrowUpRight weight="light" size={20} aria-hidden="true" />
           </Link>
         </div>
       </div>

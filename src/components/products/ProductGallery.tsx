@@ -1,7 +1,7 @@
 'use client';
 /**
- * ProductGallery — real photos when supplied; otherwise a technical-drawing
- * placeholder ("Product photo coming soon"). Never fakes a photo.
+ * ProductGallery — real photos when supplied. Until then the photo slot shows the part's
+ * pictogram large on a drawing sheet, honestly captioned. Never fakes a photo.
  */
 import { useState } from 'react';
 import type { Product } from '@/content/types';
@@ -15,15 +15,11 @@ export default function ProductGallery({ product }: { product: Product }) {
   if (imgs.length === 0) {
     return (
       <div className="p-gallery">
-        <div className="p-gallery__main" role="img" aria-label={`${product.name} — product photo coming soon`}>
+        <div className="p-gallery__main" role="img" aria-label={`${product.name} — drawn illustration, product photo coming soon`}>
           <div className="p-ph">
             <span className="p-ph__frame" aria-hidden="true" />
-            <svg aria-hidden="true" width="100%" height="100%" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" style={{ position: 'absolute', inset: 0, color: 'var(--grey-warm)' }} fill="none" stroke="currentColor" strokeWidth="1">
-              <path d="M200 24V276M24 150H376" strokeDasharray="10 4 2 4" />
-              <path d="M56 232H344M56 224V240M344 224V240" />
-            </svg>
-            <span style={{ position: 'relative', color: 'var(--burgundy)' }}><PartArt product={product} /></span>
-            <span className="p-ph__cap" style={{ position: 'relative' }}>Product photo coming soon</span>
+            <span style={{ position: 'relative', display: 'contents' }}><PartArt product={product} /></span>
+            <span className="p-fine" style={{ position: 'relative' }}>Product photo coming soon</span>
             <span className="p-ph__sub" style={{ position: 'relative' }}>Need a photo or drawing? Ask us.</span>
           </div>
         </div>

@@ -4,7 +4,7 @@
  * Posts to /api/enquiry.php. Validates via Zod fullEnquirySchema.
  * Required: Name, Company, Phone, "I am a", at least one product.
  * Optional: Email, City, State, GSTIN, quantities, Additional notes.
- * Endpoint unreachable (static preview / PHP down) -> EnquiryFallback (WhatsApp / email).
+ * Endpoint unreachable (static preview / PHP down) -> EnquiryFallback (email / retry).
  * Designed for --canvas / --surface background (onLight = true).
  */
 
@@ -13,11 +13,13 @@
 import { useState } from 'react';
 import type { FormEvent, CSSProperties } from 'react';
 import { fullEnquirySchema, flattenZodErrors } from '@/lib/enquiry-schema';
-import { waFromShortForm, enquiryLines } from '@/lib/whatsapp';
+import { enquiryLines } from '@/lib/whatsapp';
 import { postEnquiry } from '@/lib/enquiry-submit';
-import { trackEnquirySubmit, trackWhatsAppClick } from '@/lib/analytics';
+import { trackEnquirySubmit } from '@/lib/analytics';
 import { publishedProducts } from '@/content/products';
 import EnquiryFallback from './EnquiryFallback';
+import SuccessNext from './SuccessNext';
+import { Check } from '@phosphor-icons/react/dist/ssr/Check';
 import { BUYER_TYPES, FORM_CSS } from './shared';
 
 type FormState = 'idle' | 'submitting' | 'success' | 'error';
@@ -87,7 +89,6 @@ function inputStyle(hasErr: boolean): CSSProperties {
 export default function FullEnquiryForm({ prefillProduct }: { prefillProduct?: string }) {
   const [state, setState] = useState<FormState>('idle');
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [waHref, setWaHref] = useState<string | null>(null);
   const [fallbackLines, setFallbackLines] = useState<string[]>([]);
   const [rateLimited, setRateLimited] = useState(false);
   const [lines, setLines] = useState<LineItem[]>([
@@ -187,12 +188,6 @@ export default function FullEnquiryForm({ prefillProduct }: { prefillProduct?: s
         buyerType: d.buyerType,
         productCount: d.lines.length,
       });
-      setWaHref(waFromShortForm({
-        name: d.name,
-        company: d.company,
-        product: productSummary,
-        message: d.message || undefined,
-      }));
       return;
     }
     if (res.kind === 'validation') {
@@ -215,7 +210,7 @@ export default function FullEnquiryForm({ prefillProduct }: { prefillProduct?: s
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: '1.5rem', color: 'var(--success)',
         }}>
-          {'\u2713\uFE0E'}
+          <Check size={24} weight="light" />
         </div>
         <h2 style={{ fontFamily: 'var(--font-archivo)', fontVariationSettings: '"wdth" 125', fontSize: '1.5rem', fontWeight: 650, color: 'var(--ink)', letterSpacing: '-0.02em' }}>
           Enquiry received.
@@ -224,30 +219,7 @@ export default function FullEnquiryForm({ prefillProduct }: { prefillProduct?: s
           We&rsquo;ll review your requirement and reply within one business day.
           {/* COPY: TODO(client): confirm typical reply time */}
         </p>
-        {waHref && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-xs)' }}>
-            <p style={{ fontSize: '0.875rem', color: 'var(--muted)' }}>
-              Also send the same enquiry on WhatsApp for a faster response:
-            </p>
-            <a
-              href={waHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => trackWhatsAppClick({ source: 'enquiry-section' })}
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: 8,
-                padding: '12px 20px', minHeight: 44,
-                background: 'var(--whatsapp)', color: 'white',
-                borderRadius: 'var(--radius-card)',
-                fontWeight: 650, fontSize: '0.9375rem',
-                textDecoration: 'none',
-                width: 'fit-content',
-              }}
-            >
-              Send on WhatsApp &rarr;
-            </a>
-          </div>
-        )}
+        <SuccessNext onLight />
       </div>
     );
   }

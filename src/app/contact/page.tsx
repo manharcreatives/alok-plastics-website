@@ -1,15 +1,22 @@
 /**
- * /contact — address, enquiry form, click-to-load map (§8.2).
- * Phone / email / WhatsApp / GSTIN rows render only when set in site.contact.
- * LocalBusiness JSON-LD is Phase 8.
+ * /contact: address (clickable to Maps), enquiry form, click-to-load map (§8.2).
+ * Phone / email / GSTIN rows render only when set in site.contact. No WhatsApp CTA here
+ * (it lives in the floating button only).
  */
 import type { Metadata } from 'next';
+import { MapPin } from '@phosphor-icons/react/dist/ssr/MapPin';
+import { Phone } from '@phosphor-icons/react/dist/ssr/Phone';
+import { EnvelopeSimple } from '@phosphor-icons/react/dist/ssr/EnvelopeSimple';
+import { ArrowUpRight } from '@phosphor-icons/react/dist/ssr/ArrowUpRight';
 import PageHero from '@/components/page/PageHero';
 import EnquiryBand from '@/components/page/EnquiryBand';
+import { ContactArt } from '@/components/page/art';
+import FoldEdge, { FOLD_SECTION_CSS } from '@/components/sections/FoldEdge';
 import ShortEnquiryForm from '@/components/forms/ShortEnquiryForm';
 import MapLoader from '@/components/contact/MapLoader';
-import { site, formatAddress, formatAddressLines, telHref } from '@/content/site';
-import { waGeneral, waDisplayNumber } from '@/lib/whatsapp';
+import Reveal from '@/components/ui/Reveal';
+import { Eyebrow, SECTION_CSS, WRAP_STYLE } from '@/components/about/parts';
+import { site, formatAddressLines, isEmbeddableMapsUrl, mapsHref, telHref, MAPS_ARIA_LABEL } from '@/content/site';
 
 export const metadata: Metadata = {
   title: 'Contact Us',
@@ -20,33 +27,44 @@ export const metadata: Metadata = {
 };
 
 const CSS = `
-.ct-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--space-xl); align-items: start; }
-@media (max-width: 1023px) { .ct-grid { grid-template-columns: minmax(0, 1fr); gap: var(--space-lg); } }
-.ct-card { background: var(--surface); border: 1px solid var(--grey-cloud); border-radius: var(--radius-card); padding: var(--space-lg); }
-@media (max-width: 639px) { .ct-card { padding: var(--space-sm); } }
-.ct-row { display: flex; flex-direction: column; gap: 4px; padding: var(--space-sm) 0; border-top: 1px solid var(--grey-cloud); }
-.ct-row:first-of-type { border-top: 0; padding-top: 0; }
-.ct-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--grey-metal); font-weight: 600; }
-.ct-val { color: var(--ink); font-size: 1rem; line-height: 1.6; overflow-wrap: anywhere; }
-.ct-link { color: var(--burgundy); text-decoration: none; display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; }
-.ct-link:hover { text-decoration: underline; }
-.ct-link:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 2px; }
-.ct-h2 { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(1.25rem, 2.2vw, 1.5rem); font-weight: 650; letter-spacing: -0.02em; color: var(--ink); margin-bottom: var(--space-sm); }
-`;
+${SECTION_CSS}
+${FOLD_SECTION_CSS}
+.ct-main { background: var(--canvas); }
+.ct-grid { display: grid; gap: var(--space-xl); align-items: start; }
+.ct-h2 { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(1.5rem, 2.8vw, 2.25rem); font-weight: 650; line-height: 1.1; letter-spacing: -0.025em; color: var(--ink); margin: 0 0 var(--space-lg); }
 
-function isEmbeddable(url: string): boolean {
-  return /\/maps\/embed|[?&]output=embed/.test(url);
-}
+/* Address as a drawing-sheet title block */
+.ct-addr { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: var(--space-sm); align-items: start; text-decoration: none; color: inherit; padding: var(--space-md); border-bottom: 1px solid var(--grey-warm); background: var(--surface); transition: background-color 200ms; }
+.ct-addr:hover { background: var(--blush); }
+.ct-addr:focus-visible { outline: 2px solid var(--burgundy); outline-offset: -2px; }
+.ct-addr__pin { width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; background: var(--burgundy); color: var(--surface); clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%); }
+.ct-addr__t { font-family: var(--font-archivo); font-variation-settings: "wdth" 110; font-weight: 650; font-size: 1.25rem; line-height: 1.3; letter-spacing: -0.01em; color: var(--ink); font-style: normal; }
+.ct-addr__t span { display: block; font-family: var(--font-inter); font-variation-settings: normal; font-weight: 400; font-size: 1rem; letter-spacing: 0; color: var(--body); margin-top: var(--space-xs); line-height: 1.6; }
+.ct-addr__go { color: var(--burgundy); transition: transform 200ms cubic-bezier(.16,1,.3,1); }
+.ct-addr:hover .ct-addr__go { transform: translate3d(2px, -2px, 0); }
+.ct-row { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--space-sm); align-items: center; padding: var(--space-sm) var(--space-md); border-bottom: 1px solid var(--grey-warm); }
+.ct-row:last-child { border-bottom: 0; }
+.ct-label { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--grey-metal); font-weight: 600; display: block; }
+.ct-val { color: var(--ink); font-size: 1rem; line-height: 1.5; overflow-wrap: anywhere; }
+.ct-link { color: var(--burgundy); text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; min-height: 44px; }
+.ct-link:hover { color: var(--burgundy-bright); text-decoration: underline; text-underline-offset: 3px; }
+.ct-link:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 2px; }
+.ct-row svg { color: var(--grey-metal); }
+.ct-note { padding: var(--space-md); color: var(--body); line-height: 1.65; margin: 0; font-size: 0.9375rem; }
+.ct-form { background: var(--surface); border: 1px solid var(--grey-metal); padding: var(--space-lg); position: relative; }
+.ct-form::before { content: ''; position: absolute; left: -1px; top: -1px; width: 72px; height: 3px; background: var(--burgundy); }
+.ct-find { background: var(--surface); --pad-top: var(--section-y); padding-bottom: var(--section-y); padding-left: var(--grid-page-padding); padding-right: var(--grid-page-padding); }
+@media (max-width: 639px) { .ct-form { padding: var(--space-md) var(--space-sm); } .ct-addr { grid-template-columns: auto minmax(0, 1fr); } .ct-addr__go { display: none; } }
+@media (min-width: 1024px) { .ct-grid { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--space-xl); } }
+@media (prefers-reduced-motion: reduce) { .ct-addr__go { transition: none; } }
+`;
 
 export default function ContactPage() {
   const c = site.contact;
   const [line1, line2] = formatAddressLines(c);
-  const wa = waGeneral();
-  const waNum = waDisplayNumber();
-  const openUrl = c.mapsUrl && !isEmbeddable(c.mapsUrl)
-    ? c.mapsUrl
-    : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(formatAddress(c))}`;
-  const embedUrl = c.mapsUrl && isEmbeddable(c.mapsUrl) ? c.mapsUrl : null;
+  const openUrl = mapsHref(c);
+  const embedUrl = c.mapsUrl && isEmbeddableMapsUrl(c.mapsUrl) ? c.mapsUrl : null;
+  const noDirect = !c.phone && !c.email;
 
   return (
     <>
@@ -56,56 +74,68 @@ export default function ContactPage() {
         label="Contact"
         title="Talk to Alok Plastics"
         lead="Tell us which part you need, in what quantity, and for which machine. We will come back to you with a quote."
+        art={<ContactArt />}
+        enter="draw"
+        scrollHint
       />
-      <div style={{ background: 'var(--canvas)', padding: 'var(--space-xl) var(--grid-page-padding)' }}>
-        <div className="ct-grid" style={{ maxWidth: 'calc(var(--grid-max) + 2 * var(--grid-page-padding))', margin: '0 auto' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
-            <section aria-labelledby="ct-details-h" className="ct-card">
-              <h2 id="ct-details-h" className="ct-h2">Our details</h2>
-              <div className="ct-row">
-                <span className="ct-label">Address</span>
-                <address className="ct-val" style={{ fontStyle: 'normal' }}>
-                  {site.name}<br />{line1}<br />{line2}
-                </address>
+
+      <section aria-labelledby="ct-details-h" className="cp-section ct-main">
+        <div style={WRAP_STYLE}>
+          <div className="ct-grid">
+            <Reveal>
+              <Eyebrow>Our details</Eyebrow>
+              <h2 id="ct-details-h" className="ct-h2">Where to find us.</h2>
+              <div className="cp-sheet">
+                <a className="ct-addr" href={openUrl} target="_blank" rel="noopener noreferrer" aria-label={MAPS_ARIA_LABEL}>
+                  <span className="ct-addr__pin" aria-hidden="true"><MapPin size={24} weight="light" /></span>
+                  <address className="ct-addr__t">
+                    {site.name}
+                    <span>{line1}<br />{line2}</span>
+                  </address>
+                  <ArrowUpRight className="ct-addr__go" size={24} weight="light" aria-hidden="true" />
+                </a>
+                {c.phone && (
+                  <div className="ct-row">
+                    <Phone size={24} weight="light" aria-hidden="true" />
+                    <div><span className="ct-label">Phone</span><a className="ct-link" href={telHref(c.phone)}>{c.phone}</a></div>
+                  </div>
+                )}
+                {c.email && (
+                  <div className="ct-row">
+                    <EnvelopeSimple size={24} weight="light" aria-hidden="true" />
+                    <div><span className="ct-label">Email</span><a className="ct-link" href={`mailto:${c.email}`}>{c.email}</a></div>
+                  </div>
+                )}
+                {c.gstin && (
+                  <div className="ct-row">
+                    <span aria-hidden="true" style={{ width: 24 }} />
+                    <div><span className="ct-label">GSTIN</span><span className="ct-val">{c.gstin}</span></div>
+                  </div>
+                )}
+                {noDirect && (
+                  <p className="ct-note">The enquiry form is the quickest way to reach us. Tell us the part, the quantity and where it is used.</p>
+                )}
               </div>
-              {c.phone && (
-                <div className="ct-row">
-                  <span className="ct-label">Phone</span>
-                  <a className="ct-link" href={telHref(c.phone)}>{c.phone}</a>
-                </div>
-              )}
-              {c.email && (
-                <div className="ct-row">
-                  <span className="ct-label">Email</span>
-                  <a className="ct-link" href={`mailto:${c.email}`}>{c.email}</a>
-                </div>
-              )}
-              {wa && (
-                <div className="ct-row">
-                  <span className="ct-label">WhatsApp</span>
-                  <a className="ct-link" href={wa} target="_blank" rel="noopener noreferrer">
-                    {waNum ?? 'Message us on WhatsApp'}
-                  </a>
-                </div>
-              )}
-              {c.gstin && (
-                <div className="ct-row">
-                  <span className="ct-label">GSTIN</span>
-                  <span className="ct-val">{c.gstin}</span>
-                </div>
-              )}
-            </section>
-            <section aria-labelledby="ct-map-h">
-              <h2 id="ct-map-h" className="ct-h2">Find us</h2>
-              <MapLoader embedUrl={embedUrl} openUrl={openUrl} title={`Map showing ${site.name}, ${c.city}`} />
-            </section>
+            </Reveal>
+            <Reveal delay={120}>
+              <section aria-labelledby="ct-form-h" className="ct-form">
+                <h2 id="ct-form-h" className="ct-h2" style={{ marginBottom: 'var(--space-md)' }}>Send an enquiry</h2>
+                <ShortEnquiryForm source="enquiry-page" onLight />
+              </section>
+            </Reveal>
           </div>
-          <section aria-labelledby="ct-form-h" className="ct-card">
-            <h2 id="ct-form-h" className="ct-h2">Send an enquiry</h2>
-            <ShortEnquiryForm source="enquiry-page" onLight />
-          </section>
         </div>
-      </div>
+      </section>
+
+      <section aria-labelledby="ct-map-h" className="fold-sec ct-find">
+        <FoldEdge />
+        <div style={WRAP_STYLE}>
+          <Eyebrow>Find us</Eyebrow>
+          <h2 id="ct-map-h" className="ct-h2">Plot No-06, Industrial Area Phase II.</h2>
+          <MapLoader embedUrl={embedUrl} openUrl={openUrl} title={`Map showing ${site.name}, ${c.city}`} addressLines={[line1, line2]} />
+        </div>
+      </section>
+
       <EnquiryBand />
     </>
   );

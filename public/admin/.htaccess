@@ -1,0 +1,46 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Alok Plastics — /admin/ rules (Apache / LiteSpeed on Hostinger)
+# Overrides the site-wide .htaccess for this folder only.
+# ─────────────────────────────────────────────────────────────────────────────
+Options -Indexes -MultiViews
+DirectoryIndex index.php
+AddDefaultCharset UTF-8
+
+# 1. Never serve config, stored data, templates, backups or editor leftovers.
+<FilesMatch "(?i)^(config(\..*)?\.php|config\.php\.example|\.gitignore|.*\.(sqlite|sqlite3|db|jsonl|lock|bak|tmp|log|ini|md|sh))$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order deny,allow
+    Deny from all
+  </IfModule>
+</FilesMatch>
+
+# 2. Keep the admin out of search engines and caches.
+<IfModule mod_headers.c>
+  Header always set X-Robots-Tag "noindex, nofollow, noarchive, nosnippet"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set Referrer-Policy "same-origin"
+  Header always set Cross-Origin-Opener-Policy "same-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
+</IfModule>
+
+# 3. The site-wide file caches CSS/JS for a year; the admin must always revalidate
+#    (assets are also cache-busted with ?v=<mtime> by the templates).
+<IfModule mod_expires.c>
+  ExpiresActive Off
+</IfModule>
+<FilesMatch "(?i)\.(css|js)$">
+  <IfModule mod_headers.c>
+    Header set Cache-Control "private, no-cache"
+  </IfModule>
+</FilesMatch>
+# (PHP responses send their own "Cache-Control: no-store".)
+
+# 4. PHP hardening (ignored silently where PHP runs as FPM/LiteSpeed without php_value support).
+<IfModule mod_php.c>
+  php_flag display_errors off
+  php_flag expose_php off
+</IfModule>

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-01-01T00:00:00Z",
+  "roles": [
+    {
+      "id": "example-role-0000",
+      "title": "EXAMPLE ROLE TITLE",
+      "team": "sales",
+      "type": "full-time",
+      "location": "EXAMPLE LOCATION",
+      "description": "Plain text. Render with textContent, never as HTML.",
+      "active": true,
+      "createdAt": "2026-01-01T00:00:00Z",
+      "updatedAt": "2026-01-01T00:00:00Z"
+    }
+  ]
+}

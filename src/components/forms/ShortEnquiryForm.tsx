@@ -4,8 +4,8 @@
  * Posts to /api/enquiry.php. Validates via Zod schema.
  * States: idle · submitting · success · error.
  * Required: Name, Company, Phone, Product. Optional: buyer type, quantity, notes.
- * On success: offers WhatsApp follow-up if configured.
- * If the endpoint is unreachable (static preview / PHP down): WhatsApp / email
+ * On success: offers Call / Email / Browse products (never WhatsApp: that lives in the FAB only).
+ * If the endpoint is unreachable (static preview / PHP down): email
  * fallback via EnquiryFallback — the typed values stay in the form.
  *
  * Styling: designed for use inside an --burgundy background (on-dark).
@@ -17,11 +17,12 @@
 import { useState } from 'react';
 import type { FormEvent, CSSProperties } from 'react';
 import { validateShortForm } from '@/lib/enquiry-schema';
-import { waFromShortForm, enquiryLines } from '@/lib/whatsapp';
+import { enquiryLines } from '@/lib/whatsapp';
 import { postEnquiry } from '@/lib/enquiry-submit';
-import { trackEnquirySubmit, trackWhatsAppClick } from '@/lib/analytics';
+import { trackEnquirySubmit } from '@/lib/analytics';
 import { publishedProducts } from '@/content/products';
 import EnquiryFallback from './EnquiryFallback';
+import SuccessNext from './SuccessNext';
 import { BUYER_TYPES, FORM_CSS } from './shared';
 
 type FormState = 'idle' | 'submitting' | 'success' | 'error';
@@ -53,7 +54,6 @@ export default function ShortEnquiryForm({
 }: Props) {
   const [state, setState] = useState<FormState>('idle');
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [waHref, setWaHref] = useState<string | null>(null);
   const [fallbackLines, setFallbackLines] = useState<string[]>([]);
   const [rateLimited, setRateLimited] = useState(false);
 
@@ -125,11 +125,6 @@ export default function ShortEnquiryForm({
     if (res.ok) {
       setState('success');
       trackEnquirySubmit({ source, buyerType: d.buyerType });
-      setWaHref(waFromShortForm({
-        name: d.name, company: d.company,
-        product: d.product, quantity: d.quantity,
-        unit: d.quantityUnit, message: d.message,
-      }));
       form.reset();
       return;
     }
@@ -161,25 +156,7 @@ export default function ShortEnquiryForm({
           We&rsquo;ll reply within one business day.
           {/* COPY: typical reply time — TODO(client): confirm and update */}
         </p>
-        {waHref && (
-          <a
-            href={waHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => trackWhatsAppClick({ source: 'enquiry-section' })}
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: 8,
-              padding: '12px 20px', minHeight: 44,
-              background: 'var(--whatsapp)', color: 'white',
-              borderRadius: 'var(--radius-card)',
-              fontWeight: 650, fontSize: '0.875rem',
-              textDecoration: 'none',
-              width: 'fit-content',
-            }}
-          >
-            Also send on WhatsApp &rarr;
-          </a>
-        )}
+        <SuccessNext onLight={onLight} />
         <button
           type="button"
           onClick={() => setState('idle')}

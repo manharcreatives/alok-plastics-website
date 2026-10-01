@@ -1,14 +1,13 @@
 /**
  * EnquiryFallback — shown when the enquiry endpoint cannot be reached or rejects the send.
- * Offers WhatsApp / email with the enquiry pre-filled when those channels are configured
- * (site.contact.whatsapp / email), and always offers Retry. Nothing here says "TODO".
+ * Offers email with the enquiry pre-filled when configured (site.contact.email),
+ * and always offers Retry. Never WhatsApp (round 2, ask 17). Nothing here says "TODO".
  */
 
 'use client';
 
 import type { CSSProperties } from 'react';
 import { fallbackChannels } from '@/lib/enquiry-submit';
-import { trackWhatsAppClick } from '@/lib/analytics';
 
 interface Props {
   summaryLines: string[];
@@ -18,8 +17,8 @@ interface Props {
 }
 
 export default function EnquiryFallback({ summaryLines, onLight, rateLimited, onRetry }: Props) {
-  const { whatsapp, mailto } = fallbackChannels(summaryLines);
-  const hasChannel = !!(whatsapp || mailto);
+  const { mailto } = fallbackChannels(summaryLines);
+  const hasChannel = !!mailto;
   const fg = onLight ? 'var(--ink)' : 'white';
   const fgMuted = onLight ? 'var(--body)' : 'rgba(255,255,255,0.8)';
 
@@ -59,17 +58,6 @@ export default function EnquiryFallback({ summaryLines, onLight, rateLimited, on
         </p>
       )}
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-xs)' }}>
-        {!rateLimited && whatsapp && (
-          <a
-            href={whatsapp}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => trackWhatsAppClick({ source: 'enquiry-section' })}
-            style={{ ...btn, background: 'var(--whatsapp)', color: 'white' }}
-          >
-            Send on WhatsApp
-          </a>
-        )}
         {!rateLimited && mailto && (
           <a
             href={mailto}
