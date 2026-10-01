@@ -1,0 +1,360 @@
+/* Preloader overlay — §10.3
+ * Full-viewport fixed overlay, background --canvas.
+ * Composition centred-optically: logo block sits 4% above true centre.
+ */
+
+/* Hidden unless the <head> script flagged this load as a preloader run.
+   A JS failure can never leave the overlay up: that script also removes the
+   class after 6s, and without JS the class is never added. */
+.preloader,
+.preloader__panel,
+.preloader__seam {
+  display: none;
+}
+html.is-preloading .preloader {
+  display: flex;
+}
+html.is-preloading .preloader__panel,
+html.is-preloading .preloader__seam {
+  display: block;
+}
+html.is-preloading body {
+  overflow: hidden;
+}
+
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--canvas);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* 4% above true centre — optical centering for wide logo */
+  padding-bottom: 8%;
+  overflow: hidden;
+}
+
+/* Drawing grid — §10.3 t:0–250ms */
+.preloader__grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(var(--grey-metal) 0px, transparent 1px, transparent 7px, transparent 8px),
+    repeating-linear-gradient(90deg, var(--grey-metal) 0px, transparent 1px, transparent 7px, transparent 8px);
+  background-size: 8px 8px;
+  /* radial fade so it never touches text edges */
+  -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+  opacity: 0; /* animated in timeline */
+  pointer-events: none;
+}
+
+/* Logo construction area */
+.preloader__logo-area {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Wide and low — §3 rule 7 */
+  width: min(480px, 85vw);
+}
+
+.preloader__logo-area svg {
+  width: 100%;
+  height: auto;
+}
+
+/* Register marks — §10.3 t:0–250ms */
+.preloader__register {
+  position: absolute;
+  inset: -20px;
+  pointer-events: none;
+}
+
+.preloader__register-mark {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+}
+
+.preloader__register-mark::before,
+.preloader__register-mark::after {
+  content: '';
+  position: absolute;
+  background: var(--grey-warm);
+}
+
+/* Horizontal arm */
+.preloader__register-mark::before {
+  width: 10px;
+  height: 1px;
+  top: 0;
+  left: 0;
+}
+
+/* Vertical arm */
+.preloader__register-mark::after {
+  width: 1px;
+  height: 10px;
+  top: 0;
+  left: 0;
+}
+
+.preloader__register-mark--tl { top: 0; left: 0; }
+.preloader__register-mark--tr { top: 0; right: 0; transform: scaleX(-1); }
+.preloader__register-mark--bl { bottom: 0; left: 0; transform: scaleY(-1); }
+.preloader__register-mark--br { bottom: 0; right: 0; transform: scale(-1); }
+
+/* Measurement rule — §10.3 t:0–250ms */
+.preloader__rule {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-top: 16px;
+  width: min(480px, 85vw);
+  position: relative; /* anchors counter + micro-label */
+  opacity: 0; /* animated in */
+}
+
+.preloader__rule-endcap {
+  width: 1px;
+  height: 10px;
+  background: var(--grey-metal);
+  flex-shrink: 0;
+}
+
+.preloader__rule-line {
+  flex: 1;
+  height: 1px;
+  background: var(--grey-metal);
+  transform-origin: left center;
+  transform: scaleX(0); /* animated to scaleX(1) with progress */
+}
+
+/* Progress counter — mono, bottom-right */
+.preloader__counter {
+  position: absolute;
+  bottom: -28px;
+  right: 0;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.6875rem;
+  color: var(--grey-metal);
+  letter-spacing: 0.04em;
+  font-weight: 500;
+  opacity: 0; /* animated in */
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* Bottom-left micro-label — §10.3 */
+.preloader__micro-label {
+  position: absolute;
+  bottom: -28px;
+  left: 0;
+  font-family: var(--font-mono, var(--font-archivo, monospace));
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--grey-metal);
+  font-weight: 600;
+  opacity: 0; /* animated in */
+}
+
+/* Tagline area — §10.3 t:1650–2500ms inscription */
+.preloader__tagline {
+  margin-top: var(--space-lg); /* 40px — §7.4 token */
+  text-align: center;
+  opacity: 0; /* animated in */
+  position: relative;
+}
+
+/* Shirorekha (header bar that tops Devanagari) — §10.3 inscription beat */
+.preloader__shirorekha {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--burgundy);
+  transform-origin: left center;
+  transform: scaleX(0); /* animated L→R */
+}
+
+.preloader__tagline-devanagari {
+  font-family: var(--font-devanagari, sans-serif);
+  font-size: min(3.25rem, 4.6vw);
+  white-space: nowrap;
+  font-weight: 600;
+  line-height: 1.5;
+  /* clip-path reveal from top — glyphs hang from shirorekha */
+  clip-path: inset(0 0 100% 0);
+  padding-top: 8px; /* space for shirorekha */
+}
+
+.preloader__tagline-devanagari .part-1 {
+  color: var(--burgundy);
+}
+.preloader__tagline-devanagari .part-2 {
+  color: var(--grey-metal);
+}
+
+/* Flanking hairlines */
+.preloader__tagline-hairlines {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  justify-content: center;
+}
+.preloader__tagline-hairline {
+  flex: 0 1 80px;
+  height: 1px;
+  /* centre on the Devanagari x-height band, not the padded line box */
+  align-self: center;
+  font-size: min(3.25rem, 4.6vw); /* so em tracks the tagline size */
+  margin-top: 0.3em;
+  opacity: 0; /* animated in */
+}
+@media (max-width: 639px) {
+  .preloader__tagline-hairline { display: none; }
+  .preloader__micro-label { display: none; }
+}
+.preloader__tagline-hairline--left {
+  background: linear-gradient(to left, var(--grey-metal), transparent);
+}
+.preloader__tagline-hairline--right {
+  background: linear-gradient(to right, var(--grey-metal), transparent);
+}
+
+.preloader__tagline-english {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  color: var(--body);
+  margin-top: 6px;
+  opacity: 0; /* animated in */
+}
+
+/* Background layer — oversized आलोक LIGHT, aria-hidden, 6% opacity */
+.preloader__background-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-archivo, sans-serif);
+  font-size: clamp(5rem, 18vw, 14rem);
+  font-weight: 800;
+  font-variation-settings: "wdth" 125;
+  letter-spacing: -0.04em;
+  color: var(--grey-metal);
+  opacity: 0.06;
+  pointer-events: none;
+  white-space: nowrap;
+  overflow: hidden;
+  /* Drifts up-and-right during sequence */
+  will-change: transform;
+}
+
+.preloader__background-text .devanagari-part {
+  font-family: var(--font-devanagari, sans-serif);
+  font-weight: 700;
+}
+
+/* Light sweep overlay — §10.3 t:1100–1600ms */
+.preloader__light-sweep {
+  position: absolute;
+  inset: -20%;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.18) 50%,
+    transparent 70%
+  );
+  transform: translateX(-120%) translateY(120%);
+  /* mix-blend-mode: soft-light clips the sweep to logo shapes */
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* Exit panels — §10.3 t:2600–3400ms diagonal split */
+.preloader__panel {
+  position: fixed;
+  inset: 0;
+  background: var(--canvas);
+  z-index: 99;
+  pointer-events: none;
+}
+
+.preloader__panel--lower {
+  clip-path: polygon(0 0, 100% 60%, 100% 100%, 0 100%);
+  transform-origin: bottom left;
+}
+
+.preloader__panel--upper {
+  clip-path: polygon(0 0, 100% 0, 100% 60%, 0 0);
+  transform-origin: top right;
+}
+
+/* Seam glow — burgund 1px along the split for 200ms */
+.preloader__seam {
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--burgundy);
+  z-index: 101;
+  pointer-events: none;
+  opacity: 0;
+  /* Positioned at the split line — JS will adjust */
+  top: 60vh;
+  box-shadow: 0 0 8px var(--burgundy);
+  transform: rotate(-2deg);
+}
+
+/* Skip intro button — §10.4 */
+.preloader__skip {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--muted);
+  background: none;
+  border: 1px solid var(--grey-warm);
+  padding: 6px 16px;
+  border-radius: var(--radius-card);
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+.preloader__skip:hover,
+.preloader__skip:focus-visible {
+  color: var(--ink);
+  border-color: var(--grey-metal);
+}
+
+/* Reduced-motion version — §10.4 */
+.preloader--reduced {
+  /* No construction, just a simple static display + fade */
+}
+.preloader--reduced .preloader__logo-area,
+.preloader--reduced .preloader__tagline {
+  opacity: 1;
+}
+.preloader--reduced .preloader__grid,
+.preloader--reduced .preloader__register,
+.preloader--reduced .preloader__rule,
+.preloader--reduced .preloader__counter,
+.preloader--reduced .preloader__micro-label,
+.preloader--reduced .preloader__background-text,
+.preloader--reduced .preloader__light-sweep {
+  display: none;
+}
+
+/* html.is-preloading guard */
+html.is-preloading .preloader ~ * {
+  /* page behind is accessible for SEO but focus is trapped in preloader */
+}

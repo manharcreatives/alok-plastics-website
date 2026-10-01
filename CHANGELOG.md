@@ -1,0 +1,9 @@
+# Changelog
+
+## 0.2.0 — 2026-10-01
+**Fix pass (Phases 1–6)** — glass nav centring/overflow fixed; preloader mounted (logo → Sanskrit tagline → navbar hand-off, failsafes); real logo vectorised (98.4% pixel match); hero H1/CTAs/scroll cue fixed; WhatsApp CTA; counters, product bento, industries bento, USP chain rebuilt; journey dead-scroll removed (~500vh → ~275vh, static on mobile); dot-matrix India map; honesty-rule copy cleanup; footer address/contact; forms (optional notes, a11y errors, offline fallback); local fonts (offline-safe build).
+**Phase 7** — /about, /products (finder + filters), /products/[group], /products/[group]/[part] (17 parts), /industries, /career, /contact, /privacy, /terms, /refund (placeholders, noindex), branded 404; shared Footer/FAB in layout.
+**Phase 8** — metadata + JSON-LD (Organization, LocalBusiness, WebSite, Product, BreadcrumbList, FAQPage), sitemap, robots, llms.txt, .htaccess, OG/icons, SEO audit script, lab pruning.
+**Phase 9** — Playwright smoke + axe tests, contrast and aria fixes, Lighthouse run (see docs/qa.md).
+
+## 0.1.0 — Phases 0–6 (initial build)

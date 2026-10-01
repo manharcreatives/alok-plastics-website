@@ -1,0 +1,282 @@
+/* Alok Plastics — UI primitive states
+ * §15.1: hover / focus-visible / active / disabled / loading
+ * class naming: .btn, .tag, .card, .divider
+ * Only pseudo-classes and animations live here — layout/colours in component inline styles.
+ */
+
+/* ── Button base ────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  border: none;
+  font-family: var(--font-inter, system-ui);
+  font-weight: 600;
+  border-radius: var(--radius-card);
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+  user-select: none;
+  transition: background 0.18s ease, transform 0.1s ease,
+              box-shadow 0.18s ease, border-color 0.18s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--burgundy);
+  outline-offset: 2px;
+}
+
+.btn:active:not(:disabled):not([aria-busy="true"]) {
+  transform: translateY(1px);
+}
+
+.btn:disabled,
+.btn[aria-disabled="true"] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Light sweep — CSS-only once-per-hover (§15.1: primary hover) */
+.btn--primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 25%,
+    rgba(255, 255, 255, 0.22) 50%,
+    transparent 75%
+  );
+  transform: translateX(-120%);
+  pointer-events: none;
+}
+
+.btn--primary:hover:not(:disabled)::after {
+  animation: btn-sweep 0.65s ease forwards;
+}
+
+@keyframes btn-sweep {
+  from { transform: translateX(-120%); }
+  to   { transform: translateX(140%); }
+}
+
+/* Primary */
+.btn--primary {
+  background: var(--burgundy);
+  color: white;
+}
+.btn--primary:hover:not(:disabled):not([aria-busy="true"]) {
+  background: var(--burgundy-deep);
+}
+.btn--primary:focus-visible {
+  outline-color: var(--burgundy);
+  box-shadow: 0 0 0 4px rgba(88, 28, 37, 0.18);
+}
+
+/* Secondary */
+.btn--secondary {
+  background: var(--surface);
+  color: var(--burgundy);
+  border: 1px solid var(--burgundy);
+}
+.btn--secondary:hover:not(:disabled):not([aria-busy="true"]) {
+  background: var(--blush);
+}
+.btn--secondary:focus-visible {
+  outline-color: var(--burgundy);
+}
+
+/* On-burgundy (white button on dark/burgundy backgrounds) */
+.btn--on-burgundy {
+  background: white;
+  color: var(--burgundy);
+}
+.btn--on-burgundy:hover:not(:disabled):not([aria-busy="true"]) {
+  background: var(--pink-soft);
+}
+.btn--on-burgundy:focus-visible {
+  outline-color: white;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.35);
+}
+
+/* WhatsApp */
+.btn--whatsapp {
+  background: var(--whatsapp);
+  color: white;
+}
+.btn--whatsapp:hover:not(:disabled):not([aria-busy="true"]) {
+  background: color-mix(in srgb, var(--whatsapp) 82%, var(--ink));
+}
+.btn--whatsapp:focus-visible {
+  outline-color: var(--whatsapp);
+}
+
+/* Ghost */
+.btn--ghost {
+  background: transparent;
+  color: var(--burgundy);
+}
+.btn--ghost:hover:not(:disabled):not([aria-busy="true"]) {
+  background: var(--blush);
+}
+.btn--ghost:focus-visible {
+  outline-color: var(--burgundy);
+}
+
+/* Icon nudge on primary hover */
+.btn--primary:hover .btn__icon {
+  transform: translate(2px, -1px);
+}
+.btn__icon {
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+/* Loading spinner */
+.btn__spinner {
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: btn-spin 0.6s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes btn-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Sizes */
+.btn--sm { height: 36px; padding: 0 16px; font-size: 0.875rem; min-width: 44px; }
+.btn--md { height: 48px; padding: 0 24px; font-size: 0.9375rem; min-width: 44px; }
+.btn--lg { height: 56px; padding: 0 32px; font-size: 1rem; min-width: 44px; }
+
+/* ── TextLink ─────────────────────────────────────────────── */
+.text-link {
+  color: var(--burgundy);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  transition: color 0.15s ease;
+  cursor: pointer;
+}
+.text-link:hover { color: var(--burgundy-bright); }
+.text-link:focus-visible {
+  outline: 2px solid var(--burgundy);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+.text-link__arrow {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+.text-link:hover .text-link__arrow {
+  transform: translate(2px, -1px);
+}
+
+/* ── Tag ──────────────────────────────────────────────────── */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: var(--radius-card);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-family: var(--font-archivo, sans-serif);
+  white-space: nowrap;
+  transition: background 0.15s ease;
+}
+
+.tag--default {
+  background: var(--blush);
+  color: var(--burgundy);
+}
+
+.tag--muted {
+  background: var(--surface-alt);
+  color: var(--muted);
+}
+
+.tag--material {
+  background: var(--surface-alt);
+  color: var(--muted);
+  border: 1px solid var(--grey-warm);
+}
+
+/* ── Card ─────────────────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--grey-warm);
+  border-radius: var(--radius-card);
+  /* Lit top edge — §3 rule 9 */
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9),
+              0 1px 3px rgba(30, 17, 21, 0.04);
+  position: relative;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  overflow: hidden;
+}
+
+.card:hover {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9),
+              0 4px 16px rgba(30, 17, 21, 0.08);
+  transform: translateY(-1px);
+}
+
+.card--feature {
+  background: var(--burgundy);
+  border-color: var(--burgundy-deep);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18),
+              0 2px 8px rgba(30, 17, 21, 0.12);
+  color: white;
+}
+
+.card--feature:hover {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22),
+              0 6px 20px rgba(30, 17, 21, 0.2);
+  transform: translateY(-1px);
+}
+
+.card--tint {
+  background: var(--blush);
+  border-color: var(--rose-pale);
+  box-shadow: inset 0 1px 0 rgba(88, 28, 37, 0.08),
+              0 1px 3px rgba(30, 17, 21, 0.04);
+}
+
+.card--plain:hover,
+.card--tint:hover {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9),
+              0 4px 16px rgba(30, 17, 21, 0.08);
+  transform: translateY(-1px);
+}
+
+/* Drawing card — crop marks */
+.card--drawing {
+  background: var(--surface);
+  border-color: var(--grey-warm);
+}
+
+/* ── Divider ──────────────────────────────────────────────── */
+.divider {
+  border: none;
+  border-top: 1px solid var(--grey-cloud);
+  margin: var(--space-lg) 0;
+}
+
+.divider--diagonal {
+  border: none;
+  height: 2px;
+  background: var(--grey-warm);
+  transform: rotate(-1deg);
+  transform-origin: left center;
+  margin: var(--space-lg) 0;
+}

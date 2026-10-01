@@ -1,0 +1,16 @@
+{
+  "name": "Alok Plastics",
+  "short_name": "Alok Plastics",
+  "description": "Moulded plastic and steel spare parts for water coolers, display counters and deep freezers. Chandigarh.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "browser",
+  "lang": "en-IN",
+  "background_color": "#F8F7F7",
+  "theme_color": "#F8F7F7",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

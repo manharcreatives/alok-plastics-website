@@ -1,0 +1,35 @@
+# Alok Plastics — https://alokplastics.com
+# Search engines and AI answer engines are welcome; the enquiry endpoint and the design lab are not for crawling.
+
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /lab/
+
+# AI search / answer-engine crawlers (explicitly allowed)
+User-agent: GPTBot
+Allow: /
+Disallow: /api/
+Disallow: /lab/
+
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /api/
+Disallow: /lab/
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /api/
+Disallow: /lab/
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /api/
+Disallow: /lab/
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /api/
+Disallow: /lab/
+
+Sitemap: https://alokplastics.com/sitemap.xml

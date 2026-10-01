@@ -1,0 +1,27 @@
+<?php
+/**
+ * Alok Plastics — PHP endpoint configuration
+ * IMPORTANT: Copy this file to config.php and fill in real values.
+ *            config.php is in .gitignore and must NEVER be committed.
+ *
+ * See docs/deploy-hostinger.md for full setup instructions.
+ */
+
+// Recipient email — all enquiry emails go here
+$ALOK_TO_EMAIL = 'enquiry@alokplastics.com';   // TODO(client): confirm enquiry email address
+
+// Sender email — must match a mailbox on your Hostinger account
+$ALOK_FROM_EMAIL = 'noreply@alokplastics.com';  // TODO(client): create this mailbox on Hostinger
+
+// Production site URL — used for CORS origin check
+$ALOK_SITE_URL = 'https://alokplastics.com';
+
+// SMTP credentials (for PHPMailer — optional; php mail() works without this)
+$ALOK_SMTP_HOST = 'smtp.hostinger.com';
+$ALOK_SMTP_PORT = 465;                          // 465 for SSL, 587 for TLS
+$ALOK_SMTP_USER = 'noreply@alokplastics.com';   // TODO(client)
+$ALOK_SMTP_PASS = 'YOUR_EMAIL_PASSWORD_HERE';   // TODO(client): never commit this
+
+// Writable directory for rate-limit files
+// Hostinger: /tmp or sys_get_temp_dir() usually works
+$ALOK_RATE_DIR = sys_get_temp_dir();
