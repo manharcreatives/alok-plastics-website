@@ -39,7 +39,7 @@ function useCountUp(
     gsap.to(obj, {
       val: value,
       duration: 1.4,
-      ease: 'power3.out',
+      ease: 'power3.inOut',
       scrollTrigger: { trigger: el, start: 'top 85%', once: true },
       onUpdate() {
         el.textContent = formatNum(Math.round(obj.val), value);
@@ -136,7 +136,7 @@ export default function ProofStrip() {
           font-family: var(--font-archivo); font-variation-settings: "wdth" 125;
           font-size: clamp(2.5rem, 5vw, 4.5rem); font-weight: 650; line-height: 1;
           letter-spacing: -0.04em; font-feature-settings: "tnum";
-          background: var(--metal-gradient); -webkit-background-clip: text; background-clip: text;
+          background: linear-gradient(175deg, var(--burgundy-night) 0%, var(--burgundy) 55%, var(--burgundy-bright) 100%); -webkit-background-clip: text; background-clip: text;
           -webkit-text-fill-color: transparent; color: transparent;
           white-space: nowrap;
         }
@@ -160,10 +160,10 @@ export default function ProofStrip() {
         .proof-sec-head { display: flex; align-items: center; gap: var(--space-xs); }
         .proof-diamond { width: 6px; height: 6px; background: var(--burgundy); transform: rotate(45deg); flex-shrink: 0; }
         .proof-sec-value {
-          font-family: var(--font-archivo); font-size: 0.8125rem; font-weight: 600;
+          font-family: var(--font-archivo); font-size: 0.875rem; font-weight: 600;
           text-transform: uppercase; letter-spacing: 0.1em; color: var(--body); line-height: 1.3;
         }
-        .proof-sec-label { font-size: 0.8125rem; color: var(--muted); line-height: 1.4; padding-left: 14px; }
+        .proof-sec-label { font-size: 0.875rem; color: var(--muted); line-height: 1.4; padding-left: 14px; }
 
         @media (max-width: 1023px) {
           .proof-primary { grid-template-columns: repeat(2, minmax(0, 1fr)); }

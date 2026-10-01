@@ -5,8 +5,8 @@
  */
 import Link from 'next/link';
 import { ArrowUpRight } from '@phosphor-icons/react/dist/ssr/ArrowUpRight';
-import Pictogram from '@/components/brand/Pictogram';
-import FoldEdge, { FOLD_SECTION_CSS } from '@/components/sections/FoldEdge';
+import PartPicto from './PartPicto';
+import FoldEdge, { FOLD_SECTION_CSS, type FoldVariant } from '@/components/sections/FoldEdge';
 import { productsByGroup } from '@/content/products';
 import type { ProductGroup } from '@/content/types';
 import { PartGrid, pictogramFor } from './PartCard';
@@ -16,15 +16,16 @@ interface Props {
   group: ProductGroup;
   tone?: 'canvas' | 'alt';
   fold?: boolean;
+  foldVariant?: FoldVariant;
 }
 
-export default function GroupSection({ group, tone = 'canvas', fold = false }: Props) {
+export default function GroupSection({ group, tone = 'canvas', fold = false, foldVariant = 'fold' }: Props) {
   const items = productsByGroup(group.id);
   const hid = `grp-${group.slug}-h`;
   const glyph = items.map(p => pictogramFor(p.slug)).find(Boolean);
   return (
-    <section aria-labelledby={hid} className={`p-grp p-grp--${tone}${fold ? ' fold-sec' : ''}`}>
-      {fold && (<><style>{FOLD_SECTION_CSS}</style><FoldEdge /></>)}
+    <section aria-labelledby={hid} className={`p-grp p-grp--${tone}${fold ? ` fold-sec fold-sec--${foldVariant}` : ''}`}>
+      {fold && (<><style>{FOLD_SECTION_CSS}</style><FoldEdge variant={foldVariant} /></>)}
       <div className="pw p-grp__in">
         <header className="p-grp__side">
           <p className="p-eyebrow">Part group</p>
@@ -36,7 +37,7 @@ export default function GroupSection({ group, tone = 'canvas', fold = false }: P
               View group <ArrowUpRight size={18} weight="light" aria-hidden="true" />
             </Link>
           </div>
-          {glyph && <div className="p-grp__glyph" aria-hidden="true"><Pictogram name={glyph} size={48} strokeWidth={0.5} /></div>}
+          {glyph && <div className="p-grp__glyph" aria-hidden="true"><PartPicto slug={glyph} size={48} strokePx={1} className="p-picto" /></div>}
         </header>
         <PartGrid items={items} level={3} />
       </div>

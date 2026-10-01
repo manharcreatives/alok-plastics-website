@@ -25,9 +25,8 @@ const CSS = `
 .lg__toc a:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 2px; }
 .lg__tochead { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--grey-metal); font-weight: 600; margin: 0 0 var(--space-sm); }
 .lg__note { background: var(--surface); border: 1px solid var(--grey-warm); border-left: 2px solid var(--burgundy); border-radius: var(--radius-card); padding: var(--space-md); margin-bottom: var(--space-lg); }
-.lg__sec { padding: var(--space-lg) 0; border-top: 1px solid var(--grey-cloud); scroll-margin-top: 96px; }
+.lg__sec { padding: var(--space-md) 0; border-top: 1px solid var(--grey-cloud); scroll-margin-top: 96px; }
 .lg__sec h2 { font-family: var(--font-archivo); font-variation-settings: "wdth" 110; font-size: clamp(1.25rem, 2vw, 1.5rem); font-weight: 650; letter-spacing: -0.01em; color: var(--ink); margin: 0; }
-.lg__sec p { margin: var(--space-xs) 0 0; font-size: 0.875rem; color: var(--muted); }
 .lg__link { display: inline-flex; align-items: center; gap: 4px; color: var(--burgundy); font-weight: 600; text-decoration: none; min-height: 44px; }
 .lg__link:hover { color: var(--burgundy-bright); }
 @media (min-width: 900px) {
@@ -42,7 +41,7 @@ export default function LegalPage({ title, label, sections }: Props) {
   return (
     <>
       <style>{CSS}</style>
-      <PageHero crumbs={[{ label: title }]} label={label} title={title} art={<LegalArt />} enter="draw" calm
+      <PageHero crumbs={[{ label: title }]} label={label} title={title} art={<LegalArt title={title} />} enter="draw" calm layout="top"
         lead="This page is being finalised. The outline below shows what it will cover." />
       <div className="lg">
         <div className="lg__in">
@@ -54,7 +53,7 @@ export default function LegalPage({ title, label, sections }: Props) {
           </nav>
           <div>
             <div role="note" className="lg__note">
-              <p style={{ color: 'var(--ink)', fontWeight: 600, margin: 0 }}>This policy is being finalised and will be published here.</p>
+              <p style={{ color: 'var(--ink)', fontWeight: 600, margin: 0 }}>This policy is being finalised. Each heading below will carry its approved text when it is published.</p>
               <p style={{ color: 'var(--body)', lineHeight: 1.65, margin: 'var(--space-xs) 0 0' }}>
                 For any question in the meantime, please{' '}
                 <Link href="/contact/" className="lg__link">contact us <ArrowUpRight size={16} weight="light" aria-hidden="true" /></Link>
@@ -63,13 +62,12 @@ export default function LegalPage({ title, label, sections }: Props) {
             {sections.map(s => (
               <section key={s} id={slugify(s)} aria-labelledby={`${slugify(s)}-h`} className="lg__sec">
                 <h2 id={`${slugify(s)}-h`}>{s}</h2>
-                <p>Text to be published.</p>
               </section>
             ))}
           </div>
         </div>
       </div>
-      <EnquiryBand heading="Questions about this page?" text="Get in touch and we will respond." />
+      <EnquiryBand fold="register" heading="Questions about this page?" text="Get in touch and we will respond." />
     </>
   );
 }

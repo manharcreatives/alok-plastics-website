@@ -199,7 +199,7 @@ function Automotive() {
       {[98, 232].map((cx) => (
         <g key={cx}>
           <circle cx={cx} cy="142" r="22" fill="var(--surface)" />
-          <circle cx={cx} cy="142" r="22" stroke={FINE} strokeWidth="4" strokeDasharray="7 4" />
+          <circle cx={cx} cy="142" r="22" stroke={LINE} strokeWidth="2.5" />
           <circle cx={cx} cy="142" r="13" fill={face(id)} />
           <circle cx={cx} cy="142" r="4" fill={LINE} stroke="none" />
           {[0, 72, 144, 216, 288].map((a) => (
@@ -325,7 +325,7 @@ function Agriculture() {
       <path d="M62 46H132" strokeWidth="2" />
       {/* rear wheel, big */}
       <circle cx="96" cy="128" r="38" fill="var(--surface)" />
-      <circle cx="96" cy="128" r="38" stroke={FINE} strokeWidth="6" strokeDasharray="9 5" />
+      <circle cx="96" cy="128" r="38" stroke={LINE} strokeWidth="3" />
       <circle cx="96" cy="128" r="26" fill={face(id)} />
       <circle cx="96" cy="128" r="9" fill="var(--surface)" />
       {[0, 60, 120, 180, 240, 300].map((a) => (
@@ -341,7 +341,7 @@ function Agriculture() {
       <path d="M52 112A46 46 0 0 1 134 106" stroke="none" />
       {/* front wheel */}
       <circle cx="246" cy="148" r="18" fill="var(--surface)" />
-      <circle cx="246" cy="148" r="18" stroke={FINE} strokeWidth="4" strokeDasharray="6 4" />
+      <circle cx="246" cy="148" r="18" stroke={LINE} strokeWidth="2.5" />
       <circle cx="246" cy="148" r="10" fill={face(id)} />
       <circle cx="246" cy="148" r="3" fill={LINE} stroke="none" />
       {/* hitch */}

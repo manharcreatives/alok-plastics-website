@@ -19,8 +19,8 @@ export const vision =
 export const mission =
   'To combine manufacturing expertise, practical problem-solving, and customer collaboration to deliver plastic and steel solutions through consistent manufacturing, responsive service, and lasting trust.';
 
+/* The "We don't just mould plastic. We mould possibilities." line (§5.4) is set once, on Home (TrustQuote). */
 export const coreValues: { title: string; note?: string }[] = [
-  { title: 'We don’t just mould plastic. We mould possibilities.' },
   { title: 'Less waste. More value.', note: 'Smarter manufacturing.' },
   { title: 'Social employment', note: 'Creating employment opportunities and supporting local talent.' },
 ];

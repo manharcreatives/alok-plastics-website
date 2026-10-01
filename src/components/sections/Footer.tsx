@@ -40,8 +40,10 @@ const FOOTER_CSS = `
 .ft__dev span { color: var(--rose-pale); }
 .ft__en { margin: var(--space-xs) 0 0; font-size: clamp(0.9375rem, 1.4vw, 1.125rem); color: var(--rose-pale); }
 .ft__cta { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-xs); min-height: 56px; padding: 0 var(--space-lg); background: var(--surface); color: var(--burgundy);
-  font-weight: 650; font-size: 1.0625rem; text-decoration: none; border-radius: var(--radius-card); clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%); transition: background-color 200ms; width: fit-content; }
+  font-weight: 650; font-size: 1.0625rem; text-decoration: none; border-radius: var(--radius-card); clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%); transition: background-color 200ms cubic-bezier(.16,1,.3,1); width: fit-content; }
 .ft__cta:hover { background: var(--pink-soft); }
+/* A page-end enquiry band / the home enquiry form already carries the call to action: no second stacked CTA */
+body:has(.eb, #enquiry) .ft__cta { display: none; }
 .ft__cta svg { transition: transform 200ms cubic-bezier(.16,1,.3,1); }
 .ft__cta:hover svg { transform: translate3d(2px, -2px, 0); }
 
@@ -50,18 +52,19 @@ const FOOTER_CSS = `
 .ft__cols > * { min-width: 0; }
 .ft__h { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--rose-pale); font-weight: 600; margin: 0 0 var(--space-sm); }
 .ft__list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 4px; }
-.ft__link { display: inline-flex; align-items: center; gap: var(--space-xs); min-height: 32px; font-size: 0.9375rem; color: color-mix(in srgb, var(--surface) 88%, transparent); text-decoration: none; transition: color 200ms; }
+.ft__link { display: inline-flex; align-items: center; gap: var(--space-xs); min-height: 32px; font-size: 0.9375rem; color: color-mix(in srgb, var(--surface) 88%, transparent); text-decoration: none; transition: color 200ms cubic-bezier(.16,1,.3,1); }
 .ft__link:hover { color: var(--surface); text-decoration: underline; text-underline-offset: 3px; }
 .ft__link--accent { color: var(--rose-pale); font-weight: 600; }
 .ft__link:focus-visible, .ft__cta:focus-visible, .ft__addr:focus-visible, .ft__soc a:focus-visible { outline: 2px solid var(--rose-pale); outline-offset: 2px; }
 .ft__blurb { font-size: 0.9375rem; line-height: 1.65; color: color-mix(in srgb, var(--surface) 88%, transparent); max-width: 36ch; margin: var(--space-sm) 0 0; }
-.ft__addr { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: var(--space-xs); align-items: start; color: color-mix(in srgb, var(--surface) 92%, transparent); text-decoration: none; font-style: normal; font-size: 0.9375rem; line-height: 1.65; padding: var(--space-xs) 0; }
+.ft__addr { display: grid; grid-template-columns: auto minmax(0, max-content) auto; justify-content: start; text-wrap: balance; gap: var(--space-xs); align-items: start; color: color-mix(in srgb, var(--surface) 92%, transparent); text-decoration: none; font-style: normal; font-size: 0.9375rem; line-height: 1.65; padding: var(--space-xs) 0; }
+.ft__addr address { text-wrap: balance; }
 .ft__addr:hover { color: var(--surface); }
 .ft__addr:hover .ft__ar { transform: translate3d(2px, -2px, 0); }
 .ft__addr svg:first-child { margin-top: 3px; color: var(--rose-pale); }
 .ft__ar { transition: transform 200ms cubic-bezier(.16,1,.3,1); margin-top: 3px; }
 .ft__soc { list-style: none; padding: 0; margin: var(--space-sm) 0 0; display: flex; gap: var(--space-xs); }
-.ft__soc a { width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; color: var(--surface); border: 1px solid color-mix(in srgb, var(--surface) 30%, transparent); border-radius: var(--radius-card); transition: background-color 200ms; }
+.ft__soc a { width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; color: var(--surface); border: 1px solid color-mix(in srgb, var(--surface) 30%, transparent); border-radius: var(--radius-card); transition: background-color 200ms cubic-bezier(.16,1,.3,1); }
 .ft__soc a:hover { background: color-mix(in srgb, var(--surface) 14%, transparent); }
 
 /* Bottom bar */
@@ -102,7 +105,7 @@ export default function Footer() {
         <div className="ft__lock">
           <div>
             <Link href="/" aria-label="Alok Plastics, home" style={{ display: 'inline-block', marginBottom: 'var(--space-lg)' }}>
-              <Logo variant="white" style={{ height: 44, width: 'auto', display: 'block' }} />
+              <Logo variant="white" style={{ height: 56, width: 'auto', display: 'block' }} />
             </Link>
             <p lang="sa" className="ft__dev">{devA},<br /><span>{devB}</span></p>
             <p lang="en" className="ft__en">{site.tagline.english}</p>

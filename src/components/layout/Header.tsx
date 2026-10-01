@@ -57,7 +57,11 @@ export default function Header() {
   const labelRefs = useRef<Array<HTMLSpanElement | null>>([]);
   const [inkReady, setInkReady] = useState(false);
 
-  const activeIndex = navigation.primary.findIndex(item => isActivePath(pathname, item.href));
+  const routeIndex = navigation.primary.findIndex(item => isActivePath(pathname, item.href));
+  /* Navigation intent: the indicator starts gliding on pointer-down / key activation of a link,
+     not ~450ms later when the route has painted. Reconciled to the real route on path change. */
+  const [intentIndex, setIntentIndex] = useState<number | null>(null);
+  const activeIndex = intentIndex ?? routeIndex;
 
   /* Scroll-driven state transitions */
   useEffect(() => {
@@ -85,6 +89,7 @@ export default function Header() {
   const [prevPath, setPrevPath] = useState(pathname);
   if (prevPath !== pathname) {
     setPrevPath(pathname);
+    setIntentIndex(null);
     setMegaOpen(false);
     setDrawerOpen(false);
   }
@@ -246,6 +251,8 @@ export default function Header() {
                         href={item.href}
                         className={cls}
                         aria-current={isActive ? 'page' : undefined}
+                        onPointerDown={e => { if (e.button === 0) setIntentIndex(i); }}
+                        onClick={() => setIntentIndex(i)}
                       >
                         <span ref={el => { labelRefs.current[i] = el; }} className="glass-nav__label" data-label={item.label}>{item.label}</span>
                       </Link>

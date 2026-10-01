@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import PageHero from '@/components/page/PageHero';
 import EnquiryBand from '@/components/page/EnquiryBand';
 import { FinderProvider, FinderHeroBar, FinderResults } from '@/components/products/PartFinder';
-import FaqSection from '@/components/sections/FaqSection';
+import CatalogueFaq from '@/components/products/CatalogueFaq';
 import GroupSection from '@/components/products/GroupSection';
 import { CatalogueSheetArt } from '@/components/products/art';
 import { productGroups, productsByGroup } from '@/content/products';
@@ -26,16 +26,17 @@ export default function ProductsPage() {
         lead="Spare parts for water coolers, display counters and deep freezers, grouped by what the part does inside the machine."
         art={<CatalogueSheetArt />}
         enter="wipe"
+        layout="top"
       >
         <FinderHeroBar />
       </PageHero>
       <FinderResults>
         {groups.map((g, i) => (
-          <GroupSection key={g.id} group={g} tone={i % 2 === 0 ? 'canvas' : 'alt'} fold={i > 0} />
+          <GroupSection key={g.id} group={g} tone={i % 2 === 0 ? 'canvas' : 'alt'} fold={i > 0} foldVariant={(['fold', 'diag', 'step', 'register'] as const)[i % 4]} />
         ))}
       </FinderResults>
-      <FaqSection />
-      <EnquiryBand heading="Cannot find your part?" text="Describe the part and where it is used — we will identify it and reply with a quote." />
+      <CatalogueFaq />
+      <EnquiryBand fold="diag" heading="Cannot find your part?" text="Describe the part and where it is used — we will identify it and reply with a quote." />
     </FinderProvider>
   );
 }

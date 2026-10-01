@@ -1,7 +1,7 @@
 /**
  * /industries — core market (burgundy feature block) + seven industries (drawn scenes, asymmetric bento)
- * + requirement-to-repeat process (stair-step). Industry lines verbatim from §5.9; process copy from
- * journey.ts (flagged for client approval there). No numbering in any label or title.
+ * + a 'what to send us' submission sheet. Industry lines verbatim from §5.9. The submission-sheet copy
+ * (SEND below) is DRAFTED by us, not client-supplied: flagged for client approval. No numbering in labels/titles.
  */
 import type { Metadata } from 'next';
 import PageHero from '@/components/page/PageHero';
@@ -11,7 +11,12 @@ import Pictogram, { type PictogramName } from '@/components/brand/Pictogram';
 import IndustryScene, { CoreMarketScene } from '@/components/art/IndustryScenes';
 import { IndustriesHeroArt } from '@/components/products/art';
 import { industriesConfig, coreMarket } from '@/content/industries';
-import { uspChain, uspPullQuote } from '@/content/journey';
+import { ArrowUpRight } from '@phosphor-icons/react/dist/ssr/ArrowUpRight';
+import { Cube } from '@phosphor-icons/react/dist/ssr/Cube';
+import { Blueprint } from '@phosphor-icons/react/dist/ssr/Blueprint';
+import { Stack } from '@phosphor-icons/react/dist/ssr/Stack';
+import { Gear } from '@phosphor-icons/react/dist/ssr/Gear';
+import Link from 'next/link';
 import '@/components/products/products.css';
 
 export const metadata: Metadata = {
@@ -26,6 +31,14 @@ const CORE: { name: string; pictogram: PictogramName }[] = [
   { name: 'Water coolers', pictogram: 'water-cooler' },
   { name: 'Display counters', pictogram: 'display-counter' },
   { name: 'Deep freezers', pictogram: 'deep-freezer' },
+];
+
+// DRAFTED copy (not client-supplied): pending client approval.
+const SEND = [
+  { key: 'A', label: 'A sample', line: 'A worn or broken part we can match. Tell us which machine it came from.', Icon: Cube },
+  { key: 'B', label: 'A drawing', line: 'A drawing or a sketch, with the sizes that matter to you.', Icon: Blueprint },
+  { key: 'C', label: 'Quantity', line: 'How many you need, and whether it will be a repeat requirement.', Icon: Stack },
+  { key: 'D', label: 'Where it is used', line: 'The machine or application the part goes into, and the industry.', Icon: Gear },
 ];
 
 const CSS = `
@@ -84,28 +97,28 @@ ${FOLD_SECTION_CSS}
   .ib__grid > li:nth-child(1) .ib__scene, .ib__grid > li:nth-child(4) .ib__scene, .ib__grid > li:nth-child(5) .ib__scene { aspect-ratio: 2 / 1; }
 }
 
-/* process: a stair that climbs up-and-right, like the K */
+/* what to send us: a submission sheet (drawing-sheet furniture, not the home process stair) */
 .ip { background: var(--surface-alt); padding-bottom: var(--section-y); }
-.ip__head { max-width: 46rem; margin-bottom: var(--space-xl); }
-.ip__lead { margin-top: var(--space-sm); color: var(--body); line-height: 1.65; font-size: 1.0625rem; max-width: 56ch; }
-.ip__steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); border-left: 2px solid var(--grey-metal); }
-.ip__steps li { position: relative; padding: 0 0 var(--space-lg) var(--space-lg); min-width: 0; }
-.ip__steps li:last-child { padding-bottom: 0; }
-.ip__steps li::before { content: ''; position: absolute; left: -7px; top: 4px; width: 12px; height: 12px; background: var(--surface-alt); border: 2px solid var(--grey-metal); transform: rotate(45deg); }
-.ip__steps li:last-child::before { background: var(--burgundy); border-color: var(--burgundy); }
-.ip__steps h3 { font-family: var(--font-archivo); font-variation-settings: "wdth" 118; font-size: 1.375rem; font-weight: 650; letter-spacing: -0.02em; color: var(--ink); margin: 0 0 var(--space-xs); }
-.ip__steps p { margin: 0; color: var(--body); line-height: 1.6; font-size: 0.9375rem; max-width: 36ch; }
-@media (min-width: 1024px) {
-  .ip__steps { grid-template-columns: repeat(5, minmax(0, 1fr)); border-left: 0; align-items: start; padding-top: 96px; }
-  .ip__steps li { padding: var(--space-md) var(--space-sm) 0 var(--space-sm); border-top: 2px solid var(--grey-metal); border-left: 1px solid var(--grey-warm); margin-top: calc(var(--i) * 24px); }
-  .ip__steps li:first-child { border-left: 0; padding-left: 0; }
-  .ip__steps li::before { left: calc(var(--space-sm) - 6px); top: -7px; background: var(--surface-alt); }
-  .ip__steps li:first-child::before { left: -6px; }
-  .ip__steps li:last-child { border-top-color: var(--burgundy); }
-}
-.ip__quote { position: relative; margin: var(--space-xl) 0 0; padding: var(--space-lg); background: var(--blush); border-left: 2px solid var(--burgundy); clip-path: polygon(0 0, calc(100% - 40px) 0, 100% 40px, 100% 100%, 0 100%); }
-.ip__quote p { font-family: var(--font-archivo); font-variation-settings: "wdth" 118; font-size: clamp(1.25rem, 2.6vw, 2rem); font-weight: 650; line-height: 1.22; letter-spacing: -0.02em; color: var(--ink); margin: 0 0 var(--space-sm); text-wrap: balance; max-width: 32ch; }
-.ip__quote footer { font-size: 0.875rem; color: var(--muted); font-weight: 600; }
+.ip__in { display: grid; gap: var(--space-xl); grid-template-columns: minmax(0, 1fr); align-items: start; }
+.ip__lead { margin-top: var(--space-sm); color: var(--body); line-height: 1.65; font-size: 1.0625rem; max-width: 44ch; }
+.ip__cta { display: inline-flex; align-items: center; gap: var(--space-xs); margin-top: var(--space-md); font-weight: 650; color: var(--burgundy); text-decoration: none; border-bottom: 1px solid var(--burgundy); padding-bottom: 2px; min-height: 44px; }
+.ip__cta svg { transition: transform 200ms cubic-bezier(.16,1,.3,1); }
+.ip__cta:hover svg { transform: translate3d(2px, -2px, 0); }
+.ip__sheet { position: relative; background: var(--surface); border: 1px solid var(--grey-metal); clip-path: polygon(0 0, calc(100% - 44px) 0, 100% 44px, 100% 100%, 0 100%); }
+.ip__sheet::before { content: ''; position: absolute; top: 0; left: 0; width: 64px; height: 3px; background: var(--burgundy); }
+.ip__bar { display: flex; justify-content: space-between; gap: var(--space-sm); padding: var(--space-sm) var(--space-md); padding-right: 64px; border-bottom: 1px solid var(--grey-metal); font-family: var(--font-mono, monospace); font-size: 0.8125rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.ip__bar b { color: var(--burgundy); }
+.ip__rows { list-style: none; margin: 0; padding: 0; }
+.ip__row { display: grid; grid-template-columns: 56px minmax(0, 1fr); align-items: stretch; border-bottom: 1px solid var(--grey-warm); }
+.ip__row:last-child { border-bottom: 0; }
+.ip__key { display: grid; place-items: center; border-right: 1px solid var(--grey-warm); background: var(--canvas); font-family: var(--font-mono, monospace); font-weight: 700; font-size: 1rem; color: var(--grey-metal); }
+.ip__row:first-child .ip__key { background: var(--burgundy); color: var(--surface); }
+.ip__txt { padding: var(--space-md); display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--space-sm); align-items: start; }
+.ip__txt svg { color: var(--burgundy); flex: none; margin-top: 2px; }
+.ip__txt h3 { font-family: var(--font-archivo); font-variation-settings: "wdth" 118; font-size: 1.375rem; font-weight: 650; letter-spacing: -0.02em; color: var(--ink); margin: 0 0 var(--space-xs); line-height: 1.1; }
+.ip__txt p { margin: 0; color: var(--body); line-height: 1.6; font-size: 0.9375rem; max-width: 46ch; }
+.ip__foot { padding: var(--space-sm) var(--space-md); border-top: 1px solid var(--grey-metal); background: var(--blush); color: var(--ink); font-size: 0.9375rem; line-height: 1.5; }
+@media (min-width: 1024px) { .ip__in { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--space-xl); } .ip__row { grid-template-columns: 72px minmax(0, 1fr); } }
 
 @media (prefers-reduced-motion: reduce) { .ib__card, .ib__card::before, .ib__scene .ind-art-svg { transition: none; } }
 `;
@@ -171,30 +184,34 @@ export default function IndustriesPage() {
         </div>
       </section>
 
-      <section aria-labelledby="usp-h" className="ip fold-sec">
-        <FoldEdge />
-        <div className="pw">
-          <header className="ip__head">
-            <p className="in-eyebrow">Process</p>
-            <h2 id="usp-h" className="in-h2">From requirement to repeat supply.</h2>
-            <p className="ip__lead">We don’t just manufacture plastic components — we build reliable, repeatable supply partnerships.</p>
+      <section aria-labelledby="send-h" className="ip fold-sec fold-sec--step">
+        <FoldEdge variant="step" />
+        <div className="pw ip__in">
+          <header>
+            <p className="in-eyebrow">Before you enquire</p>
+            <h2 id="send-h" className="in-h2">What to send us.</h2>
+            <p className="ip__lead">Any one of these is enough to start. Whichever industry the part is for, the more you share, the faster we can quote.</p>
+            <Link href="/enquiry/" className="ip__cta">Start an enquiry <ArrowUpRight size={20} weight="light" aria-hidden="true" /></Link>
           </header>
-          <ol className="ip__steps">
-            {uspChain.map((s, idx) => (
-              <li key={s.step} style={{ ['--i' as string]: 4 - idx }}>
-                <h3>{s.label}</h3>
-                <p>{s.description}</p>
-              </li>
-            ))}
-          </ol>
-          <blockquote className="ip__quote">
-            <p>{uspPullQuote.quote}</p>
-            <footer>{uspPullQuote.attribution}</footer>
-          </blockquote>
+          <div className="ip__sheet">
+            <div className="ip__bar"><b>Submission sheet</b><span>Any one to begin</span></div>
+            <ul className="ip__rows">
+              {SEND.map(r => (
+                <li key={r.key} className="ip__row">
+                  <span className="ip__key" aria-hidden="true">{r.key}</span>
+                  <div className="ip__txt">
+                    <r.Icon size={32} weight="light" aria-hidden="true" />
+                    <div><h3>{r.label}</h3><p>{r.line}</p></div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <p className="ip__foot">Not sure what you have? Send what you can and we will ask for the rest.</p>
+          </div>
         </div>
       </section>
 
-      <EnquiryBand heading="Tell us your requirement." text="Share the part, quantity and the industry it is for — we reply with a quote." />
+      <EnquiryBand variant="wide" fold="register" heading="Tell us your requirement." text="Share the part, quantity and the industry it is for — we reply with a quote." />
     </>
   );
 }

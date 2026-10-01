@@ -6,7 +6,7 @@
 import { D } from '@/components/page/art/artCss';
 import { MATERIAL_LABELS, getProduct } from '@/content/products';
 import type { PictogramName } from '@/components/brand/Pictogram';
-import { DimH, PictoG, Reg, SHEET_CSS, SheetDefs, fitPicto } from './PictoG';
+import { DimH, PictoG, Reg, SHEET_CSS, SheetDefs, fitPicto, wrapLabel } from './PictoG';
 
 const CELL_W = 123;
 const CELL_H = 124;
@@ -53,14 +53,14 @@ export default function CatalogueSheetArt() {
           return (
             <g key={name} className="pa-fade" style={D(500 + i * 90)}>
               <PictoG name={name} {...(({ x, y, size }) => ({ x, y, size }))(fitPicto(name, cx, cy, 50))} stroke={1.4} color={accent} />
-              <text x={cx} y={cy + 52} textAnchor="middle" className="pa-mono" fontSize="8.5" fill="var(--muted)">
-                {(prod?.name ?? name).toUpperCase()}
-              </text>
+              {wrapLabel(prod?.name ?? name, 13).map((l, k) => (
+                <text key={l} x={cx} y={cy + 46 + k * 14} textAnchor="middle" className="pa-mono" fontSize="12" style={{ letterSpacing: '0.02em' }} fill="var(--muted)">{l}</text>
+              ))}
               {callout && mat && (
                 <g>
                   <circle cx={cx + 26} cy={cy - 26} r="2.2" fill="var(--burgundy)" />
                   <path d={`M${cx + 26} ${cy - 26}L${cx + 40} ${cy - 40}H${cx + 48}`} fill="none" stroke="var(--burgundy)" strokeWidth="1" pathLength={1} className="pa-draw" style={D(1100 + i * 90)} />
-                  <text x={cx + 50} y={cy - 37} className="pa-mono" fontSize="8" fill="var(--burgundy)">{mat}</text>
+                  <text x={cx + 50} y={cy - 37} className="pa-mono" fontSize="12" style={{ letterSpacing: 0 }} fill="var(--burgundy)">{mat}</text>
                 </g>
               )}
             </g>
@@ -71,16 +71,17 @@ export default function CatalogueSheetArt() {
         <g transform={`translate(${X0 + 2 * CELL_W} ${Y0 + 2 * CELL_H})`} className="pa-fade" style={D(1300)}>
           <rect width={2 * CELL_W} height={CELL_H} fill="var(--surface)" stroke="var(--grey-metal)" strokeWidth="1.25" />
           <path d={`M0 36H${2 * CELL_W}M${CELL_W + 40} 36V${CELL_H}M0 80H${CELL_W + 40}`} stroke="var(--grey-warm)" strokeWidth="1" fill="none" />
-          <text x="14" y="23" className="pa-mono" fontSize="11" fill="var(--burgundy)" fontWeight="700">ALOK PLASTICS</text>
-          <text x="14" y="58" className="pa-mono" fontSize="8" fill="var(--muted)">SPARE PARTS CATALOGUE</text>
-          <text x="14" y="104" className="pa-mono" fontSize="8" fill="var(--muted)">CHANDIGARH</text>
-          <text x={CELL_W + 52} y="58" className="pa-mono" fontSize="8" fill="var(--muted)">NOT TO</text>
-          <text x={CELL_W + 52} y="70" className="pa-mono" fontSize="8" fill="var(--muted)">SCALE</text>
+          <text x="14" y="24" className="pa-mono" fontSize="13" fill="var(--burgundy)" fontWeight="700">ALOK PLASTICS</text>
+          <text x="14" y="55" className="pa-mono" fontSize="12" fill="var(--muted)">SPARE PARTS</text>
+          <text x="14" y="70" className="pa-mono" fontSize="12" fill="var(--muted)">CATALOGUE</text>
+          <text x="14" y="106" className="pa-mono" fontSize="12" fill="var(--muted)">CHANDIGARH</text>
+          <text x={CELL_W + 52} y="55" className="pa-mono" fontSize="12" fill="var(--muted)">NOT TO</text>
+          <text x={CELL_W + 52} y="70" className="pa-mono" fontSize="12" fill="var(--muted)">SCALE</text>
           <path d={`M${2 * CELL_W - 28} ${CELL_H - 14}l16-16m-6 0h6v6`} stroke="var(--burgundy)" strokeWidth="1.5" fill="none" />
         </g>
 
         <DimH x1={X0} x2={X0 + 4 * CELL_W} y={Y0 + 3 * CELL_H + 22} className="pa-draw" style={D(1500)} />
-        <text x={X0} y={Y0 + 3 * CELL_H + 46} className="pa-mono" fontSize="8" fill="var(--grey-metal)">WATER COOLER · DISPLAY COUNTER · DEEP FREEZER</text>
+        <text x={X0} y={Y0 + 3 * CELL_H + 46} className="pa-mono" fontSize="12" fill="var(--grey-metal)">WATER COOLER · DISPLAY COUNTER · DEEP FREEZER</text>
       </g>
     </svg>
     </>

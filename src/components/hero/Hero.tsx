@@ -2,9 +2,15 @@
  * Hero section — §11.5
  * Exactly one screen (100svh). The glass pill floats on top at top:16px; the
  * diagonal exit lives inside the hero so nothing from the next section peeks in.
- * Type block left-aligned, low-left.
+ * Type block left-aligned, vertically centred between the nav and the exit diagonal; the headline
+ * runs on three lines from 768px up so it always ends before the 75deg plate edge / schematic.
  * Ambient mode (default) = light tone, --ink text, colour logo in nav.
  * Video/poster dark mode = white text, bright logo in nav.
+ *
+ * Entrance (Round 2): mask-rise headline 900ms expo.out, hairlines draw 700ms power3.inOut,
+ * CTAs lock in on back.out(1.4). It starts when the preloader hands over (alok:hero-go /
+ * is-preloading dropped) or immediately when there is no preloader. The hidden start state is only
+ * armed by the <head> script (html.hero-arm): no JS or reduced motion = static, fully visible hero.
  *
  * Exactly two buttons: Enquire Now + Browse Products. WhatsApp lives only in the
  * floating button (WhatsAppFAB).
@@ -12,8 +18,9 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import gsap from 'gsap';
 import { ArrowUpRight } from '@phosphor-icons/react/dist/csr/ArrowUpRight';
 import HeroMedia from './HeroMedia';
 import { site } from '@/content/site';
@@ -24,15 +31,24 @@ const HERO_STYLES = `
 .hero { position: relative; display: flex; flex-direction: column; overflow: hidden;
   min-height: 100svh; }
 .hero__content { position: relative; z-index: 2; flex: 1; display: flex; flex-direction: column;
-  justify-content: flex-end; width: 100%; margin: 0 auto;
+  justify-content: center; width: 100%; margin: 0 auto;
   max-width: calc(var(--grid-max) + 2 * var(--grid-page-padding));
-  padding: 96px var(--grid-page-padding) calc(4vw + var(--space-lg)); }
+  padding: calc(88px + 2vh) var(--grid-page-padding) calc(4vw + var(--space-lg)); }
 .hero__h1 { font-family: var(--font-archivo, sans-serif); font-variation-settings: "wdth" 125;
   font-weight: 650; line-height: 1.05; letter-spacing: -0.03em;
-  font-size: clamp(1.875rem, 8.2vw, 2.75rem); text-wrap: balance;
+  font-size: clamp(1.875rem, 8.6vw, 2.75rem); text-wrap: balance;
   margin: 0 0 var(--space-md); overflow-wrap: break-word; }
-.hero__line { display: inline; }
+/* Each headline line is its own mask: the inner span rises from below the clip edge. The padding
+   gives descenders (g, p) room inside the mask without moving the baseline. */
+.hero__line { display: block; overflow: hidden; padding-bottom: 0.14em; margin-bottom: -0.14em; }
+.hero__mi { display: block; }
+.hero__tail { display: inline; }
+/* text-safe crop of the metal gradient: the last glyphs keep >= 4.5:1 on the canvas */
+.hero__accent { background: var(--metal-gradient-text); -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent; }
 .hero__sub { font-size: 1.0625rem; line-height: 1.65; max-width: 55ch; margin: 0 0 var(--space-md); text-wrap: pretty; }
+.hero__eyebrow { display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-md); }
+.hero__eyebrow-bar { width: 24px; height: 2px; background: var(--burgundy); display: inline-block; flex-shrink: 0; transform-origin: left center; }
 
 /* Tagline lockup: [hairline][ Devanagari ][hairline] with the English line centred
    beneath the Devanagari block only (one grid keeps both on the same axis). */
@@ -42,9 +58,9 @@ const HERO_STYLES = `
 .hero__dev { grid-column: 2; grid-row: 1; margin: 0; white-space: nowrap; text-align: center;
   font-family: var(--font-devanagari, sans-serif); font-size: clamp(1.0625rem, 1.8vw, 1.25rem);
   font-weight: 600; line-height: 1.5; }
-.hero__rule { height: 1px; align-self: center; transform: translateY(0.14em); /* optical: Devanagari body sits below line-box centre */ }
-.hero__rule--lead { grid-column: 1; grid-row: 1; }
-.hero__rule--trail { grid-column: 3; grid-row: 1; }
+.hero__rule { height: 1px; align-self: center; margin-top: 0.28em; /* optical: Devanagari body sits below line-box centre */ }
+.hero__rule--lead { grid-column: 1; grid-row: 1; transform-origin: right center; }
+.hero__rule--trail { grid-column: 3; grid-row: 1; transform-origin: left center; }
 .hero__en { grid-column: 2; grid-row: 2; margin: 2px 0 0; text-align: center; white-space: nowrap;
   font-size: 0.75rem; letter-spacing: 0.01em; }
 
@@ -52,9 +68,9 @@ const HERO_STYLES = `
 .hero__btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-xs);
   min-height: 48px; padding: 0 var(--space-md); border-radius: var(--radius-card);
   font-weight: 600; font-size: 1rem; line-height: 1; text-decoration: none;
-  transition: background-color .2s, color .2s, border-color .2s; white-space: nowrap; }
+  transition: background-color 200ms cubic-bezier(.16,1,.3,1), color 200ms cubic-bezier(.16,1,.3,1), border-color 200ms cubic-bezier(.16,1,.3,1); white-space: nowrap; }
 .hero__btn:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 3px; }
-.hero__btn svg { transition: transform .2s cubic-bezier(.16,1,.3,1); }
+.hero__btn svg { transition: transform 200ms cubic-bezier(.16,1,.3,1); }
 .hero__btn:hover svg, .hero__btn:focus-visible svg { transform: translate3d(2px, -2px, 0); }
 .hero__btn--primary { background: var(--burgundy); color: var(--surface); border: 1px solid var(--burgundy); }
 .hero__btn--primary:hover, .hero__btn--primary:focus-visible { background: var(--burgundy-deep); border-color: var(--burgundy-deep); }
@@ -65,18 +81,44 @@ const HERO_STYLES = `
 
 .hero__cue { position: absolute; right: var(--grid-page-padding); bottom: calc(4vw + var(--space-lg));
   display: flex; flex-direction: column; align-items: center; gap: 4px; z-index: 3;
-  transition: opacity .4s; pointer-events: none; }
-.hero__cue-dot { animation: hero-scroll-dot 1.5s ease-in-out infinite; }
-@keyframes hero-scroll-dot { 0% { top: 0; opacity: 1; } 80% { top: 36px; opacity: 0; } 100% { top: 0; opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .hero__cue-dot { animation: none; } .hero__btn svg { transition: none; } }
+  transition: opacity 400ms cubic-bezier(.16,1,.3,1); pointer-events: none; }
+/* the dot travels with transform only; it pauses once the cue has faded after the first scroll */
+.hero__cue-dot { top: 0; animation: hero-scroll-dot 1200ms cubic-bezier(.65,0,.35,1) infinite; }
+.hero__cue[data-visible='false'] .hero__cue-dot { animation-play-state: paused; }
+@keyframes hero-scroll-dot {
+  0% { transform: translate3d(0, 0, 0); opacity: 1; }
+  80% { transform: translate3d(0, 36px, 0); opacity: 0; }
+  100% { transform: translate3d(0, 0, 0); opacity: 0; }
+}
+
+/* Entrance start state — armed by the <head> script (html.hero-arm, never set without JS or under
+   reduced motion). The timeline un-hides everything; without the class the content is just visible. */
+html.hero-arm .hero__mi { transform: translate3d(0, 110%, 0); }
+html.hero-arm .hero__eyebrow-bar,
+html.hero-arm .hero__rule { transform: scaleX(0); }
+html.hero-arm .hero__eyebrow-text,
+html.hero-arm .hero__sub,
+html.hero-arm .hero__dev,
+html.hero-arm .hero__en,
+html.hero-arm .hero__btn { opacity: 0; }
+
+/* ambient light sweep: a single 1200ms pass after the entrance, not a loop */
+.hero--in .hero-ambient__sweep { animation: hero-sweep 1200ms cubic-bezier(.87,0,.13,1) 900ms 1 both; }
+@media (prefers-reduced-motion: reduce) {
+  .hero__cue-dot { animation: none; }
+  .hero__btn svg { transition: none; }
+  .hero--in .hero-ambient__sweep { animation: none; }
+}
 
 @media (min-width: 768px) {
-  /* Exactly two balanced lines: each headline half is its own nowrap block.
-     Size is conservative against Archivo wdth 125 (~0.66em/char × 26 chars ≈ 17em). */
-  .hero__h1 { font-size: clamp(2rem, 4.4vw, 4.5rem); }
-  .hero__line { display: block; white-space: nowrap; }
+  /* 3 lines (the tail 'running.' drops to its own line) so the headline ends before the 75deg
+     diagonal / schematic at every width; 4.8vw capped at 72px keeps it clear at 1920 too. */
+  .hero__h1 { font-size: clamp(2rem, 4.8vw, 4.5rem); }
+  .hero__line { white-space: nowrap; }
+  .hero__tail { display: block; }
   .hero__content { padding-bottom: calc(4vw + var(--space-xl)); }
 }
+@media (min-width: 768px) and (max-width: 1023px) { .hero__sub { max-width: 40ch; font-size: 1.1875rem; } .hero__h1 { font-size: clamp(2.25rem, 5vw, 3.25rem); } }
 @media (max-width: 479px) {
   .hero__btn { flex: 1 1 auto; padding: 0 var(--space-sm); }
 }
@@ -99,7 +141,69 @@ export default function Hero() {
   const [before, after] = line2.split('big machines');
   const hasAccent = after !== undefined;
 
+  const rootRef = useRef<HTMLElement>(null);
   const [cueVisible, setCueVisible] = useState(true);
+
+  /* ── Entrance timeline ──────────────────────────────────────────────── */
+  useEffect(() => {
+    const root = rootRef.current;
+    const html = document.documentElement;
+    if (!root) return;
+
+    const armed = html.classList.contains('hero-arm');
+    const disarm = () => html.classList.remove('hero-arm');
+    let started = false;
+    let tl: gsap.core.Timeline | null = null;
+
+    const go = () => {
+      if (started) return;
+      started = true;
+      root.classList.add('hero--in');
+      if (!armed || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        disarm();
+        return;
+      }
+      const q = (sel: string) => root.querySelectorAll<HTMLElement>(sel);
+      /* Hand the hidden start state from CSS over to GSAP in the same task (the fromTo calls below
+         render their 'from' values immediately), so there is no frame in which neither applies and
+         the CSS transform can't be merged into GSAP's yPercent. */
+      disarm();
+      tl = gsap.timeline({
+        onComplete: () => {
+          gsap.set(q('.hero__mi, .hero__eyebrow-bar, .hero__eyebrow-text, .hero__sub, .hero__rule, .hero__dev, .hero__en, .hero__btn'), { clearProps: 'opacity,transform' });
+        },
+      });
+      tl.fromTo(q('.hero__eyebrow-bar'), { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: 'power3.inOut' }, 0)
+        .fromTo(q('.hero__eyebrow-text'), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.7, ease: 'expo.out' }, 0.1)
+        .fromTo(q('.hero__mi'), { yPercent: 110 }, { yPercent: 0, duration: 0.9, ease: 'expo.out', stagger: 0.08 }, 0.1)
+        .fromTo(q('.hero__sub'), { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.7, ease: 'expo.out' }, 0.5)
+        .fromTo(q('.hero__rule'), { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: 'power3.inOut' }, 0.6)
+        .fromTo(q('.hero__dev, .hero__en'), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.7, ease: 'expo.out', stagger: 0.08 }, 0.7)
+        .fromTo(q('.hero__btn'), { opacity: 0, x: -17, y: 17 }, { opacity: 1, x: 0, y: 0, duration: 0.7, ease: 'back.out(1.4)', stagger: 0.2 }, 0.9);
+    };
+
+    let mo: MutationObserver | null = null;
+    let raf = 0;
+    let failsafe: ReturnType<typeof setTimeout> | undefined;
+    if (html.classList.contains('is-preloading')) {
+      window.addEventListener('alok:hero-go', go, { once: true });
+      mo = new MutationObserver(() => { if (!html.classList.contains('is-preloading')) go(); });
+      mo.observe(html, { attributes: true, attributeFilter: ['class'] });
+      failsafe = setTimeout(go, 6500);
+    } else {
+      raf = requestAnimationFrame(go);
+    }
+
+    return () => {
+      window.removeEventListener('alok:hero-go', go);
+      mo?.disconnect();
+      cancelAnimationFrame(raf);
+      clearTimeout(failsafe);
+      tl?.kill();
+      /* the class is left for the next mount (StrictMode re-run) — the <head> script clears it after 7s */
+    };
+  }, []);
+
   useEffect(() => {
     const onScroll = () => setCueVisible(window.scrollY < 24);
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -107,7 +211,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="hero" aria-label="Hero">
+    <section ref={rootRef} className="hero" aria-label="Hero">
       <style>{HERO_STYLES}</style>
 
       {/* Media layer — sits behind all content */}
@@ -115,38 +219,35 @@ export default function Hero() {
 
       <div className="hero__content">
         {/* Eyebrow — §11.5 (no numbering) */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', marginBottom: 'var(--space-md)' }}>
-          <span style={{ width: 24, height: 2, background: 'var(--burgundy)', display: 'inline-block', flexShrink: 0 }} aria-hidden="true" />
-          <span style={{
-            fontSize: '0.75rem',
-            textTransform: 'uppercase',
-            letterSpacing: '0.16em',
-            color: isAmbient ? 'var(--grey-metal)' : mutedColor,
-            fontWeight: 600,
-          }}>
+        <div className="hero__eyebrow">
+          <span className="hero__eyebrow-bar" aria-hidden="true" />
+          <span
+            className="hero__eyebrow-text"
+            style={{
+              fontSize: '0.75rem',
+              textTransform: 'uppercase',
+              letterSpacing: '0.16em',
+              color: isAmbient ? 'var(--grey-metal)' : mutedColor,
+              fontWeight: 600,
+            }}
+          >
             {site.hero.eyebrow}
           </span>
         </div>
 
         {/* H1 — Archivo Expanded; metal gradient on "big machines" (only gradient text on the page) */}
         <h1 className="hero__h1" style={{ color: textColor }}>
-          <span className="hero__line">{line1}</span>{' '}
+          <span className="hero__line"><span className="hero__mi">{line1}</span></span>{' '}
           <span className="hero__line">
-            {hasAccent ? (
-              <>
-                {before}
-                <span style={{
-                  background: 'var(--metal-gradient)',
-                  WebkitBackgroundClip: 'text',
-                  backgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  color: 'transparent',
-                }}>
-                  big machines
-                </span>
-                {after}
-              </>
-            ) : line2}
+            <span className="hero__mi">
+              {hasAccent ? (
+                <>
+                  {before}
+                  <span className="hero__accent">big machines</span>
+                  <span className="hero__tail">{after}</span>
+                </>
+              ) : line2}
+            </span>
           </span>
         </h1>
 
@@ -187,9 +288,9 @@ export default function Hero() {
       </div>
 
       {/* Scroll cue — bottom-right, clear of the CTAs; fades after first scroll */}
-      <div className="hero__cue" style={{ opacity: cueVisible ? 1 : 0 }} aria-hidden="true">
+      <div className="hero__cue" data-visible={cueVisible ? 'true' : 'false'} style={{ opacity: cueVisible ? 1 : 0 }} aria-hidden="true">
         <span style={{
-          fontSize: '0.6875rem', textTransform: 'uppercase', letterSpacing: '0.16em', fontWeight: 600,
+          fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.16em', fontWeight: 600,
           fontFamily: 'var(--font-mono, monospace)', color: onMedia ? 'white' : 'var(--burgundy)',
           writingMode: 'vertical-rl',
         }}>

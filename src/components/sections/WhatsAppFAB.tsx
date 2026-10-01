@@ -6,7 +6,7 @@
  * Hides while #enquiry or the site footer is in the viewport (IntersectionObserver)
  * so it never covers the enquiry form or footer text.
  * Renders nothing if site.contact.whatsapp is null.
- * Pulse animation is gated by @media (prefers-reduced-motion: no-preference).
+ * Attention ring (plays twice, then stops) is gated by @media (prefers-reduced-motion: no-preference).
  */
 
 'use client';
@@ -33,16 +33,19 @@ const FAB_CSS = `
   box-shadow: 0 4px 16px color-mix(in srgb, var(--burgundy-night) 30%, transparent);
   z-index: 200;
   text-decoration: none;
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition: opacity 400ms cubic-bezier(.16,1,.3,1), transform 400ms cubic-bezier(.16,1,.3,1);
 }
 .wa-fab:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 3px; }
 .wa-fab[data-hidden="true"] { opacity: 0; pointer-events: none; transform: scale(0.85); }
+/* Attention ring: a transform/opacity ring that plays twice, then stops (no box-shadow, no loop) */
+.wa-fab::after { content: ''; position: absolute; inset: 0; border-radius: 50%; border: 2px solid var(--whatsapp);
+  opacity: 0; pointer-events: none; }
 @media (prefers-reduced-motion: no-preference) {
-  .wa-fab[data-hidden="false"] { animation: fab-pulse 2.4s ease-in-out infinite; }
+  .wa-fab[data-hidden="false"]::after { animation: fab-ring 1200ms cubic-bezier(.16,1,.3,1) 1200ms 2 both; }
 }
-@keyframes fab-pulse {
-  0%, 100% { box-shadow: 0 4px 16px color-mix(in srgb, var(--burgundy-night) 30%, transparent), 0 0 0 0 color-mix(in srgb, var(--whatsapp) 50%, transparent); }
-  50%      { box-shadow: 0 4px 16px color-mix(in srgb, var(--burgundy-night) 30%, transparent), 0 0 0 10px color-mix(in srgb, var(--whatsapp) 0%, transparent); }
+@keyframes fab-ring {
+  0%   { transform: scale(1); opacity: .7; }
+  100% { transform: scale(1.7); opacity: 0; }
 }
 @media (prefers-reduced-motion: reduce) { .wa-fab { transition: none; } }
 `;

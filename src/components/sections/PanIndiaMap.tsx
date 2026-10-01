@@ -20,19 +20,28 @@
 
 'use client';
 
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useGSAP } from '@gsap/react';
 import { gsap, ScrollTrigger, DURATIONS, EASINGS } from '@/lib/motion';
 import { useMaskRise } from '@/hooks/useMotion';
 import { site } from '@/content/site';
 import {
-  WORLD_W, WORLD_H, WORLD_DOTS, INDIA_DOTS, INDIA_OUTLINE,
-  STEP_WORLD_U, STEP_INDIA_U, project,
+  WORLD_DOTS, INDIA_DOTS, INDIA_OUTLINE, INDIA_ISLANDS,
+  STEP_WORLD_U, STEP_INDIA_U, INDIA_SCALE, INDIA_CLON, INDIA_CLAT, project,
 } from './worldDots';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const ORIGIN = project(76.78, 30.73); // Chandigarh (verified base)
+/* Two-layer composition: a wide dotted world band behind (Africa, Europe, Asia, Australia, the
+   Americas as a faint far edge), India enlarged in front by INDIA_SCALE about its centre. Points
+   inside India go through `ind()`, world points through plain `project()`. */
+const ind = (lon: number, lat: number) => {
+  const c = project(INDIA_CLON, INDIA_CLAT);
+  const p = project(lon, lat);
+  return { x: c.x + (p.x - c.x) * INDIA_SCALE, y: c.y + (p.y - c.y) * INDIA_SCALE };
+};
+const ORIGIN = ind(76.78, 30.73); // Chandigarh (verified base)
+const IND_T = `translate(${project(INDIA_CLON, INDIA_CLAT).x} ${project(INDIA_CLON, INDIA_CLAT).y}) scale(${INDIA_SCALE}) translate(${-project(INDIA_CLON, INDIA_CLAT).x} ${-project(INDIA_CLON, INDIA_CLAT).y})`;
 
 /* Regional points inside India — generic, unlabelled (no cities claimed). */
 const DOMESTIC: [number, number][] = [
@@ -40,10 +49,15 @@ const DOMESTIC: [number, number][] = [
   [85.8, 20.5], [88.3, 22.6], [91.7, 26.2], [94.2, 25.6], [84.5, 25.6], [78.2, 26.8],
   [74.2, 27.2], [70.8, 22.6], [76.4, 9.6], [81.2, 23.6],
 ];
-/* Broad world points — illustrative direction only (the ambition), no names. */
+/* Broad world points — illustrative direction only (the ambition), no names. They sit out
+   in the other continents so every one of these arcs visibly leaves India's border. */
 const WORLD: [number, number][] = [
-  [10, 50], [12, 30], [37, -2], [47, 25], [101, 14], [117, 34], [134, -25], [-58, -15], [-80, 38],
+  [8, 48], [-8, 8], [26, -22], [46, 28], [122, 14], [122, 38], [140, 36], [134, -26], [-40, -12], [18, 18],
 ];
+
+const VB = { x: 0, y: 30, w: 1075, h: 505 };
+const inFrame = (p: { x: number; y: number }) =>
+  p.x > VB.x + 8 && p.x < VB.x + VB.w - 8 && p.y > VB.y + 8 && p.y < VB.y + VB.h - 8;
 
 const round = (n: number) => Math.round(n * 10) / 10;
 
@@ -51,17 +65,17 @@ function arcPath(to: { x: number; y: number }, lift: number) {
   const mx = (ORIGIN.x + to.x) / 2;
   const my = (ORIGIN.y + to.y) / 2;
   const dist = Math.hypot(to.x - ORIGIN.x, to.y - ORIGIN.y);
-  const cy = my - Math.min(dist * lift, 190);
+  const cy = my - Math.min(dist * lift, 130);
   return `M${round(ORIGIN.x)} ${round(ORIGIN.y)}Q${round(mx)} ${round(cy)} ${round(to.x)} ${round(to.y)}`;
 }
 
 const domestic = DOMESTIC.map(([lo, la]) => {
-  const p = project(lo, la);
+  const p = ind(lo, la);
   return { p, d: arcPath(p, 0.28) };
 });
 const world = WORLD.map(([lo, la]) => {
   const p = project(lo, la);
-  return { p, d: arcPath(p, 0.3) };
+  return { p, d: arcPath(p, 0.26) };
 });
 
 const CSS = `
@@ -76,18 +90,17 @@ const CSS = `
 .pim-legend li { display: flex; align-items: center; gap: var(--space-sm); font-size: 0.9375rem; color: var(--ink); font-weight: 500; line-height: 1.35; }
 .pim-legend svg { flex: none; }
 .pim-frame { position: relative; margin-top: var(--space-xl); overflow: hidden; border-top: 1px solid var(--grey-warm); border-bottom: 1px solid var(--grey-warm); background: linear-gradient(180deg, rgba(255,255,255,.7), transparent 55%); }
-.pim-svg { display: block; width: 230%; height: auto; margin-left: -115.6%; }
+.pim-stage { overflow: hidden; -webkit-mask-image: linear-gradient(to right, transparent, var(--ink) 9%, var(--ink) 91%, transparent), linear-gradient(to bottom, transparent, var(--ink) 7%, var(--ink) 93%, transparent); -webkit-mask-composite: source-in; mask-image: linear-gradient(to right, transparent, var(--ink) 9%, var(--ink) 91%, transparent), linear-gradient(to bottom, transparent, var(--ink) 7%, var(--ink) 93%, transparent); mask-composite: intersect; }
+.pim-svg { display: block; width: 175%; height: auto; margin-left: -55%; }
 .pim-reg { position: absolute; width: 9px; height: 9px; border: solid var(--grey-warm); }
 .pim-reg.tl { top: 8px; left: 8px; border-width: 1px 0 0 1px; } .pim-reg.tr { top: 8px; right: 8px; border-width: 1px 1px 0 0; }
 .pim-reg.bl { bottom: 8px; left: 8px; border-width: 0 0 1px 1px; } .pim-reg.br { bottom: 8px; right: 8px; border-width: 0 1px 1px 0; }
-.pim-foot { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-md); margin-top: var(--space-lg); align-items: end; }
-.pim-tag-dev { font-family: var(--font-devanagari), sans-serif; font-weight: 600; font-size: clamp(1.5rem, 3.2vw, 2.5rem); line-height: 1.5; }
-.pim-tag-en { font-size: clamp(1rem, 1.6vw, 1.25rem); color: var(--body); margin-top: 2px; }
+.pim-foot { margin-top: var(--space-md); }
 .pim-note { font-size: 0.75rem; line-height: 1.5; color: var(--muted); max-width: 46ch; }
 .pim-ring { transform-box: fill-box; transform-origin: center; opacity: 0; }
 @media (prefers-reduced-motion: no-preference) {
-  .pim-ring { animation: pim-pulse 3s cubic-bezier(.16,1,.3,1) infinite; }
-  .pim-ring.b { animation-delay: 1.5s; }
+  .pim.live .pim-ring { animation: pim-pulse 3s cubic-bezier(.16,1,.3,1) infinite; }
+  .pim.live .pim-ring.b { animation-delay: 1.5s; }
 }
 @keyframes pim-pulse { 0% { transform: scale(.4); opacity: .7; } 70%, 100% { transform: scale(1); opacity: 0; } }
 @media (min-width: 720px) {
@@ -95,7 +108,6 @@ const CSS = `
 }
 @media (min-width: 900px) {
   .pim-head { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--space-xl); }
-  .pim-foot { grid-template-columns: minmax(0, 1fr) minmax(0, auto); }
 }
 `;
 
@@ -103,6 +115,15 @@ export default function PanIndiaMap() {
   const sectionRef = useRef<HTMLElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   useMaskRise(headingRef);
+
+  /* looping pulse runs only while the section is on screen */
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    const io = new IntersectionObserver(([e]) => el.classList.toggle('live', e.isIntersecting), { rootMargin: '80px' });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   useGSAP(() => {
     const root = sectionRef.current;
@@ -113,6 +134,7 @@ export default function PanIndiaMap() {
       const outline = root.querySelector<SVGPathElement>('.pim-outline');
       const worldDots = root.querySelector('.pim-world-dots');
       const indiaDots = root.querySelector('.pim-india-dots');
+      const islands = root.querySelector('.pim-islands');
       const dArcs = q<SVGPathElement>('.pim-arc-d');
       const wArcs = q<SVGPathElement>('.pim-arc-w');
       const ends = q<SVGElement>('.pim-end');
@@ -121,7 +143,7 @@ export default function PanIndiaMap() {
       if (!outline || !worldDots || !indiaDots) return;
 
       gsap.set(worldDots, { opacity: 0 });
-      gsap.set(indiaDots, { opacity: 0 });
+      gsap.set([indiaDots, islands], { opacity: 0 });
       gsap.set(outline, { strokeDasharray: 1, strokeDashoffset: 1, fillOpacity: 0 });
       gsap.set([...dArcs, ...wArcs], { strokeDasharray: 1, strokeDashoffset: 1 });
       gsap.set(ends, { opacity: 0 });
@@ -144,12 +166,13 @@ export default function PanIndiaMap() {
       };
 
       const tl = gsap.timeline({
+        defaults: { ease: EASINGS.out },
         scrollTrigger: { trigger: root.querySelector('.pim-frame'), start: 'top 72%', once: true },
       });
       tl.to(worldDots, { opacity: 1, duration: DURATIONS.full, ease: EASINGS.out }, 0)
         .to(outline, { strokeDashoffset: 0, duration: DURATIONS.full, ease: EASINGS.inOut }, 0.2)
         .to(outline, { fillOpacity: 0.05, duration: DURATIONS.long, ease: EASINGS.out }, 0.9)
-        .to(indiaDots, { opacity: 1, duration: DURATIONS.long, ease: EASINGS.out }, 0.7)
+        .to([indiaDots, islands], { opacity: 1, duration: DURATIONS.long, ease: EASINGS.out }, 0.7)
         .to(origin, { opacity: 1, duration: DURATIONS.short, ease: EASINGS.out }, 1.0);
       dArcs.forEach((arc, i) => {
         const at = 1.2 + i * 0.07;
@@ -169,7 +192,7 @@ export default function PanIndiaMap() {
       return () => {
         tl.scrollTrigger?.kill();
         tl.kill();
-        gsap.set([worldDots, indiaDots, outline, ...dArcs, ...wArcs, ...ends, ...lights, ...origin], { clearProps: 'all' });
+        gsap.set([worldDots, indiaDots, islands, outline, ...dArcs, ...wArcs, ...ends, ...lights, ...origin], { clearProps: 'all' });
       };
     });
     return () => mm.revert();
@@ -205,7 +228,7 @@ export default function PanIndiaMap() {
             </li>
             <li>
               <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
-                <path d="M2 17Q11 2 20 6" fill="none" stroke="var(--grey-metal)" strokeWidth="1" />
+                <path d="M2 17Q11 2 20 6" fill="none" stroke="var(--burgundy)" strokeOpacity="0.55" strokeWidth="1.3" />
               </svg>
               The ambition: a globally recognised Indian manufacturing brand
             </li>
@@ -214,52 +237,50 @@ export default function PanIndiaMap() {
 
         <figure style={{ margin: 0 }}>
           <div className="pim-frame">
+            <div className="pim-stage">
             <svg
               className="pim-svg"
-              viewBox={`0 0 ${WORLD_W} ${WORLD_H}`}
+              viewBox={`${VB.x} ${VB.y} ${VB.w} ${VB.h}`}
               fill="none"
               role="img"
               aria-label="Dot-matrix world map with India highlighted in burgundy. Chandigarh is the origin of the Pan Bharat delivery network; the lighter arcs are illustrative and show ambition, not delivery destinations."
             >
               {/* world backdrop: muted dots */}
-              <path className="pim-world-dots" d={WORLD_DOTS} stroke="var(--silver)" strokeOpacity="0.6" strokeWidth="3.4" strokeLinecap="round" strokeDasharray={`0 ${STEP_WORLD_U}`} />
-              {/* India: Government of India depiction */}
-              <path className="pim-outline" d={INDIA_OUTLINE} pathLength={1} fill="var(--burgundy)" fillOpacity="0.05" stroke="var(--burgundy)" strokeWidth="1.4" strokeLinejoin="round" />
-              <path className="pim-india-dots" d={INDIA_DOTS} stroke="var(--burgundy)" strokeOpacity="0.8" strokeWidth="1.35" strokeLinecap="round" strokeDasharray={`0 ${STEP_INDIA_U}`} />
+              <path className="pim-world-dots" d={WORLD_DOTS} stroke="var(--silver)" strokeOpacity="0.85" strokeWidth="2.6" strokeLinecap="round" strokeDasharray={`0 ${STEP_WORLD_U}`} />
+              {/* India: Government of India depiction, enlarged in front of the world layer */}
+              <g transform={IND_T}>
+              <path className="pim-outline" d={INDIA_OUTLINE} pathLength={1} fill="var(--burgundy)" fillOpacity="0.05" stroke="var(--burgundy)" strokeWidth={1.4 / INDIA_SCALE} strokeLinejoin="round" />
+              <path className="pim-islands" d={INDIA_ISLANDS} fill="var(--burgundy)" fillOpacity="0.55" stroke="var(--burgundy)" strokeWidth={0.5 / INDIA_SCALE} strokeLinejoin="round" />
+              <path className="pim-india-dots" d={INDIA_DOTS} stroke="var(--burgundy)" strokeOpacity="0.8" strokeWidth={1.5 / INDIA_SCALE} strokeLinecap="round" strokeDasharray={`0 ${STEP_INDIA_U}`} />
+              </g>
 
               {/* arcs: dense inside India, longer and lighter across the world */}
               {world.map((a, i) => (
-                <path key={`w${i}`} className="pim-arc-w" d={a.d} pathLength={1} stroke="var(--grey-metal)" strokeOpacity="0.7" strokeWidth="1.1" strokeLinecap="round" />
+                <path key={`w${i}`} className="pim-arc-w" d={a.d} pathLength={1} stroke="var(--burgundy)" strokeOpacity="0.55" strokeWidth="1.3" strokeLinecap="round" />
               ))}
               {domestic.map((a, i) => (
                 <path key={`d${i}`} className="pim-arc-d" d={a.d} pathLength={1} stroke="var(--burgundy)" strokeOpacity="0.8" strokeWidth="1.2" strokeLinecap="round" />
               ))}
               {[...domestic, ...world].map((a, i) => (
-                <circle key={`e${i}`} className="pim-end" cx={a.p.x} cy={a.p.y} r={i < domestic.length ? 2.1 : 2.4} fill="var(--surface)" stroke={i < domestic.length ? 'var(--burgundy)' : 'var(--grey-metal)'} strokeWidth="1.1" />
+                <circle key={`e${i}`} visibility={inFrame(a.p) ? 'visible' : 'hidden'} className="pim-end" cx={a.p.x} cy={a.p.y} r={i < domestic.length ? 2.3 : 3} fill="var(--surface)" stroke="var(--burgundy)" strokeWidth="1.1" />
               ))}
               {[...domestic, ...world].map((_, i) => (
-                <circle key={`l${i}`} className="pim-light" r="2.2" fill={i < domestic.length ? 'var(--burgundy-bright)' : 'var(--grey-metal)'} />
+                <circle key={`l${i}`} className="pim-light" r="2.8" fill="var(--burgundy-bright)" />
               ))}
 
               {/* origin: Chandigarh */}
               <g className="pim-origin">
-                <circle className="pim-ring" cx={ORIGIN.x} cy={ORIGIN.y} r="20" stroke="var(--burgundy)" strokeWidth="1.2" />
-                <circle className="pim-ring b" cx={ORIGIN.x} cy={ORIGIN.y} r="20" stroke="var(--burgundy)" strokeWidth="1.2" />
+                <circle className="pim-ring" cx={ORIGIN.x} cy={ORIGIN.y} r="24" stroke="var(--burgundy)" strokeWidth="1.2" />
+                <circle className="pim-ring b" cx={ORIGIN.x} cy={ORIGIN.y} r="24" stroke="var(--burgundy)" strokeWidth="1.2" />
                 <circle cx={ORIGIN.x} cy={ORIGIN.y} r="5" fill="var(--burgundy)" stroke="var(--surface)" strokeWidth="1.5" />
               </g>
             </svg>
+            </div>
             <span className="pim-reg tl" aria-hidden="true" /><span className="pim-reg tr" aria-hidden="true" />
             <span className="pim-reg bl" aria-hidden="true" /><span className="pim-reg br" aria-hidden="true" />
           </div>
 
           <figcaption className="pim-foot">
-            <div>
-              <p lang="sa" className="pim-tag-dev">
-                <span style={{ color: 'var(--burgundy)' }}>भारते शिल्पितम्, </span>
-                <span style={{ color: 'var(--grey-metal)' }}>विश्वय निर्मितम्</span>
-              </p>
-              <p lang="en" className="pim-tag-en">{site.tagline.english}</p>
-            </div>
             <p className="pim-note">Illustrative. Arcs show direction of travel, not delivery destinations.</p>
           </figcaption>
         </figure>

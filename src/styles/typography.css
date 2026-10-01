@@ -75,7 +75,7 @@
 /* Mono / drawing-sheet detail — §7.1 */
 .text-mono {
   font-family: var(--font-mono), monospace;
-  font-size: 0.6875rem; /* 11px */
+  font-size: 0.75rem;
   line-height: 1.4;
   letter-spacing: 0.04em;
 }

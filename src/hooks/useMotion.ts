@@ -101,7 +101,7 @@ export function useDiagonalWipe(
 
     gsap.from(el, {
       clipPath: 'polygon(0% 100%, 0% 100%, 0% 100%, 0% 100%)',
-      duration: 1.0,
+      duration: 0.9,
       ease: EASINGS.inOut,
       scrollTrigger: {
         trigger: opts.trigger ?? el,
@@ -174,7 +174,7 @@ export function useLightSweep(ref: RefObject<HTMLElement | null>) {
       if (sweepTween?.isActive()) return;
       sweepTween = gsap.fromTo(sweep,
         { x: '-120%', y: '120%' },
-        { x: '120%', y: '-120%', duration: DURATIONS.medium, ease: 'power2.inOut' },
+        { x: '120%', y: '-120%', duration: DURATIONS.medium, ease: EASINGS.powerInOut },
       );
     };
 
@@ -213,8 +213,8 @@ export function useOdometer(
 
     gsap.to(obj, {
       val: value,
-      duration: 1.4,
-      ease: 'power3.out',
+      duration: 1.2,
+      ease: EASINGS.inOut,
       scrollTrigger: {
         trigger: opts.trigger ?? el,
         start: opts.start ?? 'top 85%',

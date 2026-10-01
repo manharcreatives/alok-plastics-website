@@ -44,7 +44,7 @@ export default function GroupBlueprintArt({ group }: { group: ProductGroup }) {
                 <g className="pa-fade" style={D(1200)}>
                   <circle cx={m.right - 6} cy={m.top + m.h * 0.2} r="3" fill="var(--burgundy)" />
                   <path d={`M${m.right - 6} ${m.top + m.h * 0.2}L${m.right + 30} ${m.top + m.h * 0.2 - 36}H${m.right + 76}`} stroke="var(--burgundy)" strokeWidth="1" fill="none" />
-                  <text x={m.right + 34} y={m.top + m.h * 0.2 - 42} className="pa-mono" fontSize="10" fill="var(--burgundy)" fontWeight="700">{mat}</text>
+                  <text x={m.right + 34} y={m.top + m.h * 0.2 - 42} className="pa-mono" fontSize="12" fill="var(--burgundy)" fontWeight="700">{mat}</text>
                 </g>
               )}
             </g>
@@ -54,23 +54,23 @@ export default function GroupBlueprintArt({ group }: { group: ProductGroup }) {
             if (!hasPictogram(p.slug)) return null;
             const bx = 372;
             const by = 96 + i * 120;
-            const f = fitPicto(p.slug, bx + 44, by + 44, 52);
-            const lines = wrapLabel(p.name, 11);
+            const f = fitPicto(p.slug, bx + 32, by + 44, 44);
+            const lines = wrapLabel(p.name, 10);
             return (
               <g key={p.slug} className="pa-fade" style={D(900 + i * 150)}>
                 <rect x={bx} y={by} width="160" height="88" fill="var(--surface)" stroke="var(--grey-warm)" strokeDasharray="3 5" />
                 <PictoG name={p.slug} x={f.x} y={f.y} size={f.size} stroke={1.4} color="var(--grey-metal)" />
                 {lines.map((l, k) => (
-                  <text key={l} x={bx + 84} y={by + 38 + k * 12} className="pa-mono" fontSize="8.5" fill="var(--muted)">{l}</text>
+                  <text key={l} x={bx + 64} y={by + 34 + k * 15} className="pa-mono" fontSize="12" style={{ letterSpacing: '0.02em' }} fill="var(--muted)">{l}</text>
                 ))}
-                {p.material && <text x={bx + 84} y={by + 38 + lines.length * 12 + 4} className="pa-mono" fontSize="8" fill="var(--grey-metal)">{MATERIAL_LABELS[p.material].toUpperCase()}</text>}
+                {p.material && <text x={bx + 64} y={by + 34 + lines.length * 15} className="pa-mono" fontSize="12" style={{ letterSpacing: '0.02em' }} fill="var(--grey-metal)">{MATERIAL_LABELS[p.material].toUpperCase()}</text>}
               </g>
             );
           })}
 
-          <text x="34" y="458" className="pa-mono" fontSize="11" fill="var(--burgundy)" fontWeight="700">{main ? main.name.toUpperCase() : ''}</text>
-          <text x="34" y="474" className="pa-mono" fontSize="9" fill="var(--muted)">{group.name.toUpperCase()}</text>
-          <text x="34" y="490" className="pa-mono" fontSize="8" fill="var(--grey-metal)">NOT TO SCALE</text>
+          <text x="34" y="456" className="pa-mono" fontSize="14" fill="var(--burgundy)" fontWeight="700">{main ? main.name.toUpperCase() : ''}</text>
+          <text x="34" y="474" className="pa-mono" fontSize="12" fill="var(--muted)">{group.name.toUpperCase()}</text>
+          <text x="34" y="492" className="pa-mono" fontSize="12" fill="var(--grey-metal)">NOT TO SCALE</text>
           <path d="M514 490l16-16m-6 0h6v6" stroke="var(--burgundy)" strokeWidth="1.5" fill="none" />
         </g>
       </svg>
