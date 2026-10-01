@@ -13,7 +13,7 @@ const CALLOUTS: { y: number; tx: number; ty: number; label: string }[] = [
 
 export default function EnquiryArt() {
   return (
-    <svg className="pa-svg" viewBox="0 0 640 760" preserveAspectRatio="xMaxYMid meet" role="presentation" focusable="false">
+    <svg className="pa-svg" viewBox="0 0 640 760" preserveAspectRatio="xMinYMid meet" role="presentation" focusable="false">
       <rect x="24" y="24" width="592" height="712" fill="var(--surface)" stroke="var(--grey-metal)" strokeWidth="1" className="pa-fade" style={D(0)} />
 
       {/* front view */}
@@ -52,17 +52,17 @@ export default function EnquiryArt() {
       {/* callouts */}
       {CALLOUTS.map((c, i) => (
         <g key={c.label} className="pa-fade" style={D(1100 + i * 150)}>
-          <path d={`M${c.tx} ${c.ty}L440 ${c.y}H472`} stroke="var(--burgundy)" strokeWidth="1" fill="none" />
+          <path d={`M${c.tx} ${c.ty}L420 ${c.y}H452`} stroke="var(--burgundy)" strokeWidth="1" fill="none" />
           <circle cx={c.tx} cy={c.ty} r="3.5" fill="var(--burgundy)" />
-          <text x="480" y={c.y + 4} className="pa-mono" fill="var(--ink)" style={{ fontSize: 12, fontWeight: 500 }}>{c.label}</text>
+          <text x="460" y={c.y + 4} className="pa-mono" fill="var(--ink)" style={{ fontSize: 13, fontWeight: 500 }}>{c.label}</text>
         </g>
       ))}
 
       {/* title block */}
       <g className="pa-fade" style={D(1700)}>
-        <rect x="412" y="676" width="172" height="40" fill="none" stroke="var(--grey-metal)" strokeWidth="1" />
-        <text x="424" y="692" className="pa-mono" fill="var(--grey-metal)" style={{ fontSize: 10 }}>ALOK PLASTICS</text>
-        <text x="424" y="706" className="pa-mono" fill="var(--grey-metal)" style={{ fontSize: 10 }}>SCHEMATIC</text>
+        <rect x="400" y="670" width="184" height="50" fill="none" stroke="var(--grey-metal)" strokeWidth="1" />
+        <text x="412" y="690" className="pa-mono" fill="var(--grey-metal)" style={{ fontSize: 13 }}>ALOK PLASTICS</text>
+        <text x="412" y="709" className="pa-mono" fill="var(--grey-metal)" style={{ fontSize: 13 }}>SCHEMATIC</text>
       </g>
     </svg>
   );

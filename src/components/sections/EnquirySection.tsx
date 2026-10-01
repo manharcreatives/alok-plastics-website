@@ -3,17 +3,15 @@
  * Light section (--surface-alt) with ONE burgundy accent panel (the "tell us the part" block).
  * The footer below is burgundy too, so this section stays light and the footer opens on a folded
  * edge: never two burgundy blocks adjacent (ADR in docs/decisions.md).
- * Form is ShortEnquiryForm (§14 single source). No WhatsApp CTA here (floating button only).
+ * The address lives only in the footer (it used to repeat here). Form is ShortEnquiryForm (§14 single source). No WhatsApp CTA here (floating button only).
  */
 
 'use client';
 
 import ShortEnquiryForm from '@/components/forms/ShortEnquiryForm';
-import { ArrowUpRight } from '@phosphor-icons/react/dist/ssr/ArrowUpRight';
-import { MapPin } from '@phosphor-icons/react/dist/ssr/MapPin';
 import { Phone } from '@phosphor-icons/react/dist/ssr/Phone';
 import { EnvelopeSimple } from '@phosphor-icons/react/dist/ssr/EnvelopeSimple';
-import { site, formatAddressLines, telHref, mapsHref, MAPS_ARIA_LABEL } from '@/content/site';
+import { site, telHref } from '@/content/site';
 import { trackPhoneClick } from '@/lib/analytics';
 
 const SECTION_CSS = `
@@ -32,7 +30,7 @@ const SECTION_CSS = `
   clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 0 100%); }
 .enq-sec-aside h3 { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(1.375rem, 2.2vw, 1.75rem); font-weight: 650; letter-spacing: -0.02em; line-height: 1.15; margin: 0; color: var(--surface); }
 .enq-sec-aside p { margin: 0; font-size: 0.9375rem; line-height: 1.65; color: color-mix(in srgb, var(--surface) 90%, transparent); }
-.enq-sec-lbl { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--rose-pale); font-weight: 600; }
+.enq-sec-lbl { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--rose-pale); font-weight: 600; }
 .enq-sec-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: var(--space-xs); align-items: start; color: color-mix(in srgb, var(--surface) 92%, transparent); text-decoration: none; font-style: normal; font-size: 0.9375rem; line-height: 1.6; min-height: 44px; }
 a.enq-sec-row:hover { color: var(--surface); }
 a.enq-sec-row:hover .enq-sec-ar { transform: translate3d(2px, -2px, 0); }
@@ -47,7 +45,6 @@ a.enq-sec-row:hover .enq-sec-ar { transform: translate3d(2px, -2px, 0); }
 
 export default function EnquirySection() {
   const c = site.contact;
-  const [addrLine1, addrLine2] = formatAddressLines(c);
 
   return (
     <section id="enquiry" aria-labelledby="enquiry-heading" className="enq-sec">
@@ -75,13 +72,9 @@ export default function EnquirySection() {
                 Share the part name, quantity and any size or material preference, or describe what the part does in your equipment.
               </p>
             </div>
+            {(c.phone || c.email) && (
             <div className="rule">
-              <span className="enq-sec-lbl">Our address</span>
-              <a className="enq-sec-row" href={mapsHref(c)} target="_blank" rel="noopener noreferrer" aria-label={MAPS_ARIA_LABEL}>
-                <MapPin size={20} weight="light" aria-hidden="true" />
-                <address style={{ fontStyle: 'normal' }}>{addrLine1},<br />{addrLine2}</address>
-                <ArrowUpRight className="enq-sec-ar" size={18} weight="light" aria-hidden="true" />
-              </a>
+              <span className="enq-sec-lbl">Prefer to talk?</span>
               {c.phone && (
                 <a className="enq-sec-row" href={telHref(c.phone)} onClick={() => trackPhoneClick('enquiry-section')}>
                   <Phone size={20} weight="light" aria-hidden="true" /><span>{c.phone}</span><span />
@@ -93,6 +86,7 @@ export default function EnquirySection() {
                 </a>
               )}
             </div>
+            )}
           </aside>
         </div>
       </div>

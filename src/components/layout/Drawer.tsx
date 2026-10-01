@@ -33,21 +33,21 @@ interface DrawerProps {
 const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 const DRAWER_CSS = `
-.drawer-panel { animation: drawer-in .7s cubic-bezier(.16,1,.3,1) both; }
+.drawer-panel { animation: drawer-in 700ms cubic-bezier(.16,1,.3,1) both; }
 @keyframes drawer-in {
   from { clip-path: polygon(100% 0, 100% 0, 100% 100%, 100% 100%); }
   to   { clip-path: polygon(24px 0, 100% 0, 100% 100%, 0 100%); }
 }
 .drawer-link { position: relative; display: flex; align-items: center; justify-content: space-between;
   padding: 16px 0 16px 0; border-bottom: 1px solid var(--grey-cloud); color: var(--ink);
-  font-size: 1.0625rem; font-weight: 500; text-decoration: none; transition: color .2s, padding-left .4s cubic-bezier(.16,1,.3,1); }
+  font-size: 1.0625rem; font-weight: 500; text-decoration: none; transition: color 200ms cubic-bezier(.16,1,.3,1), padding-left 400ms cubic-bezier(.16,1,.3,1); }
 .drawer-link:hover, .drawer-link:focus-visible { color: var(--burgundy); }
 .drawer-link:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 2px; }
 .drawer-link--active { color: var(--burgundy); font-weight: 600; padding-left: 24px; }
 .drawer-link__notch { position: absolute; left: 4px; top: 50%; width: 8px; height: 8px; margin-top: -4px;
-  background: var(--burgundy); transform: rotate(45deg) scale(0); transition: transform .4s cubic-bezier(.34,1.56,.64,1); }
+  background: var(--burgundy); transform: rotate(45deg) scale(0); transition: transform 400ms cubic-bezier(.34,1.4,.64,1); }
 .drawer-link--active .drawer-link__notch { transform: rotate(45deg) scale(1); }
-.drawer-link__arrow { color: var(--muted); transition: transform .2s cubic-bezier(.16,1,.3,1); }
+.drawer-link__arrow { color: var(--muted); transition: transform 200ms cubic-bezier(.16,1,.3,1); }
 .drawer-link:hover .drawer-link__arrow { transform: translate3d(2px,-2px,0); }
 .drawer-cta { --cut: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px;
   color: var(--surface); background: var(--burgundy); font-weight: 600; font-size: 1rem; text-decoration: none;

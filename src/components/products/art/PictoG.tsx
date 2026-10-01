@@ -4,6 +4,10 @@
  */
 import type { CSSProperties } from 'react';
 import { pictogramPaths, type PictogramName } from '@/components/brand/Pictogram';
+import { extraPictos, isExtraPicto } from './extraPictos';
+
+/** Any part slug that has a drawn pictogram (brand set or the extra part set). */
+export type PartPictoName = PictogramName | keyof typeof extraPictos;
 
 /** Drawn bounding box of each pictogram inside its 48-unit box: [x, y, w, h] (measured once with getBBox). */
 export const PICTO_BOX: Partial<Record<PictogramName, [number, number, number, number]>> = {
@@ -17,8 +21,8 @@ export const PICTO_BOX: Partial<Record<PictogramName, [number, number, number, n
  * Place a pictogram so its DRAWN artwork (not its 48-unit box) is centred on (cx, cy) and its longest side
  * measures `longest` units. Returns the group origin + size and the absolute drawn rectangle.
  */
-export function fitPicto(name: PictogramName, cx: number, cy: number, longest: number) {
-  const [bx, by, bw, bh] = PICTO_BOX[name] ?? [0, 0, 48, 48];
+export function fitPicto(name: PartPictoName, cx: number, cy: number, longest: number) {
+  const [bx, by, bw, bh] = (isExtraPicto(name) ? extraPictos[name].box : PICTO_BOX[name as PictogramName]) ?? [0, 0, 48, 48];
   const s = longest / Math.max(bw, bh);
   const w = bw * s;
   const h = bh * s;
@@ -43,22 +47,21 @@ export function wrapLabel(text: string, max = 12): string[] {
 
 /** Mobile sizing for the sheet artwork inside PageHero's art slot. */
 export const SHEET_CSS = `
-@media (max-width: 767px) { .ph__art > .pa-sheet { max-height: 250px; margin-left: auto; margin-right: var(--space-xs); } }
-@media (min-width: 768px) and (max-width: 1023px) { .ph__art > .pa-sheet { max-height: 400px; align-self: flex-start; margin-top: 88px; } }
+@media (max-width: 767px) { .ph__art > .pa-sheet { max-height: 250px; margin-left: auto; margin-right: auto; } }
 `;
 
-export function hasPictogram(slug: string): slug is PictogramName {
-  return slug in pictogramPaths;
+export function hasPictogram(slug: string): slug is PartPictoName {
+  return slug in pictogramPaths || isExtraPicto(slug);
 }
 
 /** A brand pictogram drawn as an SVG group at an arbitrary scale (stroke stays a true px width). */
 export function PictoG({
   name, x, y, size, stroke = 1.5, color = 'currentColor', className, style,
 }: {
-  name: PictogramName; x: number; y: number; size: number; stroke?: number;
+  name: PartPictoName; x: number; y: number; size: number; stroke?: number;
   color?: string; className?: string; style?: CSSProperties;
 }) {
-  const def = pictogramPaths[name];
+  const def = isExtraPicto(name) ? extraPictos[name] : pictogramPaths[name as PictogramName];
   if (!def) return null;
   const s = size / 48;
   return (

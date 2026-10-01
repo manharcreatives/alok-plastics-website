@@ -14,7 +14,7 @@ const PLOTS: [number, number, number, number][] = [
 
 export default function ContactArt() {
   return (
-    <svg className="pa-svg" viewBox="0 0 640 760" preserveAspectRatio="xMaxYMid meet" role="presentation" focusable="false">
+    <svg className="pa-svg" viewBox="0 0 640 760" preserveAspectRatio="xMinYMid meet" role="presentation" focusable="false">
       {/* sheet */}
       <rect x="24" y="24" width="592" height="712" fill="var(--surface)" stroke="var(--grey-metal)" strokeWidth="1" className="pa-fade" style={D(0)} />
       <rect x="40" y="40" width="560" height="680" fill="none" stroke="var(--grey-warm)" strokeWidth="1" />
@@ -33,7 +33,7 @@ export default function ContactArt() {
       </g>
       <path d="M40 370H600" stroke="var(--grey-warm)" strokeWidth="1" strokeDasharray="10 8" fill="none" />
       <text x="320" y="364" textAnchor="middle" className="pa-mono pa-fade" fill="var(--grey-metal)" style={{ fontSize: 13, ...D(1000) }}>INDUSTRIAL AREA PHASE II</text>
-      <text x="320" y="396" textAnchor="middle" className="pa-mono pa-fade" fill="var(--grey-metal)" style={{ fontSize: 11, ...D(1100) }}>RAM DARBAR</text>
+      <text x="320" y="396" textAnchor="middle" className="pa-mono pa-fade" fill="var(--grey-metal)" style={{ fontSize: 13, ...D(1100) }}>RAM DARBAR</text>
 
       {/* THE plot */}
       <g className="pa-rise" style={D(900)}>
@@ -46,21 +46,21 @@ export default function ContactArt() {
       <g className="pa-fade" style={D(1300)}>
         <line x1="448" y1="535" x2="500" y2="535" stroke="var(--burgundy)" strokeWidth="1" />
         <rect x="500" y="513" width="92" height="44" fill="var(--surface)" stroke="var(--burgundy)" strokeWidth="1" />
-        <text x="546" y="530" textAnchor="middle" className="pa-mono" fill="var(--burgundy)" style={{ fontSize: 11 }}>PLOT</text>
+        <text x="546" y="529" textAnchor="middle" className="pa-mono" fill="var(--burgundy)" style={{ fontSize: 13 }}>PLOT</text>
         <text x="546" y="548" textAnchor="middle" fill="var(--ink)" style={{ fontSize: 14, fontWeight: 700, fontFamily: 'var(--font-archivo)' }}>No-06</text>
       </g>
 
       {/* north arrow */}
       <g className="pa-fade" style={D(1200)} stroke="var(--grey-metal)" strokeWidth="1" fill="none">
         <path d="M562 140V90M562 90l-6 12M562 90l6 12" />
-        <text x="562" y="80" textAnchor="middle" className="pa-mono" fill="var(--grey-metal)" stroke="none" style={{ fontSize: 12 }}>N</text>
+        <text x="562" y="80" textAnchor="middle" className="pa-mono" fill="var(--grey-metal)" stroke="none" style={{ fontSize: 13 }}>N</text>
       </g>
 
       {/* title block */}
       <g className="pa-fade" style={D(1400)}>
         <rect x="64" y="694" width="512" height="1" fill="var(--grey-metal)" />
-        <text x="64" y="712" className="pa-mono" fill="var(--grey-metal)" style={{ fontSize: 11 }}>SITE PLAN · SCHEMATIC, NOT TO SCALE</text>
-        <text x="576" y="712" textAnchor="end" className="pa-mono" fill="var(--grey-metal)" style={{ fontSize: 11 }}>CHANDIGARH 160003</text>
+        <text x="64" y="712" className="pa-mono" fill="var(--grey-metal)" style={{ fontSize: 13 }}>SITE PLAN · SCHEMATIC, NOT TO SCALE</text>
+        <text x="576" y="712" textAnchor="end" className="pa-mono" fill="var(--grey-metal)" style={{ fontSize: 13 }}>CHANDIGARH 160003</text>
       </g>
     </svg>
   );

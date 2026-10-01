@@ -19,7 +19,7 @@
 
 'use client';
 
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useGSAP } from '@gsap/react';
 import { gsap, ScrollTrigger, DURATIONS, EASINGS } from '@/lib/motion';
 import { useMaskRise } from '@/hooks/useMotion';
@@ -35,11 +35,62 @@ const MOBILE_Q = '(max-width: 1023.98px) and (prefers-reduced-motion: no-prefere
 const VH_PER_UNIT = 0.7;
 
 /* ── The road, in a 1600 x 900 drawing space ─────────────────────────────── */
-const LEAD_IN = 'M690 980C690 920 720 890 720 830';
 const MAIN = 'M720 830C720 720 960 760 960 640S740 540 880 450S1160 430 1160 340S1010 270 1180 230';
 const FUTURE = 'M1180 230C1300 200 1380 150 1560 70';
-const ROAD = `${LEAD_IN}${MAIN.replace('M720 830', '')}`; // one continuous strip for the road surface
 const FUTURE_STOP = 0.78; // where along the ghost road "The Future" stands
+
+/* ── Road surface geometry: sampled from the same beziers so the surface follows the
+   centre line, but wider near the viewer (bottom) and narrower toward the horizon (top):
+   a perspective foreshortening hint. Centre dashes shrink with the road. ──────────── */
+type Pt = [number, number];
+type Seg = [Pt, Pt, Pt, Pt];
+const BEZ_MAIN: Seg[] = [
+  [[690, 980], [690, 920], [720, 890], [720, 830]],
+  [[720, 830], [720, 720], [960, 760], [960, 640]],
+  [[960, 640], [960, 520], [740, 540], [880, 450]],
+  [[880, 450], [1020, 360], [1160, 430], [1160, 340]],
+  [[1160, 340], [1160, 250], [1010, 270], [1180, 230]],
+];
+const BEZ_FUT: Seg[] = [[[1180, 230], [1300, 200], [1380, 150], [1560, 70]]];
+const roadW = (y: number) => 30 + Math.max(0, Math.min(1, (y - 70) / 910)) * 56; // 86 at the bottom, ~30 at the horizon
+
+function sample(segs: Seg[], per = 40) {
+  const pts: { x: number; y: number; nx: number; ny: number }[] = [];
+  segs.forEach(([p0, p1, p2, p3], si) => {
+    for (let i = si === 0 ? 0 : 1; i <= per; i++) {
+      const t = i / per, u = 1 - t;
+      const x = u * u * u * p0[0] + 3 * u * u * t * p1[0] + 3 * u * t * t * p2[0] + t * t * t * p3[0];
+      const y = u * u * u * p0[1] + 3 * u * u * t * p1[1] + 3 * u * t * t * p2[1] + t * t * t * p3[1];
+      const dx = 3 * u * u * (p1[0] - p0[0]) + 6 * u * t * (p2[0] - p1[0]) + 3 * t * t * (p3[0] - p2[0]);
+      const dy = 3 * u * u * (p1[1] - p0[1]) + 6 * u * t * (p2[1] - p1[1]) + 3 * t * t * (p3[1] - p2[1]);
+      const l = Math.hypot(dx, dy) || 1;
+      pts.push({ x, y, nx: -dy / l, ny: dx / l });
+    }
+  });
+  return pts;
+}
+const r1 = (n: number) => Math.round(n * 10) / 10;
+function roadShapes(segs: Seg[]) {
+  const c = sample(segs);
+  const edge = (k: number) => c.map(q => ({ x: q.x + q.nx * roadW(q.y) * k, y: q.y + q.ny * roadW(q.y) * k }));
+  const line = (a: { x: number; y: number }[]) => 'M' + a.map(q => `${r1(q.x)} ${r1(q.y)}`).join('L');
+  const L = edge(-0.5), R = edge(0.5);
+  const surface = `${line(L)}L${R.slice().reverse().map(q => `${r1(q.x)} ${r1(q.y)}`).join('L')}Z`;
+  const kerbL = line(edge(-0.42)), kerbR = line(edge(0.42));
+  /* centre dashes, length proportional to local road width */
+  let dashes = '';
+  let acc = 0, on = false, d = '';
+  for (let i = 1; i < c.length; i++) {
+    const w = roadW(c[i].y);
+    acc += Math.hypot(c[i].x - c[i - 1].x, c[i].y - c[i - 1].y);
+    const run = on ? w * 0.34 : w * 0.3;
+    if (!on) { if (acc >= run) { on = true; acc = 0; d = `M${r1(c[i].x)} ${r1(c[i].y)}`; } }
+    else { d += `L${r1(c[i].x)} ${r1(c[i].y)}`; if (acc >= run) { on = false; acc = 0; dashes += d; d = ''; } }
+  }
+  return { surface, kerbL, kerbR, dashes, edgeL: line(L), edgeR: line(R) };
+}
+const ROAD_MAIN = roadShapes(BEZ_MAIN);
+const ROAD_FUT = roadShapes(BEZ_FUT);
 
 const last = journeyMarkers.length - 1;
 
@@ -99,7 +150,7 @@ const CSS = `
 
 /* shared milestone typography */
 .jrn-year { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-weight: 650; letter-spacing: -0.04em; line-height: 1; }
-.jrn-year .jrn-rise { display: inline-block; background: var(--metal-gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; padding-bottom: 0.1em; }
+.jrn-year .jrn-rise { display: inline-block; background: linear-gradient(175deg, var(--burgundy-night) 0%, var(--burgundy) 55%, var(--burgundy-bright) 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; padding-bottom: 0.1em; }
 .jrn-title { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(1.25rem, 2vw, 1.625rem); font-weight: 650; letter-spacing: -0.015em; color: var(--ink); line-height: 1.2; }
 .jrn-line { font-size: 1.0625rem; line-height: 1.65; color: var(--body); max-width: 42ch; }
 .mk { display: block; overflow: hidden; }
@@ -109,6 +160,7 @@ const CSS = `
 
 /* odometer */
 .jrn-odo { display: flex; align-items: baseline; flex-wrap: wrap; gap: var(--space-xs) var(--space-sm); margin-top: var(--space-sm); }
+.jrn-ms .jrn-odo { margin-top: var(--space-lg); }
 .jrn-odo-num { display: inline-flex; align-items: baseline; font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-weight: 650; font-size: clamp(2rem, 3.4vw, 3rem); line-height: 1; letter-spacing: -0.03em; color: var(--burgundy); font-variant-numeric: tabular-nums; }
 .odo-win { display: inline-block; height: 1em; overflow: hidden; }
 .odo-col { display: flex; flex-direction: column; will-change: transform; }
@@ -124,13 +176,13 @@ const CSS = `
 .jrn-list { list-style: none; margin: var(--space-xl) 0 0; padding: 0 0 calc(var(--section-y) + 120px); position: relative; }
 .jrn-li { position: relative; margin-left: 56px; padding-bottom: var(--space-xl); }
 .jrn-li:last-child { padding-bottom: 0; }
-.jrn-seg { position: absolute; left: -56px; top: 12px; bottom: -12px; width: 28px; background: var(--mist); border-left: 1px solid var(--grey-warm); border-right: 1px solid var(--grey-warm); }
-.jrn-seg::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; transform: translateX(-50%); background: repeating-linear-gradient(to bottom, var(--grey-metal) 0 10px, transparent 10px 20px); opacity: .6; }
+.jrn-seg { position: absolute; left: -58px; top: 12px; bottom: -12px; width: 32px; background: color-mix(in srgb, var(--grey-warm) 50%, transparent); border-left: 2px solid var(--grey-metal); border-right: 2px solid var(--grey-metal); box-shadow: inset 3px 0 0 var(--surface), inset -3px 0 0 var(--surface); }
+.jrn-seg::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; transform: translateX(-50%); background: repeating-linear-gradient(to bottom, var(--surface) 0 12px, transparent 12px 22px); }
 .jrn-seg-fill { position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; margin-left: -2px; background: var(--burgundy); transform-origin: top; }
 .jrn-li:last-child .jrn-seg { bottom: 40%; background: transparent; border-left: 1px dashed var(--grey-metal); border-right: 1px dashed var(--grey-metal); -webkit-mask-image: linear-gradient(to bottom, var(--ink), transparent); mask-image: linear-gradient(to bottom, var(--ink), transparent); }
 .jrn-li:last-child .jrn-seg-fill { display: none; }
-.jrn-node { position: absolute; left: -56px; top: 0; width: 28px; height: 24px; display: grid; place-items: center; }
-.jrn-node i { width: 14px; height: 14px; transform: rotate(45deg); background: var(--surface); border: 2px solid var(--burgundy); display: block; transition: background-color .4s; }
+.jrn-node { position: absolute; left: -58px; top: -2px; width: 32px; height: 28px; display: grid; place-items: center; }
+.jrn-node i { width: 18px; height: 18px; transform: rotate(45deg); background: var(--surface); border: 2.5px solid var(--burgundy); box-shadow: 0 0 0 5px var(--canvas); display: block; transition: background-color 400ms cubic-bezier(.16,1,.3,1); }
 .jrn-li.on .jrn-node i { background: var(--burgundy); }
 .jrn-li:last-child .jrn-node i { border-style: dashed; border-color: var(--grey-metal); }
 .jrn-li .jrn-year { font-size: clamp(3.5rem, 17vw, 6rem); margin-bottom: var(--space-xs); }
@@ -148,7 +200,8 @@ const CSS = `
   .jrn-ms:first-child { visibility: visible; }
   .jrn-ms .jrn-year { --y: clamp(4.5rem, min(8.2vw, 17svh), 8rem); font-size: var(--y); }
   .jrn-ms .jrn-year[data-long] { font-size: calc(var(--y) * 0.62); }
-  .jrn-pulse { transform-box: fill-box; transform-origin: center; animation: jrn-pulse 2.4s cubic-bezier(.16,1,.3,1) infinite; }
+  .jrn-pulse { transform-box: fill-box; transform-origin: center; }
+  .jrn.live .jrn-pulse { animation: jrn-pulse 2.4s cubic-bezier(.16,1,.3,1) infinite; }
 }
 @keyframes jrn-pulse { 0% { transform: scale(.6); opacity: .6; } 100% { transform: scale(2.2); opacity: 0; } }
 `;
@@ -157,6 +210,15 @@ export default function JourneyOrbit() {
   const sectionRef = useRef<HTMLElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   useMaskRise(headingRef);
+
+  /* the looping marker pulse only runs while the section is on screen */
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    const io = new IntersectionObserver(([e]) => el.classList.toggle('live', e.isIntersecting));
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   useGSAP(() => {
     const section = sectionRef.current;
@@ -192,6 +254,13 @@ export default function JourneyOrbit() {
         stones.forEach((s, i) => s.classList.toggle('on', i <= n));
       };
       const rises = (b: HTMLElement) => b.querySelectorAll('.jrn-rise');
+      const settle = () => {
+        /* snap whatever swap is in flight to its end state so nothing rests half-masked */
+        blocks.forEach((b, i) => {
+          gsap.getTweensOf(rises(b)).forEach(tw => tw.progress(1));
+          if (i !== active) gsap.set(b, { autoAlpha: 0 });
+        });
+      };
       const setActive = (n: number) => {
         if (n === active) return;
         const dir = n > active ? 1 : -1;
@@ -200,12 +269,12 @@ export default function JourneyOrbit() {
         const prevIdx = active;
         gsap.killTweensOf([...rises(prev), ...rises(next)]);
         gsap.to(rises(prev), {
-          yPercent: -110 * dir, duration: DURATIONS.short, ease: EASINGS.inOut, stagger: 0.04,
+          yPercent: -110 * dir, duration: DURATIONS.micro, ease: EASINGS.inOut, stagger: 0.03,
           onComplete: () => { if (active !== prevIdx) gsap.set(prev, { autoAlpha: 0 }); },
         });
         gsap.set(next, { autoAlpha: 1 });
         gsap.fromTo(rises(next), { yPercent: 110 * dir }, {
-          yPercent: 0, duration: DURATIONS.long, ease: EASINGS.out, stagger: 0.08, delay: 0.2,
+          yPercent: 0, duration: DURATIONS.medium, ease: EASINGS.out, stagger: 0.06, delay: 0.1,
         });
         active = n;
         paintStones(n);
@@ -218,11 +287,15 @@ export default function JourneyOrbit() {
         const p = posOf(t);
         gsap.set(marker, { x: p.x, y: p.y });
         gsap.set(prog, { strokeDashoffset: L1 - (Math.min(t, 4) / 4) * L1 });
-        setActive(Math.max(0, Math.min(last, Math.floor(t + 0.12))));
+        /* hysteresis: advance a hair before a stone, retreat only once clearly back past it */
+        const up = Math.floor(t + 0.12);
+        const down = Math.floor(t + 0.12 + 0.18);
+        const n = Math.max(0, Math.min(last, up > active ? up : down < active ? down : active));
+        setActive(n);
       };
 
       const tl = gsap.timeline({
-        defaults: { ease: 'none' },
+        defaults: { ease: EASINGS.powerInOut },
         onUpdate: render,
         scrollTrigger: {
           trigger: section,
@@ -231,15 +304,16 @@ export default function JourneyOrbit() {
           pin: true,
           scrub: 0.8,
           anticipatePin: 1,
+          onScrubComplete: settle,
           invalidateOnRefresh: true,
         },
       });
-      tl.to({}, { duration: 0.5 });
+      tl.to({}, { duration: 0.3 });
       for (let i = 1; i <= last; i++) {
         tl.to(proxy, { t: i, duration: 0.7, ease: EASINGS.powerInOut });
         tl.to({}, { duration: 0.4 });
       }
-      tl.to({}, { duration: 0.4 });
+      tl.to({}, { duration: 0.15 });
       render();
 
       return () => {
@@ -277,7 +351,7 @@ export default function JourneyOrbit() {
         });
         if (fill) {
           gsap.fromTo(fill, { scaleY: 0 }, {
-            scaleY: 1, ease: 'none',
+            scaleY: 1, ease: EASINGS.powerInOut,
             scrollTrigger: { trigger: li, start: 'top 62%', end: 'bottom 62%', scrub: 0.6 },
           });
         }
@@ -307,22 +381,39 @@ export default function JourneyOrbit() {
               <stop offset="0.5" style={{ stopColor: 'var(--burgundy)' }} />
               <stop offset="1" style={{ stopColor: 'var(--burgundy-deep)' }} />
             </linearGradient>
+            <linearGradient id="jrn-fade-g" gradientUnits="userSpaceOnUse" x1="0" y1="840" x2="0" y2="935">
+              <stop offset="0" style={{ stopColor: "var(--surface)" }} />
+              <stop offset="1" style={{ stopColor: "var(--ink)" }} />
+            </linearGradient>
+            <mask id="jrn-fade" maskUnits="userSpaceOnUse" x="0" y="-100" width="1700" height="1200">
+              <rect x="0" y="-100" width="1700" height="1200" fill="url(#jrn-fade-g)" />
+            </mask>
           </defs>
-          {/* road surface: edge + body + centre dashes */}
-          <path d={ROAD} stroke="var(--grey-metal)" strokeOpacity="0.4" strokeWidth="68" strokeLinecap="butt" strokeLinejoin="round" />
-          <path d={ROAD} stroke="var(--mist)" strokeWidth="64" strokeLinecap="butt" strokeLinejoin="round" />
-          <path d={ROAD} stroke="var(--grey-metal)" strokeOpacity="0.55" strokeWidth="2" strokeDasharray="14 12" />
+          {/* road surface: tarmac, kerbs, centre paint (perspective: wider near, narrower far) */}
+          <g mask="url(#jrn-fade)">
+            <path d={ROAD_MAIN.surface} fill="var(--grey-warm)" fillOpacity="0.5" />
+            <path d={ROAD_MAIN.edgeL} stroke="var(--grey-metal)" strokeOpacity="0.55" strokeWidth="2" />
+            <path d={ROAD_MAIN.edgeR} stroke="var(--grey-metal)" strokeOpacity="0.55" strokeWidth="2" />
+            <path d={ROAD_MAIN.kerbL} stroke="var(--surface)" strokeOpacity="0.95" strokeWidth="2.5" />
+            <path d={ROAD_MAIN.kerbR} stroke="var(--surface)" strokeOpacity="0.95" strokeWidth="2.5" />
+            <path d={ROAD_MAIN.dashes} stroke="var(--surface)" strokeWidth="3.5" strokeLinecap="butt" />
+          </g>
           {/* the road ahead: ghost road, dashed */}
-          <path d={FUTURE} stroke="var(--grey-metal)" strokeOpacity="0.16" strokeWidth="64" strokeDasharray="30 20" />
-          <path id="jrn-future" d={FUTURE} stroke="var(--grey-metal)" strokeOpacity="0.7" strokeWidth="2.5" strokeDasharray="4 14" strokeLinecap="round" />
+          <path d={ROAD_FUT.surface} fill="var(--grey-metal)" fillOpacity="0.08" />
+          <path d={ROAD_FUT.edgeL} stroke="var(--grey-metal)" strokeOpacity="0.45" strokeWidth="1.5" strokeDasharray="10 8" />
+          <path d={ROAD_FUT.edgeR} stroke="var(--grey-metal)" strokeOpacity="0.45" strokeWidth="1.5" strokeDasharray="10 8" />
+          <path id="jrn-future" d={FUTURE} stroke="var(--grey-metal)" strokeOpacity="0.75" strokeWidth="2.5" strokeDasharray="4 14" strokeLinecap="round" />
           {/* travelled road */}
           <path id="jrn-main" d={MAIN} stroke="none" />
           <path id="jrn-progress" d={MAIN} stroke="var(--burgundy)" strokeWidth="5" strokeLinecap="round" />
           {/* milestone stones */}
           {journeyMarkers.map((m, i) => (
             <g key={m.year} className="jrn-stone" style={{ visibility: 'hidden' }} data-i={i}>
-              <rect x="-7" y="-7" width="14" height="14" transform="rotate(45)" className="stone-sq" />
-              <text x="-52" y="5" textAnchor="end" className="stone-tx">{m.year}</text>
+              <circle r="19" className="stone-ring" />
+              <rect x="-9" y="-9" width="18" height="18" transform="rotate(45)" className="stone-sq" />
+              <circle r="2.6" className="stone-dot" />
+              <line x1="-26" y1="0" x2="-58" y2="0" className="stone-tick" />
+              <text x="-68" y="7" textAnchor="end" className="stone-tx">{m.year}</text>
             </g>
           ))}
           {/* the marker that travels */}
@@ -332,8 +423,14 @@ export default function JourneyOrbit() {
           </g>
         </svg>
         <style>{`
-          .stone-sq { fill: var(--surface); stroke: var(--grey-metal); stroke-width: 2; transition: fill .4s, stroke .4s; }
-          .stone-tx { font-family: var(--font-mono); font-size: 17px; fill: var(--grey-metal); letter-spacing: 0.08em; text-transform: uppercase; transition: fill .4s; }
+          .stone-sq { fill: var(--surface); stroke: var(--grey-metal); stroke-width: 2.5; transition: fill 400ms cubic-bezier(.16,1,.3,1), stroke 400ms cubic-bezier(.16,1,.3,1); }
+          .stone-tx { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-weight: 650; font-size: 22px; fill: var(--body); letter-spacing: -0.01em; paint-order: stroke; stroke: var(--canvas); stroke-width: 5px; stroke-linejoin: round; transition: fill 400ms cubic-bezier(.16,1,.3,1); }
+          .stone-ring { fill: none; stroke: var(--grey-metal); stroke-opacity: .35; stroke-width: 1.2; transition: stroke 400ms cubic-bezier(.16,1,.3,1), stroke-opacity 400ms; }
+          .stone-dot { fill: var(--grey-metal); transition: fill 400ms; }
+          .stone-tick { stroke: var(--grey-metal); stroke-opacity: .5; stroke-width: 1.5; transition: stroke 400ms; }
+          .jrn-stone.on .stone-ring { stroke: var(--burgundy); stroke-opacity: .55; }
+          .jrn-stone.on .stone-dot { fill: var(--surface); }
+          .jrn-stone.on .stone-tick { stroke: var(--burgundy); }
           .jrn-stone.on .stone-sq { fill: var(--burgundy); stroke: var(--burgundy); }
           .jrn-stone.on .stone-tx { fill: var(--burgundy); }
         `}</style>

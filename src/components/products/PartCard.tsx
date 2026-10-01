@@ -5,15 +5,13 @@
  */
 import Link from 'next/link';
 import { ArrowUpRight } from '@phosphor-icons/react/dist/ssr/ArrowUpRight';
-import Pictogram, { pictogramPaths, type PictogramName } from '@/components/brand/Pictogram';
+import PartPicto, { pictogramFor } from './PartPicto';
 import Tag from '@/components/ui/Tag';
 import { productPath } from '@/content/products';
 import type { Product } from '@/content/types';
 import './products.css';
 
-export function pictogramFor(slug: string): PictogramName | null {
-  return slug in pictogramPaths ? (slug as PictogramName) : null;
-}
+export { pictogramFor };
 
 export function PartArt({ product }: { product: Product }) {
   const img = product.images[0];
@@ -22,8 +20,8 @@ export function PartArt({ product }: { product: Product }) {
     return <img src={img.src} alt={img.alt} width={img.w} height={img.h} loading="lazy" />;
   }
   const name = pictogramFor(product.slug);
-  return name ? <Pictogram name={name} size={48} className="p-picto" strokeWidth={1.1} /> : (
-    <span aria-hidden="true" className="p-ph__cap">{product.name}</span>
+  return name ? <PartPicto slug={name} size={48} className="p-picto" /> : (
+    <span aria-hidden="true" className="p-plate"><span className="p-plate__cap">Drawing to come</span></span>
   );
 }
 

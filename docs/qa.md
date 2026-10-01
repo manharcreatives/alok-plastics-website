@@ -22,3 +22,25 @@
 - Next speed wins if wanted: trim Devanagari font weights (3 × ~54 KB), lazy-load below-fold GSAP sections.
 - .htaccess untested on Apache (verify on Hostinger).
 - No hero video / product photos / real contact data yet (placeholders degrade honestly).
+
+
+## Round 2 (2026-10-01, static build served locally, headless Chromium, measured)
+| Check | Result |
+|---|---|
+| `tsc --noEmit` / ESLint | clean / 0 errors, 6 warnings |
+| check-hex / spacing / glass / forbidden | all pass (glass 2/2 files) |
+| `next build` | 40 static pages |
+| `check:seo` | 34 HTML files, 28 indexable, 1630 internal links, 0 errors |
+| LCP, 4x CPU throttle, no network throttle, `?nopreload=1` | `/` 1084 ms · `/products/` 1720 ms · `/about/` 620 ms |
+| LCP, desktop | `/` 332 ms · `/products/` 256 ms · `/about/` 2088 ms |
+| CLS | 0 on all measured routes |
+| JS gzipped (all chunks loaded, home) | ~386 KB - **over the 170 KB budget** (no pre-round baseline was taken) |
+| Raw transfer, home | ~2.0 MB mobile viewport / ~3.7 MB desktop viewport - **over the 1.5 MB budget** |
+| Motion council (browser-tested) | 8.8/10, 0 CRITICAL, 0 MAJOR; console clean on 8 routes; reduced motion clean |
+| Art council | R2 7.0 -> R3 7.9 (0 CRITICAL); round-3 fixes applied, see docs/critique/r4-art-director.md |
+
+### Open
+- Home JS/transfer over budget: lazy-load below-fold GSAP sections (Journey, Map, Requirement chain) and trim Devanagari weights.
+- Not run: Lighthouse, axe on the new pages, WebKit/Firefox, real devices.
+- Admin panel tested on PHP 8.3 CLI only; Apache/LiteSpeed `.htaccess` rules and real mail delivery untested.
+- Floating WhatsApp button renders only once a WhatsApp number exists (site.ts or admin settings).

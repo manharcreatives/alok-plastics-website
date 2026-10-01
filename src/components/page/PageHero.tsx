@@ -10,6 +10,13 @@
  *   scrollHint small ↗-free scroll cue (line + dot) bottom-right on desktop.
  *   enter      entrance: 'rise' (mask-rise H1) | 'wipe' (diagonal clip wipe) | 'draw' (rule draws, H1 slides from the rule).
  *   calm       quieter variant for legal pages (smaller type, no cue).
+ *   layout     stage composition on >=768px (one-screen in every case):
+ *              base       text bottom-left, art right (default)
+ *              center     text vertically centred left, art large right
+ *              top        text top-left, art lowered right (finder-forward pages)
+ *              mirror     art left, text vertically centred right
+ *              mirror-end art left, text bottom-right
+ *              stack      huge title top-left, art strip across the bottom
  *
  * Entrances are CSS keyframes only (transform / opacity / clip-path / stroke-dashoffset),
  * fully disabled under prefers-reduced-motion.
@@ -28,6 +35,7 @@ interface Props {
   scrollHint?: boolean;
   enter?: 'rise' | 'wipe' | 'draw';
   calm?: boolean;
+  layout?: 'base' | 'center' | 'top' | 'mirror' | 'mirror-end' | 'stack';
 }
 
 const CSS = `
@@ -66,7 +74,7 @@ ${ART_CSS}
 
 .ph__cue { position: absolute; z-index: 3; right: var(--grid-page-padding); bottom: calc(var(--fold-h) + var(--space-lg));
   display: none; flex-direction: column; align-items: center; gap: var(--space-xs); }
-.ph__cue-label { writing-mode: vertical-rl; font-size: 0.6875rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--grey-metal); font-weight: 600; }
+.ph__cue-label { writing-mode: vertical-rl; font-size: 0.75rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--grey-metal); font-weight: 600; }
 .ph__cue-line { position: relative; width: 1px; height: 56px; background: var(--grey-warm); overflow: hidden; }
 .ph__cue-dot { position: absolute; left: 0; top: 0; width: 1px; height: 16px; background: var(--burgundy); animation: ph-cue 1.8s cubic-bezier(.16,1,.3,1) infinite; }
 @keyframes ph-cue { 0% { transform: translateY(-16px); } 70%, 100% { transform: translateY(56px); } }
@@ -104,15 +112,49 @@ ${ART_CSS}
   .ph__art { left: auto; width: min(54%, 820px); height: 100%; align-items: center; box-sizing: border-box; padding: 104px var(--grid-page-padding) calc(var(--fold-h) + var(--space-lg)) 0; }
   .ph__art > * { height: 100%; width: 100%; }
 }
+
+/* ── Stage compositions (>=768px). Mobile keeps one tidy stack: art on top, text below ── */
+@media (min-width: 768px) {
+  .ph[data-layout="center"] { justify-content: center; }
+  .ph[data-layout="center"] .ph__body { padding-top: 104px; padding-bottom: calc(var(--fold-h) + var(--space-xl)); }
+  .ph[data-layout="center"] .ph__text { max-width: 46rem; }
+
+  .ph[data-layout="top"] { justify-content: flex-start; }
+  .ph[data-layout="top"] .ph__body { padding-top: 120px; padding-bottom: calc(var(--fold-h) + var(--space-lg)); }
+  .ph[data-layout="top"] .ph__art { padding-top: 200px; }
+
+  .ph[data-layout="mirror"], .ph[data-layout="mirror-end"] { justify-content: center; }
+  .ph[data-layout="mirror-end"] { justify-content: flex-end; }
+  .ph[data-layout="mirror"] .ph__art, .ph[data-layout="mirror-end"] .ph__art { left: 0; right: auto; justify-content: flex-start; padding: 104px 0 calc(var(--fold-h) + var(--space-lg)) var(--grid-page-padding); }
+  .ph[data-layout="mirror"] .ph__text, .ph[data-layout="mirror-end"] .ph__text { margin-left: auto; max-width: min(40rem, 46%); }
+
+  .ph[data-layout="stack"] { justify-content: flex-start; }
+  .ph[data-layout="stack"] .ph__body { padding-top: 112px; }
+  .ph[data-layout="stack"] .ph__text { max-width: 62rem; }
+  .ph[data-layout="stack"] .ph__h1 { font-size: clamp(2.75rem, 7vw, 6.25rem); line-height: 1; }
+  .ph[data-layout="stack"] .ph__art { left: 0; right: 0; width: 100%; padding: 104px var(--grid-page-padding) calc(var(--fold-h) + var(--space-lg)); align-items: stretch; }
+}
+/* tablet (768-1023): ONE composition for every layout except stack. The art takes the whole upper
+   stage in normal flow (flex-grows to whatever the text leaves), the text sits below it, so the
+   100svh stage is filled intentionally and the two can never overlap. */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .ph:not([data-layout="stack"]) { justify-content: flex-end; }
+  .ph:not([data-layout="stack"]) .ph__body { padding-top: var(--space-sm); padding-bottom: calc(var(--fold-h) + var(--space-xl)); flex: none; }
+  .ph:not([data-layout="stack"]) .ph__text { max-width: 44rem; margin-left: 0; }
+  .ph:not([data-layout="stack"]) .ph__art { position: relative; inset: auto; left: auto; right: auto; top: auto; width: 100%; height: auto; flex: 1 1 auto; min-height: 280px; padding: 0; display: block; }
+  .ph:not([data-layout="stack"]) .ph__art > svg { position: absolute; top: 96px; bottom: var(--space-sm); left: 50%; transform: translateX(-50%); width: auto; height: calc(100% - 96px - var(--space-sm)); max-width: calc(100% - 2 * var(--grid-page-padding)); max-height: none; margin: 0; }
+  .ph:not([data-layout="stack"]) .ph__art > div { position: absolute; top: 96px; bottom: var(--space-sm); left: var(--grid-page-padding); right: var(--grid-page-padding); width: auto; height: auto; max-height: none; }
+}
+@media (min-width: 1024px) { .ph[data-layout="center"] .ph__art { width: min(66%, 960px); } }
 @media (min-width: 1024px) and (min-height: 700px) { .ph__cue { display: flex; } }
 @media (max-width: 767px) {
   .ph__art { top: 80px; height: 38%; box-sizing: border-box; padding: 0 var(--grid-page-padding); justify-content: center; }
 }
 `;
 
-export default function PageHero({ crumbs, label, title, lead, children, art, scrollHint, enter = 'rise', calm }: Props) {
+export default function PageHero({ crumbs, label, title, lead, children, art, scrollHint, enter = 'rise', calm, layout = 'base' }: Props) {
   return (
-    <section className={`ph${calm ? ' ph--calm' : ''}`} data-enter={enter} data-ready="" aria-label={label}>
+    <section className={`ph${calm ? ' ph--calm' : ''}`} data-enter={enter} data-layout={layout} data-ready="" aria-label={label}>
       <style>{CSS}</style>
       <div className="ph__grid" aria-hidden="true" />
       {art && <div className="ph__art" aria-hidden="true">{art}</div>}

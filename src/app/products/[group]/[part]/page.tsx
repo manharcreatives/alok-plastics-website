@@ -84,8 +84,9 @@ export default async function PartPage({ params }: { params: Promise<{ group: st
         label={g.name}
         title={p.name}
         lead={p.summary}
-        art={<PartSheetArt product={p} />}
+        art={<PartSheetArt product={p} group={g} />}
         enter="rise"
+        layout="mirror"
       />
 
       <div>
@@ -107,6 +108,7 @@ export default async function PartPage({ params }: { params: Promise<{ group: st
                       </div>
                     ))}
                   </dl>
+                  <div className="tb__foot" aria-hidden="true"><span>Not to scale</span><span>Alok Plastics</span></div>
                 </div>
 
                 {machines.length > 0 && (
@@ -152,9 +154,9 @@ export default async function PartPage({ params }: { params: Promise<{ group: st
         </section>
 
         {related.length > 0 && (
-          <section aria-labelledby="rel-h" className="p-section p-section--canvas fold-sec">
+          <section aria-labelledby="rel-h" className="p-section p-section--canvas fold-sec fold-sec--diag">
             <style>{FOLD_SECTION_CSS}</style>
-            <FoldEdge />
+            <FoldEdge variant="diag" />
             <div className="pw">
               <p className="p-eyebrow">Same group</p>
               <h2 id="rel-h" className="p-h2" style={{ marginBottom: 'var(--space-lg)' }}>Related parts</h2>
@@ -166,7 +168,7 @@ export default async function PartPage({ params }: { params: Promise<{ group: st
         <StickyEnquiryBar name={p.name} slug={p.slug} material={p.material} />
       </div>
 
-      <EnquiryBand heading={`Need ${p.name}?`} text="Share the quantity and use — we reply with a quote." />
+      <EnquiryBand fold="register" heading={`Need ${p.name}?`} text="Share the quantity and use — we reply with a quote." />
       <JsonLd data={productJsonLd(p, g)} />
     </>
   );

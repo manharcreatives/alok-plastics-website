@@ -45,6 +45,7 @@ export default async function GroupPage({ params }: { params: Promise<{ group: s
         lead={`${g.tagline} ${g.description}`}
         art={<GroupBlueprintArt group={g} />}
         enter="draw"
+        layout="center"
       />
 
       <section aria-labelledby="parts-h" className="p-section p-section--surface">
@@ -61,9 +62,9 @@ export default async function GroupPage({ params }: { params: Promise<{ group: s
       </section>
 
       {others.length > 0 && (
-        <section aria-labelledby="sib-h" className="p-section p-section--canvas fold-sec">
+        <section aria-labelledby="sib-h" className="p-section p-section--canvas fold-sec fold-sec--step">
           <style>{FOLD_SECTION_CSS}</style>
-          <FoldEdge />
+          <FoldEdge variant="step" />
           <div className="pw">
             <p className="p-eyebrow">Keep looking</p>
             <h2 id="sib-h" className="p-h2">Other part groups</h2>
@@ -83,7 +84,7 @@ export default async function GroupPage({ params }: { params: Promise<{ group: s
           </div>
         </section>
       )}
-      <EnquiryBand heading={`Need ${g.name.toLowerCase()} parts?`} text="Share the part name, quantity and use — we reply with a quote." />
+      <EnquiryBand variant="lock" fold="diag" heading={`Need ${g.name.toLowerCase()} parts?`} text="Share the part name, quantity and use — we reply with a quote." />
     </>
   );
 }

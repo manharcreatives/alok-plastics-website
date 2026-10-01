@@ -69,7 +69,6 @@ ${FOLD_SECTION_CSS}
 .ab-story { background: var(--surface-alt); --pad-top: var(--section-y); }
 .ab-story__grid { display: grid; gap: var(--space-xl); }
 .ab-story__head h2 { max-width: 12ch; }
-.ab-story__spine { display: none; }
 .ab-story__lead { font-family: var(--font-archivo); font-variation-settings: "wdth" 110; font-size: clamp(1.25rem, 2.2vw, 1.75rem); line-height: 1.4; letter-spacing: -0.01em; color: var(--ink); margin: 0 0 var(--space-lg); max-width: 36ch; font-weight: 500; }
 .ab-story p.ab-p { color: var(--body); line-height: 1.8; font-size: 1.0625rem; max-width: 62ch; margin: 0 0 var(--space-md); }
 .ab-story__close { margin: var(--space-xl) 0 0; padding-left: var(--space-md); border-left: 2px solid var(--burgundy); font-family: var(--font-archivo); font-variation-settings: "wdth" 110; font-size: clamp(1.25rem, 2.4vw, 1.875rem); line-height: 1.35; letter-spacing: -0.015em; color: var(--ink); max-width: 30ch; }
@@ -84,33 +83,48 @@ ${FOLD_SECTION_CSS}
 .ab-vm p.t { font-size: clamp(1.0625rem, 1.5vw, 1.1875rem); line-height: 1.7; margin: 0; color: var(--body); }
 .ab-vm__panel--m p.t { color: var(--surface); }
 
-/* Values */
+/* Values: one hero statement, two supporting panels. Notched 44-degree corners, top-lit edge. */
 .ab-vals { background: var(--canvas); }
-.ab-vals__list { list-style: none; margin: 0; padding: 0; }
-.ab-val { display: grid; gap: var(--space-sm); padding: var(--space-lg) 0; position: relative; }
-.ab-val::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 1px; background: var(--grey-warm); }
-.ab-val:first-child::before { height: 2px; background: var(--burgundy); right: auto; width: 72px; }
-.ab-val h3 { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-weight: 650; font-size: clamp(1.625rem, 3.6vw, 3rem); line-height: 1.08; letter-spacing: -0.03em; color: var(--ink); margin: 0; max-width: 20ch; text-wrap: balance; }
+.ab-vals__list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-md); }
+.ab-val { position: relative; display: grid; align-content: space-between; gap: var(--space-md); padding: var(--space-lg) var(--space-md) var(--space-md); background: var(--surface); box-shadow: inset 0 1px 0 var(--surface), inset 0 0 0 1px var(--grey-warm); clip-path: polygon(0 0, calc(100% - 32px) 0, 100% 32px, 100% 100%, 0 100%); overflow: hidden; }
+.ab-val::before { content: ''; position: absolute; left: 0; top: 0; width: 72px; height: 2px; background: var(--burgundy); }
+.ab-val h3 { position: relative; z-index: 1; font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-weight: 650; font-size: clamp(1.75rem, 3.4vw, 2.75rem); line-height: 1.06; letter-spacing: -0.03em; color: var(--ink); margin: 0; text-wrap: balance; }
 .ab-val h3 em { font-style: normal; color: var(--burgundy); display: block; }
-.ab-val p { margin: 0; color: var(--body); line-height: 1.6; max-width: 36ch; align-self: end; }
+.ab-val p { position: relative; z-index: 1; margin: 0; padding-top: var(--space-sm); border-top: 1px solid var(--grey-warm); color: var(--body); font-size: 1.0625rem; line-height: 1.6; max-width: 36ch; }
+.ab-val--hero { padding: var(--space-xl) var(--space-md); min-height: clamp(300px, 44vw, 460px); background: var(--burgundy); box-shadow: none; }
+.ab-val--hero::before { background: var(--surface); }
+.ab-val--hero h3 { color: var(--surface); font-size: clamp(2.5rem, 5vw, 4.75rem); line-height: 1; letter-spacing: -0.04em; max-width: none; }
+.ab-val--hero h3 em { color: var(--pink-soft); }
+.ab-val--hero p { color: var(--surface); border-top-color: color-mix(in srgb, var(--surface) 35%, transparent); font-family: var(--font-archivo); font-variation-settings: "wdth" 115; font-weight: 600; font-size: 1.25rem; }
+.ab-val__draw { position: absolute; right: var(--space-md); top: 50%; width: min(26%, 280px); height: auto; transform: translateY(-50%); opacity: 0.5; stroke: var(--surface); stroke-width: 1.25; stroke-linecap: square; pointer-events: none; }
+.ab-val__draw .ab-val__accent { stroke: var(--pink-soft); stroke-width: 3; }
+.ab-val--hero::after { display: none; }
+@media (max-width: 767px) { .ab-val__draw { display: none; } }
+.ab-val--soc { background: var(--surface); }
+.ab-val--soc::after { content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: min(46%, 520px); pointer-events: none;
+  background: repeating-linear-gradient(-44deg, transparent 0 18px, color-mix(in srgb, var(--burgundy) 14%, transparent) 18px 19px);
+  -webkit-mask-image: linear-gradient(to left, var(--ink), transparent 90%); mask-image: linear-gradient(to left, var(--ink), transparent 90%); }
 
 /* Leadership */
 .ab-lead { background: var(--surface); }
 .ab-plates { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-lg); }
 .ab-plate { padding: 0; }
-.ab-plate__head { display: flex; justify-content: space-between; align-items: center; padding: var(--space-xs) var(--space-sm); border-bottom: 1px solid var(--grey-metal); font-size: 0.6875rem; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; color: var(--grey-metal); }
+.ab-plate__head { display: flex; justify-content: space-between; align-items: center; padding: var(--space-xs) var(--space-sm); border-bottom: 1px solid var(--grey-metal); font-size: 0.75rem; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; color: var(--grey-metal); }
 .ab-plate__head b { color: var(--burgundy); font-weight: 600; }
 .ab-plate__name { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-weight: 650; font-size: clamp(1.75rem, 3.6vw, 2.75rem); letter-spacing: -0.03em; line-height: 1.05; color: var(--ink); margin: 0; padding: var(--space-lg) var(--space-sm) var(--space-sm); }
 .ab-plate__foot { padding: 0 var(--space-sm) var(--space-sm); font-size: 0.875rem; color: var(--muted); margin: 0; }
 
-/* Proof */
-.ab-proof { background: var(--surface-alt); --pad-top: var(--section-y); }
-.ab-proof__list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-lg) var(--space-md); grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.ab-proof__list li { position: relative; padding-top: var(--space-sm); min-width: 0; }
-.ab-proof__list li::before { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 9px; border-top: 1px solid var(--grey-metal); border-left: 1px solid var(--grey-metal); border-right: 1px solid var(--grey-metal); border-bottom: 0; }
-.ab-proof .v { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-weight: 650; letter-spacing: -0.03em; color: var(--ink); font-size: clamp(2rem, 4.4vw, 3.5rem); line-height: 1; font-variant-numeric: tabular-nums lining-nums; }
-.ab-proof .v--w { font-size: clamp(1.125rem, 2vw, 1.5rem); line-height: 1.15; letter-spacing: -0.02em; color: var(--burgundy); }
-.ab-proof .l { margin-top: var(--space-xs); font-size: 0.875rem; color: var(--body); line-height: 1.5; }
+/* Company record: a drawing-sheet title block of facts already stated in the story */
+.ab-rec { background: var(--surface-alt); --pad-top: var(--section-y); }
+.ab-rec__grid { display: grid; gap: var(--space-xl); align-items: start; }
+.ab-rec__sheet { margin: 0; border: 1.5px solid var(--grey-metal); background: var(--surface); position: relative; }
+.ab-rec__sheet::before { content: ''; position: absolute; left: -2px; top: -2px; width: 72px; height: 3px; background: var(--burgundy); }
+.ab-rec__head { display: flex; justify-content: space-between; gap: var(--space-sm); padding: var(--space-xs) var(--space-md); border-bottom: 1.5px solid var(--grey-metal); background: var(--canvas); font-family: var(--font-mono, monospace); font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--grey-metal); }
+.ab-rec__row { display: grid; grid-template-columns: minmax(96px, 1fr) minmax(0, 2.4fr); gap: var(--space-sm); align-items: baseline; padding: var(--space-sm) var(--space-md); border-bottom: 1px solid var(--grey-cloud); }
+.ab-rec__row dt { font-size: 0.75rem; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; color: var(--grey-metal); }
+.ab-rec__row dd { margin: 0; font-family: var(--font-archivo); font-variation-settings: "wdth" 115; font-weight: 650; font-size: clamp(1.125rem, 2vw, 1.5rem); line-height: 1.25; letter-spacing: -0.015em; color: var(--ink); }
+.ab-rec__row:first-of-type dd { font-size: clamp(2rem, 4.4vw, 3.5rem); line-height: 1; letter-spacing: -0.03em; }
+.ab-rec__foot { display: flex; justify-content: space-between; gap: var(--space-sm); padding: var(--space-xs) var(--space-md); font-family: var(--font-mono, monospace); font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--grey-metal); }
 
 /* Culture teaser */
 .ab-culture { background: var(--surface); }
@@ -123,24 +137,37 @@ ${FOLD_SECTION_CSS}
 
 @media (min-width: 768px) {
   .ab-legend { grid-template-columns: auto auto; justify-content: space-between; }
-  .ab-proof__list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .ab-plates { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .ab-val { grid-template-columns: minmax(0, 7fr) minmax(0, 4fr); gap: var(--space-xl); align-items: end; }
+  .ab-val--hero { padding: var(--space-xl) var(--space-lg); }
+  .ab-val { padding: var(--space-lg); min-height: 240px; }
   .ab-culture__link { grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-xl); }
 }
 @media (min-width: 1024px) {
   .ab-idea__grid { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--space-xl); }
   .ab-story__grid { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); }
   .ab-story__head { position: sticky; top: 112px; align-self: start; }
-  .ab-story__spine { display: block; width: 1px; height: 160px; background: linear-gradient(to bottom, var(--burgundy), transparent); margin-top: var(--space-lg); }
   .ab-vm { grid-template-columns: 1fr 1fr; }
   .ab-vm__panel--m { margin-top: 0; margin-left: calc(var(--seam) * -1); padding-top: var(--section-y); padding-left: calc(var(--grid-page-padding) + var(--seam)); clip-path: polygon(var(--seam) 0, 100% 0, 100% 100%, 0 100%); }
   .ab-vm__panel--v { padding-left: max(var(--grid-page-padding), calc((100vw - var(--grid-max)) / 2)); padding-right: var(--space-xl); display: flex; justify-content: flex-end; }
   .ab-vm__panel--m { padding-right: max(var(--grid-page-padding), calc((100vw - var(--grid-max)) / 2)); }
-  .ab-proof__list { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .ab-rec__grid { grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); }
+}
+@media (min-width: 1024px) {
+  .ab-vals__list { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--space-md); }
+  .ab-val--soc { min-height: 0; justify-content: stretch; }
+  .ab-val--soc h3 { font-size: clamp(2rem, 3.6vw, 3.25rem); }
 }
 @media (prefers-reduced-motion: reduce) { .ab-culture__arrow { transition: none; } }
 `;
+
+/** Facts restated from the story (MASTER_PROMPT 5.6) and site config; no new claims, no repeated stats. */
+const record: { k: string; v: string }[] = [
+  { k: 'Established', v: String(site.foundingYear) },
+  { k: 'Based in', v: site.contact.city },
+  { k: 'Makes', v: 'Plastic components from moulds and plastic granules, and steel parts' },
+  { k: 'Serves', v: 'Industrial and B2B customers across India' },
+  { k: 'Principle', v: 'Good products build business. Trust builds relationships.' },
+];
 
 export default function AboutPage() {
   const owners = site.owners;
@@ -156,6 +183,7 @@ export default function AboutPage() {
         lead="Alok Plastics is a Chandigarh-based manufacturer, established in 1998, of moulded plastic and steel spare parts for water coolers, display counters and deep freezers."
         art={<AboutArt />}
         enter="rise"
+        layout="center"
         scrollHint
       />
 
@@ -201,7 +229,6 @@ export default function AboutPage() {
             <div className="ab-story__head">
               <Eyebrow>Our story</Eyebrow>
               <h2 id="story-h" className="cp-h2">Good products build business. Trust builds relationships.</h2>
-              <div className="ab-story__spine" aria-hidden="true" />
             </div>
             <div>
               <Reveal as="p" className="ab-story__lead">{renderStory(storyLead)}</Reveal>
@@ -237,11 +264,21 @@ export default function AboutPage() {
         <div style={WRAP_STYLE}>
           <SectionHead id="vals-h" label="Core values" title="What we hold to." />
           <ul className="ab-vals__list" aria-label="Core values">
-            {coreValues.map(v => {
+            {coreValues.map((v, i) => {
               const [a, b] = splitValue(v.title);
               return (
-                <li key={v.title} className="ab-val">
-                  <Reveal as="h3">{a}{b && <em>{b}</em>}</Reveal>
+                <li key={v.title} className={`ab-val${i === 0 ? ' ab-val--hero' : ' ab-val--soc'}`}>
+                  {i === 0 && (
+                    <svg className="ab-val__draw" viewBox="0 0 360 220" fill="none" aria-hidden="true">
+                      {/* sprue + runner feeding three parts: the waste is the runner, so it is drawn small */}
+                      <path d="M20 110 H120 M120 110 V40 M120 110 V180 M120 40 H190 M120 110 H190 M120 180 H190" />
+                      <rect x="190" y="22" width="56" height="36" /><rect x="190" y="92" width="56" height="36" /><rect x="190" y="162" width="56" height="36" />
+                      <circle cx="218" cy="40" r="8" /><circle cx="218" cy="110" r="8" /><circle cx="218" cy="180" r="8" />
+                      <path d="M276 40 H340 M276 110 H340 M276 180 H340" strokeDasharray="4 4" />
+                      <path className="ab-val__accent" d="M20 110 H120" />
+                    </svg>
+                  )}
+                  <Reveal as="h3" variant={i === 0 ? 'mask' : undefined}>{a}{b && <em>{b}</em>}</Reveal>
                   {v.note && <Reveal as="p" delay={120}>{v.note}</Reveal>}
                 </li>
               );
@@ -271,21 +308,26 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Proof */}
-      <section aria-labelledby="proof-h" className="fold-sec cp-section ab-proof">
+      {/* Company record: facts already stated in the story, set as a title block */}
+      <section aria-labelledby="rec-h" className="fold-sec cp-section ab-rec">
         <FoldEdge />
         <div style={WRAP_STYLE}>
-          <SectionHead id="proof-h" label="In numbers" title="What we stand behind." />
-          <ul className="ab-proof__list">
-            {site.proof.map((p, i) => (
-              <li key={p.label}>
-                <Reveal delay={i * 60}>
-                  <div className={p.isNumeric ? 'v' : 'v v--w'}>{p.value}</div>
-                  <div className="l">{p.label}</div>
-                </Reveal>
-              </li>
-            ))}
-          </ul>
+          <div className="ab-rec__grid">
+            <header>
+              <Eyebrow>Company record</Eyebrow>
+              <h2 id="rec-h" className="cp-h2">On the record.</h2>
+              <p className="cp-lead">What Alok Plastics is, in the plainest terms.</p>
+            </header>
+            <Reveal variant="wipe">
+              <dl className="ab-rec__sheet">
+                <div className="ab-rec__head" aria-hidden="true"><span>Alok Plastics</span><span>Company record</span></div>
+                {record.map(r => (
+                  <div key={r.k} className="ab-rec__row"><dt>{r.k}</dt><dd>{r.v}</dd></div>
+                ))}
+                <div className="ab-rec__foot" aria-hidden="true"><span>Not to scale</span><span>Chandigarh</span></div>
+              </dl>
+            </Reveal>
+          </div>
         </div>
       </section>
 
@@ -302,7 +344,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <EnquiryBand />
+      <EnquiryBand variant="wide" />
     </>
   );
 }

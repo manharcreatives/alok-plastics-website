@@ -9,7 +9,6 @@ import { Phone } from '@phosphor-icons/react/dist/ssr/Phone';
 import { EnvelopeSimple } from '@phosphor-icons/react/dist/ssr/EnvelopeSimple';
 import { ArrowUpRight } from '@phosphor-icons/react/dist/ssr/ArrowUpRight';
 import PageHero from '@/components/page/PageHero';
-import EnquiryBand from '@/components/page/EnquiryBand';
 import { ContactArt } from '@/components/page/art';
 import FoldEdge, { FOLD_SECTION_CSS } from '@/components/sections/FoldEdge';
 import ShortEnquiryForm from '@/components/forms/ShortEnquiryForm';
@@ -44,7 +43,7 @@ ${FOLD_SECTION_CSS}
 .ct-addr:hover .ct-addr__go { transform: translate3d(2px, -2px, 0); }
 .ct-row { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--space-sm); align-items: center; padding: var(--space-sm) var(--space-md); border-bottom: 1px solid var(--grey-warm); }
 .ct-row:last-child { border-bottom: 0; }
-.ct-label { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--grey-metal); font-weight: 600; display: block; }
+.ct-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--grey-metal); font-weight: 600; display: block; }
 .ct-val { color: var(--ink); font-size: 1rem; line-height: 1.5; overflow-wrap: anywhere; }
 .ct-link { color: var(--burgundy); text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; min-height: 44px; }
 .ct-link:hover { color: var(--burgundy-bright); text-decoration: underline; text-underline-offset: 3px; }
@@ -54,8 +53,13 @@ ${FOLD_SECTION_CSS}
 .ct-form { background: var(--surface); border: 1px solid var(--grey-metal); padding: var(--space-lg); position: relative; }
 .ct-form::before { content: ''; position: absolute; left: -1px; top: -1px; width: 72px; height: 3px; background: var(--burgundy); }
 .ct-find { background: var(--surface); --pad-top: var(--section-y); padding-bottom: var(--section-y); padding-left: var(--grid-page-padding); padding-right: var(--grid-page-padding); }
+.ct-find__grid { display: grid; gap: var(--space-xl); align-items: start; }
+.ct-visit { margin: var(--space-lg) 0 0; padding: 0; border-top: 1px solid var(--ink); }
+.ct-visit div { display: grid; grid-template-columns: minmax(96px, 1fr) minmax(0, 2fr); gap: var(--space-sm); align-items: baseline; padding: var(--space-sm) 0; border-bottom: 1px solid var(--grey-warm); }
+.ct-visit dt { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--grey-metal); font-weight: 600; }
+.ct-visit dd { margin: 0; color: var(--ink); font-size: 1.0625rem; line-height: 1.5; }
 @media (max-width: 639px) { .ct-form { padding: var(--space-md) var(--space-sm); } .ct-addr { grid-template-columns: auto minmax(0, 1fr); } .ct-addr__go { display: none; } }
-@media (min-width: 1024px) { .ct-grid { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--space-xl); } }
+@media (min-width: 1024px) { .ct-find__grid { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); } .ct-grid { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--space-xl); } }
 @media (prefers-reduced-motion: reduce) { .ct-addr__go { transition: none; } }
 `;
 
@@ -76,6 +80,7 @@ export default function ContactPage() {
         lead="Tell us which part you need, in what quantity, and for which machine. We will come back to you with a quote."
         art={<ContactArt />}
         enter="draw"
+        layout="mirror"
         scrollHint
       />
 
@@ -127,16 +132,27 @@ export default function ContactPage() {
         </div>
       </section>
 
-      <section aria-labelledby="ct-map-h" className="fold-sec ct-find">
-        <FoldEdge />
+      {/* Getting here: no address repeat (it lives in the details card above); directions + an honest visiting note. */}
+      <section aria-labelledby="ct-map-h" className="fold-sec fold-sec--diag ct-find">
+        <FoldEdge variant="diag" />
         <div style={WRAP_STYLE}>
-          <Eyebrow>Find us</Eyebrow>
-          <h2 id="ct-map-h" className="ct-h2">Plot No-06, Industrial Area Phase II.</h2>
-          <MapLoader embedUrl={embedUrl} openUrl={openUrl} title={`Map showing ${site.name}, ${c.city}`} addressLines={[line1, line2]} />
+          <div className="ct-find__grid">
+            <Reveal>
+              <Eyebrow>Getting here</Eyebrow>
+              <h2 id="ct-map-h" className="ct-h2" style={{ marginBottom: 0 }}>Planning a visit?</h2>
+              {/* TODO(client): visiting hours and any gate / landmark directions */}
+              <dl className="ct-visit">
+                <div><dt>Directions</dt><dd>Open the map and the route starts from wherever you are.</dd></div>
+                <div><dt>Visiting hours</dt><dd>To be confirmed. Send an enquiry first and we will reply.</dd></div>
+              </dl>
+            </Reveal>
+            <Reveal delay={120}>
+              <MapLoader embedUrl={embedUrl} openUrl={openUrl} title={`Map showing ${site.name}, ${c.city}`} />
+            </Reveal>
+          </div>
         </div>
       </section>
 
-      <EnquiryBand />
     </>
   );
 }

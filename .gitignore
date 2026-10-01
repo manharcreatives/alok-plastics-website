@@ -62,3 +62,14 @@ next-env.d.ts
 # local agent/tooling config
 /.claude/
 scripts/.cache/
+
+# runtime data written by /admin/ — mutable, and holds real contact +
+# GSTIN once the client uses the panel. Commit the *.example.json
+# templates instead; runtime-data.ts falls back to src/content/site.ts
+# when the file is absent.
+/public/data/settings.json
+/public/data/careers.json
+/public/data/product-overrides.json
+
+# stray npm lockfile — this repo is pnpm-only (packageManager in package.json)
+/package-lock.json

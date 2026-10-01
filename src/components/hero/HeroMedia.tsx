@@ -176,7 +176,7 @@ function AmbientBackground() {
       <div ref={sihouettesRef} className="hero-ambient__parts" style={{
         position: 'absolute',
         inset: 0,
-        transition: 'transform 0.08s linear',
+        transition: 'transform 200ms cubic-bezier(.16,1,.3,1)',
         willChange: 'transform',
       }}>
         <svg style={{ position: 'absolute', left: '46%', bottom: '24%', opacity: 0.22, width: 56, height: 56 }}
@@ -200,7 +200,7 @@ function AmbientBackground() {
         </svg>
       </div>
 
-      {/* Light sweep — 45° white band, 9s period, lower-left → upper-right */}
+      {/* Light sweep — 45° white band, ONE 1200ms expo.inOut pass after the entrance, lower-left → upper-right */}
       <div
         ref={sweepRef}
         className="hero-ambient__sweep"
@@ -208,8 +208,8 @@ function AmbientBackground() {
           position: 'absolute',
           inset: '-50%',
           background: 'linear-gradient(45deg, transparent 35%, rgba(255,255,255,0.35) 50%, transparent 65%)',
-          animation: 'hero-sweep 9s ease-in-out infinite',
-          animationPlayState: 'running',
+          /* parked off the sheet; Hero adds .hero--in and the single 1200ms pass runs (CSS in Hero.tsx) */
+          transform: 'translate(-60%, 60%)',
           pointerEvents: 'none',
         }}
       />
@@ -217,12 +217,11 @@ function AmbientBackground() {
       {/* Sweep keyframes — injected as a style tag to avoid needing a CSS file */}
       <style>{`
         @keyframes hero-sweep {
-          0%   { transform: translate(-60%, 60%); }
-          50%  { transform: translate(60%, -60%); }
-          100% { transform: translate(-60%, 60%); }
+          from { transform: translate(-60%, 60%); }
+          to   { transform: translate(60%, -60%); }
         }
         @media (max-width: 767px) {
-          .hero-ambient__drawing { right: -12% !important; width: 80vw !important; opacity: 0.3 !important; top: 34% !important; }
+          .hero-ambient__drawing { right: -18% !important; width: 78vw !important; opacity: 0.16 !important; top: auto !important; bottom: -4% !important; transform: none !important; }
           .hero-ambient__parts { display: none; }
         }
         @media (prefers-reduced-motion: reduce) { .hero-ambient__sweep { animation: none !important; } }
@@ -246,7 +245,7 @@ function PosterBackground({ src, alt }: { src: string; alt?: string }) {
         style={{
           objectFit: 'cover',
           /* Very slow Ken Burns — scale 1→1.04 over 20s, transform only */
-          animation: 'ken-burns 20s ease-in-out infinite alternate',
+          animation: 'ken-burns 20s cubic-bezier(.65,0,.35,1) infinite alternate',
           transformOrigin: 'center center',
           willChange: 'transform',
         }}

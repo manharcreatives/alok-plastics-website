@@ -70,11 +70,29 @@ export default function JourneyBackdrop() {
 
       {/* factory roofline: far -> near */}
       <svg className="jrn-bg-roof" viewBox="0 0 1600 340" preserveAspectRatio="xMidYMax slice" focusable="false">
-        <g fill="var(--grey-cloud)">
+        <defs>
+          <linearGradient id="jrn-far" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" style={{ stopColor: 'var(--grey-cloud)', stopOpacity: 0 }} />
+            <stop offset="0.55" style={{ stopColor: 'var(--grey-cloud)', stopOpacity: 0.55 }} />
+            <stop offset="1" style={{ stopColor: 'var(--grey-cloud)', stopOpacity: 0.8 }} />
+          </linearGradient>
+          <linearGradient id="jrn-haze" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" style={{ stopColor: 'var(--surface)', stopOpacity: 0 }} />
+            <stop offset="1" style={{ stopColor: 'var(--surface)', stopOpacity: 0.7 }} />
+          </linearGradient>
+        </defs>
+        {/* farthest depth: tower and chimney silhouettes fading into the haze */}
+        <g fill="url(#jrn-far)">
+          {[[60, 90, 70, 150], [190, 40, 18, 200], [330, 110, 90, 130], [470, 60, 22, 180], [620, 120, 110, 120], [800, 30, 16, 210], [900, 100, 100, 140], [1090, 70, 20, 170], [1170, 115, 120, 125], [1360, 50, 18, 190], [1450, 105, 90, 135]].map(([x, y, w, h], i) => (
+            <rect key={i} x={x} y={y} width={w} height={h} />
+          ))}
+        </g>
+        <rect x="0" y="110" width="1600" height="140" fill="url(#jrn-haze)" />
+        <g fill="var(--grey-cloud)" opacity="0.7">
           <path d={sawtooth(1600, 200, 214, 40)} />
           {stacks([[300, 118, 14, 70], [1010, 100, 16, 90], [1400, 128, 12, 60]])}
         </g>
-        <g fill="var(--grey-warm)" opacity="0.55">
+        <g fill="var(--grey-warm)" opacity="0.4">
           <path d={sawtooth(1600, 150, 256, 0)} />
           {stacks([[520, 152, 16, 84], [1230, 140, 18, 100]])}
         </g>
@@ -82,9 +100,6 @@ export default function JourneyBackdrop() {
         {/* near layer = the next section's colour */}
         <path d={sawtooth(1600, 110, 306, 70)} fill="var(--surface-alt)" />
         <path d={sawtooth(1600, 110, 306, 70)} fill="none" stroke="var(--surface)" strokeWidth="1.5" opacity="0.9" transform="translate(0 -1)" />
-        {/* the one burgundy note: a lit glazing strip on a single tooth */}
-        <rect x="860" y="200" width="10" height="106" fill="var(--grey-warm)" />
-        <rect x="860" y="200" width="10" height="5" fill="var(--burgundy)" />
       </svg>
     </div>
   );

@@ -11,7 +11,8 @@
  * machine row stays empty when the machine fit is still TODO(client).
  *
  * Motion: cells wipe in once on a 45° diagonal (clip-path, 80ms stagger) and a
- * single soft light sweep crosses the sheet every 9s while it is on screen.
+ * single soft light sweep (1200ms) crosses the sheet when it scrolls into view; the animation
+ * only exists while the sheet is on screen (data-live), so nothing runs off-screen.
  * Reduced motion: everything static and fully visible.
  */
 
@@ -58,11 +59,11 @@ const CSS = `
 .ps__fields { display: grid; gap: 0; margin: 0; }
 .ps__field { display: grid; grid-template-columns: 72px 1fr; align-items: baseline; gap: var(--space-xs);
   padding: var(--space-xs) 0; border-top: 1px solid var(--grey-cloud); }
-.ps__field dt { margin: 0; font-size: .6875rem; font-weight: 600; text-transform: uppercase; letter-spacing: .16em; color: var(--grey-metal); }
+.ps__field dt { margin: 0; font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .16em; color: var(--grey-metal); }
 .ps__field dd { margin: 0; font-size: .8125rem; line-height: 1.4; color: var(--ink); font-weight: 500; }
 .ps__keys { display: flex; flex-wrap: wrap; gap: 8px 16px; }
 .ps__key { display: inline-flex; align-items: center; gap: 4px; color: var(--body); }
-.ps__key svg { width: 18px; height: 18px; color: var(--grey-metal); }
+.ps__key svg { width: 20px; height: 20px; color: var(--grey-metal); }
 
 /* cells */
 .ps__scroller { position: relative; display: flex; }
@@ -77,7 +78,7 @@ const CSS = `
   border-right: 1px solid var(--grey-warm); }
 .ps__cell:last-child { border-right: 0; }
 .ps__link { display: flex; flex: 1; flex-direction: column; gap: var(--space-sm); padding: var(--space-lg) var(--space-sm) var(--space-sm);
-  color: inherit; text-decoration: none; transition: background-color .2s; }
+  color: inherit; text-decoration: none; transition: background-color 200ms cubic-bezier(.16,1,.3,1); }
 .ps__link:hover, .ps__link:focus-visible { background: var(--blush); }
 .ps__link:focus-visible { outline: 2px solid var(--burgundy); outline-offset: -2px; }
 /* register mark at each cell's top-left junction */
@@ -85,31 +86,31 @@ const CSS = `
   background:
     linear-gradient(var(--grey-warm), var(--grey-warm)) center / 1px 100% no-repeat,
     linear-gradient(var(--grey-warm), var(--grey-warm)) center / 100% 1px no-repeat; }
-.ps__picto { width: 64px; height: 64px; color: var(--ink); transition: color .2s, transform .4s cubic-bezier(.16,1,.3,1); }
+.ps__picto { width: 64px; height: 64px; color: var(--ink); transition: color 200ms cubic-bezier(.16,1,.3,1), transform 400ms cubic-bezier(.16,1,.3,1); }
 .ps__link:hover .ps__picto, .ps__link:focus-visible .ps__picto { color: var(--burgundy); transform: translate3d(2px, -2px, 0); }
 .ps__part { margin: 0; color: var(--ink); font: 600 .9375rem/1.25 var(--font-archivo, sans-serif); }
 .ps__tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: auto; min-height: 20px; align-content: flex-end; }
 .ps__tag { display: inline-block; padding: 4px 6px; border: 1px solid var(--grey-metal); border-radius: var(--radius-card);
-  color: var(--grey-metal); font-size: .6875rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; line-height: 1;
-  transition: background-color .2s, color .2s, border-color .2s; }
+  color: var(--grey-metal); font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; line-height: 1;
+  transition: background-color 200ms cubic-bezier(.16,1,.3,1), color 200ms cubic-bezier(.16,1,.3,1), border-color 200ms cubic-bezier(.16,1,.3,1); }
 .ps__link:hover .ps__tag, .ps__link:focus-visible .ps__tag { background: var(--burgundy); border-color: var(--burgundy); color: var(--surface); }
 .ps__fits { display: flex; align-items: center; gap: 8px; height: 40px; box-sizing: border-box; padding-top: var(--space-xs);
   border-top: 1px solid var(--grey-cloud); color: var(--grey-metal); }
-.ps__fits svg { width: 18px; height: 18px; }
+.ps__fits svg { width: 20px; height: 20px; }
 
-/* one slow light sweep across the cells (wide layout only) */
+/* one light sweep across the cells each time the sheet scrolls into view (wide layout only) */
 .ps__sweep { position: absolute; inset: 0; z-index: 3; pointer-events: none; overflow: hidden; }
 .ps__sweep::before { content: ''; position: absolute; top: -10%; bottom: -10%; left: 0; width: 18%;
   background: linear-gradient(100deg, transparent, color-mix(in srgb, var(--surface) 70%, transparent), transparent);
   transform: translate3d(-120%, 0, 0) skewX(-24deg); }
-.ps[data-live='true'] .ps__sweep::before { animation: ps-sweep 9s cubic-bezier(.16,1,.3,1) 1.2s infinite; }
+.ps[data-live='true'] .ps__sweep::before { animation: ps-sweep 1200ms cubic-bezier(.87,0,.13,1) 900ms 1 both; }
 @keyframes ps-sweep { 0% { transform: translate3d(-120%, 0, 0) skewX(-24deg); }
-  22%, 100% { transform: translate3d(620%, 0, 0) skewX(-24deg); } }
+  100% { transform: translate3d(620%, 0, 0) skewX(-24deg); } }
 
 /* entrance — diagonal wipe per cell, only when JS has armed it */
 .ps[data-armed='true'] .ps__cell { clip-path: polygon(0 100%, 0 100%, 0 100%); }
 .ps[data-armed='true'][data-in='true'] .ps__cell { clip-path: polygon(-100% 100%, 200% -100%, 200% 200%);
-  transition: clip-path .9s cubic-bezier(.16,1,.3,1); transition-delay: calc(var(--i) * 80ms); }
+  transition: clip-path 900ms cubic-bezier(.16,1,.3,1); transition-delay: calc(min(var(--i), 6) * 80ms); }
 
 /* narrow: the schedule becomes a swipeable strip under the title block */
 @media (max-width: 1199px) {

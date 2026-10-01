@@ -67,7 +67,7 @@ function IndustryCard({ industry, span }: { industry: Industry; span: string }) 
       <div className="ind-body">
         <h3 className="ind-name">{industry.name}</h3>
         <div className="ind-lw">
-          <span className="ind-hint" aria-hidden="true"><i />Application</span>
+          <span className="ind-hint" aria-hidden="true"><i /></span>
           <p className="ind-line"><span>{industry.line}</span></p>
         </div>
       </div>
@@ -93,7 +93,7 @@ const CSS = `${FOLD_SECTION_CSS}
 .ind-core-name span { display: block; }
 .ind-core-name span + span { margin-top: 2px; }
 .ind-core-cta { display: inline-flex; align-items: center; gap: var(--space-xs); align-self: flex-start; margin-top: var(--space-sm); color: var(--surface); font-weight: 600; font-size: 0.9375rem; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--rose); }
-.ind-core-cta svg { transition: transform .2s cubic-bezier(.16,1,.3,1); }
+.ind-core-cta svg { transition: transform 200ms cubic-bezier(.16,1,.3,1); }
 .ind-core-cta:hover svg, .ind-core-cta:focus-visible svg { transform: translate3d(2px, -2px, 0); }
 .ind-core-art { position: relative; min-height: 220px; padding: var(--space-sm) var(--space-md) 0; display: flex; align-items: flex-end;  }
 .ind-core-art .ind-art-svg { width: 100%; height: auto; max-height: 100%; display: block; }
@@ -104,19 +104,20 @@ const CSS = `${FOLD_SECTION_CSS}
 .ind-mw { position: relative; }
 .ind-media { position: relative; height: clamp(200px, 56vw, 260px); overflow: hidden; background: var(--surface-alt); border-radius: var(--radius-card) var(--radius-card) 0 0; clip-path: polygon(0 0, 100% 0, 100% calc(100% - 40px), calc(100% - 40px) 100%, 0 100%); }
 .ind-media::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(to right, rgba(115,113,113,.07) 1px, transparent 1px), linear-gradient(to bottom, rgba(115,113,113,.07) 1px, transparent 1px); background-size: 16px 16px; -webkit-mask-image: radial-gradient(ellipse at 40% 35%, var(--ink) 0%, transparent 78%); mask-image: radial-gradient(ellipse at 40% 35%, var(--ink) 0%, transparent 78%); }
-.ind-art { position: absolute; inset: 0; transform: translate3d(0,0,0); transition: transform .7s cubic-bezier(.16,1,.3,1); will-change: transform; }
+.ind-art { position: absolute; inset: 0; transform: translate3d(0,0,0); transition: transform 700ms cubic-bezier(.16,1,.3,1); will-change: transform; }
 .ind-art-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; }
 .ind-photo { width: 100%; height: 100%; object-fit: cover; display: block; }
 .ind-card:hover .ind-art, .ind-card:focus-visible .ind-art { transform: translate3d(0,-4px,0) scale(1.03); }
 .ind-cut { position: absolute; right: 0; bottom: 0; width: 40px; height: 40px; overflow: visible; }
-.ind-cut path { fill: none; stroke: var(--grey-warm); stroke-width: 1.5; transition: stroke .2s; }
+.ind-cut path { fill: none; stroke: var(--grey-warm); stroke-width: 1.5; transition: stroke 200ms cubic-bezier(.16,1,.3,1); }
 .ind-card:hover .ind-cut path, .ind-card:focus-visible .ind-cut path { stroke: var(--burgundy); }
-.ind-go { position: absolute; right: 6px; bottom: 6px; display: grid; place-items: center; width: 24px; height: 24px; color: var(--burgundy); transition: transform .2s cubic-bezier(.16,1,.3,1); }
+.ind-go { position: absolute; right: 6px; bottom: 6px; display: grid; place-items: center; width: 24px; height: 24px; color: var(--burgundy); transition: transform 200ms cubic-bezier(.16,1,.3,1); }
 .ind-card:hover .ind-go, .ind-card:focus-visible .ind-go { transform: translate3d(2px, -2px, 0); }
-.ind-body { display: flex; flex-direction: column; gap: var(--space-xs); padding: var(--space-md); padding-top: var(--space-sm); flex: 1; }
+.ind-body { display: flex; flex-direction: column; gap: var(--space-xs); padding: var(--space-md); padding-top: var(--space-sm); padding-bottom: var(--space-sm); flex: 1; }
 .ind-name { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: 1.125rem; font-weight: 650; color: var(--ink); letter-spacing: -0.01em; line-height: 1.25; max-width: 24ch; }
-.ind-hint { position: absolute; left: 0; top: 0; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--muted); font-weight: 600; display: flex; align-items: center; gap: var(--space-xs); }
-.ind-hint i { width: 24px; height: 1px; background: var(--grey-metal); display: inline-block; }
+.ind-hint { position: absolute; left: 0; top: 10px; display: flex; align-items: center; }
+.ind-hint i { width: 24px; height: 1px; background: var(--grey-metal); display: inline-block; transition: width 400ms cubic-bezier(.16,1,.3,1), background-color 400ms cubic-bezier(.16,1,.3,1); }
+.ind-card:hover .ind-hint i, .ind-card:focus-visible .ind-hint i { width: 48px; background: var(--burgundy); }
 .ind-lw { position: relative; min-height: 3.1em; }
 .ind-line { font-size: 0.9375rem; color: var(--body); line-height: 1.55; max-width: 44ch; }
 .ind-line span { display: block; background: var(--surface); position: relative; }
@@ -128,7 +129,7 @@ const CSS = `${FOLD_SECTION_CSS}
 @media not all and (hover: hover) and (pointer: fine) { .ind-hint { display: none; } }
 @media (prefers-reduced-motion: reduce) { .ind-hint { display: none; } }
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  .ind-line span { clip-path: polygon(0 0, 0 0, -60% 100%, 0 100%); transition: clip-path .9s cubic-bezier(.16,1,.3,1); }
+  .ind-line span { clip-path: polygon(0 0, 0 0, -60% 100%, 0 100%); transition: clip-path 900ms cubic-bezier(.16,1,.3,1); }
   .ind-card:hover .ind-line span, .ind-card:focus-visible .ind-line span { clip-path: polygon(0 0, 160% 0, 100% 100%, 0 100%); }
 }
 

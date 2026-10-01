@@ -9,8 +9,8 @@ import { industriesConfig } from '@/content/industries';
 const COLS: number[][] = [[0, 1, 2], [3, 4], [5, 6]];
 
 const CSS = `
-.ih { position: relative; display: flex; align-items: center; justify-content: flex-end; width: 100%; padding: 96px var(--grid-page-padding) var(--space-xl) var(--space-sm); box-sizing: border-box; }
-.ih__sheet { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-sm); width: min(100%, 720px); align-items: start; }
+.ih { position: relative; display: flex; align-items: center; justify-content: flex-end; width: 100%; padding: 96px 0 var(--space-xl) var(--space-sm); box-sizing: border-box; }
+.ih__sheet { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-sm); width: min(100%, 760px); align-items: start; }
 .ih__col { display: grid; gap: var(--space-sm); min-width: 0; }
 .ih__frame { min-width: 0; }
 .ih__col:nth-child(1) { padding-top: 112px; }
@@ -19,7 +19,7 @@ const CSS = `
 .ih__frame:nth-child(odd)::before { content: ''; position: absolute; z-index: 1; top: -1px; right: -1px; width: 28px; height: 3px; background: var(--burgundy); }
 .ih__scene { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: var(--canvas); }
 .ih__scene .ind-art-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; }
-.ih__cap { display: block; padding: var(--space-xs) var(--space-xs); border-top: 1px solid var(--grey-cloud); font-family: var(--font-mono, monospace); font-size: 0.625rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ih__cap { display: block; padding: var(--space-xs) var(--space-xs); border-top: 1px solid var(--grey-cloud); font-family: var(--font-mono, monospace); font-size: 0.75rem; line-height: 1.35; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); text-wrap: balance; overflow-wrap: break-word; }
 .ih__frame { animation: ih-in 900ms calc(var(--d, 0) * 1ms) cubic-bezier(.16,1,.3,1) backwards; }
 @keyframes ih-in { from { opacity: 0; clip-path: polygon(0 0, 0 0, -44% 100%, -44% 100%); } to { opacity: 1; clip-path: polygon(0 0, 150% 0, 106% 100%, 0 100%); } }
 @media (max-width: 767px) {
@@ -31,8 +31,8 @@ const CSS = `
   .ih__cap { display: none; }
 }
 @media (min-width: 768px) and (max-width: 1023px) {
-  .ih { align-items: flex-start; padding-top: 88px; }
-  .ih__sheet { gap: var(--space-xs); width: 100%; }
+  .ih { align-items: center; padding: 0; height: 100%; }
+  .ih__sheet { gap: var(--space-sm); width: 100%; }
   .ih__col { gap: var(--space-xs); }
   .ih__col:nth-child(1) { padding-top: 64px; }
   .ih__col:nth-child(2) { padding-top: 32px; }

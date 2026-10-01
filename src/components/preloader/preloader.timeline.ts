@@ -81,9 +81,9 @@ export function buildPreloaderTimeline(
       .set(refs.overlay.current, { opacity: 1 })
       .to(refs.overlay.current, {
         opacity: 0,
-        duration: 0.25,
+        duration: 0.2,
         delay: 0.5,
-        ease: 'power2.inOut',
+        ease: 'power3.inOut',
         onComplete: () => {
           if (refs.overlay.current) {
             refs.overlay.current.style.display = 'none';
@@ -100,33 +100,33 @@ export function buildPreloaderTimeline(
   tl
     .to(refs.grid.current, {
       opacity: 0.03,
-      duration: 0.25,
-      ease: 'power2.in',
+      duration: 0.2,
+      ease: 'power3.inOut',
     }, 0)
     /* Register marks (handled via CSS; GSAP draws them in via scaleX) */
     .to('.preloader__register-mark', {
       scaleX: 1,
-      duration: 0.15,
+      duration: 0.2,
       stagger: 0.04,
-      ease: 'power3.out',
+      ease: 'expo.out',
     }, 0.05)
     /* Measurement rule endcaps appear */
     .to(refs.rule.current, {
       opacity: 1,
       duration: 0.2,
-      ease: 'power2.out',
+      ease: 'expo.out',
     }, 0.1)
     /* Counter fades in */
     .to(refs.counter.current, {
       opacity: 1,
       duration: 0.2,
-      ease: 'power2.out',
+      ease: 'expo.out',
     }, 0.15)
     /* Micro-label fades in */
     .to(refs.microLabel.current, {
       opacity: 1,
       duration: 0.2,
-      ease: 'power2.out',
+      ease: 'expo.out',
     }, 0.2);
 
   /* Background layer — oversized ALOK LIGHT drifts up-and-right at 6% */
@@ -137,7 +137,7 @@ export function buildPreloaderTimeline(
       x: '2%',
       y: '-3%',
       duration: 2.5,
-      ease: 'none',
+      ease: 'power3.inOut',
     }, 0);
 
   /* t 0.15–1.25s — Construction */
@@ -148,8 +148,8 @@ export function buildPreloaderTimeline(
     {
       opacity: 1,
       scaleY: 1,
-      duration: 0.6,
-      ease: 'power3.out',
+      duration: 0.7,
+      ease: 'expo.out',
     }, 0.15);
 
   /* L+O core: two halves slide in from opposite 45° sides and lock */
@@ -159,7 +159,7 @@ export function buildPreloaderTimeline(
       opacity: 1,
       x: 0,
       y: 0,
-      duration: 0.55,
+      duration: 0.4,
       ease: 'back.out(1.4)', /* mechanical click */
     }, 0.45);
 
@@ -170,7 +170,7 @@ export function buildPreloaderTimeline(
       opacity: 1,
       x: 0,
       y: 0,
-      duration: 0.5,
+      duration: 0.4,
       ease: 'expo.out',
     }, 0.7);
 
@@ -180,8 +180,8 @@ export function buildPreloaderTimeline(
     {
       x: '120%',
       y: '-120%',
-      duration: 0.5,
-      ease: 'power2.inOut',
+      duration: 0.4,
+      ease: 'power3.inOut',
     }, 1.1);
 
   /* t 1.3–1.8s — PLASTICS letters rise */
@@ -192,7 +192,7 @@ export function buildPreloaderTimeline(
         opacity: 1,
         y: 0,
         letterSpacing: '0.16em', /* tighten to logo's exact spacing */
-        duration: 0.5,
+        duration: 0.4,
         ease: 'expo.out',
       }, 1.3);
   }
@@ -203,7 +203,7 @@ export function buildPreloaderTimeline(
     { scaleX: 0 },
     {
       scaleX: 1,
-      duration: 0.45,
+      duration: 0.4,
       ease: 'power3.inOut',
     }, 1.65);
 
@@ -211,7 +211,7 @@ export function buildPreloaderTimeline(
   tl.to(refs.tagline.current, {
     opacity: 1,
     duration: 0.2,
-    ease: 'power2.out',
+    ease: 'expo.out',
   }, 1.65);
 
   /* Devanagari glyphs hang from shirorekha — clip-path top→bottom */
@@ -219,22 +219,22 @@ export function buildPreloaderTimeline(
     { clipPath: 'inset(0 0 100% 0)' },
     {
       clipPath: 'inset(0 0 0% 0)',
-      duration: 0.65,
+      duration: 0.7,
       ease: 'expo.out',
     }, 1.85);
 
   /* Flanking hairlines draw outward */
   tl.fromTo(refs.hairlineLeft.current,
     { scaleX: 0, opacity: 1, transformOrigin: 'right center' },
-    { scaleX: 1, opacity: 1, duration: 0.4, ease: 'power3.out' }, 2.1);
+    { scaleX: 1, opacity: 1, duration: 0.4, ease: 'expo.out' }, 2.1);
   tl.fromTo(refs.hairlineRight.current,
     { scaleX: 0, opacity: 1, transformOrigin: 'left center' },
-    { scaleX: 1, opacity: 1, duration: 0.4, ease: 'power3.out' }, 2.1);
+    { scaleX: 1, opacity: 1, duration: 0.4, ease: 'expo.out' }, 2.1);
 
   /* English line appears */
   tl.fromTo(refs.taglineEn.current,
     { opacity: 0, y: 4 },
-    { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' }, 2.3);
+    { opacity: 1, y: 0, duration: 0.4, ease: 'expo.out' }, 2.3);
 
   /* t 2.6–3.4s — Exit */
 
@@ -243,8 +243,8 @@ export function buildPreloaderTimeline(
     refs.counter.current, refs.microLabel.current, refs.bgText.current], {
     opacity: 0,
     y: -8,
-    duration: 0.3,
-    ease: 'power2.in',
+    duration: 0.4,
+    ease: 'power3.inOut',
     stagger: 0.02,
   }, 2.6);
 
@@ -293,16 +293,19 @@ export function buildPreloaderTimeline(
     ease: 'expo.inOut',
   }, 2.75);
 
+  /* Tell the hero its entrance may start as the panels part */
+  tl.add(() => { window.dispatchEvent(new Event('alok:hero-go')); }, 2.85);
+
   /* Seam glow — 200ms on the split edges */
   tl.to(refs.seam.current, {
     opacity: 1,
-    duration: 0.1,
-    ease: 'power2.in',
+    duration: 0.2,
+    ease: 'power3.inOut',
   }, 2.8)
   .to(refs.seam.current, {
     opacity: 0,
     duration: 0.2,
-    ease: 'power2.out',
+    ease: 'expo.out',
   }, 3.0);
 
   return tl;
@@ -334,7 +337,7 @@ export function updatePreloaderCounter(
     gsap.to(ruleLineEl, {
       scaleX: value / 100,
       duration: 0.2,
-      ease: 'power2.out',
+      ease: 'expo.out',
       overwrite: 'auto',
     });
   }

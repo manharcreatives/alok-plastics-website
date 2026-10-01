@@ -19,7 +19,7 @@ interface Props {
 }
 
 const CSS = `
-.map-panel { position: relative; overflow: hidden; background: var(--surface); border: 1px solid var(--grey-metal); min-height: 320px; display: flex; align-items: center; justify-content: center; padding: var(--space-lg) var(--space-md); }
+.map-panel { position: relative; overflow: hidden; background: var(--surface); border: 1px solid var(--grey-metal); min-height: 360px; display: flex; align-items: center; justify-content: center; padding: var(--space-lg) var(--space-md); }
 .map-panel::before { content: ''; position: absolute; inset: 0; pointer-events: none;
   background-image: linear-gradient(to right, color-mix(in srgb, var(--grey-metal) 8%, transparent) 1px, transparent 1px), linear-gradient(to bottom, color-mix(in srgb, var(--grey-metal) 8%, transparent) 1px, transparent 1px);
   background-size: 24px 24px; -webkit-mask-image: radial-gradient(ellipse 70% 80% at 50% 50%, var(--ink), transparent); mask-image: radial-gradient(ellipse 70% 80% at 50% 50%, var(--ink), transparent); }
@@ -27,7 +27,7 @@ const CSS = `
 .map-inner { position: relative; display: flex; flex-direction: column; align-items: center; gap: var(--space-sm); text-align: center; max-width: 40ch; }
 .map-pin { width: 56px; height: 56px; display: inline-flex; align-items: center; justify-content: center; background: var(--burgundy); color: var(--surface); clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%); }
 .map-addr { font-family: var(--font-archivo); font-variation-settings: "wdth" 110; font-weight: 650; font-size: 1.125rem; line-height: 1.35; color: var(--ink); margin: 0; }
-.map-btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-xs); min-height: 48px; padding: 0 var(--space-md); border-radius: var(--radius-card); font-weight: 600; font-size: 0.9375rem; text-decoration: none; cursor: pointer; font-family: inherit; transition: background-color 200ms; }
+.map-btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-xs); min-height: 48px; padding: 0 var(--space-md); border-radius: var(--radius-card); font-weight: 600; font-size: 0.9375rem; text-decoration: none; cursor: pointer; font-family: inherit; transition: background-color 200ms cubic-bezier(.16,1,.3,1); }
 .map-btn--primary { background: var(--burgundy); color: var(--surface); border: 1px solid var(--burgundy); }
 .map-btn--primary:hover { background: var(--burgundy-deep); }
 .map-btn svg { transition: transform 200ms cubic-bezier(.16,1,.3,1); }

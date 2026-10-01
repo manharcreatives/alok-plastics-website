@@ -8,9 +8,10 @@
  *   and Ladakh). Fetched once and cached in scripts/.cache/ (gitignored).
  *
  * Output (all in one SVG coordinate space, 5 units per degree, plate carree):
- *   - WORLD_DOTS : run-length rows of land dots, 2deg grid, India cells excluded
+ *   - WORLD_DOTS : run-length rows of land dots, 1.5deg grid, India cells excluded
  *   - INDIA_DOTS : run-length rows of India dots, 2/3deg grid (3x finer)
- *   - INDIA_OUTLINE : simplified India outline path (Douglas-Peucker 0.035deg)
+ *   - INDIA_OUTLINE : simplified mainland outline path (Douglas-Peucker 0.035deg)
+ *   - INDIA_ISLANDS : Andaman, Nicobar and other islands as small filled shapes
  * Rows are encoded as horizontal segments; the component draws them with a
  * zero-length round-cap dash pattern, so one segment = a whole row of dots.
  *
@@ -27,10 +28,12 @@ const CACHE = join(ROOT, 'scripts', '.cache', 'ne_10m_admin_0_countries_ind.geoj
 const OUT = join(ROOT, 'src', 'components', 'sections', 'worldDots.ts');
 
 /* Frame (degrees) and scale */
-const LON0 = -85, LON1 = 160, LAT_TOP = 70, LAT_BOT = -45;
+const LON0 = -50, LON1 = 165, LAT_TOP = 66, LAT_BOT = -48;
+/* India is enlarged in front of the world layer (a 2-layer composition): scale S about C. */
+const S = 2.2, CLON = 80, CLAT = 22;
 const K = 5; // svg units per degree
 const W = (LON1 - LON0) * K, H = (LAT_TOP - LAT_BOT) * K;
-const STEP_WORLD = 2, STEP_INDIA = 2 / 3;
+const STEP_WORLD = 1.1, STEP_INDIA = 2 / 3;
 
 async function load() {
   const arg = process.argv[2];
@@ -117,21 +120,24 @@ const rowsToPath = (rs) =>
 const IND_BB = [67, 5, 99, 38];
 const inIndia = (x, y) => x >= IND_BB[0] && x <= IND_BB[2] && y >= IND_BB[1] && y <= IND_BB[3] && hit(indiaPolys, x, y);
 
-const worldRows = rows(STEP_WORLD, (x, y) => !inIndia(x, y) && hit(others, x, y));
+/* clear the world dots under the enlarged India (plus a small halo) so the silhouette stands in front */
+const under = (lon, lat) => inIndia(CLON + (lon - CLON) / S, CLAT + (lat - CLAT) / S);
+const HALO = 1.6;
+const nearIndia = (lon, lat) => under(lon, lat) || under(lon + HALO, lat) || under(lon - HALO, lat) || under(lon, lat + HALO) || under(lon, lat - HALO);
+const worldRows = rows(STEP_WORLD, (x, y) => !nearIndia(x, y) && hit(others, x, y));
 const indiaRows = rows(STEP_INDIA, (x, y) => inIndia(x, y));
 
-/* outline */
-const outlineRings = [];
-for (const { rings } of indiaPolys) {
-  const ring = rings[0];
-  if (area(ring) < 0.02) continue; // drop specks
+/* outline: the mainland only (heavy stroke); islands are drawn separately as small filled shapes
+   so the Andaman and Nicobar chains read as islands, not as stray marks */
+const ringPath = (r) => 'M' + r.map(([lo, la]) => `${f(px(lo))} ${f(py(la))}`).join('L') + 'Z';
+const simplify = (ring, tol) => {
   const mid = Math.floor(ring.length / 2);
-  const s = [...dp(ring.slice(0, mid + 1), 0.035).slice(0, -1), ...dp(ring.slice(mid), 0.035)];
-  if (s.length >= 4) outlineRings.push(s);
-}
-const outline = outlineRings
-  .map((r) => 'M' + r.map(([lo, la]) => `${f(px(lo))} ${f(py(la))}`).join('L') + 'Z')
-  .join('');
+  return [...dp(ring.slice(0, mid + 1), tol).slice(0, -1), ...dp(ring.slice(mid), tol)];
+};
+const sorted = indiaPolys.map(({ rings }) => rings[0]).sort((a, b) => area(b) - area(a));
+const mainland = simplify(sorted[0], 0.035);
+const outline = ringPath(mainland);
+const islands = sorted.slice(1).filter((r) => area(r) >= 0.005).map((r) => simplify(r, 0.012)).filter((r) => r.length >= 4).map(ringPath).join('');
 
 const worldPath = rowsToPath(worldRows);
 const indiaPath = rowsToPath(indiaRows);
@@ -145,12 +151,16 @@ export const WORLD_H = ${H};
 export const WORLD_K = ${K}; // svg units per degree (plate carree)
 export const WORLD_LON0 = ${LON0};
 export const WORLD_LAT_TOP = ${LAT_TOP};
+export const INDIA_SCALE = ${S};
+export const INDIA_CLON = ${CLON};
+export const INDIA_CLAT = ${CLAT};
 export const STEP_WORLD_U = ${f(STEP_WORLD * K)};
 export const STEP_INDIA_U = ${(STEP_INDIA * K).toFixed(3)};
 
 export const WORLD_DOTS = '${worldPath}';
 export const INDIA_DOTS = '${indiaPath}';
 export const INDIA_OUTLINE = '${outline}';
+export const INDIA_ISLANDS = '${islands}';
 
 /** lon/lat -> svg user units */
 export const project = (lon: number, lat: number) => ({
@@ -159,4 +169,4 @@ export const project = (lon: number, lat: number) => ({
 });
 `;
 writeFileSync(OUT, ts);
-console.log('wrote', OUT, (ts.length / 1024).toFixed(1) + ' KB', 'world rows', worldRows.length, 'india rows', indiaRows.length, 'rings', outlineRings.length);
+console.log('wrote', OUT, (ts.length / 1024).toFixed(1) + ' KB', 'world rows', worldRows.length, 'india rows', indiaRows.length, 'islands', islands.split('M').length - 1);

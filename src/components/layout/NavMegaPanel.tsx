@@ -169,7 +169,7 @@ const MEGA_CSS = `
   background: var(--surface); border: 1px solid var(--grey-warm); border-radius: var(--radius-card);
   box-shadow: inset 0 1px 0 var(--surface), 0 8px 40px rgba(30,17,21,0.10);
   max-height: calc(100svh - 120px); overflow-y: auto;
-  animation: mega-in .4s cubic-bezier(.16,1,.3,1) both; }
+  animation: mega-in 400ms cubic-bezier(.16,1,.3,1) both; }
 @keyframes mega-in { from { opacity: 0; clip-path: polygon(0 0, 100% 0, 100% 0, 0 0); }
   to { opacity: 1; clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); } }
 .mega__col { padding: var(--space-lg) var(--space-lg) var(--space-md); border-right: 1px solid var(--grey-warm); }
@@ -182,10 +182,10 @@ const MEGA_CSS = `
 .mega__list { list-style: none; margin: 0; padding: 0; }
 .mega__part { display: flex; align-items: center; gap: 8px; padding: 8px 0; color: var(--body);
   font-size: .875rem; text-decoration: none; border-bottom: 1px solid var(--grey-cloud);
-  transition: color .2s; }
-.mega__picto { width: 16px; height: 16px; flex-shrink: 0; color: var(--muted); transition: color .2s; }
+  transition: color 200ms cubic-bezier(.16,1,.3,1); }
+.mega__picto { width: 16px; height: 16px; flex-shrink: 0; color: var(--muted); transition: color 200ms cubic-bezier(.16,1,.3,1); }
 .mega__arrow { margin-left: auto; opacity: 0; transform: translate3d(-2px, 2px, 0);
-  transition: opacity .2s, transform .2s cubic-bezier(.16,1,.3,1); }
+  transition: opacity 200ms cubic-bezier(.16,1,.3,1), transform 200ms cubic-bezier(.16,1,.3,1); }
 .mega__part:hover, .mega__part:focus-visible { color: var(--burgundy); }
 .mega__part:hover .mega__picto, .mega__part:focus-visible .mega__picto { color: var(--burgundy); }
 .mega__part:hover .mega__arrow, .mega__part:focus-visible .mega__arrow { opacity: 1; transform: translate3d(0,0,0); }
