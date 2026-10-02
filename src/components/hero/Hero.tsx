@@ -48,7 +48,6 @@ const HERO_STYLES = `
   -webkit-text-fill-color: transparent; color: transparent; }
 .hero__sub { font-size: 1.0625rem; line-height: 1.65; max-width: 55ch; margin: 0 0 var(--space-md); text-wrap: pretty; }
 .hero__eyebrow { display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-md); }
-.hero__eyebrow-bar { width: 24px; height: 2px; background: var(--burgundy); display: inline-block; flex-shrink: 0; transform-origin: left center; }
 
 /* Tagline lockup: [hairline][ Devanagari ][hairline] with the English line centred
    beneath the Devanagari block only (one grid keeps both on the same axis). */
@@ -94,7 +93,6 @@ const HERO_STYLES = `
 /* Entrance start state — armed by the <head> script (html.hero-arm, never set without JS or under
    reduced motion). The timeline un-hides everything; without the class the content is just visible. */
 html.hero-arm .hero__mi { transform: translate3d(0, 110%, 0); }
-html.hero-arm .hero__eyebrow-bar,
 html.hero-arm .hero__rule { transform: scaleX(0); }
 html.hero-arm .hero__eyebrow-text,
 html.hero-arm .hero__sub,
@@ -170,11 +168,10 @@ export default function Hero() {
       disarm();
       tl = gsap.timeline({
         onComplete: () => {
-          gsap.set(q('.hero__mi, .hero__eyebrow-bar, .hero__eyebrow-text, .hero__sub, .hero__rule, .hero__dev, .hero__en, .hero__btn'), { clearProps: 'opacity,transform' });
+          gsap.set(q('.hero__mi, .hero__eyebrow-text, .hero__sub, .hero__rule, .hero__dev, .hero__en, .hero__btn'), { clearProps: 'opacity,transform' });
         },
       });
-      tl.fromTo(q('.hero__eyebrow-bar'), { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: 'power3.inOut' }, 0)
-        .fromTo(q('.hero__eyebrow-text'), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.7, ease: 'expo.out' }, 0.1)
+      tl.fromTo(q('.hero__eyebrow-text'), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.7, ease: 'expo.out' }, 0.1)
         .fromTo(q('.hero__mi'), { yPercent: 110 }, { yPercent: 0, duration: 0.9, ease: 'expo.out', stagger: 0.08 }, 0.1)
         .fromTo(q('.hero__sub'), { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.7, ease: 'expo.out' }, 0.5)
         .fromTo(q('.hero__rule'), { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: 'power3.inOut' }, 0.6)
@@ -220,7 +217,6 @@ export default function Hero() {
       <div className="hero__content">
         {/* Eyebrow — §11.5 (no numbering) */}
         <div className="hero__eyebrow">
-          <span className="hero__eyebrow-bar" aria-hidden="true" />
           <span
             className="hero__eyebrow-text"
             style={{

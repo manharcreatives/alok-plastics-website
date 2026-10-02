@@ -102,7 +102,6 @@ const CSS = `
 .pim-inner { max-width: calc(var(--grid-max) + 2 * var(--grid-page-padding)); margin: 0 auto; }
 .pim-head { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-md); align-items: end; }
 .pim-label { display: flex; align-items: center; gap: 10px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--muted); font-weight: 600; font-family: var(--font-archivo); margin-bottom: var(--space-sm); }
-.pim-label i { width: 24px; height: 2px; background: var(--burgundy); display: inline-block; }
 .pim-h2 { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(1.75rem, 3.5vw, 2.75rem); font-weight: 650; line-height: 1.1; letter-spacing: -0.025em; color: var(--ink); max-width: 20ch; text-wrap: balance; margin-bottom: var(--space-md); }
 .pim-lead { font-size: 1.0625rem; line-height: 1.65; color: var(--body); max-width: 52ch; }
 .pim-legend { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-sm); }
@@ -274,7 +273,7 @@ export default function PanIndiaMap() {
       <div className="pim-inner">
         <div className="pim-head">
           <div>
-            <div className="pim-label"><i aria-hidden="true" />Pan Bharat</div>
+            <div className="pim-label">Pan Bharat</div>
             <h2 id="map-heading" ref={headingRef} className="pim-h2">From Chandigarh to every corner of India.</h2>
             {/* COPY: drafted from verified facts (§5.10; Chandigarh base; Pan Bharat delivery network) — needs client approval */}
             <p className="pim-lead">

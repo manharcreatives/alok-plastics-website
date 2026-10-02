@@ -107,15 +107,6 @@
   margin-bottom: var(--space-md);
 }
 
-/* The 24px burgundy rule before the label */
-.section-label::before {
-  content: '';
-  display: block;
-  width: 24px;
-  height: 2px;
-  background: var(--burgundy);
-  flex-shrink: 0;
-}
 
 /* ── Tagline composition — §2.7 ───────────────────────────────── */
 /* Large sizes: first half burgundy, second half grey-metal */

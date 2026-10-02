@@ -44,7 +44,6 @@ const SEND = [
 const CSS = `
 ${FOLD_SECTION_CSS}
 .in-eyebrow { display: flex; align-items: center; gap: var(--space-xs); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; font-weight: 600; margin-bottom: var(--space-sm); line-height: 1; color: var(--grey-metal-text); }
-.in-eyebrow::before { content: ''; width: 24px; height: 2px; background: var(--burgundy); }
 .in-h2 { font-family: var(--font-archivo); font-variation-settings: "wdth" 118; font-size: clamp(1.875rem, 4vw, 3.25rem); font-weight: 650; line-height: 1.06; letter-spacing: -0.025em; color: var(--ink); text-wrap: balance; }
 
 /* core market: the one burgundy block on this page */
@@ -52,7 +51,6 @@ ${FOLD_SECTION_CSS}
 .ic::before { content: ''; position: absolute; inset: 0; pointer-events: none; background-image: linear-gradient(to right, color-mix(in srgb, var(--surface) 5%, transparent) 1px, transparent 1px), linear-gradient(to bottom, color-mix(in srgb, var(--surface) 5%, transparent) 1px, transparent 1px); background-size: 8px 8px; -webkit-mask-image: radial-gradient(ellipse 60% 70% at 78% 50%, var(--ink), transparent 80%); mask-image: radial-gradient(ellipse 60% 70% at 78% 50%, var(--ink), transparent 80%); }
 .ic__in { position: relative; display: grid; gap: var(--space-xl); grid-template-columns: minmax(0, 1fr); align-items: center; }
 .ic .in-eyebrow { color: var(--rose-pale); }
-.ic .in-eyebrow::before { background: var(--rose-pale); }
 .ic .in-h2 { color: var(--surface); }
 .ic__lead { margin-top: var(--space-sm); color: var(--rose-pale); line-height: 1.65; max-width: 48ch; font-size: 1.0625rem; }
 .ic__list { list-style: none; margin: var(--space-lg) 0 0; padding: 0; border-top: 1px solid color-mix(in srgb, var(--surface) 24%, transparent); }

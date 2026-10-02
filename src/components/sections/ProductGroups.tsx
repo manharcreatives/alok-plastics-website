@@ -163,7 +163,6 @@ function GroupCard({
       <div className="pg-in">
         <div className="pg-card-body">
           <div className="pg-card-head">
-            <span aria-hidden="true" className="pg-card-bar" />
             <span className="pg-card-count">{products.length} {products.length === 1 ? 'part' : 'parts'}</span>
           </div>
           <h3 className="pg-card-title">{group.name}</h3>
@@ -256,7 +255,6 @@ const CSS = FOLD_SECTION_CSS + `
   .pg-card-body { flex: 1; display: flex; flex-direction: column; padding: var(--space-lg) var(--space-lg) var(--space-md); min-width: 0; }
   .pg-card-head { display: flex; align-items: center; gap: var(--space-xs); margin-bottom: var(--space-sm); }
   .pg-card-count { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; font-weight: 600; color: var(--grey-metal); }
-  .pg-card-bar { width: 24px; height: 2px; background: var(--burgundy); display: inline-block; }
   .pg-card-title { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(1.375rem, 2.4vw, 1.875rem); line-height: 1.12; font-weight: 650; letter-spacing: -0.02em; color: var(--ink); margin-bottom: var(--space-xs); max-width: 18ch; }
   .pg-card-desc { font-size: 0.9375rem; color: var(--body); line-height: 1.55; margin-bottom: var(--space-md); max-width: 52ch; }
   .pg-panel { position: relative; min-height: 248px; flex: 1 0 auto; max-height: 320px; background: var(--surface-alt); border: 1px solid var(--grey-cloud); overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: var(--space-md); }

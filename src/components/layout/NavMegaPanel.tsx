@@ -103,7 +103,6 @@ export default function NavMegaPanel({
           return (
             <div key={group.id} className="mega__col">
               <div className="mega__kicker">
-                <span className="mega__dash" aria-hidden />
                 {groupProducts.length} {groupProducts.length === 1 ? 'part' : 'parts'}
               </div>
 
@@ -175,7 +174,6 @@ const MEGA_CSS = `
 .mega__col { padding: var(--space-lg) var(--space-lg) var(--space-md); border-right: 1px solid var(--grey-warm); }
 .mega__kicker { display: flex; align-items: center; gap: 8px; margin-bottom: var(--space-xs);
   font-size: .75rem; text-transform: uppercase; letter-spacing: .16em; font-weight: 600; color: var(--muted); }
-.mega__dash { width: 16px; height: 2px; background: var(--burgundy); flex-shrink: 0; }
 .mega__group { display: block; margin-bottom: var(--space-sm); color: var(--ink); text-decoration: none;
   font: 600 1rem/1.3 var(--font-archivo, sans-serif); }
 .mega__group:hover, .mega__group:focus-visible { color: var(--burgundy); }

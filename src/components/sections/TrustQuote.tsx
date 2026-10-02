@@ -39,7 +39,6 @@ const CSS = FOLD_SECTION_CSS + `
   .tq-sec { --pad-top: calc(var(--section-y) * 1.2); background: var(--surface); padding-bottom: var(--section-y); padding-left: var(--grid-page-padding); padding-right: var(--grid-page-padding); overflow: hidden; }
   .tq-wrap { position: relative; max-width: calc(var(--grid-max) + 2 * var(--grid-page-padding)); margin: 0 auto; }
   .tq-micro { position: relative; display: inline-flex; align-items: center; gap: 10px; margin-bottom: var(--space-md); font-size: 0.75rem; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; color: var(--muted); font-family: var(--font-archivo); }
-  .tq-micro::before { content: ""; width: 24px; height: 2px; background: var(--burgundy); }
   .tq-h { position: relative; z-index: 1; font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(2.25rem, 6.4vw, 5.75rem); font-weight: 650; line-height: 1.02; letter-spacing: -0.035em; color: var(--ink); max-width: 14ch; text-wrap: balance; }
   .tq-lower { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-lg); margin-top: var(--space-xl); align-items: end; }
   .tq-peak { width: min(100%, 560px); height: auto; overflow: visible; display: block; }

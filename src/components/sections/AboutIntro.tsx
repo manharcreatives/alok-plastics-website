@@ -111,7 +111,6 @@ const CSS = METAL_TEXT_CSS + `
   .ap-wrap { position: relative; max-width: calc(var(--grid-max) + 2 * var(--grid-page-padding)); margin: 0 auto; padding: 0 var(--grid-page-padding); }
   .ap-top { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-xl); align-items: end; }
   .ap-micro { display: inline-flex; align-items: center; gap: 10px; margin-bottom: var(--space-md); font-size: 0.75rem; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; color: var(--muted); font-family: var(--font-archivo); }
-  .ap-micro::before { content: ""; width: 24px; height: 2px; background: var(--burgundy); }
   .ap-h {
     font-family: var(--font-archivo); font-variation-settings: "wdth" 125;
     font-size: clamp(2.25rem, 5.2vw, 4.5rem); font-weight: 650; line-height: 1.04; letter-spacing: -0.03em;

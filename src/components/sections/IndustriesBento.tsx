@@ -79,7 +79,6 @@ const CSS = `${FOLD_SECTION_CSS}
 .ind-sec { --pad-top: calc(var(--section-y) + 8px); background: var(--surface); padding-left: var(--grid-page-padding); padding-right: var(--grid-page-padding); padding-bottom: calc(var(--section-y) + 16px); }
 .ind-head { display: flex; flex-direction: column; gap: var(--space-sm); }
 .ind-label { display: flex; align-items: center; gap: 10px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--muted); font-weight: 600; font-family: var(--font-archivo); }
-.ind-label i { width: 24px; height: 2px; background: var(--burgundy); display: inline-block; }
 .ind-head h2 { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(1.75rem, 3.5vw, 2.75rem); line-height: 1.1; letter-spacing: -0.025em; font-weight: 650; color: var(--ink); max-width: 22ch; text-wrap: balance; }
 .ind-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-md); margin-top: var(--space-xl); }
 
@@ -87,7 +86,6 @@ const CSS = `${FOLD_SECTION_CSS}
 .ind-core { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); background: var(--burgundy); border-radius: var(--radius-card); box-shadow: inset 0 1px 0 rgba(255,255,255,.18); overflow: hidden; clip-path: polygon(0 0, 100% 0, 100% calc(100% - 56px), calc(100% - 56px) 100%, 0 100%); }
 .ind-core-copy { display: flex; flex-direction: column; gap: var(--space-sm); padding: var(--space-lg); min-width: 0; }
 .ind-core-kicker { display: flex; align-items: center; gap: var(--space-xs); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--rose-pale); font-weight: 600; }
-.ind-core-kicker i { width: 24px; height: 2px; background: var(--rose-pale); display: inline-block; }
 .ind-core-name { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(1.5rem, 2.8vw, 2.25rem); font-weight: 650; color: var(--surface); line-height: 1.12; letter-spacing: -0.02em; text-wrap: balance; }
 .ind-core-desc { font-size: 1rem; color: var(--rose-pale); line-height: 1.6; max-width: 46ch; }
 .ind-core-name span { display: block; }
@@ -182,7 +180,7 @@ export default function IndustriesBento() {
       <FoldEdge />
       <div style={{ maxWidth: 'calc(var(--grid-max) + 2 * var(--grid-page-padding))', margin: '0 auto' }}>
         <div className="ind-head">
-          <div className="ind-label"><i aria-hidden="true" />Industries</div>
+          <div className="ind-label">Industries</div>
           <h2 id="industries-heading" ref={headingRef}>Built for the industries that build India.</h2>
         </div>
 
@@ -190,7 +188,7 @@ export default function IndustriesBento() {
           {/* Core market — the one burgundy block in this section */}
           <div className="ind-core">
             <div className="ind-core-copy">
-              <div className="ind-core-kicker"><i aria-hidden="true" />Core market</div>
+              <div className="ind-core-kicker">Core market</div>
               <p className="ind-core-name">
                 <span className="sr-only">{coreMarket.name}</span>
                 {coreMarket.name.split(' · ').map(n => <span key={n} aria-hidden="true">{n}</span>)}

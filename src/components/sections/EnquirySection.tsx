@@ -22,7 +22,6 @@ const SECTION_CSS = `
 .enq-sec__in { position: relative; max-width: calc(var(--grid-max) + 2 * var(--grid-page-padding)); margin: 0 auto; }
 .enq-sec-head { margin-bottom: var(--space-xl); max-width: 40rem; }
 .enq-sec-eyebrow { display: flex; align-items: center; gap: var(--space-xs); margin-bottom: var(--space-sm); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--grey-metal); font-weight: 600; line-height: 1; }
-.enq-sec-eyebrow i { width: 24px; height: 2px; background: var(--burgundy); display: inline-block; }
 .enq-sec-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-xl); align-items: start; }
 .enq-sec-form { position: relative; background: var(--surface); border: 1px solid var(--grey-metal); padding: var(--space-lg); min-width: 0; }
 .enq-sec-form::before { content: ''; position: absolute; left: -1px; top: -1px; width: 72px; height: 3px; background: var(--burgundy); }
@@ -52,7 +51,7 @@ export default function EnquirySection() {
       <div className="enq-sec__bg" aria-hidden="true" />
       <div className="enq-sec__in">
         <div className="enq-sec-head">
-          <p className="enq-sec-eyebrow"><i aria-hidden="true" />Enquire</p>
+          <p className="enq-sec-eyebrow">Enquire</p>
           {/* COPY: drafted, needs client approval */}
           <h2 id="enquiry-heading" style={{ fontFamily: 'var(--font-archivo)', fontVariationSettings: '"wdth" 125', fontSize: 'clamp(2rem, 4.2vw, 3.5rem)', fontWeight: 650, lineHeight: 1.05, letterSpacing: '-0.03em', color: 'var(--ink)', margin: 0 }}>
             Let&rsquo;s talk parts.
