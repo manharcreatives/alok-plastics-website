@@ -24,7 +24,6 @@ ${FOLD_SECTION_CSS}
 .eb { --pad-top: var(--section-y); background: var(--surface-alt); padding-bottom: var(--section-y); padding-left: var(--grid-page-padding); padding-right: var(--grid-page-padding); overflow: hidden; }
 .eb__inner { position: relative; z-index: 1; max-width: calc(var(--grid-max) + 2 * var(--grid-page-padding)); margin: 0 auto; display: grid; gap: var(--space-lg); align-items: end; }
 .eb__label { display: flex; align-items: center; gap: var(--space-xs); margin-bottom: var(--space-sm); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--grey-metal-text); font-weight: 600; }
-.eb__label i { width: 24px; height: 2px; background: var(--burgundy); display: inline-block; }
 .eb__h { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(1.75rem, 4.4vw, 3.25rem); font-weight: 650; line-height: 1.06; letter-spacing: -0.03em; color: var(--ink); max-width: 18ch; text-wrap: balance; margin: 0 0 var(--space-sm); }
 .eb__p { color: var(--body); line-height: 1.65; max-width: 52ch; margin: 0; }
 .eb__cta { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-xs); min-height: 56px; padding: 0 var(--space-lg); background: var(--burgundy); color: var(--surface);
@@ -74,7 +73,7 @@ export default function EnquiryBand({
         {variant === 'wide' ? (
           <>
             <div>
-              <p className="eb__label"><i aria-hidden="true" />Next step</p>
+              <p className="eb__label">Next step</p>
               <h2 id="enquiry-band-h" className="eb__h">{heading}</h2>
             </div>
             <div className="eb__row">
@@ -85,7 +84,7 @@ export default function EnquiryBand({
         ) : variant === 'lock' ? (
           <>
             <div>
-              <p className="eb__label"><i aria-hidden="true" />Next step</p>
+              <p className="eb__label">Next step</p>
               <h2 id="enquiry-band-h" className="eb__h">{heading}</h2>
             </div>
             <div className="eb__panel">
@@ -96,7 +95,7 @@ export default function EnquiryBand({
         ) : (
           <>
             <div>
-              <p className="eb__label"><i aria-hidden="true" />Next step</p>
+              <p className="eb__label">Next step</p>
               <h2 id="enquiry-band-h" className="eb__h">{heading}</h2>
               <p className="eb__p">{text}</p>
             </div>

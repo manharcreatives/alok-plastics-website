@@ -58,7 +58,6 @@ ${ART_CSS}
 .ph__text { max-width: 44rem; }
 .ph__crumbs { margin-bottom: var(--space-md); }
 .ph__label { display: flex; align-items: center; gap: var(--space-xs); margin-bottom: var(--space-sm); }
-.ph__rule { display: inline-block; width: 40px; height: 2px; background: var(--burgundy); transform-origin: left center; }
 .ph__labeltext { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--grey-metal); font-weight: 600; line-height: 1; }
 .ph__h1mask { display: block; overflow: hidden; padding-bottom: 0.12em; margin-bottom: calc(-0.12em); }
 .ph__h1 { font-family: var(--font-archivo, sans-serif); font-variation-settings: "wdth" 125; font-weight: 650;
@@ -82,7 +81,6 @@ ${ART_CSS}
 .ph { --fold-h: clamp(24px, 4vw, 56px); }
 
 /* ── Entrances ── */
-.ph[data-ready] .ph__rule { animation: ph-draw 700ms cubic-bezier(.16,1,.3,1) both; }
 .ph[data-ready] .ph__labeltext { animation: ph-fade 400ms 200ms cubic-bezier(.16,1,.3,1) both; }
 .ph[data-ready] .ph__crumbs { animation: ph-fade 400ms cubic-bezier(.16,1,.3,1) both; }
 .ph[data-ready] .ph__lead { animation: ph-rise 700ms 400ms cubic-bezier(.16,1,.3,1) both; }
@@ -91,9 +89,7 @@ ${ART_CSS}
 .ph[data-ready][data-enter="rise"] .ph__h1 { animation: ph-maskrise 900ms 200ms cubic-bezier(.16,1,.3,1) both; }
 .ph[data-ready][data-enter="wipe"] .ph__h1 { animation: ph-wipe 900ms 200ms cubic-bezier(.65,0,.35,1) both; }
 .ph[data-ready][data-enter="draw"] .ph__h1 { animation: ph-slide 900ms 400ms cubic-bezier(.16,1,.3,1) both; }
-.ph[data-ready][data-enter="draw"] .ph__rule { animation-duration: 900ms; }
 .ph[data-ready] .ph__fold { animation: ph-fade 1200ms 400ms cubic-bezier(.65,0,.35,1) both; }
-@keyframes ph-draw { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 @keyframes ph-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes ph-rise { from { opacity: 0; transform: translate3d(0, 16px, 0); } to { opacity: 1; transform: none; } }
 @keyframes ph-maskrise { from { transform: translate3d(0, 105%, 0); } to { transform: none; } }
@@ -163,7 +159,6 @@ export default function PageHero({ crumbs, label, title, lead, children, art, sc
         <div className="ph__text">
           <div className="ph__crumbs"><Breadcrumbs items={crumbs} /></div>
           <div className="ph__label">
-            <span className="ph__rule" aria-hidden="true" />
             <span className="ph__labeltext">{label}</span>
           </div>
           <span className="ph__h1mask"><h1 className="ph__h1">{title}</h1></span>

@@ -15,7 +15,7 @@ interface MicroLabelProps {
 
 export default function MicroLabel({
   children,
-  showRule = true,
+  showRule = false, /* labels read as plain text; the rule is opt-in */
   className = '',
 }: MicroLabelProps) {
   return (

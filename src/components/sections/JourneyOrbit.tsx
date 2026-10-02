@@ -146,7 +146,6 @@ const CSS = `
 .jrn { position: relative; isolation: isolate; background: linear-gradient(180deg, var(--canvas) 0%, var(--surface-alt) 100%); overflow: hidden; border-top: 1px solid var(--grey-warm); }
 .jrn-inner { position: relative; z-index: 2; max-width: calc(var(--grid-max) + 2 * var(--grid-page-padding)); margin: 0 auto; padding: calc(var(--section-y) + 24px) var(--grid-page-padding) 0; }
 .jrn-label { display: flex; align-items: center; gap: 10px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--muted); font-weight: 600; font-family: var(--font-archivo); margin-bottom: var(--space-sm); }
-.jrn-label i { width: 24px; height: 2px; background: var(--burgundy); display: inline-block; }
 .jrn-h2 { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(1.75rem, 3.5vw, 2.75rem); font-weight: 650; line-height: 1.1; letter-spacing: -0.025em; color: var(--ink); max-width: 18ch; text-wrap: balance; }
 
 /* shared milestone typography */
@@ -452,7 +451,7 @@ export default function JourneyOrbit() {
       </div>
 
       <div className="jrn-inner">
-        <div className="jrn-label"><i aria-hidden="true" />Our Journey</div>
+        <div className="jrn-label">Our Journey</div>
         <h2 id="journey-heading" ref={headingRef} className="jrn-h2">Built on Manufacturing. Grown on Trust.</h2>
 
         {/* Mobile / tablet / reduced-motion: the vertical road */}
