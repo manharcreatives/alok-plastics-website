@@ -44,3 +44,37 @@
 - Not run: Lighthouse, axe on the new pages, WebKit/Firefox, real devices.
 - Admin panel tested on PHP 8.3 CLI only; Apache/LiteSpeed `.htaccess` rules and real mail delivery untested.
 - Floating WhatsApp button renders only once a WhatsApp number exists (site.ts or admin settings).
+
+## §25 gate audit (2026-10-02, branch client-fixes-round5, static `out/` via `npx serve`)
+
+| Check | Result |
+|---|---|
+| Playwright (`npm test`: smoke + axe, 15 tests) | **15/15 pass**, two consecutive runs |
+| axe serious/critical, 14 routes @1440 (incl. legal, 404) | **0** after fixes (was: Metal Grey micro-labels 4.2:1 on Light Grey on 8 routes; `aria-label` on `<p>` on home) |
+| Horizontal scroll @320 / 375 / 1440 | 0 px on all 14 routes |
+| `h1` per page | exactly 1 on all routes |
+| `#` / empty hrefs · dead internal links | 0 · 0 of 49 |
+| Tagline `[lang=sa]` text | byte-identical to §2.7 everywhere (footer was missing the space after the comma) |
+| Reduced motion (`/`, `/about/`, `/career/`, `/products/`) | no Lenis, no pin-spacers, no text left at opacity < 0.1 |
+| Touch targets @375 | ≥ 44 px tall on footer links, breadcrumbs, legal TOC, product rows, CTA links, skip link |
+| Console | one error per page: `GET /data/settings.json 404`, by design until the admin panel writes the file (docs/admin-panel.md) |
+| `typecheck` · `lint` (incl. hex/spacing/glass/forbidden) · `build` | clean · 0 errors, 7 pre-existing warnings · clean |
+
+Lighthouse 12, mobile, simulated slow 4G (fresh session, so the preloader runs):
+
+| Route | Perf | A11y | BP | SEO | LCP (sim) | LCP (observed) | CLS | TBT | Weight |
+|---|---|---|---|---|---|---|---|---|---|
+| `/` | 62 | 100 | 96 | 100 | 6.2 s | 1.03 s | 0 | 540 ms | 882 KB |
+| `/products/` | 77 | 100 | 96 | 100 | 5.8 s | 0.78 s* | 0 | 140 ms | 1197 KB |
+| `/products/water-control/float-valve/` | 79 | 100 | 96 | 100 | 5.7 s | | 0 | 50 ms | 1218 KB |
+| `/about/` | 75 | 100 | 96 | 100 | 5.6 s | 0.81 s | 0 | 220 ms | 821 KB |
+| `/contact/` | 76 | 100 | 96 | 100 | 6.2 s | | 0 | 130 ms | 801 KB |
+
+\* `?nopreload=1` run. BP 96 = the settings.json 404 above.
+
+**Root cause of the Perf gap:** LCP text paints at ~0.7–1.0 s, but every route ships 16 JS files (393 KB gzipped / 1.35 MB raw; 119–172 KB unused) and 7 font files (337 KB) on the critical path. Budgets are 170 KB / 120 KB JS and ≤ 4 fonts. The preloader is not the main cost (`?nopreload=1` only moves home 62 → 73).
+
+### Gates still failing
+- Lighthouse Perf ≥ 90 and simulated LCP < 2.0 s on all five pages (JS + font weight above).
+- Inner-page weight < 900 KB: `/products/` 1197 KB, part pages 1218 KB (catalogue JPGs 104–149 KB each).
+- Console clean: settings.json 404 (design decision, see above).

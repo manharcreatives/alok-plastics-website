@@ -91,6 +91,7 @@ body {
   background: var(--burgundy);
   color: white;
   padding: var(--space-xs) var(--space-md);
+  min-height: 44px; display: inline-flex; align-items: center;
   border-radius: var(--radius-card);
   font-weight: 600;
   z-index: 9999;

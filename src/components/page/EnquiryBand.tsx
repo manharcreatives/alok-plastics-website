@@ -23,7 +23,7 @@ const CSS = `
 ${FOLD_SECTION_CSS}
 .eb { --pad-top: var(--section-y); background: var(--surface-alt); padding-bottom: var(--section-y); padding-left: var(--grid-page-padding); padding-right: var(--grid-page-padding); overflow: hidden; }
 .eb__inner { position: relative; z-index: 1; max-width: calc(var(--grid-max) + 2 * var(--grid-page-padding)); margin: 0 auto; display: grid; gap: var(--space-lg); align-items: end; }
-.eb__label { display: flex; align-items: center; gap: var(--space-xs); margin-bottom: var(--space-sm); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--grey-metal); font-weight: 600; }
+.eb__label { display: flex; align-items: center; gap: var(--space-xs); margin-bottom: var(--space-sm); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--grey-metal-text); font-weight: 600; }
 .eb__label i { width: 24px; height: 2px; background: var(--burgundy); display: inline-block; }
 .eb__h { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(1.75rem, 4.4vw, 3.25rem); font-weight: 650; line-height: 1.06; letter-spacing: -0.03em; color: var(--ink); max-width: 18ch; text-wrap: balance; margin: 0 0 var(--space-sm); }
 .eb__p { color: var(--body); line-height: 1.65; max-width: 52ch; margin: 0; }

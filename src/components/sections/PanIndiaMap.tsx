@@ -135,7 +135,7 @@ const CSS = `
 .pim-rows { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-sm); }
 .pim-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-xs); padding-bottom: var(--space-sm); border-bottom: 1px solid var(--grey-cloud); }
 .pim-row-k { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-sm); }
-.pim-row-name { font-size: 0.9375rem; font-weight: 600; color: var(--ink); text-decoration: none; }
+.pim-row-name { display: inline-flex; align-items: center; min-height: 44px; font-size: 0.9375rem; font-weight: 600; color: var(--ink); text-decoration: none; }
 .pim-row-name:hover { color: var(--burgundy); }
 .pim-row-n { font-family: var(--font-mono, monospace); font-size: 0.8125rem; color: var(--muted); white-space: nowrap; }
 .pim-tiles { display: flex; flex-wrap: wrap; gap: 4px; }

@@ -4,7 +4,7 @@
 .p-section--canvas { background: var(--canvas); }
 .p-section--surface { background: var(--surface); }
 .p-section--alt { background: var(--surface-alt); }
-.p-eyebrow { display: flex; align-items: center; gap: var(--space-xs); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--grey-metal); font-weight: 600; margin-bottom: var(--space-sm); line-height: 1; }
+.p-eyebrow { display: flex; align-items: center; gap: var(--space-xs); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--grey-metal-text); font-weight: 600; margin-bottom: var(--space-sm); line-height: 1; }
 .p-eyebrow::before { content: ''; width: 24px; height: 2px; background: var(--burgundy); flex: none; }
 .p-eyebrow__num { font-family: var(--font-mono, monospace); color: var(--burgundy); }
 .p-h2 { font-family: var(--font-archivo); font-variation-settings: "wdth" 115; font-size: clamp(1.75rem, 3.4vw, 2.75rem); font-weight: 650; letter-spacing: -0.025em; color: var(--ink); line-height: 1.08; text-wrap: balance; }

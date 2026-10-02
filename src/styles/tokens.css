@@ -34,6 +34,8 @@
   --ink: #1E1115;               /* headings & key text (warm near-black) */
   --body: #4A3D40;              /* paragraphs */
   --muted: #6B5F62;             /* helper text, placeholders, footnotes */
+  /* micro-labels that can sit on Light Grey: Metal Grey deepened 15% toward ink (>=5:1 on all light surfaces) */
+  --grey-metal-text: color-mix(in srgb, var(--grey-metal) 85%, var(--ink));
 
   /* ── Functional — never brand colours ───────────────────────── */
   --whatsapp: #0F7B6C;          /* WhatsApp buttons & links ONLY */

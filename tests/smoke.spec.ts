@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { site } from '../src/content/site';
 
 const widths = [375, 768, 1440];
 
@@ -25,9 +26,11 @@ test('no raw TODO / invented-claim strings on home', async ({ page }) => {
   }
 });
 
-test('hero has Enquire + WhatsApp CTAs', async ({ page }) => {
+// Round 2 (docs/round2-brief.md #6): the hero has exactly two buttons, the primary enquiry CTA (label from
+// site.ts) + Browse Products; WhatsApp lives only in the FAB.
+test('hero has the enquiry + Browse Products CTAs', async ({ page }) => {
   await page.addInitScript(() => sessionStorage.setItem('alok:preloaded', '1'));
   await page.goto('/');
-  await expect(page.getByRole('link', { name: /Enquire Now/i }).first()).toBeVisible();
-  await expect(page.getByRole('link', { name: /WhatsApp Us/i }).first()).toBeVisible();
+  await expect(page.locator('.hero').getByRole('link', { name: site.hero.ctas.primary })).toBeVisible();
+  await expect(page.locator('.hero').getByRole('link', { name: /Browse Products/i })).toBeVisible();
 });

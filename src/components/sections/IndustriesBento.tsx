@@ -92,7 +92,7 @@ const CSS = `${FOLD_SECTION_CSS}
 .ind-core-desc { font-size: 1rem; color: var(--rose-pale); line-height: 1.6; max-width: 46ch; }
 .ind-core-name span { display: block; }
 .ind-core-name span + span { margin-top: 2px; }
-.ind-core-cta { display: inline-flex; align-items: center; gap: var(--space-xs); align-self: flex-start; margin-top: var(--space-sm); color: var(--surface); font-weight: 600; font-size: 0.9375rem; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--rose); }
+.ind-core-cta { display: inline-flex; align-items: center; min-height: 44px; gap: var(--space-xs); align-self: flex-start; margin-top: var(--space-sm); color: var(--surface); font-weight: 600; font-size: 0.9375rem; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--rose); }
 .ind-core-cta svg { transition: transform 200ms cubic-bezier(.16,1,.3,1); }
 .ind-core-cta:hover svg, .ind-core-cta:focus-visible svg { transform: translate3d(2px, -2px, 0); }
 .ind-core-art { position: relative; min-height: 220px; padding: var(--space-sm) var(--space-md) 0; display: flex; align-items: flex-end;  }
@@ -191,7 +191,8 @@ export default function IndustriesBento() {
           <div className="ind-core">
             <div className="ind-core-copy">
               <div className="ind-core-kicker"><i aria-hidden="true" />Core market</div>
-              <p className="ind-core-name" aria-label={coreMarket.name}>
+              <p className="ind-core-name">
+                <span className="sr-only">{coreMarket.name}</span>
                 {coreMarket.name.split(' · ').map(n => <span key={n} aria-hidden="true">{n}</span>)}
               </p>
               <p className="ind-core-desc">{coreMarket.description}</p>
