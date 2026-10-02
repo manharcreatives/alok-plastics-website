@@ -20,7 +20,7 @@ const CSS = `
 .lg { background: var(--canvas); padding: var(--section-y) var(--grid-page-padding); }
 .lg__in { max-width: calc(var(--grid-max) + 2 * var(--grid-page-padding)); margin: 0 auto; display: grid; gap: var(--space-lg); }
 .lg__toc { list-style: none; margin: 0; padding: 0; border-left: 1px solid var(--grey-warm); }
-.lg__toc a { display: block; padding: var(--space-xs) var(--space-sm); font-size: 0.9375rem; color: var(--body); text-decoration: none; border-left: 2px solid transparent; margin-left: -1px; }
+.lg__toc a { display: flex; align-items: center; min-height: 44px; padding: var(--space-xs) var(--space-sm); font-size: 0.9375rem; color: var(--body); text-decoration: none; border-left: 2px solid transparent; margin-left: -1px; }
 .lg__toc a:hover { color: var(--burgundy); border-left-color: var(--burgundy); }
 .lg__toc a:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 2px; }
 .lg__tochead { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--grey-metal); font-weight: 600; margin: 0 0 var(--space-sm); }

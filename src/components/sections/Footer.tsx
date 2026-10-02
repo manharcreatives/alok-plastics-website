@@ -52,7 +52,7 @@ body:has(.eb, #enquiry) .ft__cta { display: none; }
 .ft__cols > * { min-width: 0; }
 .ft__h { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--rose-pale); font-weight: 600; margin: 0 0 var(--space-sm); }
 .ft__list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 4px; }
-.ft__link { display: inline-flex; align-items: center; gap: var(--space-xs); min-height: 32px; font-size: 0.9375rem; color: color-mix(in srgb, var(--surface) 88%, transparent); text-decoration: none; transition: color 200ms cubic-bezier(.16,1,.3,1); }
+.ft__link { display: inline-flex; align-items: center; gap: var(--space-xs); min-height: 44px; font-size: 0.9375rem; color: color-mix(in srgb, var(--surface) 88%, transparent); text-decoration: none; transition: color 200ms cubic-bezier(.16,1,.3,1); }
 .ft__link:hover { color: var(--surface); text-decoration: underline; text-underline-offset: 3px; }
 .ft__link--accent { color: var(--rose-pale); font-weight: 600; }
 .ft__link:focus-visible, .ft__cta:focus-visible, .ft__addr:focus-visible, .ft__soc a:focus-visible { outline: 2px solid var(--rose-pale); outline-offset: 2px; }
@@ -107,7 +107,7 @@ export default function Footer() {
             <Link href="/" aria-label="Alok Plastics, home" style={{ display: 'inline-block', marginBottom: 'var(--space-lg)' }}>
               <Logo variant="white" style={{ height: 56, width: 'auto', display: 'block' }} />
             </Link>
-            <p lang="sa" className="ft__dev">{devA},<br /><span>{devB}</span></p>
+            <p lang="sa" className="ft__dev">{devA},{' '}<br /><span>{devB}</span></p>
             <p lang="en" className="ft__en">{site.tagline.english}</p>
           </div>
           <Link href="/enquiry/" className="ft__cta" onClick={() => trackQuoteCtaClick({ source: 'footer' })}>

@@ -120,7 +120,7 @@ const CSS = METAL_TEXT_CSS + `
   .ap-p { font-size: 1.0625rem; line-height: 1.65; color: var(--body); max-width: 52ch; margin-bottom: var(--space-sm); }
   .ap-link {
     display: inline-flex; align-items: center; gap: var(--space-xs); margin-top: var(--space-md);
-    padding: var(--space-xs) 0; font-weight: 600; font-size: 0.9375rem; color: var(--burgundy);
+    min-height: 44px; padding: var(--space-xs) 0; font-weight: 600; font-size: 0.9375rem; color: var(--burgundy);
     border-bottom: 2px solid var(--burgundy); text-decoration: none;
   }
   .ap-link svg { transition: transform 200ms cubic-bezier(.16,1,.3,1); }

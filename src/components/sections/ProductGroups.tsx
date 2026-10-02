@@ -283,7 +283,7 @@ const CSS = FOLD_SECTION_CSS + `
   .pg-dim b:first-of-type { left: 0; } .pg-dim b:last-of-type { right: 0; }
   .pg-tags { display: flex; flex-wrap: wrap; gap: var(--space-xs); margin-bottom: var(--space-xs); }
   .pg-parts { list-style: none; margin: 0; padding: 0; }
-  .pg-part { display: flex; align-items: center; gap: var(--space-xs); padding: var(--space-xs) 0; border-bottom: 1px solid var(--grey-cloud); font-size: 0.9375rem; color: var(--body); min-width: 0; text-decoration: none; transition: color 200ms cubic-bezier(.16,1,.3,1), padding-left 200ms cubic-bezier(.16,1,.3,1); }
+  .pg-part { display: flex; align-items: center; gap: var(--space-xs); min-height: 44px; padding: var(--space-xs) 0; border-bottom: 1px solid var(--grey-cloud); font-size: 0.9375rem; color: var(--body); min-width: 0; text-decoration: none; transition: color 200ms cubic-bezier(.16,1,.3,1), padding-left 200ms cubic-bezier(.16,1,.3,1); }
   .pg-parts li:last-child .pg-part { border-bottom: none; }
   .pg-part:hover, .pg-part:focus-visible { color: var(--burgundy); padding-left: 4px; }
   .pg-part:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 2px; }
@@ -296,7 +296,7 @@ const CSS = FOLD_SECTION_CSS + `
   .pg-cta-row { display: flex; flex-wrap: wrap; gap: var(--space-sm); margin-top: var(--space-md); }
   .pg-card-foot { border-top: 1px solid var(--grey-cloud); padding: var(--space-xs) var(--space-lg); display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); background: var(--canvas); }
   .pg-card--alt .pg-card-foot { padding-left: calc(var(--space-lg) + var(--cut)); }
-  .pg-foot-btn, .pg-foot-link { display: inline-flex; align-items: center; gap: var(--space-xs); background: none; border: none; cursor: pointer; font-size: 0.875rem; color: var(--burgundy); font-weight: 600; padding: var(--space-xs) 0; text-decoration: none; }
+  .pg-foot-btn, .pg-foot-link { display: inline-flex; align-items: center; min-height: 44px; gap: var(--space-xs); background: none; border: none; cursor: pointer; font-size: 0.875rem; color: var(--burgundy); font-weight: 600; padding: var(--space-xs) 0; text-decoration: none; }
   .pg-foot-link svg { transition: transform 200ms cubic-bezier(.16,1,.3,1); }
   .pg-foot-link:hover svg { transform: translate(2px, -2px); }
   .pg-foot-btn:focus-visible, .pg-foot-link:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 2px; }

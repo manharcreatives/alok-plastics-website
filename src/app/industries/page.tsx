@@ -43,7 +43,7 @@ const SEND = [
 
 const CSS = `
 ${FOLD_SECTION_CSS}
-.in-eyebrow { display: flex; align-items: center; gap: var(--space-xs); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; font-weight: 600; margin-bottom: var(--space-sm); line-height: 1; color: var(--grey-metal); }
+.in-eyebrow { display: flex; align-items: center; gap: var(--space-xs); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; font-weight: 600; margin-bottom: var(--space-sm); line-height: 1; color: var(--grey-metal-text); }
 .in-eyebrow::before { content: ''; width: 24px; height: 2px; background: var(--burgundy); }
 .in-h2 { font-family: var(--font-archivo); font-variation-settings: "wdth" 118; font-size: clamp(1.875rem, 4vw, 3.25rem); font-weight: 650; line-height: 1.06; letter-spacing: -0.025em; color: var(--ink); text-wrap: balance; }
 
