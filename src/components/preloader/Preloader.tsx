@@ -20,11 +20,7 @@
 
 import { useEffect, useRef, useCallback } from 'react';
 import Logo from '@/components/brand/Logo';
-import {
-  buildPreloaderTimeline,
-  updatePreloaderCounter,
-  type PreloaderRefs,
-} from './preloader.timeline';
+import type { PreloaderRefs } from './preloader.timeline';
 import { shouldShowPreloader, markPreloaderDone } from '@/lib/preload';
 import './preloader.css';
 
@@ -123,7 +119,21 @@ export default function Preloader({ navLogoSlotRef, onComplete }: PreloaderProps
       navLogoSlot: navLogoSlotRef ?? { current: document.querySelector<HTMLElement>('.glass-nav__logo') },
     };
 
-    const tl = buildPreloaderTimeline(refs, {
+    /* Repeat visits never download the timeline (+ GSAP): it is only imported when the overlay runs.
+     * The overlay is already painted by CSS from the <head> class, so nothing is shown late. */
+    let cancelled = false;
+    let tl: gsap.core.Timeline | null = null;
+    let fontsTimer: ReturnType<typeof setTimeout> | undefined;
+    let speedUp: ReturnType<typeof setTimeout> | undefined;
+    const failsafe = setTimeout(() => {
+      tl?.progress(1);
+      endNow();
+      inertTargets.forEach(el => el.removeAttribute('inert'));
+    }, 5000);
+
+    import('./preloader.timeline').then(({ buildPreloaderTimeline, updatePreloaderCounter }) => {
+    if (cancelled) return;
+    const t = tl = buildPreloaderTimeline(refs, {
       onProgress: (value) => {
         updatePreloaderCounter(counterRef.current, ruleLineRef.current, value);
       },
@@ -135,28 +145,23 @@ export default function Preloader({ navLogoSlotRef, onComplete }: PreloaderProps
         if (live) live.textContent = 'Loaded Alok Plastics';
       },
     });
-    timelineRef.current = tl;
+    timelineRef.current = t;
 
     /* Start once fonts are ready (so the tagline doesn't swap mid-sequence),
      * but never wait more than 1.2s */
     let started = false;
     const start = () => {
-      if (started) return;
+      if (started || cancelled) return;
       started = true;
-      tl.play();
+      t.play();
     };
-    const fontsTimer = setTimeout(start, 1200);
+    fontsTimer = setTimeout(start, 1200);
     document.fonts?.ready.then(start, start);
 
-    /* Speed-up at 4s, hard failsafe at 5s: jump to the end (runs finalise).
+    /* Speed-up at 4s (from mount); hard failsafe at 5s above jumps to the end.
      * The <head> script's 6s class removal is the last line of defence. */
-    const speedUp = setTimeout(() => { tl.timeScale(6); }, 4000);
-    const failsafe = setTimeout(() => {
-      start();
-      tl.progress(1);
-      endNow();
-      inertTargets.forEach(el => el.removeAttribute('inert'));
-    }, 5000);
+    speedUp = setTimeout(() => { t.timeScale(6); }, 4000);
+    }, () => { if (!cancelled) { endNow(); inertTargets.forEach(el => el.removeAttribute('inert')); onComplete?.(); } });
 
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') skip();
@@ -164,11 +169,12 @@ export default function Preloader({ navLogoSlotRef, onComplete }: PreloaderProps
     document.addEventListener('keydown', handleKey);
 
     return () => {
+      cancelled = true;
       document.removeEventListener('keydown', handleKey);
       clearTimeout(fontsTimer);
       clearTimeout(speedUp);
       clearTimeout(failsafe);
-      tl.kill();
+      tl?.kill();
       timelineRef.current = null;
       inertTargets.forEach(el => el.removeAttribute('inert'));
     };

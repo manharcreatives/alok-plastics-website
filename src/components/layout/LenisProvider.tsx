@@ -10,12 +10,20 @@
 'use client';
 
 import { useEffect } from 'react';
-import { initLenis, destroyLenis } from '@/lib/motion';
+/* The motion core (GSAP + ScrollTrigger + Lenis, ~45 KB gz) is imported dynamically so it is not on
+   the critical path of pages whose first paint doesn't need it. Sections that animate import it
+   statically and share the same module instance. */
 
 export default function LenisProvider({ children }: { children?: React.ReactNode }) {
   useEffect(() => {
-    initLenis();
-    return () => destroyLenis();
+    let alive = true;
+    let destroy: (() => void) | undefined;
+    import('@/lib/motion').then(m => {
+      if (!alive) return;
+      m.initLenis();
+      destroy = m.destroyLenis;
+    });
+    return () => { alive = false; destroy?.(); };
   }, []);
 
   return <>{children}</>;

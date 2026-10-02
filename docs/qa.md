@@ -78,3 +78,18 @@ Lighthouse 12, mobile, simulated slow 4G (fresh session, so the preloader runs):
 - Lighthouse Perf ≥ 90 and simulated LCP < 2.0 s on all five pages (JS + font weight above).
 - Inner-page weight < 900 KB: `/products/` 1197 KB, part pages 1218 KB (catalogue JPGs 104–149 KB each).
 - Console clean: settings.json 404 (design decision, see above).
+
+### Bundle trim pass 1 (same day, no visual change)
+Flip removed (never used); SplitText registered only in `useMaskRise`; Lenis/GSAP core dynamically imported by `LenisProvider`; preloader timeline imported only when the overlay runs; Noto Sans Devanagari and JetBrains Mono `preload: false` (7 → 4–5 font requests).
+
+| Route | Perf | LCP (sim) | TBT | Fonts | Weight |
+|---|---|---|---|---|---|
+| `/` | 62 → 65 | 6.2 → 5.6 s | 540 → 480 ms | 7 → 5 | 882 → 800 KB |
+| `/products/` | 77 → 77 | 5.8 → 5.4 s | 140 ms | 7 → 5 | 1197 → 1083 KB |
+| `/products/water-control/float-valve/` | 79 → 79 | 5.7 → 5.2 s | 50 → 70 ms | 7 → 5 | 1218 → 1104 KB |
+| `/about/` | 75 → 78 | 5.6 → 4.8 s | 220 → 180 ms | 7 → 5 | 821 → 730 KB |
+| `/contact/` | 76 → 75 | 6.2 → 5.3 s | 130 → 230 ms | 7 → 4 | 801 → 665 KB |
+
+Preloader re-verified on a first visit (plays, hands off, `inert` released, no errors); `npm test` 15/15.
+
+**What still holds Perf below 90:** Lighthouse's simulated LCP charges all script execution before first paint (observed LCP ~0.7–1.0 s) on a 4× slowed CPU. Pre-paint JS is React/Next (~160 KB gz, fixed) plus GSAP/ScrollTrigger/Lenis on pages with animated sections. zod (90 KB gz) and home-section chunks arrive later via link prefetch. Next levers, larger changes: lazy-hydrate below-fold animated sections, `zod/mini` in the forms, disable `<Link>` prefetch for footer links.
