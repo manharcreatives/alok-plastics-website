@@ -34,6 +34,7 @@ const notoDevanagari = localFont({
   ],
   variable: '--font-devanagari',
   display: 'swap',
+  preload: false, /* accent text only; loads on use instead of competing with the headline */
   fallback: ['Noto Sans Devanagari', 'Nirmala UI', 'sans-serif'],
 });
 
@@ -44,6 +45,7 @@ const jetbrainsMono = localFont({
   ],
   variable: '--font-mono',
   display: 'swap',
+  preload: false, /* micro-detail only */
   fallback: ['Courier New', 'monospace'],
 });
 
