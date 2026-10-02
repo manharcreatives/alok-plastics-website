@@ -10,13 +10,13 @@ import { D } from './artCss';
    can never absolutely-overlap the heading or lead text. */
 /* The word lives in the band to the RIGHT of the headline's widest line ("Grow alongside"), so it can
    never cross it at any width. Its size is derived from that band instead of a fixed vw value:
-     headline size  = the PageHero stack h1 clamp (keep in sync with PageHero.tsx)
+     headline size  = --fs-display-xl (the PageHero stack h1)
      headline width ≈ 8.9em  (measured 8.78em in Archivo wdth 125, rounded up)
      word width     ≈ 5.6em  ("& CRAFT", measured 5.47em, rounded up)
      band           = 100vw - both page paddings - headline width - a 48px gap
    The hero clips overflow; below 768px there is no room beside the headline, so the word is hidden. */
 const CSS = `
-.pa-career { --h1: clamp(2.75rem, 7vw, 6.25rem); position: relative; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
+.pa-career { --h1: var(--fs-display-xl); position: relative; width: 100%; height: 100%; pointer-events: none; overflow: hidden; }
 .pa-career__word {
   position: absolute; top: 0; right: 0; z-index: 0;
   font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-weight: 700;

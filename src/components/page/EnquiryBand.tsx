@@ -23,8 +23,8 @@ const CSS = `
 ${FOLD_SECTION_CSS}
 .eb { --pad-top: var(--section-y); background: var(--surface-alt); padding-bottom: var(--section-y); padding-left: var(--grid-page-padding); padding-right: var(--grid-page-padding); overflow: hidden; }
 .eb__inner { position: relative; z-index: 1; max-width: calc(var(--grid-max) + 2 * var(--grid-page-padding)); margin: 0 auto; display: grid; gap: var(--space-lg); align-items: end; }
-.eb__label { display: flex; align-items: center; gap: var(--space-xs); margin-bottom: var(--space-sm); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--grey-metal-text); font-weight: 600; }
-.eb__h { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(1.75rem, 4.4vw, 3.25rem); font-weight: 650; line-height: 1.06; letter-spacing: -0.03em; color: var(--ink); max-width: 18ch; text-wrap: balance; margin: 0 0 var(--space-sm); }
+.eb__label { display: flex; align-items: center; gap: var(--space-xs); margin-bottom: var(--space-sm); font-size: var(--fs-label); text-transform: uppercase; letter-spacing: var(--tr-label); color: var(--grey-metal-text); font-weight: 600; line-height: var(--lh-label); font-family: var(--font-archivo), sans-serif; }
+.eb__h { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-h1); font-weight: 650; line-height: var(--lh-h1); letter-spacing: var(--tr-h1); color: var(--ink); max-width: 18ch; text-wrap: balance; margin: 0 0 var(--space-sm); }
 .eb__p { color: var(--body); line-height: 1.65; max-width: 52ch; margin: 0; }
 .eb__cta { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-xs); min-height: 56px; padding: 0 var(--space-lg); background: var(--burgundy); color: var(--surface);
   font-weight: 650; font-size: 1.0625rem; text-decoration: none; border-radius: var(--radius-card); clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%);
@@ -39,10 +39,10 @@ ${FOLD_SECTION_CSS}
 /* wide: the headline carries the band; text and action sit under a ruled line */
 .eb--wide .eb__lines, .eb--lock .eb__lines { display: none; }
 .eb--wide .eb__inner { grid-template-columns: minmax(0, 1fr); gap: var(--space-lg); }
-.eb--wide .eb__h { max-width: 20ch; font-size: clamp(2.25rem, 6.4vw, 5.5rem); line-height: 1.02; margin-bottom: 0; }
+.eb--wide .eb__h { max-width: 20ch; font-size: var(--fs-h1); line-height: var(--lh-h1); margin-bottom: 0; }
 .eb--wide .eb__row { display: grid; gap: var(--space-md); align-items: center; padding-top: var(--space-md); border-top: 1px solid var(--grey-metal); }
 /* lock: a big headline keyed against a stepped, notched blush panel (the L+O lock) that holds the action */
-.eb--lock .eb__h { font-size: clamp(2.25rem, 4.6vw, 4rem); max-width: 16ch; line-height: 1.02; margin-bottom: 0; }
+.eb--lock .eb__h { font-size: var(--fs-h1); max-width: 16ch; line-height: var(--lh-h1); margin-bottom: 0; }
 .eb--lock .eb__panel { position: relative; background: var(--blush); border-left: 2px solid var(--burgundy); padding: calc(var(--space-lg) + 28px) var(--space-lg) var(--space-lg); display: grid; gap: var(--space-md); justify-items: start;
   clip-path: polygon(0 28px, 34% 28px, 34% 14px, 68% 14px, 68% 0, calc(100% - 40px) 0, 100% 40px, 100% 100%, 0 100%); }
 .eb--lock .eb__panel::after { content: ''; position: absolute; right: var(--space-md); bottom: var(--space-md); width: 56px; height: 56px; pointer-events: none;

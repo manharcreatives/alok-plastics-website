@@ -110,10 +110,10 @@ const CSS = METAL_TEXT_CSS + `
   }
   .ap-wrap { position: relative; max-width: calc(var(--grid-max) + 2 * var(--grid-page-padding)); margin: 0 auto; padding: 0 var(--grid-page-padding); }
   .ap-top { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-xl); align-items: end; }
-  .ap-micro { display: inline-flex; align-items: center; gap: 10px; margin-bottom: var(--space-md); font-size: 0.75rem; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; color: var(--muted); font-family: var(--font-archivo); }
+  .ap-micro { display: inline-flex; align-items: center; gap: 10px; margin-bottom: var(--space-md); font-size: var(--fs-label); letter-spacing: var(--tr-label); text-transform: uppercase; font-weight: 600; color: var(--muted); font-family: var(--font-archivo), sans-serif; line-height: var(--lh-label); }
   .ap-h {
     font-family: var(--font-archivo); font-variation-settings: "wdth" 125;
-    font-size: clamp(2.25rem, 5.2vw, 4.5rem); font-weight: 650; line-height: 1.04; letter-spacing: -0.03em;
+    font-size: var(--fs-h1); font-weight: 650; line-height: var(--lh-h1); letter-spacing: var(--tr-h1);
     color: var(--ink); max-width: 15ch; margin-bottom: var(--space-lg); text-wrap: balance;
   }
   .ap-p { font-size: 1.0625rem; line-height: 1.65; color: var(--body); max-width: 52ch; margin-bottom: var(--space-sm); }
@@ -162,11 +162,11 @@ const CSS = METAL_TEXT_CSS + `
   .ap-num-wrap { position: relative; display: inline-flex; align-items: baseline; gap: 4px; overflow: hidden; padding: 0 4px 4px 0; }
   .ap-num {
     font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-variant-numeric: tabular-nums lining-nums;
-    font-size: clamp(2.5rem, 6.2vw, 5.5rem); font-weight: 650; line-height: 1; letter-spacing: -0.04em;
+    font-size: var(--fs-stat); font-weight: 650; line-height: var(--lh-stat); letter-spacing: var(--tr-stat);
     background: linear-gradient(175deg, var(--burgundy-night) 0%, var(--burgundy) 55%, var(--burgundy-bright) 100%); -webkit-background-clip: text; background-clip: text;
     -webkit-text-fill-color: transparent; color: var(--burgundy); white-space: nowrap;
   }
-  .ap-suffix { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(1.25rem, 2.4vw, 2.25rem); font-weight: 500; color: var(--grey-metal); letter-spacing: -0.02em; white-space: nowrap; }
+  .ap-suffix { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-stat-unit); font-weight: 500; color: var(--grey-metal); letter-spacing: -0.02em; white-space: nowrap; }
   .ap-num-wrap::after {
     content: ""; position: absolute; inset: -20%; pointer-events: none; opacity: 0;
     background: linear-gradient(45deg, transparent 38%, rgba(255,255,255,.85) 50%, transparent 62%);

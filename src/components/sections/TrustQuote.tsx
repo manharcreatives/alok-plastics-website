@@ -38,8 +38,8 @@ const TESTIMONIALS: { quote: string; name: string; company: string }[] = [
 const CSS = FOLD_SECTION_CSS + `
   .tq-sec { --pad-top: calc(var(--section-y) * 1.2); background: var(--surface); padding-bottom: var(--section-y); padding-left: var(--grid-page-padding); padding-right: var(--grid-page-padding); overflow: hidden; }
   .tq-wrap { position: relative; max-width: calc(var(--grid-max) + 2 * var(--grid-page-padding)); margin: 0 auto; }
-  .tq-micro { position: relative; display: inline-flex; align-items: center; gap: 10px; margin-bottom: var(--space-md); font-size: 0.75rem; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; color: var(--muted); font-family: var(--font-archivo); }
-  .tq-h { position: relative; z-index: 1; font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(2.25rem, 6.4vw, 5.75rem); font-weight: 650; line-height: 1.02; letter-spacing: -0.035em; color: var(--ink); max-width: 14ch; text-wrap: balance; }
+  .tq-micro { position: relative; display: inline-flex; align-items: center; gap: 10px; margin-bottom: var(--space-md); font-size: var(--fs-label); letter-spacing: var(--tr-label); text-transform: uppercase; font-weight: 600; color: var(--muted); font-family: var(--font-archivo), sans-serif; line-height: var(--lh-label); }
+  .tq-h { position: relative; z-index: 1; font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-h1); font-weight: 650; line-height: var(--lh-h1); letter-spacing: var(--tr-h1); color: var(--ink); max-width: 14ch; text-wrap: balance; }
   .tq-lower { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-lg); margin-top: var(--space-xl); align-items: end; }
   .tq-peak { width: min(100%, 560px); height: auto; overflow: visible; display: block; }
   .tq-peak path { fill: none; stroke: var(--grey-metal); stroke-width: 1.5; stroke-linecap: square; stroke-linejoin: miter; vector-effect: non-scaling-stroke; }
@@ -56,7 +56,7 @@ const CSS = FOLD_SECTION_CSS + `
   .tq-row::after { content: ""; position: absolute; left: 0; bottom: -1px; height: 1px; width: 100%; background: var(--burgundy); transform: scaleX(0); transform-origin: left; transition: transform 0.4s cubic-bezier(.16,1,.3,1); }
   .tq-row:hover::after { transform: scaleX(1); }
   .tq-k { font-size: 0.75rem; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; color: var(--burgundy); font-family: var(--font-archivo); }
-  .tq-v { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(1.1875rem, 2vw, 1.625rem); line-height: 1.2; font-weight: 600; letter-spacing: -0.02em; color: var(--ink); }
+  .tq-v { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-lead-lg); line-height: var(--lh-lead-lg); font-weight: 600; letter-spacing: var(--tr-lead-lg); color: var(--ink); }
   .tq-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-sm); padding: var(--space-sm); background: var(--blush); }
   .tq-foot p { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-weight: 650; color: var(--burgundy); font-size: 1.125rem; letter-spacing: -0.01em; }
   .tq-go { display: inline-flex; align-items: center; gap: var(--space-xs); padding: var(--space-xs) 0; font-weight: 600; font-size: 0.9375rem; color: var(--burgundy); border-bottom: 2px solid var(--burgundy); text-decoration: none; }

@@ -78,15 +78,15 @@ function IndustryCard({ industry, span }: { industry: Industry; span: string }) 
 const CSS = `${FOLD_SECTION_CSS}
 .ind-sec { --pad-top: calc(var(--section-y) + 8px); background: var(--surface); padding-left: var(--grid-page-padding); padding-right: var(--grid-page-padding); padding-bottom: calc(var(--section-y) + 16px); }
 .ind-head { display: flex; flex-direction: column; gap: var(--space-sm); }
-.ind-label { display: flex; align-items: center; gap: 10px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--muted); font-weight: 600; font-family: var(--font-archivo); }
-.ind-head h2 { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(1.75rem, 3.5vw, 2.75rem); line-height: 1.1; letter-spacing: -0.025em; font-weight: 650; color: var(--ink); max-width: 22ch; text-wrap: balance; }
+.ind-label { display: flex; align-items: center; gap: 10px; font-size: var(--fs-label); text-transform: uppercase; letter-spacing: var(--tr-label); color: var(--muted); font-weight: 600; font-family: var(--font-archivo), sans-serif; line-height: var(--lh-label); }
+.ind-head h2 { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-h2); line-height: var(--lh-h2); letter-spacing: var(--tr-h2); font-weight: 650; color: var(--ink); max-width: 22ch; text-wrap: balance; }
 .ind-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-md); margin-top: var(--space-xl); }
 
 /* ── core market (the one burgundy block) ── */
 .ind-core { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); background: var(--burgundy); border-radius: var(--radius-card); box-shadow: inset 0 1px 0 rgba(255,255,255,.18); overflow: hidden; clip-path: polygon(0 0, 100% 0, 100% calc(100% - 56px), calc(100% - 56px) 100%, 0 100%); }
 .ind-core-copy { display: flex; flex-direction: column; gap: var(--space-sm); padding: var(--space-lg); min-width: 0; }
-.ind-core-kicker { display: flex; align-items: center; gap: var(--space-xs); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--rose-pale); font-weight: 600; }
-.ind-core-name { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(1.5rem, 2.8vw, 2.25rem); font-weight: 650; color: var(--surface); line-height: 1.12; letter-spacing: -0.02em; text-wrap: balance; }
+.ind-core-kicker { display: flex; align-items: center; gap: var(--space-xs); font-size: var(--fs-label); text-transform: uppercase; letter-spacing: var(--tr-label); color: var(--rose-pale); font-weight: 600; line-height: var(--lh-label); font-family: var(--font-archivo), sans-serif; }
+.ind-core-name { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-h2); font-weight: 650; color: var(--surface); line-height: var(--lh-h2); letter-spacing: var(--tr-h2); text-wrap: balance; }
 .ind-core-desc { font-size: 1rem; color: var(--rose-pale); line-height: 1.6; max-width: 46ch; }
 .ind-core-name span { display: block; }
 .ind-core-name span + span { margin-top: 2px; }

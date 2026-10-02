@@ -26,7 +26,7 @@ const CSS = `
 .lg__tochead { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--grey-metal); font-weight: 600; margin: 0 0 var(--space-sm); }
 .lg__note { background: var(--surface); border: 1px solid var(--grey-warm); border-left: 2px solid var(--burgundy); border-radius: var(--radius-card); padding: var(--space-md); margin-bottom: var(--space-lg); }
 .lg__sec { padding: var(--space-md) 0; border-top: 1px solid var(--grey-cloud); scroll-margin-top: 96px; }
-.lg__sec h2 { font-family: var(--font-archivo); font-variation-settings: "wdth" 110; font-size: clamp(1.25rem, 2vw, 1.5rem); font-weight: 650; letter-spacing: -0.01em; color: var(--ink); margin: 0; }
+.lg__sec h2 { font-family: var(--font-archivo); font-variation-settings: "wdth" 110; font-size: var(--fs-h3); font-weight: 650; letter-spacing: var(--tr-h3); color: var(--ink); margin: 0; }
 .lg__link { display: inline-flex; align-items: center; gap: 4px; color: var(--burgundy); font-weight: 600; text-decoration: none; min-height: 44px; }
 .lg__link:hover { color: var(--burgundy-bright); }
 @media (min-width: 900px) {

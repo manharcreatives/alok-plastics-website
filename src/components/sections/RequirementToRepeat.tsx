@@ -71,8 +71,8 @@ const TRACK = 'M 0 100 A 100 100 0 0 0 0 -100 A 100 100 0 0 0 0 100';
 
 const CSS = FOLD_SECTION_CSS + `
   .usp-sec { --pad-top: calc(var(--section-y) * 0.9); background: var(--canvas); padding-bottom: calc(var(--section-y) * 1.2); padding-left: var(--grid-page-padding); padding-right: var(--grid-page-padding); overflow: hidden; }
-  .usp-micro { display: inline-flex; align-items: center; gap: 10px; margin-bottom: var(--space-sm); font-size: 0.75rem; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; color: var(--muted); font-family: var(--font-archivo); }
-  .usp-h { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(1.75rem, 3.5vw, 2.75rem); font-weight: 650; line-height: 1.1; letter-spacing: -0.025em; color: var(--ink); margin-bottom: var(--space-sm); }
+  .usp-micro { display: inline-flex; align-items: center; gap: 10px; margin-bottom: var(--space-sm); font-size: var(--fs-label); letter-spacing: var(--tr-label); text-transform: uppercase; font-weight: 600; color: var(--muted); font-family: var(--font-archivo), sans-serif; line-height: var(--lh-label); }
+  .usp-h { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-h2); font-weight: 650; line-height: var(--lh-h2); letter-spacing: var(--tr-h2); color: var(--ink); margin-bottom: var(--space-sm); }
   .usp-lead { font-size: 1.0625rem; color: var(--body); line-height: 1.65; max-width: 60ch; }
 
   /* Chain — mobile: vertical on a rail */
@@ -97,7 +97,7 @@ const CSS = FOLD_SECTION_CSS + `
   .usp-peak { position: relative; width: 144px; height: 112px; flex-shrink: 0; }
   .usp-peak i { position: absolute; left: 0; top: 0; bottom: 0; width: 56%; background: var(--burgundy); clip-path: polygon(0 100%, 44% 0, 100% 0, 56% 100%); }
   .usp-peak b { position: absolute; left: 44%; right: 0; top: 0; bottom: 0; background: var(--silver-gradient); clip-path: polygon(44% 0, 100% 0, 56% 100%, 0 100%); opacity: .55; }
-  .usp-quote-text { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(1.625rem, 3.6vw, 3.25rem); font-weight: 650; line-height: 1.12; letter-spacing: -0.03em; color: var(--ink); max-width: 24ch; text-wrap: balance; margin-bottom: var(--space-md); }
+  .usp-quote-text { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-h1); font-weight: 650; line-height: var(--lh-h1); letter-spacing: var(--tr-h1); color: var(--ink); max-width: 24ch; text-wrap: balance; margin-bottom: var(--space-md); }
   .usp-quote-hl { background: linear-gradient(175deg, var(--burgundy-night) 0%, var(--burgundy) 55%, var(--burgundy-bright) 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: var(--burgundy); }
   .usp-quote-attr { display: flex; align-items: center; gap: var(--space-sm); font-size: 0.875rem; color: var(--body); font-weight: 600; }
 

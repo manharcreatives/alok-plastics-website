@@ -255,7 +255,7 @@ const CSS = FOLD_SECTION_CSS + `
   .pg-card-body { flex: 1; display: flex; flex-direction: column; padding: var(--space-lg) var(--space-lg) var(--space-md); min-width: 0; }
   .pg-card-head { display: flex; align-items: center; gap: var(--space-xs); margin-bottom: var(--space-sm); }
   .pg-card-count { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; font-weight: 600; color: var(--grey-metal); }
-  .pg-card-title { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(1.375rem, 2.4vw, 1.875rem); line-height: 1.12; font-weight: 650; letter-spacing: -0.02em; color: var(--ink); margin-bottom: var(--space-xs); max-width: 18ch; }
+  .pg-card-title { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-h3); line-height: var(--lh-h3); font-weight: 650; letter-spacing: var(--tr-h3); color: var(--ink); margin-bottom: var(--space-xs); max-width: 18ch; }
   .pg-card-desc { font-size: 0.9375rem; color: var(--body); line-height: 1.55; margin-bottom: var(--space-md); max-width: 52ch; }
   .pg-panel { position: relative; min-height: 248px; flex: 1 0 auto; max-height: 320px; background: var(--surface-alt); border: 1px solid var(--grey-cloud); overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: var(--space-md); }
   .pg-card--single .pg-panel { flex: 0 0 auto; height: 248px; }
@@ -304,7 +304,7 @@ const CSS = FOLD_SECTION_CSS + `
   .pg-path--b { background: var(--burgundy); }
   .pg-path-ico { margin-bottom: var(--space-sm); width: 48px; height: 48px; }
   .pg-path-kicker { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; font-weight: 600; margin-bottom: var(--space-sm); }
-  .pg-path-text { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 650; line-height: 1.2; margin-bottom: var(--space-md); flex: 1; }
+  .pg-path-text { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-lead-lg); font-weight: 650; line-height: var(--lh-lead-lg); margin-bottom: var(--space-md); flex: 1; }
   .pg-path .btn svg { margin-left: var(--space-xs); transition: transform 200ms cubic-bezier(.16,1,.3,1); }
   .pg-path .btn:hover svg { transform: translate(2px, -2px); }
 

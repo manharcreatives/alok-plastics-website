@@ -111,7 +111,7 @@ html.hero-arm .hero__btn { opacity: 0; }
 @media (min-width: 768px) {
   /* 3 lines (the tail 'running.' drops to its own line) so the headline ends before the 75deg
      diagonal / schematic at every width; 4.8vw capped at 72px keeps it clear at 1920 too. */
-  .hero__h1 { font-size: clamp(2rem, 4.8vw, 4.5rem); }
+  .hero__h1 { font-size: var(--fs-display); }
   .hero__line { white-space: nowrap; }
   .hero__tail { display: block; }
   .hero__content { padding-bottom: calc(4vw + var(--space-xl)); }
@@ -220,9 +220,11 @@ export default function Hero() {
           <span
             className="hero__eyebrow-text"
             style={{
-              fontSize: '0.75rem',
+              fontSize: 'var(--fs-label)',
+              lineHeight: 'var(--lh-label)',
+              fontFamily: 'var(--font-archivo), sans-serif',
               textTransform: 'uppercase',
-              letterSpacing: '0.16em',
+              letterSpacing: 'var(--tr-label)',
               color: isAmbient ? 'var(--grey-metal)' : mutedColor,
               fontWeight: 600,
             }}

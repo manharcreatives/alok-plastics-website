@@ -21,13 +21,13 @@ const SECTION_CSS = `
   background-size: 8px 8px; -webkit-mask-image: radial-gradient(ellipse 60% 70% at 25% 40%, var(--ink), transparent); mask-image: radial-gradient(ellipse 60% 70% at 25% 40%, var(--ink), transparent); }
 .enq-sec__in { position: relative; max-width: calc(var(--grid-max) + 2 * var(--grid-page-padding)); margin: 0 auto; }
 .enq-sec-head { margin-bottom: var(--space-xl); max-width: 40rem; }
-.enq-sec-eyebrow { display: flex; align-items: center; gap: var(--space-xs); margin-bottom: var(--space-sm); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--grey-metal); font-weight: 600; line-height: 1; }
+.enq-sec-eyebrow { display: flex; align-items: center; gap: var(--space-xs); margin-bottom: var(--space-sm); font-size: var(--fs-label); text-transform: uppercase; letter-spacing: var(--tr-label); color: var(--grey-metal); font-weight: 600; line-height: var(--lh-label); font-family: var(--font-archivo), sans-serif; }
 .enq-sec-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-xl); align-items: start; }
 .enq-sec-form { position: relative; background: var(--surface); border: 1px solid var(--grey-metal); padding: var(--space-lg); min-width: 0; }
 .enq-sec-form::before { content: ''; position: absolute; left: -1px; top: -1px; width: 72px; height: 3px; background: var(--burgundy); }
 .enq-sec-aside { position: relative; background: var(--burgundy); color: var(--surface); padding: var(--space-lg); min-width: 0; display: flex; flex-direction: column; gap: var(--space-md);
   clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 0 100%); }
-.enq-sec-aside h3 { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(1.375rem, 2.2vw, 1.75rem); font-weight: 650; letter-spacing: -0.02em; line-height: 1.15; margin: 0; color: var(--surface); }
+.enq-sec-aside h3 { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-h3); font-weight: 650; letter-spacing: var(--tr-h3); line-height: var(--lh-h3); margin: 0; color: var(--surface); }
 .enq-sec-aside p { margin: 0; font-size: 0.9375rem; line-height: 1.65; color: color-mix(in srgb, var(--surface) 90%, transparent); }
 .enq-sec-lbl { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--rose-pale); font-weight: 600; }
 .enq-sec-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: var(--space-xs); align-items: start; color: color-mix(in srgb, var(--surface) 92%, transparent); text-decoration: none; font-style: normal; font-size: 0.9375rem; line-height: 1.6; min-height: 44px; }
@@ -53,7 +53,7 @@ export default function EnquirySection() {
         <div className="enq-sec-head">
           <p className="enq-sec-eyebrow">Enquire</p>
           {/* COPY: drafted, needs client approval */}
-          <h2 id="enquiry-heading" style={{ fontFamily: 'var(--font-archivo)', fontVariationSettings: '"wdth" 125', fontSize: 'clamp(2rem, 4.2vw, 3.5rem)', fontWeight: 650, lineHeight: 1.05, letterSpacing: '-0.03em', color: 'var(--ink)', margin: 0 }}>
+          <h2 id="enquiry-heading" style={{ fontFamily: 'var(--font-archivo)', fontVariationSettings: '"wdth" 125', fontSize: 'var(--fs-h1)', fontWeight: 650, lineHeight: 1.05, letterSpacing: '-0.03em', color: 'var(--ink)', margin: 0 }}>
             Let&rsquo;s talk parts.
           </h2>
         </div>
