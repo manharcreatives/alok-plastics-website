@@ -52,9 +52,9 @@ export const site: SiteConfig = {
     },
     eyebrow: 'EST. 1998 · CHANDIGARH',
     headline: ['The small parts that', 'keep big machines running.'],
-    sub: 'Moulded plastic and steel spare parts for water coolers, display counters and deep freezers — float valves, F-bushes, connecting bushes, ventilation jalli and more, in nylon, HDPE, PPCP and brass.',
+    sub: 'We make the parts water coolers, display counters and deep freezers run on — float valves, F-bushes, connecting bushes, gaskets and more, in nylon, HDPE, PPCP and brass.',
     ctas: {
-      primary: 'Enquire Now',
+      primary: 'Send Your Requirement',
       tertiary: 'Browse products',
     },
   },

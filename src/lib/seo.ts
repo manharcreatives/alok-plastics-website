@@ -21,9 +21,9 @@ export function absoluteUrl(path = '/'): string {
   return `${SITE_URL}${path.startsWith('/') ? path : `/${path}`}`;
 }
 
-export const HOME_TITLE = 'Alok Plastics, Chandigarh | Cooler & Freezer Spare Parts';
+export const HOME_TITLE = 'Alok Plastics, Chandigarh | Plastic Spare Parts Manufacturer — Cooler & Freezer Parts';
 export const HOME_DESCRIPTION =
-  'Chandigarh-based manufacturer since 1998 of moulded plastic and steel spare parts for water coolers, display counters and deep freezers. Request a quote.';
+  'Chandigarh manufacturer since 1998. Moulded plastic & steel spare parts for water coolers, display counters & deep freezers — float valves, F-bushes, gaskets, nylon & HDPE. OEM & B2B wholesale enquiries welcome.';
 
 const ctx = { '@context': 'https://schema.org' } as const;
 
@@ -62,8 +62,9 @@ function contactPoint(): Json | null {
 
 /** Plain-sentence entity statement (§18 GEO) — reused on home meta + llms.txt. */
 export const ENTITY_STATEMENT =
-  `${site.name} is a ${site.contact.city}-based manufacturer, established in ${site.foundingYear}, ` +
-  'of moulded plastic and steel spare parts for water coolers, display counters and deep freezers.';
+  `${site.name} is a ${site.contact.city}-based plastic parts manufacturer, established in ${site.foundingYear}, ` +
+  'of moulded plastic and steel spare parts for water coolers, display counters and deep freezers — ' +
+  'including float valves, F-bushes, connecting bushes, ventilation jalli, door locks, gaskets and push cocks in nylon, HDPE, PPCP and brass.';
 
 export function organizationJsonLd(): Json {
   const sa = sameAs();
@@ -82,7 +83,14 @@ export function organizationJsonLd(): Json {
     address: postalAddress(),
     // Roles exactly as stated by the client; `employee` (not `founder`) until confirmed.
     employee: site.owners.map(o => ({ '@type': 'Person', name: o.name, jobTitle: o.title })),
-    knowsAbout: productGroups.map(g => g.name),
+    knowsAbout: [
+      ...productGroups.map(g => g.name),
+      'Float Valve', 'F-Bush', 'Connecting Bush', 'Ventilation Jalli',
+      'Adjustable Leg Insert', 'Waste Pipe', 'Door Lock', 'Hinge', 'Gasket', 'Push Cock',
+      'Nylon Parts', 'HDPE Parts', 'PPCP Parts', 'Brass Parts',
+      'Water Cooler Spare Parts', 'Deep Freezer Spare Parts', 'Display Counter Parts',
+      'OEM Plastic Parts', 'Moulded Plastic Components', 'B2B Spare Parts Supplier India',
+    ],
     ...(cp ? { contactPoint: cp } : {}),
     ...(site.contact.email ? { email: site.contact.email } : {}),
     ...(site.contact.phone ? { telephone: site.contact.phone } : {}),
@@ -201,7 +209,9 @@ export function describe(base: string, suffix: string, max = 155): string {
 
 /** Title for a part page: longest candidate that fits 60 chars with no template suffix. */
 export function partTitle(p: Product, g: ProductGroup): string {
+  const mat = p.material ? ` ${MATERIAL_LABELS[p.material]}` : '';
   const candidates = [
+    `${p.name}${mat} Manufacturer | Alok Plastics, Chandigarh`,
     `${p.name} | ${g.name} — Alok Plastics, Chandigarh`,
     `${p.name} | ${g.name} — Alok Plastics`,
     `${p.name} Spare Part | Alok Plastics, Chandigarh`,

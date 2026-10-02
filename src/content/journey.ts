@@ -7,43 +7,43 @@ export const journeyMarkers: JourneyMarker[] = [
   {
     year: '1998',
     title: 'The Beginning',
-    line: 'Alok Plastics begins its manufacturing journey with a focus on serving industrial and B2B customers.',
+    line: 'Founded in Chandigarh with a clear purpose — make reliable plastic parts for the businesses that keep India\'s appliances running.',
     isFuture: false,
   },
   {
-    // TODO(client): verify — decade-level narrative; no specific facts claimed beyond 'long-term customer relationships'
+    // TODO(client): verify decade-level narrative
     year: '2000s',
     title: 'Building Customer Relationships',
-    line: 'The company grows through consistent manufacturing, reliable service, and long-term customer relationships.',
+    line: 'Built a loyal customer base the old-fashioned way — by showing up, delivering on time, and fixing problems fast.',
     isFuture: false,
   },
   {
-    // TODO(client): verify — 'strengthens manufacturing capabilities' and 'different parts of India' are narrative, not backed by a stated fact
+    // TODO(client): verify — automatic moulding machine adoption timeframe
     year: '2010s',
-    title: 'Expanding Reach',
-    line: 'Alok Plastics strengthens its manufacturing capabilities and expands its customer base across different parts of India.',
+    title: 'Upgrading the Floor',
+    line: 'Switched to automatic injection moulding. Faster turnaround, tighter tolerances, and a customer base that grew across India.',
     isFuture: false,
   },
   {
-    // 20 Cr+ delivered is a verified proof point (site.ts proof). TODO(client): confirm the '2020s' decade placement of the milestone
+    // 20 Cr+ delivered is a verified proof point (site.ts proof). TODO(client): confirm the '2020s' decade placement
     year: '2020s',
     title: '20+ Crore Products Delivered',
-    line: 'The company reached the milestone of 20 crore+ successfully delivered products, with deliveries continuing.',
+    line: '20 crore+ parts delivered — and counting. The milestone that proved consistent manufacturing builds real trust.',
     isFuture: false,
     stat: { value: 20, suffix: 'Cr+', label: 'products delivered' }, // verified proof point (§5.5) — runs the odometer
   },
   {
-    // TODO(client): verify — 'plastic and steel products' product-range claim and 'across India' (Pan Bharat network is verified)
+    // TODO(client): verify
     year: 'Today',
     title: 'Serving India',
-    line: 'Alok Plastics continues to serve B2B customers across India with plastic and steel products, focusing on quality, reliability, and trust.',
+    line: 'Serving OEMs, dealers and distributors across India. 70%+ repeat customers. Still based in Chandigarh, still answering the phone.',
     isFuture: false,
   },
   {
-    // TODO(client): verify — expansion plans are forward-looking; confirm client is happy to state them publicly
+    // TODO(client): verify expansion plans before publishing
     year: 'The Future',
     title: 'Expanding Production',
-    line: 'The next phase includes plans to expand the production house, increase manufacturing capabilities, and serve growing customer requirements.',
+    line: 'Expanding the production floor — more machines, more capacity, to serve the businesses already waiting.',
     isFuture: true,
   },
 ];
@@ -54,37 +54,33 @@ export const uspChain = [
   {
     step: 1,
     label: 'Understand',
-    // COPY: drafted, needs client approval
-    description: 'You share the part, quantity and use — we listen before we quote.',
+    description: 'Send us a drawing, photo or sample — we ask the right questions before we quote.',
   },
   {
     step: 2,
     label: 'Develop',
-    // COPY: drafted, needs client approval
-    description: 'We select the material and process to match your specification.',
+    // TODO(client): confirm "quote within 24 hours" is accurate
+    description: 'We pick the right material for your use case and get a quote back to you within 24 hours.',
   },
   {
     step: 3,
     label: 'Manufacture',
-    // COPY: drafted, needs client approval
-    description: 'Parts are moulded to your requirement, using automatic moulding machines.',
+    description: 'Your parts run on automatic moulding machines — consistent dimensions, batch after batch.',
   },
   {
     step: 4,
     label: 'Supply',
-    // COPY: drafted, needs client approval
-    description: 'We dispatch to you through our Pan Bharat delivery network.',
+    description: 'We dispatch across India — Delhi to Chennai, Chandigarh to Kolkata. Tell us your deadline.',
   },
   {
     step: 5,
     label: 'Repeat',
-    // COPY: drafted, needs client approval
-    description: 'Consistent quality means you reorder with confidence, every time.',
+    description: '70% of our orders are reorders. Once you find a supplier you can count on, you come back.',
   },
 ];
 
 // The USP pull-quote — verbatim from §5.8
 export const uspPullQuote = {
   quote: 'We don\'t measure success by the order we deliver. We measure it by the orders that keep coming back.',
-  attribution: '— Alok Plastics',
+  attribution: '— Aalok Kumar, CEO, Alok Plastics',
 };

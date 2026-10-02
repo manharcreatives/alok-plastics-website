@@ -9,9 +9,9 @@ import { CatalogueSheetArt } from '@/components/products/art';
 import { productGroups, productsByGroup } from '@/content/products';
 
 export const metadata: Metadata = {
-  title: 'Spare Parts Catalogue',
+  title: 'Plastic Spare Parts Catalogue | Water Cooler, Freezer & Counter Parts',
   description:
-    'Browse spare parts for water coolers, display counters and deep freezers, grouped by what the part does. Search by name or material and request a quote.',
+    'Browse moulded plastic & steel spare parts for water coolers, display counters and deep freezers — float valves, F-bushes, connecting bushes, gaskets, door locks, nylon & HDPE. Search by name or material and request a quote.',
   alternates: { canonical: '/products/' },
 };
 

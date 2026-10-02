@@ -131,8 +131,9 @@ ${ART_CSS}
   .ph[data-layout="stack"] { justify-content: flex-start; }
   .ph[data-layout="stack"] .ph__body { padding-top: 112px; }
   .ph[data-layout="stack"] .ph__text { max-width: 62rem; }
-  .ph[data-layout="stack"] .ph__h1 { font-size: clamp(2.75rem, 7vw, 6.25rem); line-height: 1; }
-  .ph[data-layout="stack"] .ph__art { left: 0; right: 0; width: 100%; padding: 104px var(--grid-page-padding) calc(var(--fold-h) + var(--space-lg)); align-items: stretch; }
+  .ph[data-layout="stack"] .ph__h1 { font-size: clamp(2.75rem, 7vw, 6.25rem); line-height: 1; margin-bottom: var(--space-lg); }
+  .ph[data-layout="stack"] .ph__actions { display: block; margin-top: var(--space-lg); }
+  .ph[data-layout="stack"] .ph__art { left: 0; right: 0; width: 100%; height: 100%; padding: 104px var(--grid-page-padding) calc(var(--fold-h) + var(--space-lg)); align-items: stretch; }
 }
 /* tablet (768-1023): ONE composition for every layout except stack. The art takes the whole upper
    stage in normal flow (flex-grows to whatever the text leaves), the text sits below it, so the

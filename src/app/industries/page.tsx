@@ -20,9 +20,9 @@ import Link from 'next/link';
 import '@/components/products/products.css';
 
 export const metadata: Metadata = {
-  title: { absolute: 'Industries We Serve | Alok Plastics' },
+  title: { absolute: 'Industries We Serve | OEM Plastic Parts Supplier — Alok Plastics, Chandigarh' },
   description:
-    'Spare parts for water coolers, display counters and deep freezers, plus components for OEM, engineering, automotive, electrical, kitchen and agriculture.',
+    'Plastic & steel spare parts for OEM manufacturers, engineering, automotive, electrical, gas & kitchen equipment, agriculture and packaging. Water coolers, display counters, deep freezers — pan-India supply from Chandigarh.',
   alternates: { canonical: '/industries/' },
   robots: { index: true, follow: true },
 };
