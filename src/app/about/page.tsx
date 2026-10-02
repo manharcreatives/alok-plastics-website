@@ -17,9 +17,9 @@ import { brandIdea, story, vision, mission, coreValues } from '@/components/abou
 import { Eyebrow, SECTION_CSS, SectionHead, WRAP_STYLE } from '@/components/about/parts';
 
 export const metadata: Metadata = {
-  title: { absolute: 'About Alok Plastics | Manufacturer, Chandigarh' },
+  title: { absolute: 'About Alok Plastics | Moulded Plastic Parts Manufacturer Since 1998, Chandigarh' },
   description:
-    'Alok Plastics is a Chandigarh-based manufacturer, established in 1998, of moulded plastic and steel parts. Our story, vision, mission and values.',
+    'Alok Plastics — Chandigarh plastic & steel spare parts manufacturer since 1998, Ram Darbar Industrial Area. Serving OEMs, dealers & distributors across India. Our story, vision, mission and values.',
   alternates: { canonical: '/about/' },
   robots: { index: true, follow: true },
 };

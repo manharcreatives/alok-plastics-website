@@ -13,6 +13,7 @@ export type HeroMediaMode = 'auto' | 'video' | 'poster' | 'ambient';
 export type ProductVariant = {
   label: string;
   note?: string;
+  price?: number;                     // catalogue list price for this variant — stored, not shown while showPrices=false
 };
 
 export type ProductImage = {

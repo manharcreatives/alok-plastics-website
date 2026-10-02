@@ -153,8 +153,8 @@ export default function ShortEnquiryForm({
           Enquiry received.
         </p>
         <p style={{ fontSize: '0.9375rem', color: fgMuted, lineHeight: 1.6 }}>
-          We&rsquo;ll reply within one business day.
-          {/* COPY: typical reply time — TODO(client): confirm and update */}
+          {/* TODO(client): confirm reply time before launch */}
+          We&rsquo;ll get back to you within 24 hours — usually the same day if you&rsquo;ve sent this before noon IST.
         </p>
         <SuccessNext onLight={onLight} />
         <button
