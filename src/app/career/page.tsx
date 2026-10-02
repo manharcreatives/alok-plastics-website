@@ -27,11 +27,11 @@ ${FOLD_SECTION_CSS}
 /* Culture */
 .cr-culture { background: var(--surface); }
 .cr-culture__grid { display: grid; gap: var(--space-xl); }
-.cr-culture__statement { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-weight: 650; font-size: clamp(1.75rem, 3.6vw, 3rem); line-height: 1.1; letter-spacing: -0.03em; color: var(--ink); margin: 0 0 var(--space-lg); text-wrap: balance; max-width: 18ch; }
+.cr-culture__statement { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-weight: 650; font-size: var(--fs-h2); line-height: var(--lh-h2); letter-spacing: var(--tr-h2); color: var(--ink); margin: 0 0 var(--space-lg); text-wrap: balance; max-width: 18ch; }
 .cr-culture__statement em { font-style: normal; color: var(--burgundy); }
 .cr-culture p.p { color: var(--body); line-height: 1.8; font-size: 1.125rem; max-width: 60ch; margin: 0 0 var(--space-md); }
 .cr-words { list-style: none; margin: 0; padding: 0; }
-.cr-words li { position: relative; padding: var(--space-md) 0; font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-weight: 700; font-size: clamp(2rem, 4.6vw, 4.5rem); line-height: 1; letter-spacing: -0.04em; color: var(--ink); border-top: 1px solid var(--grey-warm); display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-sm); }
+.cr-words li { position: relative; padding: var(--space-md) 0; font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-weight: 700; font-size: var(--fs-display); line-height: var(--lh-display); letter-spacing: var(--tr-display); color: var(--ink); border-top: 1px solid var(--grey-warm); display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-sm); }
 .cr-words li:last-child { border-bottom: 1px solid var(--grey-warm); }
 .cr-words li:nth-child(2) { color: var(--grey-metal); padding-left: var(--space-md); }
 .cr-words li:nth-child(3) { color: var(--burgundy); padding-left: var(--space-lg); }
@@ -44,7 +44,7 @@ ${FOLD_SECTION_CSS}
 .cr-team::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--burgundy); transform: scaleY(0); transform-origin: top; transition: transform 400ms cubic-bezier(.16,1,.3,1); }
 .cr-team:hover { background: var(--surface); padding-left: var(--space-md); }
 .cr-team:hover::before { transform: scaleY(1); }
-.cr-team h3 { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-weight: 650; font-size: clamp(1.5rem, 3.2vw, 2.5rem); line-height: 1.08; letter-spacing: -0.03em; color: var(--ink); margin: 0; }
+.cr-team h3 { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-weight: 650; font-size: var(--fs-h3); line-height: var(--lh-h3); letter-spacing: var(--tr-h3); color: var(--ink); margin: 0; }
 .cr-team p { margin: 0; color: var(--body); line-height: 1.6; font-size: 1.0625rem; max-width: 42ch; }
 
 /* Roles */
@@ -53,7 +53,7 @@ ${FOLD_SECTION_CSS}
 .cr-role-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--grey-warm); }
 .cr-role-list li { padding: var(--space-sm) 0; border-bottom: 1px solid var(--grey-warm); }
 .cr-empty { padding: var(--space-lg) var(--space-md); background: var(--blush); border: 1px solid var(--pink-soft); border-left: 2px solid var(--burgundy); border-radius: var(--radius-card); }
-.cr-empty h3 { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-weight: 650; font-size: clamp(1.5rem, 2.6vw, 2rem); letter-spacing: -0.02em; line-height: 1.1; color: var(--ink); margin: 0; }
+.cr-empty h3 { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-weight: 650; font-size: var(--fs-h3); letter-spacing: var(--tr-h3); line-height: var(--lh-h3); color: var(--ink); margin: 0; }
 .cr-empty p { color: var(--body); line-height: 1.65; margin: var(--space-sm) 0 0; max-width: 44ch; }
 
 /* Hero team sheet (in document flow below lead text) */

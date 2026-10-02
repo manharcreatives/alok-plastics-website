@@ -101,8 +101,8 @@ const CSS = `
 .pim { position: relative; background: var(--surface-alt); padding: calc(var(--section-y) + 16px) var(--grid-page-padding) calc(var(--section-y) + 24px); overflow: hidden; }
 .pim-inner { max-width: calc(var(--grid-max) + 2 * var(--grid-page-padding)); margin: 0 auto; }
 .pim-head { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-md); align-items: end; }
-.pim-label { display: flex; align-items: center; gap: 10px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--muted); font-weight: 600; font-family: var(--font-archivo); margin-bottom: var(--space-sm); }
-.pim-h2 { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(1.75rem, 3.5vw, 2.75rem); font-weight: 650; line-height: 1.1; letter-spacing: -0.025em; color: var(--ink); max-width: 20ch; text-wrap: balance; margin-bottom: var(--space-md); }
+.pim-label { display: flex; align-items: center; gap: 10px; font-size: var(--fs-label); text-transform: uppercase; letter-spacing: var(--tr-label); color: var(--muted); font-weight: 600; font-family: var(--font-archivo), sans-serif; margin-bottom: var(--space-sm); line-height: var(--lh-label); }
+.pim-h2 { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-h2); font-weight: 650; line-height: var(--lh-h2); letter-spacing: var(--tr-h2); color: var(--ink); max-width: 20ch; text-wrap: balance; margin-bottom: var(--space-md); }
 .pim-lead { font-size: 1.0625rem; line-height: 1.65; color: var(--body); max-width: 52ch; }
 .pim-legend { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-sm); }
 .pim-legend li { display: flex; align-items: center; gap: var(--space-sm); font-size: 0.9375rem; color: var(--ink); font-weight: 500; line-height: 1.35; }
@@ -126,10 +126,10 @@ const CSS = `
 
 /* "What leaves Chandigarh": unit chart, one symbol tile per published part */
 .pim-man { margin-top: var(--space-xl); display: grid; gap: var(--space-lg); }
-.pim-man-h { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(1.25rem, 2vw, 1.625rem); font-weight: 650; letter-spacing: -0.02em; color: var(--ink); margin: 0 0 var(--space-xs); }
+.pim-man-h { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-h3); font-weight: 650; letter-spacing: var(--tr-h3); color: var(--ink); margin: 0 0 var(--space-xs); }
 .pim-man-sub { font-size: 0.9375rem; line-height: 1.6; color: var(--body); margin: 0; max-width: 44ch; }
 .pim-man-total { display: flex; align-items: baseline; gap: var(--space-xs); margin-top: var(--space-md); }
-.pim-man-total b { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 650; line-height: 1; letter-spacing: -0.04em; color: var(--burgundy); }
+.pim-man-total b { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-stat); font-weight: 650; line-height: var(--lh-stat); letter-spacing: var(--tr-stat); color: var(--burgundy); }
 .pim-man-total span { font-size: 0.75rem; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; color: var(--muted); }
 .pim-rows { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-sm); }
 .pim-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-xs); padding-bottom: var(--space-sm); border-bottom: 1px solid var(--grey-cloud); }

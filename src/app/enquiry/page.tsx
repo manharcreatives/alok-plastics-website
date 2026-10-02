@@ -29,7 +29,7 @@ ${SECTION_CSS}
 .eq-panel { background: var(--surface); border: 1px solid var(--grey-metal); padding: var(--space-lg); position: relative; min-width: 0; }
 .eq-panel::before { content: ''; position: absolute; left: -1px; top: -1px; width: 72px; height: 3px; background: var(--burgundy); }
 .eq-side { display: flex; flex-direction: column; gap: var(--space-lg); min-width: 0; }
-.eq-side h2 { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(1.25rem, 2.2vw, 1.75rem); font-weight: 650; letter-spacing: -0.02em; line-height: 1.15; color: var(--ink); margin: 0 0 var(--space-sm); }
+.eq-side h2 { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-h3); font-weight: 650; letter-spacing: var(--tr-h3); line-height: var(--lh-h3); color: var(--ink); margin: 0 0 var(--space-sm); }
 .eq-list { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--ink); }
 .eq-list li { display: grid; grid-template-columns: 12px minmax(0, 1fr); gap: var(--space-sm); padding: var(--space-sm) 0; border-bottom: 1px solid var(--grey-warm); color: var(--body); line-height: 1.55; font-size: 0.9375rem; }
 .eq-list li::before { content: ''; width: 12px; height: 2px; background: var(--burgundy); margin-top: 0.7em; }

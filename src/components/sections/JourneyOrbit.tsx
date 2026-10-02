@@ -145,13 +145,13 @@ function runOdometer(root: Element | null) {
 const CSS = `
 .jrn { position: relative; isolation: isolate; background: linear-gradient(180deg, var(--canvas) 0%, var(--surface-alt) 100%); overflow: hidden; border-top: 1px solid var(--grey-warm); }
 .jrn-inner { position: relative; z-index: 2; max-width: calc(var(--grid-max) + 2 * var(--grid-page-padding)); margin: 0 auto; padding: calc(var(--section-y) + 24px) var(--grid-page-padding) 0; }
-.jrn-label { display: flex; align-items: center; gap: 10px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--muted); font-weight: 600; font-family: var(--font-archivo); margin-bottom: var(--space-sm); }
-.jrn-h2 { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(1.75rem, 3.5vw, 2.75rem); font-weight: 650; line-height: 1.1; letter-spacing: -0.025em; color: var(--ink); max-width: 18ch; text-wrap: balance; }
+.jrn-label { display: flex; align-items: center; gap: 10px; font-size: var(--fs-label); text-transform: uppercase; letter-spacing: var(--tr-label); color: var(--muted); font-weight: 600; font-family: var(--font-archivo), sans-serif; margin-bottom: var(--space-sm); line-height: var(--lh-label); }
+.jrn-h2 { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-h2); font-weight: 650; line-height: var(--lh-h2); letter-spacing: var(--tr-h2); color: var(--ink); max-width: 18ch; text-wrap: balance; }
 
 /* shared milestone typography */
 .jrn-year { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-weight: 650; letter-spacing: -0.04em; line-height: 1; }
 .jrn-year .jrn-rise { display: inline-block; background: linear-gradient(175deg, var(--burgundy-night) 0%, var(--burgundy) 55%, var(--burgundy-bright) 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; padding-bottom: 0.1em; }
-.jrn-title { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(1.25rem, 2vw, 1.625rem); font-weight: 650; letter-spacing: -0.015em; color: var(--ink); line-height: 1.2; }
+.jrn-title { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-h3); font-weight: 650; letter-spacing: var(--tr-h3); color: var(--ink); line-height: var(--lh-h3); }
 .jrn-line { font-size: 1.0625rem; line-height: 1.65; color: var(--body); max-width: 42ch; }
 .mk { display: block; overflow: hidden; }
 .jrn-rise { display: block; will-change: transform; }

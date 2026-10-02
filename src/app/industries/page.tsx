@@ -43,8 +43,8 @@ const SEND = [
 
 const CSS = `
 ${FOLD_SECTION_CSS}
-.in-eyebrow { display: flex; align-items: center; gap: var(--space-xs); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; font-weight: 600; margin-bottom: var(--space-sm); line-height: 1; color: var(--grey-metal-text); }
-.in-h2 { font-family: var(--font-archivo); font-variation-settings: "wdth" 118; font-size: clamp(1.875rem, 4vw, 3.25rem); font-weight: 650; line-height: 1.06; letter-spacing: -0.025em; color: var(--ink); text-wrap: balance; }
+.in-eyebrow { display: flex; align-items: center; gap: var(--space-xs); font-size: var(--fs-label); text-transform: uppercase; letter-spacing: var(--tr-label); font-weight: 600; margin-bottom: var(--space-sm); line-height: var(--lh-label); color: var(--grey-metal-text); font-family: var(--font-archivo), sans-serif; }
+.in-h2 { font-family: var(--font-archivo); font-variation-settings: "wdth" 118; font-size: var(--fs-h2); font-weight: 650; line-height: var(--lh-h2); letter-spacing: var(--tr-h2); color: var(--ink); text-wrap: balance; }
 
 /* core market: the one burgundy block on this page */
 .ic { background: var(--burgundy); color: var(--surface); padding: var(--section-y) 0; position: relative; overflow: hidden; }
@@ -74,7 +74,7 @@ ${FOLD_SECTION_CSS}
 .ib__card:hover .ib__scene .ind-art-svg { transform: scale(1.04); }
 .ib__img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .ib__body { padding: var(--space-md); display: flex; flex-direction: column; gap: var(--space-xs); flex: 1; }
-.ib__body h3 { font-family: var(--font-archivo); font-variation-settings: "wdth" 118; font-size: clamp(1.25rem, 2vw, 1.625rem); font-weight: 650; letter-spacing: -0.02em; line-height: 1.12; color: var(--ink); margin: 0; }
+.ib__body h3 { font-family: var(--font-archivo); font-variation-settings: "wdth" 118; font-size: var(--fs-h3); font-weight: 650; letter-spacing: var(--tr-h3); line-height: var(--lh-h3); color: var(--ink); margin: 0; }
 .ib__body p { margin: 0; color: var(--body); line-height: 1.6; font-size: 0.9375rem; max-width: 46ch; }
 @media (min-width: 768px) {
   .ib__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }

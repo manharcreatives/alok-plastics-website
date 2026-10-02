@@ -30,7 +30,7 @@ ${SECTION_CSS}
 ${FOLD_SECTION_CSS}
 .ct-main { background: var(--canvas); }
 .ct-grid { display: grid; gap: var(--space-xl); align-items: start; }
-.ct-h2 { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(1.5rem, 2.8vw, 2.25rem); font-weight: 650; line-height: 1.1; letter-spacing: -0.025em; color: var(--ink); margin: 0 0 var(--space-lg); }
+.ct-h2 { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-h2); font-weight: 650; line-height: var(--lh-h2); letter-spacing: var(--tr-h2); color: var(--ink); margin: 0 0 var(--space-lg); }
 
 /* Address as a drawing-sheet title block */
 .ct-addr { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: var(--space-sm); align-items: start; text-decoration: none; color: inherit; padding: var(--space-md); border-bottom: 1px solid var(--grey-warm); background: var(--surface); transition: background-color 200ms; }
