@@ -52,7 +52,7 @@ export const site: SiteConfig = {
     },
     eyebrow: 'EST. 1998 · CHANDIGARH',
     headline: ['The small parts that', 'keep big machines running.'],
-    sub: 'We make the parts water coolers, display counters and deep freezers run on — float valves, F-bushes, connecting bushes, gaskets and more, in nylon, HDPE, PPCP and brass.',
+    sub: 'We make the parts water coolers, display counters and deep freezers run on: float valves, F-bushes, connecting bushes, gaskets and more, in nylon, HDPE, PPCP and brass.',
     ctas: {
       primary: 'Send Your Requirement',
       tertiary: 'Browse products',
@@ -122,7 +122,7 @@ type Contact = SiteConfig['contact'];
 export function formatCityLine(c: Contact = site.contact): string {
   const sameAsCity = !c.state || c.state.trim().toLowerCase() === c.city.trim().toLowerCase();
   const place = sameAsCity ? c.city : `${c.city}, ${c.state}`;
-  return c.pincode ? `${place} \u2014 ${c.pincode}` : place;
+  return c.pincode ? `${place} - ${c.pincode}` : place;
 }
 
 /** Two display lines: street address, then "City[, State] — PIN, Country". */

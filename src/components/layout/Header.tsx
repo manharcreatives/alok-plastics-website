@@ -190,7 +190,7 @@ export default function Header() {
             <Link
               href="/"
               className="glass-nav__logo"
-              aria-label="Alok Plastics — Home"
+              aria-label="Alok Plastics home"
             >
               <Logo
                 variant={logoVariant}

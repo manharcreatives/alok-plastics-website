@@ -4,7 +4,7 @@
  * Composition: left = micro-label, mask-rise headline, two sentences, "Read our story ↗".
  * Right = a giant top-lit आलोक (Alok = light) with a drawing-sheet TITLE BLOCK laid over it
  * that carries the key facts. Below = the numbers band (20 Cr+, 70%+, 1998, 100%) that
- * counts up slowly (~2.4s) once on scroll-in, then a light sweep lands across the numerals.
+ * counts up slowly and evenly (~3.2s) once on scroll-in, then a light sweep lands across the numerals.
  *
  * Facts only from MASTER_PROMPT §5 (see §19). Drafted lines are flagged for approval.
  * Reduced motion: final values, no reveals.
@@ -25,7 +25,7 @@ import { METAL_TEXT_CSS } from './FoldEdge';
 /* COPY: drafted, needs client approval — restates §5.1 / §5.12 facts only */
 const HEADLINE = 'Small, strong parts. Made in Chandigarh.';
 const INTRO = [
-  'Alok Plastics is a Chandigarh manufacturer of plastic and steel parts for water coolers, display counters and deep freezers — moulded from plastic granules for B2B customers.',
+  'Alok Plastics is a Chandigarh manufacturer of plastic and steel parts for water coolers, display counters and deep freezers, moulded from plastic granules for B2B customers.',
   'Alok means light. Customers keep coming back to us for it.',
 ];
 
@@ -35,7 +35,7 @@ const TITLE_BLOCK: { k: string; v: string }[] = [
   { k: 'Process', v: 'Moulds + plastic granules' },
   { k: 'Fits', v: 'Water coolers · Display counters · Deep freezers' },
   { k: 'Serves', v: 'B2B manufacturers' },
-  { k: 'Alok', v: 'आलोक — light' },
+  { k: 'Alok', v: 'आलोक means light' },
 ];
 
 const NUMERIC = site.proof.filter(p => p.isNumeric);
@@ -43,7 +43,10 @@ const WORDS = site.proof.filter(p => !p.isNumeric);
 
 const isYear = (v: number) => v >= 1900 && v <= 2100;
 const fmt = (n: number, final: number) => (isYear(final) ? String(n) : n.toLocaleString('en-IN'));
-const COUNT_S = 2.4;
+/* Slow, even climb: sine.inOut keeps the rate nearly constant so every step is readable
+   (power3.inOut packed most of the climb into ~0.8s and read as a jump). */
+const COUNT_S = 3.2;
+const COUNT_EASE = 'sine.inOut';
 
 /* One numeral: counts up once when it scrolls in; light sweep on landing. */
 function Stat({ value, label, numericValue, index }: { value: string; label: string; numericValue?: number; index: number }) {
@@ -69,15 +72,15 @@ function Stat({ value, label, numericValue, index }: { value: string; label: str
       tween = gsap.to(o, {
         v: target,
         duration: COUNT_S,
-        delay: 0.4 + index * 0.16,
-        ease: 'power3.inOut',
+        delay: 0.3 + index * 0.2,
+        ease: COUNT_EASE,
         onUpdate: () => { num.textContent = fmt(Math.round(o.v), target); },
         onComplete: () => {
           num.textContent = fmt(target, target);
           wrapRef.current?.classList.add('ap-swept');
         },
       });
-    }, { threshold: 0.5 });
+    }, { threshold: 0.6 });
     io.observe(root);
     return () => { io.disconnect(); tween?.kill(); num.textContent = fmt(target, target); };
   }, [from, target, index]);

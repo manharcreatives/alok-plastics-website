@@ -11,7 +11,7 @@ import { productGroups, productsByGroup } from '@/content/products';
 export const metadata: Metadata = {
   title: 'Plastic Spare Parts Catalogue | Water Cooler, Freezer & Counter Parts',
   description:
-    'Browse moulded plastic & steel spare parts for water coolers, display counters and deep freezers — float valves, F-bushes, connecting bushes, gaskets, door locks, nylon & HDPE. Search by name or material and request a quote.',
+    'Browse moulded plastic & steel spare parts for water coolers, display counters and deep freezers: float valves, F-bushes, connecting bushes, gaskets, door locks, nylon & HDPE. Search by name or material and request a quote.',
   alternates: { canonical: '/products/' },
 };
 
@@ -36,7 +36,7 @@ export default function ProductsPage() {
         ))}
       </FinderResults>
       <CatalogueFaq />
-      <EnquiryBand fold="diag" heading="Cannot find your part?" text="Describe the part and where it is used — we will identify it and reply with a quote." />
+      <EnquiryBand fold="diag" heading="Cannot find your part?" text="Describe the part and where it is used. We will identify it and reply with a quote." />
     </FinderProvider>
   );
 }

@@ -21,9 +21,9 @@ export function absoluteUrl(path = '/'): string {
   return `${SITE_URL}${path.startsWith('/') ? path : `/${path}`}`;
 }
 
-export const HOME_TITLE = 'Alok Plastics, Chandigarh | Plastic Spare Parts Manufacturer — Cooler & Freezer Parts';
+export const HOME_TITLE = 'Alok Plastics, Chandigarh | Plastic Spare Parts Manufacturer for Coolers & Freezers';
 export const HOME_DESCRIPTION =
-  'Chandigarh manufacturer since 1998. Moulded plastic & steel spare parts for water coolers, display counters & deep freezers — float valves, F-bushes, gaskets, nylon & HDPE. OEM & B2B wholesale enquiries welcome.';
+  'Chandigarh manufacturer since 1998. Moulded plastic & steel spare parts for water coolers, display counters & deep freezers: float valves, F-bushes, gaskets, nylon & HDPE. OEM & B2B wholesale enquiries welcome.';
 
 const ctx = { '@context': 'https://schema.org' } as const;
 
@@ -63,7 +63,7 @@ function contactPoint(): Json | null {
 /** Plain-sentence entity statement (§18 GEO) — reused on home meta + llms.txt. */
 export const ENTITY_STATEMENT =
   `${site.name} is a ${site.contact.city}-based plastic parts manufacturer, established in ${site.foundingYear}, ` +
-  'of moulded plastic and steel spare parts for water coolers, display counters and deep freezers — ' +
+  'of moulded plastic and steel spare parts for water coolers, display counters and deep freezers, ' +
   'including float valves, F-bushes, connecting bushes, ventilation jalli, door locks, gaskets and push cocks in nylon, HDPE, PPCP and brass.';
 
 export function organizationJsonLd(): Json {
@@ -212,8 +212,8 @@ export function partTitle(p: Product, g: ProductGroup): string {
   const mat = p.material ? ` ${MATERIAL_LABELS[p.material]}` : '';
   const candidates = [
     `${p.name}${mat} Manufacturer | Alok Plastics, Chandigarh`,
-    `${p.name} | ${g.name} — Alok Plastics, Chandigarh`,
-    `${p.name} | ${g.name} — Alok Plastics`,
+    `${p.name} | ${g.name} | Alok Plastics, Chandigarh`,
+    `${p.name} | ${g.name} | Alok Plastics`,
     `${p.name} Spare Part | Alok Plastics, Chandigarh`,
     `${p.name} Spare Part | Alok Plastics`,
   ];

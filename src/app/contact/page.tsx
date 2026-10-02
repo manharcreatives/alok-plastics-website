@@ -20,7 +20,7 @@ import { site, formatAddressLines, isEmbeddableMapsUrl, mapsHref, telHref, MAPS_
 export const metadata: Metadata = {
   title: 'Contact Alok Plastics | Plastic Parts Manufacturer, Chandigarh',
   description:
-    'Contact Alok Plastics — Plot No-06, Industrial Area Phase II, Ram Darbar, Chandigarh 160003. Enquire for water cooler, display counter & deep freezer spare parts. OEM & B2B orders welcome.',
+    'Contact Alok Plastics at Plot No-06, Industrial Area Phase II, Ram Darbar, Chandigarh 160003. Enquire for water cooler, display counter & deep freezer spare parts. OEM & B2B orders welcome.',
   alternates: { canonical: '/contact/' },
   robots: { index: true, follow: true },
 };

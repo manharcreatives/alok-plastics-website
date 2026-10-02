@@ -168,7 +168,7 @@ export function FinderResults({ children }: { children: ReactNode }) {
             ) : (
               <div className="p-empty">
                 <p><strong>{term ? `No part in the catalogue matches “${term}”.` : 'No part in the catalogue matches those filters.'}</strong></p>
-                <p>This catalogue lists the parts we have published so far. If yours is not here, describe it in the enquiry form — what it does, what machine it is for — and we will identify it.</p>
+                <p>This catalogue lists the parts we have published so far. If yours is not here, describe it in the enquiry form (what it does and which machine it is for) and we will identify it.</p>
                 <div className="p-btns">
                   <Link className="p-btn p-btn--primary" href="/enquiry/">Get a Quote <ArrowUpRight size={18} weight="light" aria-hidden="true" /></Link>
                 </div>

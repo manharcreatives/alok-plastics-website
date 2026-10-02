@@ -19,7 +19,7 @@ import { Eyebrow, SECTION_CSS, SectionHead, WRAP_STYLE } from '@/components/abou
 export const metadata: Metadata = {
   title: { absolute: 'About Alok Plastics | Moulded Plastic Parts Manufacturer Since 1998, Chandigarh' },
   description:
-    'Alok Plastics — Chandigarh plastic & steel spare parts manufacturer since 1998, Ram Darbar Industrial Area. Serving OEMs, dealers & distributors across India. Our story, vision, mission and values.',
+    'Alok Plastics is a Chandigarh manufacturer of plastic & steel spare parts since 1998, based in Ram Darbar Industrial Area. Serving OEMs, dealers & distributors across India. Our story, vision, mission and values.',
   alternates: { canonical: '/about/' },
   robots: { index: true, follow: true },
 };
@@ -52,11 +52,12 @@ ${FOLD_SECTION_CSS}
 /* Brand idea */
 .ab-idea { background: var(--surface); }
 .ab-idea__grid { display: grid; gap: var(--space-xl); align-items: center; }
-.ab-idea__sheet { padding: var(--space-lg) var(--space-md) var(--space-md); }
+.ab-idea__sheet { padding: var(--space-lg) 0 var(--space-md); max-width: 460px; margin: 0 auto; }
 .ab-idea__logo { display: flex; justify-content: center; padding: var(--space-md) 0 var(--space-lg); }
-.ab-legend { list-style: none; margin: 0; padding: var(--space-sm) 0 0; border-top: 1px solid var(--grey-warm); display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-sm); }
-.ab-legend li { display: flex; align-items: center; gap: var(--space-xs); font-size: 0.8125rem; color: var(--body); }
-.ab-legend i { width: 16px; height: 16px; display: inline-block; flex: none; }
+.ab-legend { list-style: none; margin: 0 auto; padding: var(--space-sm) 0 0; border-top: 1px solid var(--grey-cloud); display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-xs) var(--space-lg); max-width: 340px; }
+.ab-legend li { display: flex; align-items: center; gap: var(--space-xs); font-size: 0.875rem; color: var(--body); }
+.ab-legend li b { font-weight: 600; color: var(--ink); }
+.ab-legend i { width: 12px; height: 12px; display: inline-block; flex: none; }
 .ab-idea__devname { font-family: var(--font-devanagari); font-weight: 700; font-size: clamp(3.5rem, 9vw, 7rem); line-height: 1.2; color: var(--burgundy); margin: 0; }
 .ab-idea__means { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(1.25rem, 2.4vw, 1.75rem); font-weight: 650; letter-spacing: -0.02em; color: var(--grey-metal); margin: 0 0 var(--space-md); }
 .ab-idea__p { font-size: clamp(1.0625rem, 1.5vw, 1.25rem); line-height: 1.7; color: var(--ink); max-width: 56ch; margin: 0; }
@@ -136,8 +137,7 @@ ${FOLD_SECTION_CSS}
 .ab-culture__link:hover .ab-culture__arrow { transform: translate3d(2px, -2px, 0); background: var(--burgundy-deep); }
 
 @media (min-width: 768px) {
-  .ab-legend { grid-template-columns: auto auto; justify-content: space-between; }
-  .ab-plates { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .ab-plates { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .ab-val--hero { padding: var(--space-xl) var(--space-lg); }
   .ab-val { padding: var(--space-lg); min-height: 240px; }
   .ab-culture__link { grid-template-columns: minmax(0, 1fr) auto; gap: var(--space-xl); }
@@ -192,13 +192,13 @@ export default function AboutPage() {
         <div style={WRAP_STYLE}>
           <div className="ab-idea__grid">
             <Reveal variant="wipe">
-              <div className="cp-sheet ab-idea__sheet">
+              <div className="ab-idea__sheet">
                 <div className="ab-idea__logo">
                   <Logo variant="color" style={{ width: '100%', maxWidth: 340, height: 'auto' }} />
                 </div>
                 <ul className="ab-legend" aria-label="What the colours mean">
-                  <li><i style={{ background: 'var(--burgundy)' }} aria-hidden="true" />Burgundy: our strength</li>
-                  <li><i style={{ background: 'var(--grey-metal)' }} aria-hidden="true" />Grey: our metal</li>
+                  <li><i style={{ background: 'linear-gradient(135deg, var(--burgundy-deep), var(--burgundy-bright))' }} aria-hidden="true" /><span><b>Burgundy:</b> our strength</span></li>
+                  <li><i style={{ background: 'linear-gradient(180deg, var(--grey-metal), var(--silver))' }} aria-hidden="true" /><span><b>Grey:</b> our metal</span></li>
                 </ul>
               </div>
             </Reveal>

@@ -120,7 +120,7 @@ export default function Footer() {
           <div>
             <h2 className="ft__h">Alok Plastics</h2>
             <p className="ft__blurb" style={{ marginTop: 0 }}>
-              B2B spare parts for the appliance and refrigeration industry — made in Chandigarh since {site.foundingYear}.
+              B2B spare parts for the appliance and refrigeration industry, made in Chandigarh since {site.foundingYear}.
               If your cooler or freezer runs on a plastic part, there&rsquo;s a good chance we make it.
             </p>
             {social.length > 0 && (
