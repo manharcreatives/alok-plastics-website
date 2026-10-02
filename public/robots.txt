@@ -1,4 +1,4 @@
-# Alok Plastics — https://alokplastics.com
+# Alok Plastics, https://alokplastics.com
 # Search engines and AI answer engines are welcome; the enquiry endpoint and the design lab are not for crawling.
 
 User-agent: *

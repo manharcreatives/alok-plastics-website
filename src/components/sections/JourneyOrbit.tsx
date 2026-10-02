@@ -138,7 +138,8 @@ function runOdometer(root: Element | null) {
   };
   gsap.killTweensOf(o);
   paint();
-  gsap.to(o, { p: value, duration: DURATIONS.full, ease: EASINGS.out, onUpdate: paint });
+  /* slow, even roll (matches the AboutIntro counters) so the climb from 0 reads step by step */
+  gsap.to(o, { p: value, duration: 3.2, ease: 'sine.inOut', onUpdate: paint });
 }
 
 const CSS = `

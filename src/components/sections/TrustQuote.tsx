@@ -21,12 +21,12 @@ import { useMaskRise } from '@/hooks/useMotion';
 import FoldEdge, { FOLD_SECTION_CSS } from './FoldEdge';
 
 const LEDGER: { k: string; v: string }[] = [
-  { k: 'Quality', v: 'Consistent manufacturing, order after order — same spec, same finish, every batch.' },
+  { k: 'Quality', v: 'Consistent manufacturing, order after order. Same spec, same finish, every batch.' },
   { k: 'Price', v: 'Fair pricing. We\'ll tell you upfront if an order doesn\'t work for either side.' },
   { k: 'Supply', v: 'Reliable supply a production line can plan around. No surprise stockouts.' },
   { k: 'Delivery', v: 'Timely delivery, to the date we agree. Not "around" that date.' },
   // TODO(client): confirm "24 hours" is the actual quote turnaround before publishing
-  { k: 'Response', v: 'Quote back to you within 24 hours of your requirement — usually same day.' },
+  { k: 'Response', v: 'Quote back to you within 24 hours of your requirement, usually the same day.' },
 ];
 
 /* Testimonials — hidden until client provides verified, attributed quotes */

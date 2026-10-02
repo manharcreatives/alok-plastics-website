@@ -70,7 +70,7 @@ export const products: Product[] = [
     // COPY: drafted, needs client approval
     summary: 'A nylon sliding bush for display counter door channels, reducing friction and ensuring smooth door travel.',
     images: [
-      { src: '/catalogue/spares/page-003-004.jpg', alt: 'F-Bush nylon sliding bush — Alok Plastics', w: 700, h: 900 },
+      { src: '/catalogue/spares/page-003-004.jpg', alt: 'F-Bush nylon sliding bush, Alok Plastics', w: 700, h: 900 },
     ],
     published: true,
   },
@@ -92,8 +92,8 @@ export const products: Product[] = [
     // COPY: drafted, needs client approval
     summary: 'A connecting bush available in brass and nylon, used to join pipes and fittings in water cooler and deep freezer systems.',
     images: [
-      { src: '/catalogue/spares/page-005-006.jpg', alt: 'Connecting Bush — Alok Plastics', w: 1000, h: 1000 },
-      { src: '/catalogue/spares/page-005-007.jpg', alt: 'Connecting Bush nylon variant — Alok Plastics', w: 1000, h: 1000 },
+      { src: '/catalogue/spares/page-005-006.jpg', alt: 'Connecting Bush, Alok Plastics', w: 1000, h: 1000 },
+      { src: '/catalogue/spares/page-005-007.jpg', alt: 'Connecting Bush nylon variant, Alok Plastics', w: 1000, h: 1000 },
     ],
     published: true,
   },
@@ -108,7 +108,7 @@ export const products: Product[] = [
     // COPY: drafted, needs client approval
     summary: 'A locking mechanism for display counter and deep freezer doors.',
     images: [
-      { src: '/catalogue/spares/page-012-017.jpg', alt: 'Door Lock chrome handle latch — Alok Plastics', w: 1000, h: 1000 },
+      { src: '/catalogue/spares/page-012-017.jpg', alt: 'Door Lock chrome handle latch, Alok Plastics', w: 1000, h: 1000 },
     ],
     published: true,
   },
@@ -136,7 +136,7 @@ export const products: Product[] = [
     // COPY: drafted, needs client approval
     summary: 'A combined handle and lock component.',
     images: [
-      { src: '/catalogue/spares/page-006-008.jpg', alt: 'Handle Lock latch mechanism — Alok Plastics', w: 1000, h: 1000 },
+      { src: '/catalogue/spares/page-006-008.jpg', alt: 'Handle Lock latch mechanism, Alok Plastics', w: 1000, h: 1000 },
     ],
     published: true,
   },
@@ -151,8 +151,8 @@ export const products: Product[] = [
     // COPY: drafted, needs client approval
     summary: 'A bracket-style handle for equipment doors and panels.',
     images: [
-      { src: '/catalogue/spares/page-007-009.jpg', alt: 'Bracket Handle recessed pull handles in three sizes — Alok Plastics', w: 700, h: 900 },
-      { src: '/catalogue/spares/page-007-010.jpg', alt: 'Bracket Handle showing weight variants — Alok Plastics', w: 700, h: 900 },
+      { src: '/catalogue/spares/page-007-009.jpg', alt: 'Bracket Handle recessed pull handles in three sizes, Alok Plastics', w: 700, h: 900 },
+      { src: '/catalogue/spares/page-007-010.jpg', alt: 'Bracket Handle showing weight variants, Alok Plastics', w: 700, h: 900 },
     ],
     published: true,
   },
@@ -167,7 +167,7 @@ export const products: Product[] = [
     // COPY: drafted, needs client approval
     summary: 'A stainless steel hinge (kabja) for equipment doors.',
     images: [
-      { src: '/catalogue/spares/page-019-024.jpg', alt: 'SS Kabja 12 Gauge Heavy Duty stainless steel hinge — Alok Plastics', w: 750, h: 1000 },
+      { src: '/catalogue/spares/page-019-024.jpg', alt: 'SS Kabja 12 Gauge Heavy Duty stainless steel hinge, Alok Plastics', w: 750, h: 1000 },
     ],
     published: true,
   },
@@ -182,7 +182,7 @@ export const products: Product[] = [
     // COPY: drafted, needs client approval
     summary: 'An L-type hinge for door and panel applications.',
     images: [
-      { src: '/catalogue/spares/page-014-019.jpg', alt: 'L-Type Hinge stainless steel pivot pair — Alok Plastics', w: 1000, h: 800 },
+      { src: '/catalogue/spares/page-014-019.jpg', alt: 'L-Type Hinge stainless steel pivot pair, Alok Plastics', w: 1000, h: 800 },
     ],
     published: true,
   },
@@ -197,7 +197,7 @@ export const products: Product[] = [
     // COPY: drafted, needs client approval
     summary: 'A U-type spring for self-closing door mechanisms.',
     images: [
-      { src: '/catalogue/spares/page-017-022.jpg', alt: 'U-Type Door Spring wire spring with helical coils — Alok Plastics', w: 700, h: 900 },
+      { src: '/catalogue/spares/page-017-022.jpg', alt: 'U-Type Door Spring wire spring with helical coils, Alok Plastics', w: 700, h: 900 },
     ],
     published: true,
   },
@@ -212,7 +212,7 @@ export const products: Product[] = [
     // COPY: drafted, needs client approval
     summary: 'A spring mechanism for L-type hinged doors.',
     images: [
-      { src: '/catalogue/spares/page-020-025.jpg', alt: 'L-Hinge Door Spring complete assembly with coil spring — Alok Plastics', w: 1000, h: 700 },
+      { src: '/catalogue/spares/page-020-025.jpg', alt: 'L-Hinge Door Spring complete assembly with coil spring, Alok Plastics', w: 1000, h: 700 },
     ],
     published: true,
   },
@@ -231,8 +231,8 @@ export const products: Product[] = [
     // COPY: drafted, needs client approval
     summary: 'A nylon float valve that controls the water level inside water coolers and dispensers.',
     images: [
-      { src: '/catalogue/spares/page-008-011.jpg', alt: 'Float Valve nylon components — ball, valve body and rod — Alok Plastics', w: 1000, h: 1000 },
-      { src: '/catalogue/spares/page-001-000.jpg', alt: 'Float Valve rubber ball float with valve assembly — Alok Plastics', w: 640, h: 480 },
+      { src: '/catalogue/spares/page-008-011.jpg', alt: 'Float Valve nylon components: ball, valve body and rod, Alok Plastics', w: 1000, h: 1000 },
+      { src: '/catalogue/spares/page-001-000.jpg', alt: 'Float Valve rubber ball float with valve assembly, Alok Plastics', w: 640, h: 480 },
     ],
     published: true,
   },
@@ -252,8 +252,8 @@ export const products: Product[] = [
     // COPY: drafted, needs client approval
     summary: 'A brass push-type tap for water dispensing on water coolers. Available in light and heavy duty.',
     images: [
-      { src: '/catalogue/spares/page-011-015.jpg', alt: 'Push Cock chrome tap heavy duty — Alok Plastics', w: 1000, h: 1000 },
-      { src: '/catalogue/spares/page-011-016.jpg', alt: 'Push Cock chrome tap light duty — Alok Plastics', w: 1000, h: 1000 },
+      { src: '/catalogue/spares/page-011-015.jpg', alt: 'Push Cock chrome tap heavy duty, Alok Plastics', w: 1000, h: 1000 },
+      { src: '/catalogue/spares/page-011-016.jpg', alt: 'Push Cock chrome tap light duty, Alok Plastics', w: 1000, h: 1000 },
     ],
     published: true,
   },
@@ -270,7 +270,7 @@ export const products: Product[] = [
     // COPY: drafted, needs client approval
     summary: 'A PPCP waste pipe for draining overflow water from water coolers and display counters.',
     images: [
-      { src: '/catalogue/spares/page-009-012.jpg', alt: 'Waste Pipe flexible corrugated drain pipe — Alok Plastics', w: 1000, h: 1000 },
+      { src: '/catalogue/spares/page-009-012.jpg', alt: 'Waste Pipe flexible corrugated drain pipe, Alok Plastics', w: 1000, h: 1000 },
     ],
     published: true,
   },
@@ -285,7 +285,7 @@ export const products: Product[] = [
     // COPY: drafted, needs client approval
     summary: 'A coupling connector for waste pipe assemblies.',
     images: [
-      { src: '/catalogue/spares/page-013-018.jpg', alt: 'Waste Coupling chrome drain assembly — Alok Plastics', w: 1000, h: 1000 },
+      { src: '/catalogue/spares/page-013-018.jpg', alt: 'Waste Coupling chrome drain assembly, Alok Plastics', w: 1000, h: 1000 },
     ],
     published: true,
   },
@@ -308,7 +308,7 @@ export const products: Product[] = [
     // COPY: drafted, needs client approval
     summary: 'A PPCP ventilation grille that fits water coolers, display counters and deep freezers to allow airflow while keeping out debris.',
     images: [
-      { src: '/catalogue/spares/page-004-005.jpg', alt: 'Ventilation Jalli white louvered grille — Alok Plastics', w: 1000, h: 1000 },
+      { src: '/catalogue/spares/page-004-005.jpg', alt: 'Ventilation Jalli white louvered grille, Alok Plastics', w: 1000, h: 1000 },
     ],
     published: true,
   },
@@ -335,7 +335,7 @@ export const products: Product[] = [
     // COPY: drafted, needs client approval
     summary: 'An HDPE adjustable insert for equipment legs, allowing fine height adjustment and protecting floors. Available in round and square tube sections, five sizes.',
     images: [
-      { src: '/catalogue/spares/page-002-003.jpg', alt: 'Adjustable Leg Insert HDPE nylon levelling foot — Alok Plastics', w: 1000, h: 1000 },
+      { src: '/catalogue/spares/page-002-003.jpg', alt: 'Adjustable Leg Insert HDPE nylon levelling foot, Alok Plastics', w: 1000, h: 1000 },
     ],
     published: true,
   },
@@ -365,8 +365,8 @@ export const products: Product[] = [
     material: undefined, // TODO(client)
     variants: [],
     images: [
-      { src: '/catalogue/spares/page-010-013.jpg', alt: 'Three Core Plug Indian 3-pin power cord — Alok Plastics', w: 1000, h: 1000 },
-      { src: '/catalogue/spares/page-010-014.jpg', alt: 'Three Core Plug with ring terminals — Alok Plastics', w: 1000, h: 1000 },
+      { src: '/catalogue/spares/page-010-013.jpg', alt: 'Three Core Plug Indian 3-pin power cord, Alok Plastics', w: 1000, h: 1000 },
+      { src: '/catalogue/spares/page-010-014.jpg', alt: 'Three Core Plug with ring terminals, Alok Plastics', w: 1000, h: 1000 },
     ],
     published: false,    // not shown until group confirmed
   },
@@ -379,7 +379,7 @@ export const products: Product[] = [
     material: undefined,
     variants: [],
     images: [
-      { src: '/catalogue/spares/page-018-023.jpg', alt: 'PUF Chemical POL and ISO two-component drums — Alok Plastics', w: 850, h: 640 },
+      { src: '/catalogue/spares/page-018-023.jpg', alt: 'PUF Chemical POL and ISO two-component drums, Alok Plastics', w: 850, h: 640 },
     ],
     published: false,
   },
@@ -392,8 +392,8 @@ export const products: Product[] = [
     material: undefined,
     variants: [],
     images: [
-      { src: '/catalogue/spares/page-021-026.jpg', alt: 'Bright Chrome spray paint 318 — Alok Plastics', w: 750, h: 1000 },
-      { src: '/catalogue/spares/page-022-027.jpg', alt: 'Bright Chrome aerosol lacquer — Alok Plastics', w: 750, h: 1000 },
+      { src: '/catalogue/spares/page-021-026.jpg', alt: 'Bright Chrome spray paint 318, Alok Plastics', w: 750, h: 1000 },
+      { src: '/catalogue/spares/page-022-027.jpg', alt: 'Bright Chrome aerosol lacquer, Alok Plastics', w: 750, h: 1000 },
     ],
     published: false,
   },

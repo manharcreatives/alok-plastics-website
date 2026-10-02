@@ -192,7 +192,7 @@ export default function Preloader({ navLogoSlotRef, onComplete }: PreloaderProps
           className="preloader__background-text"
           aria-hidden="true"
         >
-          <span className="devanagari-part">आलोक</span>&nbsp;—&nbsp;LIGHT
+          <span className="devanagari-part">आलोक</span>&nbsp;·&nbsp;LIGHT
         </div>
 
         {/* Drawing grid */}

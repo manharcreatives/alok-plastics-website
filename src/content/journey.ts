@@ -7,14 +7,14 @@ export const journeyMarkers: JourneyMarker[] = [
   {
     year: '1998',
     title: 'The Beginning',
-    line: 'Founded in Chandigarh with a clear purpose — make reliable plastic parts for the businesses that keep India\'s appliances running.',
+    line: 'Founded in Chandigarh with a clear purpose: make reliable plastic parts for the businesses that keep India\'s appliances running.',
     isFuture: false,
   },
   {
     // TODO(client): verify decade-level narrative
     year: '2000s',
     title: 'Building Customer Relationships',
-    line: 'Built a loyal customer base the old-fashioned way — by showing up, delivering on time, and fixing problems fast.',
+    line: 'Built a loyal customer base the old-fashioned way, by showing up, delivering on time, and fixing problems fast.',
     isFuture: false,
   },
   {
@@ -28,7 +28,7 @@ export const journeyMarkers: JourneyMarker[] = [
     // 20 Cr+ delivered is a verified proof point (site.ts proof). TODO(client): confirm the '2020s' decade placement
     year: '2020s',
     title: '20+ Crore Products Delivered',
-    line: '20 crore+ parts delivered — and counting. The milestone that proved consistent manufacturing builds real trust.',
+    line: '20 crore+ parts delivered, and counting. The milestone that proved consistent manufacturing builds real trust.',
     isFuture: false,
     stat: { value: 20, suffix: 'Cr+', label: 'products delivered' }, // verified proof point (§5.5) — runs the odometer
   },
@@ -43,7 +43,7 @@ export const journeyMarkers: JourneyMarker[] = [
     // TODO(client): verify expansion plans before publishing
     year: 'The Future',
     title: 'Expanding Production',
-    line: 'Expanding the production floor — more machines, more capacity, to serve the businesses already waiting.',
+    line: 'Expanding the production floor: more machines, more capacity, to serve the businesses already waiting.',
     isFuture: true,
   },
 ];
@@ -54,7 +54,7 @@ export const uspChain = [
   {
     step: 1,
     label: 'Understand',
-    description: 'Send us a drawing, photo or sample — we ask the right questions before we quote.',
+    description: 'Send us a drawing, photo or sample. We ask the right questions before we quote.',
   },
   {
     step: 2,
@@ -65,12 +65,12 @@ export const uspChain = [
   {
     step: 3,
     label: 'Manufacture',
-    description: 'Your parts run on automatic moulding machines — consistent dimensions, batch after batch.',
+    description: 'Your parts run on automatic moulding machines, with consistent dimensions batch after batch.',
   },
   {
     step: 4,
     label: 'Supply',
-    description: 'We dispatch across India — Delhi to Chennai, Chandigarh to Kolkata. Tell us your deadline.',
+    description: 'We dispatch across India, from Delhi to Chennai and Chandigarh to Kolkata. Tell us your deadline.',
   },
   {
     step: 5,
@@ -82,5 +82,5 @@ export const uspChain = [
 // The USP pull-quote — verbatim from §5.8
 export const uspPullQuote = {
   quote: 'We don\'t measure success by the order we deliver. We measure it by the orders that keep coming back.',
-  attribution: '— Aalok Kumar, CEO, Alok Plastics',
+  attribution: 'Aalok Kumar, CEO, Alok Plastics',
 };

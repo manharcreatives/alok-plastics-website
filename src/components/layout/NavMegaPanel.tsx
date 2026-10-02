@@ -140,7 +140,7 @@ export default function NavMegaPanel({
             <div className="mega__tile-kicker">Custom requirement?</div>
             <p className="mega__tile-title">Need a part made to your requirement?</p>
             <p className="mega__tile-body">
-              Share a sample, drawing or photo — we&apos;ll develop and supply it.
+              Share a sample, drawing or photo and we&apos;ll develop and supply it.
             </p>
           </div>
           <Link href="/enquiry" className="mega__tile-cta" onClick={onClose}>

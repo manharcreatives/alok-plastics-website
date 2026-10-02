@@ -84,7 +84,7 @@ export default async function GroupPage({ params }: { params: Promise<{ group: s
           </div>
         </section>
       )}
-      <EnquiryBand variant="lock" fold="diag" heading={`Need ${g.name.toLowerCase()} parts?`} text="Share the part name, quantity and use — we reply with a quote." />
+      <EnquiryBand variant="lock" fold="diag" heading={`Need ${g.name.toLowerCase()} parts?`} text="Share the part name, quantity and use, and we will reply with a quote." />
     </>
   );
 }

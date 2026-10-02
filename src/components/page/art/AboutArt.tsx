@@ -1,6 +1,6 @@
 /**
  * AboutArt — the folded A-peak as a lit sheet: light rays from above (आलोक = light),
- * a burgundy leg and a metal-grey leg meeting at a crease, outline wordmark beneath.
+ * a burgundy leg and a metal-grey leg meeting at a crease. Symbol only: no lettering beneath it.
  * Pure geometry from the logo's language; no data.
  */
 import { D } from './artCss';
@@ -44,10 +44,6 @@ export default function AboutArt() {
         <line x1="320" y1="200" x2="20" y2="512" stroke="var(--rose-pale)" strokeWidth="1.5" opacity="0.8" />
         <line x1="320" y1="200" x2="620" y2="512" stroke="var(--surface)" strokeWidth="1.5" opacity="0.8" />
       </g>
-
-      {/* outline wordmark */}
-      <text x="320" y="728" textAnchor="middle" lang="hi" fill="none" stroke="var(--grey-metal)" strokeWidth="1" className="pa-fade"
-        style={{ fontFamily: 'var(--font-devanagari)', fontSize: 120, fontWeight: 700, ...D(1100) }}>आलोक</text>
 
       {/* register marks */}
       <g stroke="var(--grey-warm)" strokeWidth="1" fill="none">

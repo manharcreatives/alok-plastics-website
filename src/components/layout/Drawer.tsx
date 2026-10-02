@@ -166,7 +166,7 @@ export default function Drawer({ isOpen, onClose }: DrawerProps) {
           justifyContent: 'space-between',
           marginBottom: 'var(--space-lg)',
         }}>
-          <Link href="/" onClick={onClose} aria-label="Alok Plastics — Home">
+          <Link href="/" onClick={onClose} aria-label="Alok Plastics home">
             <Logo variant="color" lockup="full" style={{ height: 32, width: 'auto' }} />
           </Link>
           <button

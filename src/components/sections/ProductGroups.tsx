@@ -350,7 +350,7 @@ export default function ProductGroups() {
         <SectionHeader
           label="Products"
           heading="Parts for water coolers, display counters and deep freezers."
-          lead="Moulded plastic and steel parts for every door, valve and vent — from a single component to a production line's worth."
+          lead="Moulded plastic and steel parts for every door, valve and vent, from a single component to a production line's worth."
           link={{ href: '/products', label: 'All products' }}
         />
 
@@ -385,7 +385,7 @@ export default function ProductGroups() {
             <Glyph name="sheet-callout" strokeWidth={1.5} className="pg-path-ico" style={{ color: 'var(--rose-pale)' }} />
             <p className="pg-path-kicker" style={{ color: 'var(--rose-pale)' }}>I need a custom part</p>
             {/* COPY: drafted */}
-            <p className="pg-path-text" style={{ color: 'white' }}>Share a sample, drawing or photo — we&apos;ll develop and supply it.</p>
+            <p className="pg-path-text" style={{ color: 'white' }}>Share a sample, drawing or photo and we&apos;ll develop and supply it.</p>
             <Link href="/enquiry" className="btn btn--on-burgundy btn--md">Enquire <ArrowUpRight size={18} weight="light" aria-hidden="true" /></Link>
           </div>
         </div>

@@ -35,7 +35,7 @@ export default function EnquiryFallback({ summaryLines, onLight, rateLimited, on
   if (rateLimited) {
     message = 'You have just sent an enquiry. Please wait a moment before sending another.';
   } else if (hasChannel) {
-    message = 'We could not send your enquiry from this page. Your details are safe — send them to us directly instead.';
+    message = 'We could not send your enquiry from this page. Your details are safe. Please send them to us directly instead.';
   } else {
     message = 'We could not send your enquiry right now. Please check your connection and try again.';
   }

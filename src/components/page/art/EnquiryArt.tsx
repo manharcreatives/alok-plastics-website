@@ -54,7 +54,6 @@ export default function EnquiryArt() {
         fontSize={HEADING_SIZE}
         letterSpacing="0.16em"
         fill="var(--grey-metal)"
-        textTransform="uppercase"
         className="pa-fade" style={D(100)}
       >PART DRAWING</text>
       <text
@@ -194,7 +193,7 @@ export default function EnquiryArt() {
         <line x1="390" y1="714" x2="620" y2="714" stroke="var(--grey-metal)" strokeWidth="0.75" />
         <text x="404" y="675" fontFamily="var(--font-mono, monospace)" fontSize={HEADING_SIZE} letterSpacing="0.14em" fill="var(--grey-metal)">DRAWN BY</text>
         <text x="404" y="705" fontFamily="var(--font-mono, monospace)" fontSize={13} fill="var(--ink)" fontWeight="600" letterSpacing="0.06em">ALOK PLASTICS</text>
-        <text x="404" y="735" fontFamily="var(--font-mono, monospace)" fontSize={HEADING_SIZE} letterSpacing="0.14em" fill="var(--grey-metal)">CHANDIGARH — SINCE 1998</text>
+        <text x="404" y="735" fontFamily="var(--font-mono, monospace)" fontSize={HEADING_SIZE} letterSpacing="0.14em" fill="var(--grey-metal)">CHANDIGARH · SINCE 1998</text>
       </g>
 
       {/* ── Drawing label (front view) ────────────────────────────────── */}

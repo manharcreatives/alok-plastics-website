@@ -67,7 +67,7 @@ export const metadata: Metadata = {
     siteName: site.name,
     locale: 'en_IN',
     // title / description / url are inherited per page from each route's own metadata.
-    images: [{ url: OG_IMAGE_PATH, width: 1200, height: 630, alt: `${site.name} — ${site.tagline.english}` }],
+    images: [{ url: OG_IMAGE_PATH, width: 1200, height: 630, alt: `${site.name}: ${site.tagline.english}` }],
   },
   twitter: {
     card: 'summary_large_image',

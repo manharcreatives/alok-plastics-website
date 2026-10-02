@@ -20,11 +20,15 @@
 
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import { useGSAP } from '@gsap/react';
 import { gsap, ScrollTrigger, DURATIONS, EASINGS } from '@/lib/motion';
 import { useMaskRise } from '@/hooks/useMotion';
 import { site } from '@/content/site';
+import { pictogramPaths, type PictogramName } from '@/components/brand/Pictogram';
+import PartPicto from '@/components/products/PartPicto';
+import { productGroups, productsByGroup } from '@/content/products';
 import {
   WORLD_DOTS, INDIA_DOTS, INDIA_OUTLINE, INDIA_ISLANDS,
   STEP_WORLD_U, STEP_INDIA_U, INDIA_SCALE, INDIA_CLON, INDIA_CLAT, project,
@@ -54,6 +58,21 @@ const DOMESTIC: [number, number][] = [
 const WORLD: [number, number][] = [
   [8, 48], [-8, 8], [26, -22], [46, 28], [122, 14], [122, 38], [140, 36], [134, -26], [-40, -12], [18, 18],
 ];
+
+/* Ten domestic endpoints carry a part symbol from the catalogue (the parts we dispatch); the rest
+   stay plain studs. Illustrative only: no part is claimed for any particular region. */
+const BADGE: Partial<Record<number, PictogramName>> = {
+  13: 'float-valve', 0: 'push-cock', 1: 'waste-pipe', 2: 'ventilation-jalli', 14: 'gasket',
+  3: 'door-lock', 4: 'hinge', 6: 'adjustable-leg-insert', 7: 'connecting-bush', 8: 'f-bush',
+};
+const BADGE_R = 10.5;
+const ICON = 13; /* pictogram size inside a badge, in map units */
+
+/* The catalogue as a unit chart: one row per product family, one symbol tile per published part. */
+const MANIFEST = productGroups
+  .map(g => ({ g, parts: productsByGroup(g.id) }))
+  .filter(r => r.parts.length > 0);
+const MANIFEST_TOTAL = MANIFEST.reduce((n, r) => n + r.parts.length, 0);
 
 const VB = { x: 0, y: 30, w: 1075, h: 505 };
 const inFrame = (p: { x: number; y: number }) =>
@@ -103,6 +122,42 @@ const CSS = `
   .pim.live .pim-ring.b { animation-delay: 1.5s; }
 }
 @keyframes pim-pulse { 0% { transform: scale(.4); opacity: .7; } 70%, 100% { transform: scale(1); opacity: 0; } }
+.pim-badge-ring { fill: var(--surface); stroke: var(--burgundy); stroke-width: 1.2; }
+.pim-badge-icon { fill: none; stroke: var(--burgundy); stroke-linecap: square; stroke-linejoin: miter; }
+
+/* "What leaves Chandigarh": unit chart, one symbol tile per published part */
+.pim-man { margin-top: var(--space-xl); display: grid; gap: var(--space-lg); }
+.pim-man-h { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(1.25rem, 2vw, 1.625rem); font-weight: 650; letter-spacing: -0.02em; color: var(--ink); margin: 0 0 var(--space-xs); }
+.pim-man-sub { font-size: 0.9375rem; line-height: 1.6; color: var(--body); margin: 0; max-width: 44ch; }
+.pim-man-total { display: flex; align-items: baseline; gap: var(--space-xs); margin-top: var(--space-md); }
+.pim-man-total b { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 650; line-height: 1; letter-spacing: -0.04em; color: var(--burgundy); }
+.pim-man-total span { font-size: 0.75rem; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; color: var(--muted); }
+.pim-rows { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-sm); }
+.pim-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-xs); padding-bottom: var(--space-sm); border-bottom: 1px solid var(--grey-cloud); }
+.pim-row-k { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-sm); }
+.pim-row-name { font-size: 0.9375rem; font-weight: 600; color: var(--ink); text-decoration: none; }
+.pim-row-name:hover { color: var(--burgundy); }
+.pim-row-n { font-family: var(--font-mono, monospace); font-size: 0.8125rem; color: var(--muted); white-space: nowrap; }
+.pim-tiles { display: flex; flex-wrap: wrap; gap: 4px; }
+.pim-tile { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px;
+  background: var(--surface); border: 1px solid var(--grey-warm); color: var(--burgundy); border-radius: var(--radius-card);
+  transition: background-color 200ms cubic-bezier(.16,1,.3,1), color 200ms cubic-bezier(.16,1,.3,1), border-color 200ms; }
+.pim-tile:hover, .pim-tile:focus-visible { background: var(--burgundy); border-color: var(--burgundy); color: var(--surface); }
+.pim-tile:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 2px; }
+.pim-tile::after { content: attr(data-name); position: absolute; left: 50%; bottom: calc(100% + 6px); transform: translateX(-50%);
+  padding: 4px 8px; background: var(--ink); color: var(--surface); font-size: 0.75rem; font-weight: 600; white-space: nowrap;
+  border-radius: var(--radius-card); opacity: 0; pointer-events: none; transition: opacity 150ms; z-index: 2; }
+.pim-tile:hover::after, .pim-tile:focus-visible::after { opacity: 1; }
+.pim-man[data-armed='true'] .pim-tile { opacity: 0; transform: translate3d(0, 8px, 0) scale(.9); }
+.pim-man[data-armed='true'][data-in='true'] .pim-tile { opacity: 1; transform: none;
+  transition: opacity 500ms cubic-bezier(.16,1,.3,1) calc(var(--k) * 60ms), transform 500ms cubic-bezier(.16,1,.3,1) calc(var(--k) * 60ms),
+    background-color 200ms, color 200ms, border-color 200ms; }
+@media (prefers-reduced-motion: reduce) { .pim-man[data-armed='true'] .pim-tile { opacity: 1; transform: none; transition: none; } }
+@media (min-width: 900px) {
+  .pim-man { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: var(--space-xl); align-items: start; }
+  .pim-row { grid-template-columns: 220px minmax(0, 1fr); align-items: center; }
+  .pim-row-k { flex-direction: column; gap: 2px; }
+}
 @media (min-width: 720px) {
   .pim-svg { width: 100%; margin-left: 0; }
 }
@@ -114,7 +169,22 @@ const CSS = `
 export default function PanIndiaMap() {
   const sectionRef = useRef<HTMLElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const manRef = useRef<HTMLDivElement>(null);
+  const [manArmed, setManArmed] = useState(false);
+  const [manIn, setManIn] = useState(false);
   useMaskRise(headingRef);
+
+  /* manifest tiles rise in once, in reading order, when the chart scrolls into view */
+  useEffect(() => {
+    const el = manRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const io = new IntersectionObserver(([e]) => {
+      setManArmed(true);
+      if (e.isIntersecting) { setManIn(true); io.disconnect(); }
+    }, { threshold: 0.3 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   /* looping pulse runs only while the section is on screen */
   useEffect(() => {
@@ -232,6 +302,15 @@ export default function PanIndiaMap() {
               </svg>
               The ambition: a globally recognised Indian manufacturing brand
             </li>
+            <li>
+              <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
+                <circle cx="11" cy="11" r="9.5" fill="var(--surface)" stroke="var(--burgundy)" strokeWidth="1.2" />
+                <g transform="translate(5 5) scale(0.25)" fill="none" stroke="var(--burgundy)" strokeWidth="5">
+                  {pictogramPaths['float-valve'].paths.map((d, i) => <path key={i} d={d} />)}
+                </g>
+              </svg>
+              Parts on the move, drawn from our catalogue
+            </li>
           </ul>
         </div>
 
@@ -261,9 +340,22 @@ export default function PanIndiaMap() {
               {domestic.map((a, i) => (
                 <path key={`d${i}`} className="pim-arc-d" d={a.d} pathLength={1} stroke="var(--burgundy)" strokeOpacity="0.8" strokeWidth="1.2" strokeLinecap="round" />
               ))}
-              {[...domestic, ...world].map((a, i) => (
-                <circle key={`e${i}`} visibility={inFrame(a.p) ? 'visible' : 'hidden'} className="pim-end" cx={a.p.x} cy={a.p.y} r={i < domestic.length ? 2.3 : 3} fill="var(--surface)" stroke="var(--burgundy)" strokeWidth="1.1" />
-              ))}
+              {[...domestic, ...world].map((a, i) => {
+                const badge = i < domestic.length ? BADGE[i] : undefined;
+                if (badge) {
+                  const k = ICON / 48;
+                  return (
+                    <g key={`e${i}`} className="pim-end" transform={`translate(${round(a.p.x)} ${round(a.p.y)})`}>
+                      <title>{pictogramPaths[badge].title}</title>
+                      <circle className="pim-badge-ring" r={BADGE_R} />
+                      <g className="pim-badge-icon" transform={`translate(${-ICON / 2} ${-ICON / 2}) scale(${k})`} strokeWidth={1 / k}>
+                        {pictogramPaths[badge].paths.map((d, j) => <path key={j} d={d} />)}
+                      </g>
+                    </g>
+                  );
+                }
+                return <circle key={`e${i}`} visibility={inFrame(a.p) ? 'visible' : 'hidden'} className="pim-end" cx={a.p.x} cy={a.p.y} r={i < domestic.length ? 2.3 : 3} fill="var(--surface)" stroke="var(--burgundy)" strokeWidth="1.1" />;
+              })}
               {[...domestic, ...world].map((_, i) => (
                 <circle key={`l${i}`} className="pim-light" r="2.8" fill="var(--burgundy-bright)" />
               ))}
@@ -281,9 +373,39 @@ export default function PanIndiaMap() {
           </div>
 
           <figcaption className="pim-foot">
-            <p className="pim-note">Illustrative. Arcs show direction of travel, not delivery destinations.</p>
+            <p className="pim-note">Illustrative. Arcs show direction of travel, not delivery destinations. Part symbols show what we make, not where each part goes.</p>
           </figcaption>
         </figure>
+
+        {/* What leaves Chandigarh: the published catalogue as a unit chart */}
+        <div ref={manRef} className="pim-man" data-armed={manArmed ? 'true' : undefined} data-in={manIn ? 'true' : undefined}>
+          <div>
+            <h3 className="pim-man-h">What leaves {site.contact.city}.</h3>
+            <p className="pim-man-sub">Every symbol is one part in our catalogue, grouped by what it does inside the machine. Tap a part to see it.</p>
+            <p className="pim-man-total"><b>{MANIFEST_TOTAL}</b><span>parts across {MANIFEST.length} families</span></p>
+          </div>
+          <ul className="pim-rows">
+            {MANIFEST.map((r, ri) => {
+              const before = MANIFEST.slice(0, ri).reduce((n, x) => n + x.parts.length, 0);
+              return (
+                <li key={r.g.id} className="pim-row">
+                  <div className="pim-row-k">
+                    <Link href={`/products/${r.g.slug}/`} className="pim-row-name">{r.g.name}</Link>
+                    <span className="pim-row-n">{r.parts.length} {r.parts.length === 1 ? 'part' : 'parts'}</span>
+                  </div>
+                  <div className="pim-tiles">
+                    {r.parts.map((p, pi) => (
+                      <Link key={p.slug} href={`/products/${r.g.slug}/${p.slug}/`} className="pim-tile" data-name={p.name}
+                        aria-label={p.name} style={{ ['--k' as string]: before + pi }}>
+                        <PartPicto slug={p.slug} size={32} />
+                      </Link>
+                    ))}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       </div>
     </section>
   );

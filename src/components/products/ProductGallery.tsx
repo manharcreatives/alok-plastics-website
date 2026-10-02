@@ -15,7 +15,7 @@ export default function ProductGallery({ product }: { product: Product }) {
   if (imgs.length === 0) {
     return (
       <div className="p-gallery">
-        <div className="p-gallery__main" role="img" aria-label={`${product.name} — drawn illustration, product photo coming soon`}>
+        <div className="p-gallery__main" role="img" aria-label={`${product.name}, drawn illustration. Product photo coming soon.`}>
           <div className="p-ph">
             <span className="p-ph__frame" aria-hidden="true" />
             <span style={{ position: 'relative', display: 'contents' }}><PartArt product={product} /></span>

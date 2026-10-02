@@ -168,7 +168,7 @@ export default async function PartPage({ params }: { params: Promise<{ group: st
         <StickyEnquiryBar name={p.name} slug={p.slug} material={p.material} />
       </div>
 
-      <EnquiryBand fold="register" heading={`Need ${p.name}?`} text="Share the quantity and use — we reply with a quote." />
+      <EnquiryBand fold="register" heading={`Need ${p.name}?`} text="Share the quantity and use, and we will reply with a quote." />
       <JsonLd data={productJsonLd(p, g)} />
     </>
   );
