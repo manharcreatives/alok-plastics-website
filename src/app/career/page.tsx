@@ -9,8 +9,9 @@ import PageHero from '@/components/page/PageHero';
 import { CareerArt } from '@/components/page/art';
 import FoldEdge, { FOLD_SECTION_CSS } from '@/components/sections/FoldEdge';
 import Reveal from '@/components/ui/Reveal';
+import RoleList from '@/components/career/RoleList';
+import { useRuntimeContact } from '@/components/runtime/useRuntime';
 import { careerConfig } from '@/content/career';
-import { site } from '@/content/site';
 import { Eyebrow, SECTION_CSS, SectionHead, WRAP_STYLE } from '@/components/about/parts';
 
 export const metadata: Metadata = {
@@ -83,8 +84,6 @@ ${FOLD_SECTION_CSS}
 
 export default function CareerPage() {
   const { culture, teams } = careerConfig;
-  const openRoles = careerConfig.openRoles.filter(r => r.published);
-  const email = site.contact.email;
   const paragraphs = culture.split(/\n\s*\n/);
 
   return (
@@ -157,34 +156,7 @@ export default function CareerPage() {
               <Eyebrow>Open roles</Eyebrow>
               <h2 id="roles-h" className="cp-h2">Current openings</h2>
             </header>
-            {openRoles.length > 0 ? (
-              <ul className="cr-role-list">
-                {openRoles.map(r => (
-                  <li key={r.id}>
-                    <strong style={{ color: 'var(--ink)' }}>{r.title}</strong>
-                    <span style={{ display: 'block', color: 'var(--muted)', fontSize: '0.875rem' }}>{r.team} · {r.location} · {r.type}</span>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <Reveal variant="wipe">
-                <div className="cr-empty">
-                  <h3>No open roles right now</h3>
-                  <p>
-                    {email
-                      ? 'You are welcome to send your CV and we will keep it on file.'
-                      : 'Reach out through our contact page and tell us about yourself.'}
-                  </p>
-                  {email ? (
-                    <a className="cp-btn" style={{ minHeight: 56, padding: '0 var(--space-lg)', marginTop: 'var(--space-md)' }} href={`mailto:${email}?subject=${encodeURIComponent('Career enquiry: CV')}`}>
-                      <EnvelopeSimple size={20} weight="light" aria-hidden="true" /> Send your CV
-                    </a>
-                  ) : (
-                    <Link className="cp-btn" href="/contact/" style={{ minHeight: 56, padding: '0 var(--space-lg)', marginTop: 'var(--space-md)' }}>Contact us <ArrowUpRight size={20} weight="light" aria-hidden="true" /></Link>
-                  )}
-                </div>
-              </Reveal>
-            )}
+            <RoleList />
           </div>
         </div>
       </section>

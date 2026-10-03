@@ -9,7 +9,7 @@ import { z } from 'zod';
 /* ── Shared field definitions ─────────────────────────────────── */
 
 /* NOTE: .trim() comes first so whitespace-only input fails the min() check. */
-const nameField = z
+export const nameField = z
   .string()
   .trim()
   .min(2, 'Enter your name (at least 2 characters).')
@@ -21,7 +21,7 @@ const companyField = z
   .min(2, 'Enter your company name (at least 2 characters).')
   .max(100, 'Company name must be under 100 characters.');
 
-const phoneField = z
+export const phoneField = z
   .string()
   .trim()
   .refine(
@@ -38,7 +38,7 @@ const emailField = z
   .or(z.literal(''));
 
 /* Additional notes are OPTIONAL — product + contact details are enough to quote. */
-const messageField = z
+export const messageField = z
   .string()
   .trim()
   .max(2000, 'Notes must be under 2000 characters.')

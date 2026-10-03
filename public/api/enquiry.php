@@ -92,7 +92,7 @@ if (file_exists($lockFile)) {
         die(json_encode(['ok' => false, 'error' => 'Too many requests. Please wait a moment and try again.']));
     }
 }
-file_put_contents($lockFile, (string) $now, LOCK_EX);
+// The lock is written only after validation passes (below), so fixing a typo is never rate limited.
 
 // ── Read POST data ────────────────────────────────────────────────────────────
 
@@ -187,6 +187,8 @@ if (!empty($errors)) {
     http_response_code(422);
     die(json_encode(['ok' => false, 'errors' => $errors]));
 }
+
+file_put_contents($lockFile, (string) $now, LOCK_EX);
 
 // ── Build email ───────────────────────────────────────────────────────────────
 

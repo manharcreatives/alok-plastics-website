@@ -4,15 +4,12 @@
  * faster, and the contact details that exist. No WhatsApp CTA (it lives in the floating button).
  */
 import type { Metadata } from 'next';
-import { MapPin } from '@phosphor-icons/react/dist/ssr/MapPin';
-import { Phone } from '@phosphor-icons/react/dist/ssr/Phone';
-import { EnvelopeSimple } from '@phosphor-icons/react/dist/ssr/EnvelopeSimple';
 import EnquiryFormPrefilled from '@/components/products/EnquiryFormPrefilled';
 import PageHero from '@/components/page/PageHero';
 import { EnquiryArt } from '@/components/page/art';
 import Reveal from '@/components/ui/Reveal';
 import { Eyebrow, SECTION_CSS, WRAP_STYLE } from '@/components/about/parts';
-import { site, formatAddressLines, mapsHref, telHref, MAPS_ARIA_LABEL } from '@/content/site';
+import { EnquiryContactRows, EnquiryEmailTip } from '@/components/contact/EnquiryContact';
 
 export const metadata: Metadata = {
   title: 'Get a Quote',
@@ -49,8 +46,6 @@ ${SECTION_CSS}
 `;
 
 export default function EnquiryPage() {
-  const c = site.contact;
-  const [addrLine1, addrLine2] = formatAddressLines(c);
 
   return (
     <>
@@ -92,30 +87,13 @@ export default function EnquiryPage() {
                   <li><span><b>Quantity</b> you need, in pieces or sets.</span></li>
                   <li>
                     <span>
-                      <b>A drawing or photo.</b> Mention it in the message{c.email ? <> or send it to <a href={`mailto:${c.email}`} style={{ color: 'var(--burgundy)', fontWeight: 600 }}>{c.email}</a></> : ''} and we will confirm how to share it.
+                      <b>A drawing or photo.</b> Mention it in the message<EnquiryEmailTip /> and we will confirm how to share it.
                     </span>
                   </li>
                 </ul>
               </div>
 
-              <div className="eq-contact">
-                <a className="row" href={mapsHref(c)} target="_blank" rel="noopener noreferrer" aria-label={MAPS_ARIA_LABEL}>
-                  <MapPin size={22} weight="light" aria-hidden="true" />
-                  <span><b>{site.name}</b>{addrLine1},<br />{addrLine2}</span>
-                </a>
-                {c.phone && (
-                  <a className="row" href={telHref(c.phone)}>
-                    <Phone size={22} weight="light" aria-hidden="true" />
-                    <span><b>Phone</b>{c.phone}</span>
-                  </a>
-                )}
-                {c.email && (
-                  <a className="row" href={`mailto:${c.email}`}>
-                    <EnvelopeSimple size={22} weight="light" aria-hidden="true" />
-                    <span><b>Email</b>{c.email}</span>
-                  </a>
-                )}
-              </div>
+              <EnquiryContactRows />
             </Reveal>
           </div>
         </div>

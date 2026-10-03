@@ -27,6 +27,7 @@ export async function loadContent() {
     site: siteM.site,
     formatAddress: siteM.formatAddress,
     productGroups: productsM.productGroups,
+    products: productsM.products,
     publishedProducts: productsM.publishedProducts,
     productsByGroup: productsM.productsByGroup,
     productPath: productsM.productPath,

@@ -23,6 +23,7 @@ import { Phone } from '@phosphor-icons/react/dist/csr/Phone';
 import Logo from '@/components/brand/Logo';
 import { navigation } from '@/content/navigation';
 import { site } from '@/content/site';
+import { useRuntimeContact } from '@/components/runtime/useRuntime';
 import { isActivePath } from './isActivePath';
 
 interface DrawerProps {
@@ -68,6 +69,8 @@ export default function Drawer({ isOpen, onClose }: DrawerProps) {
   const drawerRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
+  /* Panel value for the call button, null until settings.json arrives. */
+  const { phone } = useRuntimeContact();
 
   /* Focus trap + Esc */
   useEffect(() => {
@@ -221,10 +224,10 @@ export default function Drawer({ isOpen, onClose }: DrawerProps) {
             <ArrowUpRight weight="light" size={18} aria-hidden="true" />
           </Link>
 
-          {site.contact.phone && (
-            <a href={`tel:${site.contact.phone}`} className="drawer-call">
+          {phone && (
+            <a href={`tel:${phone}`} className="drawer-call">
               <Phone weight="light" size={18} aria-hidden="true" />
-              Call: {site.contact.phone}
+              Call: {phone}
             </a>
           )}
         </div>

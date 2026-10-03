@@ -11,8 +11,9 @@
 import ShortEnquiryForm from '@/components/forms/ShortEnquiryForm';
 import { Phone } from '@phosphor-icons/react/dist/ssr/Phone';
 import { EnvelopeSimple } from '@phosphor-icons/react/dist/ssr/EnvelopeSimple';
-import { site, telHref } from '@/content/site';
+import { telHref } from '@/content/site';
 import { trackPhoneClick } from '@/lib/analytics';
+import { useRuntimeContact } from '@/components/runtime/useRuntime';
 
 const SECTION_CSS = `
 .enq-sec { position: relative; overflow: hidden; background: var(--surface-alt); padding: var(--section-y) var(--grid-page-padding); }
@@ -43,7 +44,7 @@ a.enq-sec-row:hover .enq-sec-ar { transform: translate3d(2px, -2px, 0); }
 `;
 
 export default function EnquirySection() {
-  const c = site.contact;
+  const c = useRuntimeContact();
 
   return (
     <section id="enquiry" aria-labelledby="enquiry-heading" className="enq-sec">

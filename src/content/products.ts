@@ -62,7 +62,7 @@ export const products: Product[] = [
     machine: 'TODO', // TODO(client): which machines use this part
     material: 'nylon',
     variants: [],     // TODO(client): sizes/variants from catalogue
-    price: { amount: 10, unit: 'pc' }, // catalogue price — not shown (showPrices: false)
+    catalogPrice: { amount: 10, unit: 'pc' }, // catalogue price — not shown (showPrices: false)
     sku: undefined,   // TODO(client)
     hsn: undefined,   // TODO(client)
     moq: undefined,   // TODO(client)
@@ -226,7 +226,7 @@ export const products: Product[] = [
     machine: ['water-cooler'],
     material: 'nylon',
     variants: [],
-    price: { amount: 180, unit: 'set' }, // catalogue price — not shown
+    catalogPrice: { amount: 180, unit: 'set' }, // catalogue price — not shown
     sku: undefined,   // TODO(client)
     // COPY: drafted, needs client approval
     summary: 'A nylon float valve that controls the water level inside water coolers and dispensers.',
@@ -265,7 +265,7 @@ export const products: Product[] = [
     machine: ['water-cooler', 'display-counter'],
     material: 'ppcp',
     variants: [],
-    price: { amount: 20, unit: 'pc' }, // catalogue price — not shown
+    catalogPrice: { amount: 20, unit: 'pc' }, // catalogue price — not shown
     sku: undefined,   // TODO(client)
     // COPY: drafted, needs client approval
     summary: 'A PPCP waste pipe for draining overflow water from water coolers and display counters.',

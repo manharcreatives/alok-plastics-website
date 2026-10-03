@@ -6,7 +6,7 @@ import { ArrowUpRight } from '@phosphor-icons/react/dist/ssr/ArrowUpRight';
 import PageHero from '@/components/page/PageHero';
 import EnquiryBand from '@/components/page/EnquiryBand';
 import FoldEdge, { FOLD_SECTION_CSS } from '@/components/sections/FoldEdge';
-import { PartGrid } from '@/components/products/PartCard';
+import GroupParts from '@/components/products/GroupParts';
 import { GroupBlueprintArt } from '@/components/products/art';
 import { describe } from '@/lib/seo';
 import { getGroupBySlug, productGroups, productsByGroup } from '@/content/products';
@@ -57,7 +57,7 @@ export default async function GroupPage({ params }: { params: Promise<{ group: s
             </div>
             <span className="pg-meta">{items.length} {items.length === 1 ? 'part' : 'parts'}</span>
           </div>
-          <PartGrid items={items} level={3} />
+          <GroupParts groupId={g.id} items={items} />
         </div>
       </section>
 
