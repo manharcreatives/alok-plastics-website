@@ -1,53 +1,14 @@
 /**
- * Part-finder search + filter logic (pure, client-safe).
- * Fuse.js index over published products only. Machine filter never claims a
- * machine for a product whose machine fit is unconfirmed ('TODO').
+ * Part-finder helpers, kept as thin wrappers over catalog-search so existing consumers
+ * (PartFinder) keep working. New code should use `@/lib/catalog-search` directly.
+ *
+ * Machine filter never claims a machine for a product whose fit is unconfirmed ('TODO').
  */
-import Fuse from 'fuse.js';
-import {
-  MACHINE_LABELS,
-  MATERIAL_LABELS,
-  getGroup,
-  knownMachines,
-  publishedProducts,
-} from '@/content/products';
+import { MATERIAL_LABELS, knownMachines, publishedProducts } from '@/content/products';
 import type { MachineId, MaterialId, Product } from '@/content/types';
-
-interface Doc {
-  product: Product;
-  name: string;
-  summary: string;
-  material: string;
-  variants: string;
-  group: string;
-  machines: string;
-}
-
-const docs: Doc[] = publishedProducts
-  .filter(p => p.group)
-  .map(p => ({
-    product: p,
-    name: p.name,
-    summary: p.summary ?? '',
-    material: p.material ? MATERIAL_LABELS[p.material] : '',
-    variants: (p.variants ?? []).map(v => `${v.label} ${v.note ?? ''}`).join(' '),
-    group: p.group ? getGroup(p.group)?.name ?? '' : '',
-    machines: knownMachines(p).map(m => MACHINE_LABELS[m]).join(' '),
-  }));
-
-const fuse = new Fuse(docs, {
-  keys: [
-    { name: 'name', weight: 0.5 },
-    { name: 'material', weight: 0.15 },
-    { name: 'variants', weight: 0.1 },
-    { name: 'group', weight: 0.1 },
-    { name: 'machines', weight: 0.1 },
-    { name: 'summary', weight: 0.05 },
-  ],
-  threshold: 0.35,
-  ignoreLocation: true,
-  minMatchCharLength: 2,
-});
+import { applyProductOverride } from '@/components/runtime/useRuntime';
+import type { RuntimeProducts } from '@/lib/runtime-schema';
+import { DEFAULT_QUERY, isListable, searchCatalog } from '@/lib/catalog-search';
 
 /** Machines that at least one product is confirmed for. */
 export const availableMachines: MachineId[] = (
@@ -69,12 +30,42 @@ export function isFiltering(f: PartQuery): boolean {
   return f.q.trim().length > 0 || f.machine !== 'all' || f.material !== 'all';
 }
 
-export function searchParts(f: PartQuery): Product[] {
-  const q = f.q.trim();
-  let list: Product[] = q
-    ? fuse.search(q).map(r => r.item.product)
-    : docs.map(d => d.product);
-  if (f.machine !== 'all') list = list.filter(p => knownMachines(p).includes(f.machine as MachineId));
-  if (f.material !== 'all') list = list.filter(p => p.material === f.material);
-  return list;
+/** Merged, listable products per override map, so the search index is built once per edit. */
+const listCache = new WeakMap<object, Product[]>();
+let buildList: Product[] | null = null;
+
+function listFor(edits?: RuntimeProducts['products'] | null, hidden?: ReadonlySet<string>): Product[] {
+  if (hidden && hidden.size > 0) {
+    // Hidden sets are rebuilt by the caller on change; a fresh list here is cheap and never stale.
+    return base(edits).filter(p => !hidden.has(p.slug));
+  }
+  return base(edits);
+}
+
+function base(edits?: RuntimeProducts['products'] | null): Product[] {
+  if (!edits || edits.size === 0) {
+    return (buildList ??= publishedProducts.filter(p => p.group && isListable(p)));
+  }
+  let hit = listCache.get(edits);
+  if (!hit) {
+    hit = publishedProducts
+      .map(p => applyProductOverride(p, edits.get(p.slug)))
+      .filter(p => p.group && isListable(p));
+    listCache.set(edits, hit);
+  }
+  return hit;
+}
+
+export function searchParts(
+  f: PartQuery,
+  hidden?: ReadonlySet<string>,
+  edits?: RuntimeProducts['products'] | null,
+): Product[] {
+  return searchCatalog(listFor(edits, hidden), {
+    ...DEFAULT_QUERY,
+    q: f.q,
+    machines: f.machine === 'all' ? [] : [f.machine],
+    materials: f.material === 'all' ? [] : [f.material],
+    pageSize: 100_000,
+  }).items;
 }

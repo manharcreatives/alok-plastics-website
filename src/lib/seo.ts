@@ -151,7 +151,7 @@ export function breadcrumbJsonLd(items: CrumbInput[]): Json {
   };
 }
 
-/** Product schema: no offers, prices, ratings or reviews. Unknown fields omitted. */
+/** Product schema: no offers, ratings or reviews at build time (offers are added at runtime only when the owner sets a price). Unknown fields omitted. */
 export function productJsonLd(p: Product, g: ProductGroup): Json {
   const images = p.images.map(i => absoluteUrl(i.src));
   return {
@@ -218,4 +218,32 @@ export function partTitle(p: Product, g: ProductGroup): string {
     `${p.name} Spare Part | Alok Plastics`,
   ];
   return candidates.find(c => c.length <= 60) ?? candidates[candidates.length - 1];
+}
+
+/**
+ * schema.org Offer for a product. Only call this when the owner has set a price (runtime
+ * products.json); build-time Product JSON-LD never carries an offer. On-request availability
+ * is left out rather than guessed.
+ */
+export function productOffer(opts: {
+  price: number;
+  url: string;
+  availability?: 'in-stock' | 'out-of-stock' | 'on-request';
+  discontinued?: boolean;
+}): Json {
+  const avail = opts.discontinued
+    ? 'https://schema.org/Discontinued'
+    : opts.availability === 'in-stock'
+      ? 'https://schema.org/InStock'
+      : opts.availability === 'out-of-stock'
+        ? 'https://schema.org/OutOfStock'
+        : null;
+  return {
+    '@type': 'Offer',
+    price: opts.price.toFixed(2),
+    priceCurrency: 'INR',
+    url: opts.url,
+    ...(avail ? { availability: avail } : {}),
+    seller: { '@id': ID.org },
+  };
 }

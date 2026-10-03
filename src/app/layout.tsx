@@ -8,6 +8,9 @@ import { HOME_DESCRIPTION, HOME_TITLE, OG_IMAGE_PATH } from '@/lib/seo';
 import Header from '@/components/layout/Header';
 import LenisProvider from '@/components/layout/LenisProvider';
 import Preloader from '@/components/preloader/Preloader';
+import RuntimeProvider from '@/components/runtime/RuntimeProvider';
+import AnnouncementBanner from '@/components/runtime/AnnouncementBanner';
+import CartProvider from '@/components/cart/CartProvider';
 
 // ── Fonts — self-hosted woff2 in src/fonts (no Google request at build OR runtime) ──
 // §7.1: Archivo variable (wdth 62–125 + wght), Inter variable, Noto Sans Devanagari, JetBrains Mono
@@ -124,12 +127,19 @@ export default function RootLayout({ children }: Props) {
         {/* Preloader — SSR markup is display:none unless html.is-preloading (set in <head>) */}
         <Preloader />
         <LenisProvider />
-        <Header />
-        <main id="main">
-          {children}
-        </main>
-        <Footer />
-        <WhatsAppFAB />
+        {/* Runtime layer: one fetch of the JSON /admin/ writes, shared by every consumer below.
+            Values land after hydration and only ever overlay a build-time value. */}
+        <RuntimeProvider>
+          <CartProvider>
+            <AnnouncementBanner />
+            <Header />
+            <main id="main">
+              {children}
+            </main>
+            <Footer />
+            <WhatsAppFAB />
+          </CartProvider>
+        </RuntimeProvider>
       </body>
     </html>
   );

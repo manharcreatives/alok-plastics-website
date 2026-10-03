@@ -13,8 +13,10 @@
 import { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { ArrowUpRight } from '@phosphor-icons/react/dist/csr/ArrowUpRight';
+import ProductText from '@/components/runtime/ProductText';
 import Pictogram from '@/components/brand/Pictogram';
 import { productGroups, products } from '@/content/products';
+import { useHiddenProductSlugs } from '@/components/runtime/useRuntime';
 
 interface NavMegaPanelProps {
   /** id referenced by the trigger's aria-controls */
@@ -41,6 +43,7 @@ export default function NavMegaPanel({
   onPointerLeave,
 }: NavMegaPanelProps) {
   const panelRef = useRef<HTMLDivElement>(null);
+  const hidden = useHiddenProductSlugs();
 
   /* Close on Esc, return focus to the trigger */
   useEffect(() => {
@@ -98,7 +101,7 @@ export default function NavMegaPanel({
           /* Derive the group's products by their anchorParts slugs */
           const groupProducts = group.anchorParts
             .map(slug => products.find(p => p.slug === slug))
-            .filter((p): p is NonNullable<typeof p> => p !== undefined);
+            .filter((p): p is NonNullable<typeof p> => p !== undefined && !hidden.has(p.slug));
 
           return (
             <div key={group.id} className="mega__col">
@@ -123,7 +126,7 @@ export default function NavMegaPanel({
                         size={24}
                         className="mega__picto"
                       />
-                      <span>{product.name}</span>
+                      <span><ProductText slug={product.slug} field="name" fallback={product.name} /></span>
                       <ArrowUpRight weight="light" size={14} aria-hidden="true" className="mega__arrow" />
                     </Link>
                   </li>

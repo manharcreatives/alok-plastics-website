@@ -17,11 +17,13 @@ import Link from 'next/link';
 import { ArrowUpRight } from '@phosphor-icons/react/dist/csr/ArrowUpRight';
 import { CaretDown } from '@phosphor-icons/react/dist/csr/CaretDown';
 import { CaretUp } from '@phosphor-icons/react/dist/csr/CaretUp';
+import ProductText from '@/components/runtime/ProductText';
 import FoldEdge, { FOLD_SECTION_CSS } from './FoldEdge';
 import Pictogram, { pictogramPaths, type PictogramName } from '@/components/brand/Pictogram';
 import SectionHeader from '@/components/ui/SectionHeader';
 import Tag from '@/components/ui/Tag';
 import { productGroups, productsByGroup, productPath } from '@/content/products';
+import { useHiddenProductSlugs } from '@/components/runtime/useRuntime';
 import type { Product } from '@/content/types';
 
 /* ── Glare effect — cursor-tracked radial highlight ─────────── */
@@ -187,7 +189,7 @@ function GroupCard({
               <li key={product.slug}>
                 <Link href={productPath(product)} className="pg-part">
                   <PartIcon slug={product.slug} px={20} />
-                  <span className="pg-part-name">{product.name}</span>
+                  <span className="pg-part-name"><ProductText slug={product.slug} field="name" fallback={product.name} /></span>
                   {isExpanded && product.material && (
                     <Tag material={product.material as Parameters<typeof Tag>[0]['material']} />
                   )}
@@ -325,6 +327,7 @@ const CSS = FOLD_SECTION_CSS + `
 `;
 
 export default function ProductGroups() {
+  const hidden = useHiddenProductSlugs();
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const toggle = useCallback((id: string) => {
@@ -361,7 +364,7 @@ export default function ProductGroups() {
             <GroupCard
               key={group.id}
               group={group}
-              products={productsByGroup(group.id)}
+              products={productsByGroup(group.id).filter(p => !hidden.has(p.slug))}
               isExpanded={expandedId === group.id}
               onToggle={() => toggle(group.id)}
               useGlare={i < 2}

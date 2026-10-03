@@ -1,7 +1,12 @@
 /**
  * WhatsApp deep link helpers — single source for all WA links in the site.
- * All links read site.contact.whatsapp at call time.
- * Functions return null when the number is not configured.
+ *
+ * Every helper takes an optional `number`. Pass the value from `useRuntimeContact()`
+ * and the link follows whatever the owner last saved in the panel; omit it and the
+ * link reads the build-time value in `site.contact`. Either way the number is reduced
+ * to digits here, because `wa.me` wants the country code and nothing else.
+ *
+ * Functions return null when no number is configured — the caller renders nothing.
  * §14 spec: WhatsApp is the primary channel — must work even if email fails.
  */
 
@@ -13,16 +18,17 @@ function digits(n: string): string {
 }
 
 /** Base WhatsApp link with an encoded message */
-export function waLink(message: string): string | null {
-  if (!site.contact.whatsapp) return null;
-  const num = digits(site.contact.whatsapp);
-  return `https://wa.me/${num}?text=${encodeURIComponent(message)}`;
+export function waLink(message: string, number?: string | null): string | null {
+  const src = number || site.contact.whatsapp;
+  if (!src) return null;
+  return `https://wa.me/${digits(src)}?text=${encodeURIComponent(message)}`;
 }
 
 /** Generic enquiry — home hero / FAB */
-export function waGeneral(): string | null {
+export function waGeneral(number?: string | null): string | null {
   return waLink(
     'Hello Alok Plastics! I would like to enquire about spare parts.',
+    number,
   );
 }
 
@@ -34,7 +40,7 @@ export function waProduct(opts: {
   unit?: 'pcs' | 'sets';
   buyerName?: string;
   city?: string;
-}): string | null {
+}, number?: string | null): string | null {
   const { productName, variant, quantity, unit, buyerName, city } = opts;
   const lines: string[] = [
     `Hello Alok Plastics! I'd like a quote for:`,
@@ -45,7 +51,7 @@ export function waProduct(opts: {
   }
   if (buyerName) lines.push(`• Name: ${buyerName}`);
   if (city) lines.push(`• City: ${city}`);
-  return waLink(lines.join('\n'));
+  return waLink(lines.join('\n'), number);
 }
 
 /** Enquiry follow-up — used by both forms after a successful send */
@@ -56,8 +62,8 @@ export function waFromShortForm(opts: {
   quantity?: number;
   unit?: 'pcs' | 'sets';
   message?: string;
-}): string | null {
-  return waLink(enquiryLines(opts).join('\n'));
+}, number?: string | null): string | null {
+  return waLink(enquiryLines(opts).join('\n'), number);
 }
 
 /** Plain summary lines shared by WhatsApp and mailto fallbacks */
@@ -85,7 +91,51 @@ export function enquiryLines(opts: {
 }
 
 /** Formatted WA number for display (e.g. "+91 98765 43210") */
-export function waDisplayNumber(): string | null {
-  if (!site.contact.whatsapp) return null;
-  return site.contact.whatsapp;
+export function waDisplayNumber(number?: string | null): string | null {
+  return number || site.contact.whatsapp;
+}
+
+/* ── Order request (cart -> WhatsApp). No payment, nothing is confirmed here. ── */
+
+export interface OrderLine {
+  name: string;
+  sku?: string | null;
+  qty: number;
+  /** INR from the admin, or null => "Price on request". Never guessed. */
+  price: number | null;
+}
+
+export interface OrderCustomer {
+  name: string;
+  phone: string;
+  /** Delivery address / city */
+  address: string;
+  message?: string;
+}
+
+const inr = (n: number) => `\u20B9${n.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
+
+/** The structured order-request text (also used by the copy-message fallback). */
+export function orderMessage(lines: OrderLine[], customer: OrderCustomer): string {
+  const out: string[] = ['ORDER REQUEST - Alok Plastics', ''];
+  lines.forEach((l, i) => {
+    out.push(`${i + 1}. ${l.name}`);
+    if (l.sku) out.push(`   SKU: ${l.sku}`);
+    out.push(`   Qty: ${l.qty}`);
+    out.push(`   Price: ${l.price === null ? 'Price on request' : `${inr(l.price)} each`}`);
+  });
+  /* Only when EVERY line has a price; a partial sum would be a made-up number. */
+  if (lines.length > 0 && lines.every(l => l.price !== null)) {
+    const total = lines.reduce((s, l) => s + (l.price as number) * l.qty, 0);
+    out.push('', `Estimated total: ${inr(total)} (final price to be confirmed)`);
+  }
+  out.push('', 'Customer details', `Name: ${customer.name}`, `Phone: ${customer.phone}`, `Delivery address / city: ${customer.address}`);
+  if (customer.message?.trim()) out.push('', `Message: ${customer.message.trim()}`);
+  out.push('', 'Please confirm availability, final price and delivery.');
+  return out.join('\n');
+}
+
+/** WhatsApp link for the order request, or null when no number is configured. */
+export function waOrder(lines: OrderLine[], customer: OrderCustomer, number?: string | null): string | null {
+  return waLink(orderMessage(lines, customer), number);
 }

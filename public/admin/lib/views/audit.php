@@ -1,24 +1,32 @@
 <?php defined('ALOK_ADMIN') || exit; ?>
 <?php /** @var list<array<string,mixed>> $entries */ ?>
-<h1>Activity log</h1>
-<p class="lead">Sign-ins and changes made in this panel, newest first (last 200). Network addresses are stored only as an anonymous code.</p>
+<?= page_head('Activity log', [['Dashboard', u()], ['Activity log', null]], 'Sign-ins and changes made in this panel, newest first (last 200). Network addresses are stored only as an anonymous code.') ?>
 <?php if (!$entries): ?>
-  <p class="card empty">Nothing recorded yet.</p>
+  <div class="card empty-state">
+    <span class="empty-ico"><?= icon('clock') ?></span>
+    <p class="empty-title">Nothing recorded yet</p>
+    <p>Sign-ins, status changes, notes and exports will appear here.</p>
+  </div>
 <?php else: ?>
-<div class="card flush">
-<table class="table stack">
-  <thead><tr><th scope="col">When</th><th scope="col">Who</th><th scope="col">What</th><th scope="col">Detail</th></tr></thead>
-  <tbody>
-  <?php foreach ($entries as $en): ?>
-    <tr>
-      <td data-label="When"><?= e(alok_date((int) ($en['ts'] ?? 0), 'd M Y, H:i:s')) ?></td>
-      <td data-label="Who"><?= e($en['user'] ?? '') ?></td>
-      <td data-label="What"><?= e(str_replace('_', ' ', (string) ($en['action'] ?? ''))) ?></td>
-      <td data-label="Detail"><?= e(trim(($en['target'] ?? '') . ' ' . ($en['detail'] ?? ''))) ?></td>
-    </tr>
-  <?php endforeach; ?>
-  </tbody>
-</table>
+<div class="card">
+<?php $day = null; $open = false;
+foreach ($entries as $en):
+    $ts = (int) ($en['ts'] ?? 0);
+    $d = alok_date($ts, 'l, d M Y');
+    if ($d !== $day):
+        if ($open) echo '</ol>';
+        $day = $d; $open = true; ?>
+  <h2 class="log-day"><?= e($d) ?></h2>
+  <ol class="timeline">
+<?php endif;
+    $act = (string) ($en['action'] ?? '');
+    $cls = str_contains($act, 'fail') || str_contains($act, 'block') || str_contains($act, 'reject') ? ' class="tl-fail"' : (in_array($act, ['login', 'logout'], true) ? ' class="tl-dim"' : '');
+    $detail = trim(($en['target'] ?? '') . ' ' . ($en['detail'] ?? '')); ?>
+    <li<?= $cls ?>>
+      <span class="tl-meta"><?= e(alok_date($ts, 'H:i:s')) ?> · <span class="tl-who"><?= e($en['user'] ?? '') ?></span></span>
+      <span class="tl-act"><?= e(str_replace('_', ' ', $act)) ?></span>
+      <?php if ($detail !== ''): ?><span class="tl-detail"><?= e($detail) ?></span><?php endif; ?>
+    </li>
+<?php endforeach; if ($open) echo '</ol>'; ?>
 </div>
 <?php endif; ?>
-<p class="meta"><a href="<?= e(u('system')) ?>">System check</a></p>

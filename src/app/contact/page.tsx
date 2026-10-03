@@ -4,18 +4,15 @@
  * (it lives in the floating button only).
  */
 import type { Metadata } from 'next';
-import { MapPin } from '@phosphor-icons/react/dist/ssr/MapPin';
-import { Phone } from '@phosphor-icons/react/dist/ssr/Phone';
-import { EnvelopeSimple } from '@phosphor-icons/react/dist/ssr/EnvelopeSimple';
-import { ArrowUpRight } from '@phosphor-icons/react/dist/ssr/ArrowUpRight';
 import PageHero from '@/components/page/PageHero';
 import { ContactArt } from '@/components/page/art';
 import FoldEdge, { FOLD_SECTION_CSS } from '@/components/sections/FoldEdge';
 import ShortEnquiryForm from '@/components/forms/ShortEnquiryForm';
+import { ContactSheet, VisitingHours } from '@/components/contact/ContactSheet';
 import MapLoader from '@/components/contact/MapLoader';
 import Reveal from '@/components/ui/Reveal';
 import { Eyebrow, SECTION_CSS, WRAP_STYLE } from '@/components/about/parts';
-import { site, formatAddressLines, isEmbeddableMapsUrl, mapsHref, telHref, MAPS_ARIA_LABEL } from '@/content/site';
+import { site, isEmbeddableMapsUrl, mapsHref } from '@/content/site';
 
 export const metadata: Metadata = {
   title: 'Contact Alok Plastics | Plastic Parts Manufacturer, Chandigarh',
@@ -65,10 +62,8 @@ ${FOLD_SECTION_CSS}
 
 export default function ContactPage() {
   const c = site.contact;
-  const [line1, line2] = formatAddressLines(c);
   const openUrl = mapsHref(c);
   const embedUrl = c.mapsUrl && isEmbeddableMapsUrl(c.mapsUrl) ? c.mapsUrl : null;
-  const noDirect = !c.phone && !c.email;
 
   return (
     <>
@@ -90,37 +85,7 @@ export default function ContactPage() {
             <Reveal>
               <Eyebrow>Our details</Eyebrow>
               <h2 id="ct-details-h" className="ct-h2">Where to find us.</h2>
-              <div className="cp-sheet">
-                <a className="ct-addr" href={openUrl} target="_blank" rel="noopener noreferrer" aria-label={MAPS_ARIA_LABEL}>
-                  <span className="ct-addr__pin" aria-hidden="true"><MapPin size={24} weight="light" /></span>
-                  <address className="ct-addr__t">
-                    {site.name}
-                    <span>{line1}<br />{line2}</span>
-                  </address>
-                  <ArrowUpRight className="ct-addr__go" size={24} weight="light" aria-hidden="true" />
-                </a>
-                {c.phone && (
-                  <div className="ct-row">
-                    <Phone size={24} weight="light" aria-hidden="true" />
-                    <div><span className="ct-label">Phone</span><a className="ct-link" href={telHref(c.phone)}>{c.phone}</a></div>
-                  </div>
-                )}
-                {c.email && (
-                  <div className="ct-row">
-                    <EnvelopeSimple size={24} weight="light" aria-hidden="true" />
-                    <div><span className="ct-label">Email</span><a className="ct-link" href={`mailto:${c.email}`}>{c.email}</a></div>
-                  </div>
-                )}
-                {c.gstin && (
-                  <div className="ct-row">
-                    <span aria-hidden="true" style={{ width: 24 }} />
-                    <div><span className="ct-label">GSTIN</span><span className="ct-val">{c.gstin}</span></div>
-                  </div>
-                )}
-                {noDirect && (
-                  <p className="ct-note">The enquiry form is the quickest way to reach us. Tell us the part, the quantity and where it is used.</p>
-                )}
-              </div>
+              <ContactSheet />
             </Reveal>
             <Reveal delay={120}>
               <section aria-labelledby="ct-form-h" className="ct-form">
@@ -143,7 +108,7 @@ export default function ContactPage() {
               {/* TODO(client): visiting hours and any gate / landmark directions */}
               <dl className="ct-visit">
                 <div><dt>Directions</dt><dd>Open the map and the route starts from wherever you are.</dd></div>
-                <div><dt>Visiting hours</dt><dd>To be confirmed. Send an enquiry first and we will reply.</dd></div>
+                <div><dt>Visiting hours</dt><VisitingHours /></div>
               </dl>
             </Reveal>
             <Reveal delay={120}>

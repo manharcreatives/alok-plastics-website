@@ -1,21 +1,19 @@
 /** /products/[group]/[part]/ — product detail (§8.2). No prices; unknown fields omitted. */
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ArrowUpRight } from '@phosphor-icons/react/dist/ssr/ArrowUpRight';
-import { Phone } from '@phosphor-icons/react/dist/ssr/Phone';
 import PageHero from '@/components/page/PageHero';
 import EnquiryBand from '@/components/page/EnquiryBand';
-import FoldEdge, { FOLD_SECTION_CSS } from '@/components/sections/FoldEdge';
 import Pictogram from '@/components/brand/Pictogram';
 import ProductGallery from '@/components/products/ProductGallery';
 import StickyEnquiryBar from '@/components/products/StickyEnquiryBar';
-import { PartGrid } from '@/components/products/PartCard';
+import RelatedProducts from '@/components/products/RelatedProducts';
+import ProductBuyBox from '@/components/products/ProductBuyBox';
 import { PartSheetArt } from '@/components/products/art';
-import Tag from '@/components/ui/Tag';
+import ProductSpecs from '@/components/products/ProductSpecs';
+import ProductSeoRuntime from '@/components/products/ProductSeoRuntime';
+import ProductText from '@/components/runtime/ProductText';
 import {
   MACHINE_LABELS,
-  MATERIAL_LABELS,
   getGroup,
   getGroupBySlug,
   knownMachines,
@@ -23,7 +21,6 @@ import {
   productsByGroup,
   publishedProducts,
 } from '@/content/products';
-import { site, telHref } from '@/content/site';
 import JsonLd from '@/components/seo/JsonLd';
 import { describe, partTitle, productJsonLd } from '@/lib/seo';
 import '@/components/products/products.css';
@@ -63,15 +60,7 @@ export default async function PartPage({ params }: { params: Promise<{ group: st
 
   const machines = knownMachines(p);
   const variants = p.variants ?? [];
-  const related = productsByGroup(g.id).filter(x => x.slug !== p.slug).slice(0, 4);
-  const phone = site.contact.phone;
 
-  const cells: { label: string; value: string; wide?: boolean }[] = [{ label: 'Group', value: g.name, wide: true }];
-  if (p.material) cells.push({ label: 'Material', value: MATERIAL_LABELS[p.material] });
-  if (p.sku) cells.push({ label: 'Drg no.', value: p.sku });
-  if (p.hsn) cells.push({ label: 'HSN', value: p.hsn });
-  if (p.moq) cells.push({ label: 'MOQ', value: p.moq });
-  if (p.packing) cells.push({ label: 'Packing', value: p.packing });
 
   return (
     <>
@@ -82,8 +71,8 @@ export default async function PartPage({ params }: { params: Promise<{ group: st
           { label: p.name },
         ]}
         label={g.name}
-        title={p.name}
-        lead={p.summary}
+        title={<ProductText slug={p.slug} field="name" fallback={p.name} />}
+        lead={p.summary ? <ProductText slug={p.slug} field="summary" fallback={p.summary} /> : undefined}
         art={<PartSheetArt product={p} group={g} />}
         enter="rise"
         layout="mirror"
@@ -95,21 +84,8 @@ export default async function PartPage({ params }: { params: Promise<{ group: st
             <div className="p-detail">
               <div className="p-detail__sheet"><ProductGallery product={p} /></div>
               <div className="p-info">
-                <div className="tb">
-                  <div className="tb__head">
-                    <h2 id="spec-h" className="tb__name">{p.name}</h2>
-                    {p.material && <Tag material={p.material} />}
-                  </div>
-                  <dl className="tb__grid">
-                    {cells.map(c => (
-                      <div key={c.label} className={`tb__cell${c.wide || cells.length === 1 ? ' tb__cell--wide' : ''}`}>
-                        <dt>{c.label}</dt>
-                        <dd>{c.value}</dd>
-                      </div>
-                    ))}
-                  </dl>
-                  <div className="tb__foot" aria-hidden="true"><span>Not to scale</span><span>Alok Plastics</span></div>
-                </div>
+                <ProductBuyBox product={p} />
+                <ProductSpecs product={p} groupName={g.name} />
 
                 {machines.length > 0 && (
                   <section aria-labelledby="fit-h">
@@ -138,38 +114,19 @@ export default async function PartPage({ params }: { params: Promise<{ group: st
                   )}
                 </section>
 
-                <div className="p-cta">
-                  <Link className="p-btn p-btn--primary" href={`/enquiry/?product=${p.slug}`}>
-                    Get a Quote <ArrowUpRight size={18} weight="light" aria-hidden="true" />
-                  </Link>
-                  {phone && (
-                    <a className="p-btn p-btn--ghost" href={telHref(phone)}>
-                      <Phone size={18} weight="light" aria-hidden="true" /> Call
-                    </a>
-                  )}
-                </div>
               </div>
             </div>
           </div>
         </section>
 
-        {related.length > 0 && (
-          <section aria-labelledby="rel-h" className="p-section p-section--canvas fold-sec fold-sec--diag">
-            <style>{FOLD_SECTION_CSS}</style>
-            <FoldEdge variant="diag" />
-            <div className="pw">
-              <p className="p-eyebrow">Same group</p>
-              <h2 id="rel-h" className="p-h2" style={{ marginBottom: 'var(--space-lg)' }}>Related parts</h2>
-              <PartGrid items={related} level={3} />
-            </div>
-          </section>
-        )}
+        <RelatedProducts product={p} />
 
-        <StickyEnquiryBar name={p.name} slug={p.slug} material={p.material} />
+        <StickyEnquiryBar product={p} />
       </div>
 
       <EnquiryBand fold="register" heading={`Need ${p.name}?`} text="Share the quantity and use, and we will reply with a quote." />
       <JsonLd data={productJsonLd(p, g)} />
+      <ProductSeoRuntime product={p} />
     </>
   );
 }

@@ -1,6 +1,7 @@
 <?php defined('ALOK_ADMIN') || exit; ?>
+<?= page_head('Delete enquiry #' . (int) $r['id'] . '?', [['Dashboard', u()], ['Enquiries', u('enquiries')], ['#' . (int) $r['id'], u('enquiry', ['id' => $r['id']])], ['Delete', null]]) ?>
 <section class="card narrow">
-  <h1>Delete enquiry #<?= (int) $r['id'] ?>?</h1>
+  <span class="empty-ico"><?= icon('trash') ?></span>
   <p>This permanently removes the enquiry from <b><?= e($r['name']) ?></b> (<?= e($r['company']) ?>) including its notes. It cannot be undone.</p>
   <p class="meta">If you only want it out of the way, archive it instead.</p>
   <form method="post" action="<?= e(u('enquiry_delete', ['id' => $r['id']])) ?>" class="actions">

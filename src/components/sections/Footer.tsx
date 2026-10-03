@@ -23,6 +23,7 @@ import { site, formatAddressLines, telHref, mapsHref, MAPS_ARIA_LABEL } from '@/
 import { navigation, footerProductLinks, footerCompanyLinks } from '@/content/navigation';
 import Logo from '@/components/brand/Logo';
 import { trackPhoneClick, trackQuoteCtaClick } from '@/lib/analytics';
+import { useRuntimeContact, useRuntimeSocial } from '@/components/runtime/useRuntime';
 
 const FOOTER_CSS = `
 .ft { --fold: clamp(28px, 5vw, 72px); position: relative; background: var(--burgundy); color: var(--surface);
@@ -81,13 +82,15 @@ body:has(.eb, #enquiry) .ft__cta { display: none; }
 
 export default function Footer() {
   const year = new Date().getFullYear();
-  const c = site.contact;
+  /* Panel values over build-time ones. Address stays build-time — see useRuntimeContact. */
+  const c = useRuntimeContact();
+  const socialLinks = useRuntimeSocial();
   const [addrLine1, addrLine2] = formatAddressLines(c);
   const social = [
-    { key: 'instagram', label: 'Instagram', Icon: InstagramLogo, href: site.social.instagram },
-    { key: 'linkedin',  label: 'LinkedIn',  Icon: LinkedinLogo,  href: site.social.linkedin },
-    { key: 'facebook',  label: 'Facebook',  Icon: FacebookLogo,  href: site.social.facebook },
-    { key: 'youtube',   label: 'YouTube',   Icon: YoutubeLogo,   href: site.social.youtube },
+    { key: 'instagram', label: 'Instagram', Icon: InstagramLogo, href: socialLinks.instagram },
+    { key: 'linkedin',  label: 'LinkedIn',  Icon: LinkedinLogo,  href: socialLinks.linkedin },
+    { key: 'facebook',  label: 'Facebook',  Icon: FacebookLogo,  href: socialLinks.facebook },
+    { key: 'youtube',   label: 'YouTube',   Icon: YoutubeLogo,   href: socialLinks.youtube },
   ].filter(s => !!s.href);
   const [devA, devB] = site.tagline.devanagari.split(', ');
 

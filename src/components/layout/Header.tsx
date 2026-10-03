@@ -25,6 +25,7 @@ import { List } from '@phosphor-icons/react/dist/csr/List';
 import { ArrowUpRight } from '@phosphor-icons/react/dist/csr/ArrowUpRight';
 import Logo from '@/components/brand/Logo';
 import Drawer from './Drawer';
+import CartButton from '@/components/cart/CartButton';
 import NavMegaPanel from './NavMegaPanel';
 import { navigation } from '@/content/navigation';
 import { site } from '@/content/site';
@@ -273,6 +274,8 @@ export default function Header() {
                 <span className="glass-nav__cta-label">Get a Quote</span>
                 <ArrowUpRight weight="light" size={16} aria-hidden="true" className="glass-nav__cta-arrow" />
               </Link>
+
+              <CartButton />
 
               {/* Mobile menu */}
               <button
