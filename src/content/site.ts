@@ -40,11 +40,11 @@ export const site: SiteConfig = {
 
   hero: {
     media: {
-      mode: 'ambient',   // 'auto' | 'video' | 'poster' | 'ambient'
+      mode: 'video',   // 'auto' | 'video' | 'poster' | 'ambient'
       // 'auto' → video if sources exist + device qualifies; else poster; else ambient
       video: {
         webm: null,        // TODO(client): supply footage → /media/hero.webm
-        mp4: null,         // TODO(client): /media/hero.mp4
+        mp4: '/media/hero.mp4',
         mobileMp4: null,   // TODO(client): optional ≤800KB mobile version
       },
       poster: null,        // TODO(client): /media/hero-poster.jpg — see docs/hero-video-brief.md
