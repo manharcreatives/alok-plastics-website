@@ -8,8 +8,8 @@
  * (glass-nav.css is the other file; combined = 2 files total, within limit).
  *
  * Round 2: WhatsApp CTA removed (WhatsApp lives only in the floating button);
- * Phosphor Light icons; active page carries the same burgundy datum notch as
- * the desktop nav.
+ * Phosphor Light icons; the active page is marked by a plain burgundy rule, the
+ * same language as the desktop nav.
  */
 
 'use client';
@@ -45,9 +45,10 @@ const DRAWER_CSS = `
 .drawer-link:hover, .drawer-link:focus-visible { color: var(--burgundy); }
 .drawer-link:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 2px; }
 .drawer-link--active { color: var(--burgundy); font-weight: 600; padding-left: 24px; }
-.drawer-link__notch { position: absolute; left: 4px; top: 50%; width: 8px; height: 8px; margin-top: -4px;
-  background: var(--burgundy); transform: rotate(45deg) scale(0); transition: transform 400ms cubic-bezier(.34,1.4,.64,1); }
-.drawer-link--active .drawer-link__notch { transform: rotate(45deg) scale(1); }
+.drawer-link__notch { position: absolute; left: 6px; top: 50%; width: 2px; height: 20px; margin-top: -10px;
+  background: var(--burgundy); transform: scaleY(0); transform-origin: 50% 50%;
+  transition: transform 400ms var(--ease-expo-out); }
+.drawer-link--active .drawer-link__notch { transform: scaleY(1); }
 .drawer-link__arrow { color: var(--muted); transition: transform 200ms cubic-bezier(.16,1,.3,1); }
 .drawer-link:hover .drawer-link__arrow { transform: translate3d(2px,-2px,0); }
 .drawer-cta { --cut: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px;

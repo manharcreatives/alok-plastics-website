@@ -51,6 +51,11 @@
      Use this (not --metal-gradient) whenever the gradient is clipped to text. */
   --metal-gradient-text: linear-gradient(175deg, #2E0A0F 0%, #581C25 46%, #8A2C38 83%, #9C4D57 100%);
   --silver-gradient: linear-gradient(180deg, #6E6C6C 0%, #8F8D8D 45%, #BDBBBB 100%);
+  /* On-media crop of the brand ramp, for gradient text sitting on the hero video /
+     scrim. Runs the accent ramp in reverse (pale -> bright) because --metal-gradient-text
+     is graded for a light canvas and its dark end would disappear over footage.
+     Every stop clears 4.5:1 against the scrimmed video. */
+  --metal-gradient-on-media: linear-gradient(175deg, #E3B5B8 0%, #C35A61 46%, #8A2C38 100%);
 
   /* ── Spacing tokens — §7.4 base-4 system ───────────────────────
    * Never use arbitrary values between 28px and 36px (ambiguous spacing).

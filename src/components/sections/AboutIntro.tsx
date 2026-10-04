@@ -1,10 +1,12 @@
 /**
  * S2b · AboutIntro — short company intro + proof numbers (merged ProofStrip, see ADR-011).
  *
- * Composition: left = micro-label, mask-rise headline, two sentences, "Read our story ↗".
- * Right = a giant top-lit आलोक (Alok = light) with a drawing-sheet TITLE BLOCK laid over it
- * that carries the key facts. Below = the numbers band (20 Cr+, 70%+, 1998, 100%) that
- * counts up slowly and evenly (~3.2s) once on scroll-in, then a light sweep lands across the numerals.
+ * Composition: an editorial split across the full width. Left = micro-label + mask-rise
+ * headline; right = the two intro sentences and "Read our story ↗", bottom-aligned to the
+ * headline. (The giant आलोक + title block that used to fill the right side was removed; the
+ * intro copy now occupies that column instead.) Below = the numbers band (20 Cr+, 70%+, 1998,
+ * 100%) that counts up slowly and evenly (~3.2s) once on scroll-in, then a light sweep lands
+ * across the numerals.
  *
  * Facts only from MASTER_PROMPT §5 (see §19). Drafted lines are flagged for approval.
  * Reduced motion: final values, no reveals.
@@ -15,7 +17,6 @@
 import { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { ArrowUpRight } from '@phosphor-icons/react/dist/csr/ArrowUpRight';
-import { useGSAP } from '@gsap/react';
 import { gsap } from '@/lib/motion';
 import { prefersReducedMotion } from '@/hooks/useReducedMotion';
 import { useMaskRise } from '@/hooks/useMotion';
@@ -27,15 +28,6 @@ const HEADLINE = 'Small, strong parts. Made in Chandigarh.';
 const INTRO = [
   'Alok Plastics is a Chandigarh manufacturer of plastic and steel parts for water coolers, display counters and deep freezers, moulded from plastic granules for B2B customers.',
   'Alok means light. Customers keep coming back to us for it.',
-];
-
-/* Title block facts — all from §5.1 / §5.12 / §6 */
-const TITLE_BLOCK: { k: string; v: string }[] = [
-  { k: 'Works', v: `${site.contact.address}, ${site.contact.city}` },
-  { k: 'Process', v: 'Moulds + plastic granules' },
-  { k: 'Fits', v: 'Water coolers · Display counters · Deep freezers' },
-  { k: 'Serves', v: 'B2B manufacturers' },
-  { k: 'Alok', v: 'आलोक means light' },
 ];
 
 const NUMERIC = site.proof.filter(p => p.isNumeric);
@@ -109,12 +101,12 @@ const CSS = METAL_TEXT_CSS + `
             mask-image: radial-gradient(ellipse 70% 60% at 70% 40%, white 0%, transparent 75%);
   }
   .ap-wrap { position: relative; max-width: calc(var(--grid-max) + 2 * var(--grid-page-padding)); margin: 0 auto; padding: 0 var(--grid-page-padding); }
-  .ap-top { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-xl); align-items: end; }
+  .ap-top { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-lg); align-items: end; }
   .ap-micro { display: inline-flex; align-items: center; gap: 10px; margin-bottom: var(--space-md); font-size: var(--fs-label); letter-spacing: var(--tr-label); text-transform: uppercase; font-weight: 600; color: var(--muted); font-family: var(--font-archivo), sans-serif; line-height: var(--lh-label); }
   .ap-h {
     font-family: var(--font-archivo); font-variation-settings: "wdth" 125;
     font-size: var(--fs-h1); font-weight: 650; line-height: var(--lh-h1); letter-spacing: var(--tr-h1);
-    color: var(--ink); max-width: 15ch; margin-bottom: var(--space-lg); text-wrap: balance;
+    color: var(--ink); max-width: 15ch; margin: 0; text-wrap: balance;
   }
   .ap-p { font-size: 1.0625rem; line-height: 1.65; color: var(--body); max-width: 52ch; margin-bottom: var(--space-sm); }
   .ap-link {
@@ -127,29 +119,7 @@ const CSS = METAL_TEXT_CSS + `
   .ap-link:hover svg { transform: translate(2px, -2px); }
   .ap-link:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 4px; }
 
-  /* Right: giant आलोक + title block */
-  .ap-art { position: relative; }
-  .ap-deva {
-    display: block; margin: 0 0 var(--space-md) auto; width: fit-content;
-    font-family: var(--font-devanagari), sans-serif; font-weight: 700; line-height: 1.4;
-    font-size: clamp(7rem, 12.5vw, 12.5rem); letter-spacing: -0.02em; white-space: nowrap; user-select: none;
-    background: linear-gradient(175deg, var(--burgundy-night) 0%, var(--burgundy) 55%, var(--burgundy-bright) 100%); -webkit-background-clip: text; background-clip: text;
-    -webkit-text-fill-color: transparent; color: var(--burgundy);
-  }
-  .ap-tb {
-    position: relative; margin: 0 0 0 auto; width: min(100%, 440px);
-    background: var(--surface); border: 1px solid var(--grey-metal);
-    clip-path: polygon(0 0, calc(100% - 40px) 0, 100% 40px, 100% 100%, 0 100%);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.9);
-  }
-  .ap-tb-head { display: flex; align-items: center; justify-content: space-between; padding: var(--space-xs) 56px var(--space-xs) var(--space-sm); border-bottom: 1px solid var(--grey-metal); background: var(--surface-alt); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; font-weight: 600; color: var(--muted); }
-  .ap-tb dl { margin: 0; }
-  .ap-row { display: grid; grid-template-columns: 88px minmax(0, 1fr); border-bottom: 1px solid var(--grey-cloud); }
-  .ap-row:last-child { border-bottom: none; }
-  .ap-row dt { padding: var(--space-xs) var(--space-sm); border-right: 1px solid var(--grey-cloud); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.14em; font-weight: 600; color: var(--muted); display: flex; align-items: center; }
-  .ap-row dd { margin: 0; padding: var(--space-xs) var(--space-sm); font-size: 0.875rem; line-height: 1.45; color: var(--ink); }
-  .ap-row:first-child dd { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-weight: 650; color: var(--burgundy); }
-  .ap-row dd[lang="hi"] { font-family: var(--font-devanagari), sans-serif; font-weight: 600; }
+  .ap-body .ap-p:last-of-type { margin-bottom: 0; }
 
   /* Numbers band */
   .ap-band { position: relative; margin-top: var(--space-xl); }
@@ -182,8 +152,9 @@ const CSS = METAL_TEXT_CSS + `
   .ap-words { max-width: var(--grid-max); margin: var(--space-lg) auto 0; padding-top: var(--space-sm); border-top: 1px solid var(--grey-cloud); display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-sm); }
   .ap-word { display: flex; flex-direction: column; gap: 4px; }
   .ap-word strong { font-family: var(--font-archivo); font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink); font-weight: 650; display: flex; align-items: center; gap: var(--space-xs); }
-  .ap-word strong::before { content: ""; width: 6px; height: 6px; background: var(--burgundy); transform: rotate(45deg); flex-shrink: 0; }
-  .ap-word span { font-size: 0.875rem; color: var(--muted); padding-left: 14px; }
+  /* marker: a short rule, the same list grammar as .eq-list — not a rotated square */
+  .ap-word strong::before { content: ""; width: 12px; height: 2px; background: var(--burgundy); flex-shrink: 0; }
+  .ap-word span { font-size: 0.875rem; color: var(--muted); padding-left: 20px; }
 
   @media (min-width: 768px) {
     .ap-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-md); }
@@ -191,12 +162,8 @@ const CSS = METAL_TEXT_CSS + `
     .ap-words { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-md); }
   }
   @media (min-width: 1024px) {
-    .ap-top { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--space-lg); }
+    .ap-top { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--space-xl); }
     .ap-band-in { clip-path: polygon(0 0, 100% 0, 100% calc(100% - 56px), calc(100% - 56px) 100%, 0 100%); padding-bottom: var(--space-lg); }
-  }
-  @media (max-width: 1023px) {
-    .ap-deva { font-size: min(27vw, 11rem); margin-left: 0; margin-right: auto; }
-    .ap-tb { width: 100%; }
   }
   @media (prefers-reduced-motion: reduce) { .ap-swept::after { animation: none; } }
 `;
@@ -204,22 +171,7 @@ const CSS = METAL_TEXT_CSS + `
 export default function AboutIntro() {
   const sectionRef = useRef<HTMLElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
-  const tbRef = useRef<HTMLDivElement>(null);
-  const devaRef = useRef<HTMLParagraphElement>(null);
   useMaskRise(headingRef);
-
-  useGSAP(() => {
-    if (prefersReducedMotion()) return;
-    const tb = tbRef.current, deva = devaRef.current;
-    if (!tb || !deva) return;
-    const tl = gsap.timeline({ scrollTrigger: { trigger: tb, start: 'top 85%', once: true } });
-    tl.from(deva, { yPercent: 8, autoAlpha: 0, duration: 1.2, ease: 'expo.out' }, 0)
-      .fromTo(tb,
-        { clipPath: 'polygon(0 100%, 0 100%, 0 100%, 0 100%, 0 100%)' },
-        { clipPath: 'polygon(0 0, calc(100% - 40px) 0, 100% 40px, 100% 100%, 0 100%)', duration: 1.2, ease: 'expo.inOut', clearProps: 'clipPath' },
-        0.1)
-      .from(tb.querySelectorAll('.ap-row'), { autoAlpha: 0, x: -16, duration: 0.7, ease: 'expo.out', stagger: 0.08 }, 0.7);
-  }, { scope: sectionRef });
 
   return (
     <section ref={sectionRef} aria-labelledby="about-intro-heading" className="ap">
@@ -230,25 +182,12 @@ export default function AboutIntro() {
           <div>
             <p className="ap-micro">About Alok</p>
             <h2 id="about-intro-heading" ref={headingRef} className="ap-h">{HEADLINE}</h2>
+          </div>
+          <div className="ap-body">
             {INTRO.map(t => <p key={t} className="ap-p">{t}</p>)}
             <Link href="/about/" className="ap-link">
               Read our story <ArrowUpRight size={18} weight="light" aria-hidden="true" />
             </Link>
-          </div>
-
-          <div className="ap-art">
-            <p ref={devaRef} className="ap-deva" lang="hi" aria-hidden="true">आलोक</p>
-            <div ref={tbRef} className="ap-tb">
-              <div className="ap-tb-head"><span>Alok Plastics</span><span>Manufacturer</span></div>
-              <dl>
-                {TITLE_BLOCK.map(r => (
-                  <div key={r.k} className="ap-row">
-                    <dt>{r.k}</dt>
-                    <dd {...(r.k === 'Alok' ? { lang: 'hi' } : {})}>{r.v}</dd>
-                  </div>
-                ))}
-              </dl>
-            </div>
           </div>
         </div>
       </div>

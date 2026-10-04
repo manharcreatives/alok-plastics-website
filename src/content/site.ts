@@ -48,7 +48,10 @@ export const site: SiteConfig = {
         mobileMp4: null,   // TODO(client): optional ≤800KB mobile version
       },
       poster: null,        // TODO(client): /media/hero-poster.jpg — see docs/hero-video-brief.md
-      tone: 'light',       // 'light' = colour logo in navbar; 'dark' = bright logo
+      // 'dark' = white text + bright logo in navbar. Required whenever footage plays:
+      // measured across the full loop, --ink over the scrim lands between 1.25:1 and
+      // 3.5:1 (illegible), while white holds 14:1 or better on every frame.
+      tone: 'dark',
     },
     eyebrow: 'EST. 1998 · CHANDIGARH',
     headline: ['The small parts that', 'keep big machines running.'],

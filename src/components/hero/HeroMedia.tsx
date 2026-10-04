@@ -378,33 +378,82 @@ function VideoBackground({ webm, mp4, poster }: { webm?: string | null; mp4?: st
   );
 }
 
-/* ── Scrim (video + poster modes) ────────────────────────────── */
+/* ── Scrim (video + poster modes) ──────────────────────────────
+   The copy is one left-aligned block: eyebrow + headline sit high (y~22-48%),
+   sub + tagline + CTAs sit low (y~51-78%), and the block runs from x=64 to x~780
+   at 1440. The footage behind it has blown specular highlights that reach 0.78
+   relative luminance, so a flat wash cannot carry the type on its own.
+
+   Three gradients grade that block instead, all built from --ink so the overlay can
+   never drift off the brand's warm near-black:
+     directional  even protection down the length of the column, clearing to nothing
+                  past ~66% so the right of frame stays open and the footage reads
+     head         a short guard that starts below the nav pill (the light glass must sit on
+                  open footage, or it greys over and the colour logo loses its wordmark) and
+                  peaks above the headline so it never sits on a flare
+     seat         a short guard off the bottom for the CTA row and the exit diagonal
+   The pair of guards is what keeps the block readable top and bottom; the local
+   glyph-level guarantee is the text-shadow in Hero.tsx. */
+const SCRIM_CSS = `
+.hero-scrim { position: absolute; inset: 0; pointer-events: none; }
+/* every darkening layer stays out of the nav band (pill = 16px + 64px): light glass has to sit
+   on open footage, or it greys over and the colour logo's metal-grey wordmark sinks into it */
+.hero-scrim__directional { position: absolute; inset: 0;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, transparent 84px, var(--ink) 132px);
+          mask-image: linear-gradient(to bottom, transparent 0, transparent 84px, var(--ink) 132px);
+  background: linear-gradient(96deg,
+    color-mix(in srgb, var(--ink) 68%, transparent) 0%,
+    color-mix(in srgb, var(--ink) 58%, transparent) 26%,
+    color-mix(in srgb, var(--ink) 36%, transparent) 46%,
+    color-mix(in srgb, var(--ink) 11%, transparent) 66%,
+    transparent 88%); }
+.hero-scrim__head { position: absolute; inset: 0;
+  background: linear-gradient(to bottom,
+    transparent 0,
+    transparent 96px,
+    color-mix(in srgb, var(--ink) 24%, transparent) 18%,
+    color-mix(in srgb, var(--ink) 10%, transparent) 28%,
+    transparent 44%); }
+.hero-scrim__seat { position: absolute; inset: 0;
+  background: linear-gradient(to top,
+    color-mix(in srgb, var(--ink) 52%, transparent) 0%,
+    color-mix(in srgb, var(--ink) 18%, transparent) 22%,
+    transparent 48%); }
+/* flat burgundy wash. Deliberately NOT mix-blend-mode: overlay — that mode pushes
+   the footage's own highlights further up, so bright frames bloom behind the text. */
+.hero-scrim__tint { position: absolute; inset: 0; background: var(--burgundy); opacity: .07; }
+.hero-scrim__grain { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .04; }
+
+/* Below 768px the copy spans the full width, so there is no right-hand side left to
+   clear: the horizontal falloff would go light exactly where the sub-headline sits.
+   Flatten to a near-even wash and keep the two guards. */
+@media (max-width: 767px) {
+  .hero-scrim__directional { background: linear-gradient(180deg,
+    color-mix(in srgb, var(--ink) 62%, transparent) 0%,
+    color-mix(in srgb, var(--ink) 56%, transparent) 52%,
+    color-mix(in srgb, var(--ink) 66%, transparent) 100%); }
+}
+`;
+
 function Scrim() {
   return (
-    <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }} aria-hidden="true">
-      {/* Multi-stop gradient — lower-left concentrated, top-right transparent */}
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        background: 'radial-gradient(120% 90% at 0% 100%, rgba(30,17,21,.55) 0%, rgba(30,17,21,.25) 45%, transparent 75%)',
-      }} />
-      {/* Burgundy overlay at 8–12% */}
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        background: 'var(--burgundy)',
-        opacity: 0.10,
-        mixBlendMode: 'overlay',
-      }} />
-      {/* SVG grain — 3–5% feTurbulence, static, kills banding */}
-      <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.04 }} aria-hidden="true">
-        <filter id="hero-grain">
-          <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" />
-          <feColorMatrix type="saturate" values="0" />
-        </filter>
-        <rect width="100%" height="100%" filter="url(#hero-grain)" />
-      </svg>
-    </div>
+    <>
+      <style>{SCRIM_CSS}</style>
+      <div className="hero-scrim" aria-hidden="true">
+        <div className="hero-scrim__directional" />
+        <div className="hero-scrim__head" />
+        <div className="hero-scrim__seat" />
+        <div className="hero-scrim__tint" />
+        {/* film grain — static, kills banding across the gradient stops */}
+        <svg className="hero-scrim__grain" aria-hidden="true">
+          <filter id="hero-grain">
+            <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" />
+            <feColorMatrix type="saturate" values="0" />
+          </filter>
+          <rect width="100%" height="100%" filter="url(#hero-grain)" />
+        </svg>
+      </div>
+    </>
   );
 }
 

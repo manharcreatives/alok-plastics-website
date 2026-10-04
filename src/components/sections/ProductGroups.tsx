@@ -292,7 +292,6 @@ const CSS = FOLD_SECTION_CSS + `
   .pg-part:hover .pg-part-go, .pg-part:focus-visible .pg-part-go { opacity: 1; transform: translate(0, 0); }
   @media (hover: none) { .pg-part-go { opacity: .5; transform: none; } }
   .pg-part-dot { display: inline-block; flex-shrink: 0; position: relative; }
-  .pg-part-dot::after { content: ""; position: absolute; left: 7px; top: 7px; width: 6px; height: 6px; background: var(--grey-warm); transform: rotate(45deg); }
   .pg-cta-row { display: flex; flex-wrap: wrap; gap: var(--space-sm); margin-top: var(--space-md); }
   .pg-card-foot { border-top: 1px solid var(--grey-cloud); padding: var(--space-xs) var(--space-lg); display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); background: var(--canvas); }
   .pg-card--alt .pg-card-foot { padding-left: calc(var(--space-lg) + var(--cut)); }
@@ -305,7 +304,15 @@ const CSS = FOLD_SECTION_CSS + `
   .pg-path--a { background: var(--surface); border-bottom: 1px solid var(--grey-warm); }
   .pg-path--b { background: var(--burgundy); }
   .pg-path-ico { margin-bottom: var(--space-sm); width: 48px; height: 48px; }
-  .pg-path-kicker { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; font-weight: 600; margin-bottom: var(--space-sm); }
+  /* The option label is the title of each path: set in the brand face, larger and heavier than a
+     micro-label, with one short rule beneath it. Burgundy on the light panel, --surface on burgundy
+     (>= 9:1), so the two read as a matched pair. The rule lengthens while that path's CTA is
+     hovered or focused: the label answers the action, nothing else moves. */
+  .pg-path-kicker { position: relative; font-family: var(--font-archivo), sans-serif; font-size: 0.9375rem; line-height: 1.3; text-transform: uppercase; letter-spacing: 0.14em; font-weight: 700; margin: 0 0 var(--space-sm); padding-bottom: var(--space-sm); }
+  .pg-path-kicker::after { content: ""; position: absolute; left: 0; bottom: 0; width: 32px; height: 2px; background: currentColor; transition: width 400ms cubic-bezier(.16,1,.3,1); }
+  .pg-path:has(.btn:hover, .btn:focus-visible) .pg-path-kicker::after { width: 64px; }
+  .pg-path--a .pg-path-kicker { color: var(--burgundy); }
+  .pg-path--b .pg-path-kicker { color: var(--surface); }
   .pg-path-text { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-lead-lg); font-weight: 650; line-height: var(--lh-lead-lg); margin-bottom: var(--space-md); flex: 1; }
   .pg-path .btn svg { margin-left: var(--space-xs); transition: transform 200ms cubic-bezier(.16,1,.3,1); }
   .pg-path .btn:hover svg { transform: translate(2px, -2px); }
@@ -322,7 +329,7 @@ const CSS = FOLD_SECTION_CSS + `
     .pg-path--b { clip-path: polygon(24px 0, 100% 0, 100% 100%, 0 100%); }
   }
   @media (prefers-reduced-motion: reduce) {
-    .pg-in::before, .pg-picto, .pg-part, .pg-part-go { transition: none; }
+    .pg-in::before, .pg-picto, .pg-part, .pg-part-go, .pg-path-kicker::after { transition: none; }
   }
 `;
 
@@ -378,15 +385,15 @@ export default function ProductGroups() {
         <div className="pg-paths">
           <div className="pg-path pg-path--a">
             <Glyph name="f-bush" strokeWidth={1.5} className="pg-path-ico" style={{ color: 'var(--grey-metal)' }} />
-            <p className="pg-path-kicker" style={{ color: 'var(--muted)' }}>I need a catalogue part</p>
+            <h3 className="pg-path-kicker">I need a catalogue part</h3>
             <p className="pg-path-text" style={{ color: 'var(--ink)' }}>Browse by group, material or machine.</p>
             <Link href="/products" className="btn btn--secondary btn--md">Browse Products</Link>
           </div>
           <div className="pg-path pg-path--b">
             <Glyph name="sheet-callout" strokeWidth={1.5} className="pg-path-ico" style={{ color: 'var(--rose-pale)' }} />
-            <p className="pg-path-kicker" style={{ color: 'var(--rose-pale)' }}>I need a custom part</p>
+            <h3 className="pg-path-kicker">I need a custom part</h3>
             {/* COPY: drafted */}
-            <p className="pg-path-text" style={{ color: 'white' }}>Share a sample, drawing or photo and we&apos;ll develop and supply it.</p>
+            <p className="pg-path-text" style={{ color: 'var(--surface)' }}>Share a sample, drawing or photo and we&apos;ll develop and supply it.</p>
             <Link href="/enquiry" className="btn btn--on-burgundy btn--md">Enquire <ArrowUpRight size={18} weight="light" aria-hidden="true" /></Link>
           </div>
         </div>

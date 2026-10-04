@@ -19,7 +19,7 @@
 
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { useGSAP } from '@gsap/react';
 import { gsap, ScrollTrigger, DURATIONS, EASINGS } from '@/lib/motion';
 import { useMaskRise } from '@/hooks/useMotion';
@@ -182,9 +182,10 @@ const CSS = `
 .jrn-li:last-child .jrn-seg { bottom: 40%; background: transparent; border-left: 1px dashed var(--grey-metal); border-right: 1px dashed var(--grey-metal); -webkit-mask-image: linear-gradient(to bottom, var(--ink), transparent); mask-image: linear-gradient(to bottom, var(--ink), transparent); }
 .jrn-li:last-child .jrn-seg-fill { display: none; }
 .jrn-node { position: absolute; left: -58px; top: -2px; width: 32px; height: 28px; display: grid; place-items: center; }
-.jrn-node i { width: 18px; height: 18px; transform: rotate(45deg); background: var(--surface); border: 2.5px solid var(--burgundy); box-shadow: 0 0 0 5px var(--canvas); display: block; transition: background-color 400ms cubic-bezier(.16,1,.3,1); }
+/* each milestone is a stop line painted across the road, not an ornament on it */
+.jrn-node i { width: 32px; height: 4px; background: var(--grey-metal); display: block; transition: background-color 400ms cubic-bezier(.16,1,.3,1); }
 .jrn-li.on .jrn-node i { background: var(--burgundy); }
-.jrn-li:last-child .jrn-node i { border-style: dashed; border-color: var(--grey-metal); }
+.jrn-li:last-child .jrn-node i { height: 0; background: none; border-top: 2px dashed var(--grey-metal); }
 .jrn-li .jrn-year { font-size: clamp(3.5rem, 17vw, 6rem); margin-bottom: var(--space-xs); }
 .jrn-li .jrn-year[data-long] { font-size: clamp(2.5rem, 12vw, 4.5rem); }
 .jrn-li .jrn-title { margin-bottom: var(--space-xs); }
@@ -200,25 +201,13 @@ const CSS = `
   .jrn-ms:first-child { visibility: visible; }
   .jrn-ms .jrn-year { --y: clamp(4.5rem, min(8.2vw, 17svh), 8rem); font-size: var(--y); }
   .jrn-ms .jrn-year[data-long] { font-size: calc(var(--y) * 0.62); }
-  .jrn-pulse { transform-box: fill-box; transform-origin: center; }
-  .jrn.live .jrn-pulse { animation: jrn-pulse 2.4s cubic-bezier(.16,1,.3,1) infinite; }
 }
-@keyframes jrn-pulse { 0% { transform: scale(.6); opacity: .6; } 100% { transform: scale(2.2); opacity: 0; } }
 `;
 
 export default function JourneyOrbit() {
   const sectionRef = useRef<HTMLElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   useMaskRise(headingRef);
-
-  /* the looping marker pulse only runs while the section is on screen */
-  useEffect(() => {
-    const el = sectionRef.current;
-    if (!el || typeof IntersectionObserver === 'undefined') return;
-    const io = new IntersectionObserver(([e]) => el.classList.toggle('live', e.isIntersecting));
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
 
   useGSAP(() => {
     const section = sectionRef.current;
@@ -410,28 +399,25 @@ export default function JourneyOrbit() {
           {journeyMarkers.map((m, i) => (
             <g key={m.year} className="jrn-stone" style={{ visibility: 'hidden' }} data-i={i}>
               <circle r="19" className="stone-ring" />
-              <rect x="-9" y="-9" width="18" height="18" transform="rotate(45)" className="stone-sq" />
-              <circle r="2.6" className="stone-dot" />
+              <circle r="6" className="stone-dot" />
               <line x1="-26" y1="0" x2="-58" y2="0" className="stone-tick" />
               <text x="-68" y="7" textAnchor="end" className="stone-tx">{m.year}</text>
             </g>
           ))}
-          {/* the marker that travels */}
+          {/* the marker that travels: the one 'you are here' mark on the road, so it keeps
+              the datum shape the nav uses for Home; the milestones it passes do not */}
           <g id="jrn-marker">
-            <circle className="jrn-pulse" r="20" stroke="var(--burgundy)" strokeWidth="1.5" />
             <rect x="-12" y="-12" width="24" height="24" transform="rotate(45)" fill="url(#jrn-mk)" stroke="var(--surface)" strokeWidth="2.5" />
           </g>
         </svg>
         <style>{`
-          .stone-sq { fill: var(--surface); stroke: var(--grey-metal); stroke-width: 2.5; transition: fill 400ms cubic-bezier(.16,1,.3,1), stroke 400ms cubic-bezier(.16,1,.3,1); }
           .stone-tx { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-weight: 650; font-size: 22px; fill: var(--body); letter-spacing: -0.01em; paint-order: stroke; stroke: var(--canvas); stroke-width: 5px; stroke-linejoin: round; transition: fill 400ms cubic-bezier(.16,1,.3,1); }
           .stone-ring { fill: none; stroke: var(--grey-metal); stroke-opacity: .35; stroke-width: 1.2; transition: stroke 400ms cubic-bezier(.16,1,.3,1), stroke-opacity 400ms; }
-          .stone-dot { fill: var(--grey-metal); transition: fill 400ms; }
+          .stone-dot { fill: var(--surface); stroke: var(--grey-metal); stroke-width: 2.5; transition: fill 400ms, stroke 400ms; }
           .stone-tick { stroke: var(--grey-metal); stroke-opacity: .5; stroke-width: 1.5; transition: stroke 400ms; }
           .jrn-stone.on .stone-ring { stroke: var(--burgundy); stroke-opacity: .55; }
-          .jrn-stone.on .stone-dot { fill: var(--surface); }
+          .jrn-stone.on .stone-dot { fill: var(--burgundy); stroke: var(--burgundy); }
           .jrn-stone.on .stone-tick { stroke: var(--burgundy); }
-          .jrn-stone.on .stone-sq { fill: var(--burgundy); stroke: var(--burgundy); }
           .jrn-stone.on .stone-tx { fill: var(--burgundy); }
         `}</style>
 

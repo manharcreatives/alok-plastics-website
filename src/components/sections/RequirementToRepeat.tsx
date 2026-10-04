@@ -75,12 +75,12 @@ const CSS = FOLD_SECTION_CSS + `
   .usp-h { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-h2); font-weight: 650; line-height: var(--lh-h2); letter-spacing: var(--tr-h2); color: var(--ink); margin-bottom: var(--space-sm); }
   .usp-lead { font-size: 1.0625rem; color: var(--body); line-height: 1.65; max-width: 60ch; }
 
-  /* Chain — mobile: vertical on a rail */
+  /* Chain — mobile: vertical on a rail. The rail alone marks the run; each step is
+       identified by its own 01/05 mono index, so no node ornament sits on it. */
   .usp-chain { list-style: none; margin: var(--space-xl) 0 0; padding: 0 0 0 var(--space-md); display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-md); position: relative; }
   .usp-chain::before { content: ""; position: absolute; left: 0; top: 8px; bottom: 8px; width: 2px; background: linear-gradient(180deg, var(--burgundy) 0%, var(--grey-warm) 100%); }
   .usp-node { position: relative; display: flex; min-width: 0; }
   .usp-shape { flex: 1; display: flex; min-width: 0; padding: 1px; background: var(--grey-warm); clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 0 100%); }
-  .usp-node::before { content: ""; position: absolute; left: calc(-1 * var(--space-md) - 4px); top: var(--space-md); width: 10px; height: 10px; background: var(--burgundy); transform: rotate(45deg); }
   .usp-node-in { flex: 1; min-width: 0; background: var(--surface); padding: var(--space-md); box-shadow: inset 0 1px 0 rgba(255,255,255,.9); clip-path: polygon(0 0, calc(100% - 23px) 0, 100% 23px, 100% 100%, 0 100%); }
   .usp-node--last .usp-shape { background: var(--burgundy); }
   .usp-node--last .usp-node-in { background: var(--blush); }
@@ -105,7 +105,7 @@ const CSS = FOLD_SECTION_CSS + `
   @media (min-width: 1024px) {
     /* static desktop (no JS / reduced motion): five tiles in a row */
     .usp-chain { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--space-md); padding: 0; align-items: stretch; }
-    .usp-chain::before, .usp-node::before { display: none; }
+    .usp-chain::before { display: none; }
     .usp-node--last { grid-column: auto; }
     .usp-quote { grid-template-columns: 200px minmax(0, 1fr); gap: var(--space-lg); margin-top: calc(var(--space-xl) * 1.8); }
     .usp-peak { width: 200px; height: 156px; }
@@ -133,12 +133,12 @@ const CSS = FOLD_SECTION_CSS + `
     .usp-floor .p { fill: none; stroke: var(--burgundy); stroke-width: 0.9; }
     .usp-floor .s { fill: var(--surface); stroke: var(--burgundy); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
     .usp-floor .s[data-on='true'] { fill: var(--burgundy); }
-    /* step index under the stage */
+    /* step index under the stage — a rule, matching the nav/drawer active language */
     .usp-sec[data-ring='on'] .usp-dots { display: flex; justify-content: center; gap: var(--space-md); margin: 0; padding: 0; list-style: none; }
     .usp-dots li { display: flex; align-items: center; gap: var(--space-xs); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600; color: var(--muted); transition: color 300ms; }
-    .usp-dots li i { width: 8px; height: 8px; border: 1.5px solid var(--grey-metal); transform: rotate(45deg); transition: background-color 300ms, border-color 300ms; }
+    .usp-dots li i { width: 2px; height: 12px; background: var(--grey-warm); flex-shrink: 0; transition: background-color 300ms; }
     .usp-dots li[data-on='true'] { color: var(--burgundy); }
-    .usp-dots li[data-on='true'] i { background: var(--burgundy); border-color: var(--burgundy); }
+    .usp-dots li[data-on='true'] i { background: var(--burgundy); }
   }
 `;
 
