@@ -1,5 +1,5 @@
 // Alok Plastics — Home page
-// S1: Hero · S2: ValuesRibbon · S3: AboutIntro (incl. proof numbers) · S4: ProductGroups
+// S1: Hero · S3: AboutIntro (incl. proof numbers) · S4: ProductGroups
 // S5: RequirementToRepeat · S6: IndustriesBento · S7: JourneyOrbit
 // S8: PanIndiaMap · S10: TrustQuote · S11: EnquirySection
 // S12 Footer + S13 WhatsAppFAB now live in layout.tsx (shared by every route)
@@ -9,7 +9,6 @@ import type { Metadata } from 'next';
 import JsonLd from '@/components/seo/JsonLd';
 import { HOME_DESCRIPTION, HOME_TITLE, localBusinessJsonLd, organizationJsonLd, websiteJsonLd } from '@/lib/seo';
 import Hero from '@/components/hero/Hero';
-import ValuesRibbon from '@/components/hero/ValuesRibbon';
 import AboutIntro from '@/components/sections/AboutIntro';
 import ProductGroups from '@/components/sections/ProductGroups';
 import RequirementToRepeat from '@/components/sections/RequirementToRepeat';
@@ -31,8 +30,6 @@ export default function HomePage() {
       <JsonLd data={[organizationJsonLd(), localBusinessJsonLd(), websiteJsonLd()]} />
       {/* S1 · Hero */}
       <Hero />
-      {/* S2 · Values ribbon */}
-      <ValuesRibbon />
       {/* S3 · About intro + proof numbers (ProofStrip merged in — ADR-011) */}
       <AboutIntro />
       {/* S4 · Product groups bento */}

@@ -28,6 +28,9 @@ export type ProductPrice = {
   unit: 'pc' | 'set';
 };
 
+export type Availability = 'in-stock' | 'out-of-stock' | 'on-request';
+export type ProductStatus = 'active' | 'inactive' | 'archived';
+
 export type Product = {
   slug: string;
   name: string;
@@ -35,12 +38,20 @@ export type Product = {
   machine: MachineId[] | 'TODO';
   material?: MaterialId;
   variants?: ProductVariant[];
-  price?: ProductPrice;             // stored but not shown while showPrices=false
+  catalogPrice?: ProductPrice;      // printed-catalogue list price — stored, never shown or used for sorting/cart
+  price?: number;                   // INR, ONLY from the admin (runtime products.json). Absent = "Price on request"
+  availability?: Availability;      // admin-set only; absent + no stock = "On request"
+  stock?: number;                   // integer 0..100000, admin-set only
+  keywords?: string[];              // admin search tags
+  brand?: string;
+  featured?: boolean;
+  status?: ProductStatus;           // inactive/archived = not listable
   sku?: string;                     // TODO(client) for most products
   hsn?: string;                     // TODO(client)
   moq?: string;                     // TODO(client)
   packing?: string;                 // TODO(client)
   summary?: string;                 // COPY: drafted, needs client approval
+  description?: string;             // longer copy; set at runtime via admin products.json
   images: ProductImage[];
   published: boolean;
 };

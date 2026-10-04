@@ -1,13 +1,16 @@
 <?php defined('ALOK_ADMIN') || exit; ?>
 <?php /** @var list<array<string,mixed>> $roles */ ?>
-<div class="row-between">
-  <h1>Open roles</h1>
-  <a class="btn btn-primary" href="<?= e(u('role')) ?>">Add a role</a>
-</div>
-<p class="lead">Roles listed here appear on the Careers page. Shown roles are the ones marked <b>Live</b>. When nothing is live, the page shows its normal “send your CV” message.</p>
+<?= page_head('Open roles', [['Dashboard', u()], ['Open roles', null]],
+    'Roles listed here appear on the Careers page. Roles marked <b>Live</b> are shown. When nothing is live, the page shows its normal “send your CV” message.',
+    '<a class="btn btn-primary" href="' . e(u('role')) . '">' . icon('plus') . 'Add a role</a>') ?>
 
 <?php if (!$roles): ?>
-  <p class="card empty">No roles yet. Add one when you are hiring.</p>
+  <div class="card empty-state">
+    <span class="empty-ico"><?= icon('briefcase') ?></span>
+    <p class="empty-title">No roles yet</p>
+    <p>Add one when you are hiring. It appears on the Careers page as soon as it is set to Live.</p>
+    <a class="btn btn-primary" href="<?= e(u('role')) ?>"><?= icon('plus') ?>Add a role</a>
+  </div>
 <?php else: ?>
 <ul class="roles">
   <?php foreach ($roles as $ro): ?>
@@ -21,8 +24,8 @@
     </div>
     <div class="actions">
       <form method="post" action="<?= e(u('careers')) ?>"><?= csrf_field() ?><input type="hidden" name="id" value="<?= e($ro['id'] ?? '') ?>">
-        <button class="btn btn-secondary btn-sm" type="submit"><?= !empty($ro['active']) ? 'Hide from website' : 'Show on website' ?></button></form>
-      <a class="btn btn-secondary btn-sm" href="<?= e(u('role', ['id' => $ro['id'] ?? ''])) ?>">Edit</a>
+        <button class="btn btn-secondary btn-sm" type="submit"><?= icon('eye') ?><?= !empty($ro['active']) ? 'Hide from website' : 'Show on website' ?></button></form>
+      <a class="btn btn-secondary btn-sm" href="<?= e(u('role', ['id' => $ro['id'] ?? ''])) ?>"><?= icon('edit') ?>Edit</a>
       <a class="btn btn-quiet btn-sm" href="<?= e(u('role_delete', ['id' => $ro['id'] ?? ''])) ?>">Delete…</a>
     </div>
   </li>

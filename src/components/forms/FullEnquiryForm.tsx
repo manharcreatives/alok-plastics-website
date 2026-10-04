@@ -17,6 +17,7 @@ import { enquiryLines } from '@/lib/whatsapp';
 import { postEnquiry } from '@/lib/enquiry-submit';
 import { trackEnquirySubmit } from '@/lib/analytics';
 import { publishedProducts } from '@/content/products';
+import { useHiddenProductSlugs, useRuntimeProductMap } from '@/components/runtime/useRuntime';
 import EnquiryFallback from './EnquiryFallback';
 import SuccessNext from './SuccessNext';
 import { Check } from '@phosphor-icons/react/dist/ssr/Check';
@@ -87,6 +88,13 @@ function inputStyle(hasErr: boolean): CSSProperties {
 }
 
 export default function FullEnquiryForm({ prefillProduct }: { prefillProduct?: string }) {
+  const hidden = useHiddenProductSlugs();
+  const edits = useRuntimeProductMap();
+  /* owner-edited names win for the label and the value that gets submitted */
+  const productOptions = [
+    ...publishedProducts.filter(p => !hidden.has(p.slug)).map(p => edits?.get(p.slug)?.name ?? p.name),
+    PRODUCT_OPTIONS[PRODUCT_OPTIONS.length - 1],
+  ];
   const [state, setState] = useState<FormState>('idle');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [fallbackLines, setFallbackLines] = useState<string[]>([]);
@@ -367,7 +375,7 @@ export default function FullEnquiryForm({ prefillProduct }: { prefillProduct?: s
                       style={{ ...inputStyle(!!pErr), cursor: 'pointer' }}
                     >
                       <option value="" disabled>Select product&hellip;</option>
-                      {PRODUCT_OPTIONS.map(opt => (
+                      {productOptions.map(opt => (
                         <option key={opt} value={opt}>{opt}</option>
                       ))}
                     </select>

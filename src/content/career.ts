@@ -6,7 +6,7 @@ import type { CareerConfig } from './types';
 export const careerConfig: CareerConfig = {
   culture: `At Alok Plastics, we believe a strong company is built by strong people. We aim to create a joyful, supportive, and trustworthy working environment where every team member feels valued and respected.
 
-We encourage teamwork, learning, responsibility, and continuous improvement — giving people opportunities to develop their skills, take ownership of their work, and grow alongside the company. As we expand, our goal is to build not just a larger manufacturing business, but a workplace where people enjoy working, grow together, and take pride in what they create.`,
+We encourage teamwork, learning, responsibility, and continuous improvement, giving people opportunities to develop their skills, take ownership of their work, and grow alongside the company. As we expand, our goal is to build not just a larger manufacturing business, but a workplace where people enjoy working, grow together, and take pride in what they create.`,
 
   teams: [
     {

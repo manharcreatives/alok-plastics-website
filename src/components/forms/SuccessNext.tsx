@@ -6,7 +6,8 @@ import Link from 'next/link';
 import { Phone } from '@phosphor-icons/react/dist/ssr/Phone';
 import { EnvelopeSimple } from '@phosphor-icons/react/dist/ssr/EnvelopeSimple';
 import { ArrowUpRight } from '@phosphor-icons/react/dist/ssr/ArrowUpRight';
-import { site, telHref } from '@/content/site';
+import { telHref } from '@/content/site';
+import { useRuntimeContact } from '@/components/runtime/useRuntime';
 
 const CSS = `
 .sn { display: flex; flex-wrap: wrap; gap: var(--space-xs); }
@@ -23,7 +24,7 @@ const CSS = `
 `;
 
 export default function SuccessNext({ onLight }: { onLight: boolean }) {
-  const { phone, email } = site.contact;
+  const { phone, email } = useRuntimeContact();
   return (
     <div className={onLight ? 'sn' : 'sn sn--dark'}>
       <style>{CSS}</style>

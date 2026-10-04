@@ -76,3 +76,20 @@ export function trackQuoteCtaClick(opts: {
 export function trackCatalogueDownload(): void {
   push({ event: 'catalogue_download' });
 }
+
+/* ── Cart events (privacy-safe: slugs and counts only, never names, phones or addresses) ── */
+
+/** A product was added to the cart */
+export function trackAddToCart(opts: { productSlug: string; qty: number; source: string }): void {
+  push({ event: 'add_to_cart', product_slug: opts.productSlug, qty: opts.qty, cart_source: opts.source });
+}
+
+/** The mini-cart or the cart page was opened */
+export function trackCartOpen(opts: { source: 'header' | 'bar' | 'added' | 'page'; lineCount: number }): void {
+  push({ event: 'cart_open', cart_source: opts.source, line_count: opts.lineCount });
+}
+
+/** The visitor opened the WhatsApp order request */
+export function trackOrderRequestWhatsApp(opts: { lineCount: number; unitCount: number }): void {
+  push({ event: 'order_request_whatsapp', line_count: opts.lineCount, unit_count: opts.unitCount });
+}

@@ -24,7 +24,7 @@ return [
     // null = use admin/data/ (protected by .htaccess, but inside the web root).
     'data_dir' => null,
 
-    // Where settings.json / careers.json / product-overrides.json are written.
+    // Where careers.json / product-overrides.json are written.
     // null = <website root>/data  (served publicly as /data/). Leave as null unless told otherwise.
     'public_data_dir' => null,
 

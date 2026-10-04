@@ -34,6 +34,8 @@
   --ink: #1E1115;               /* headings & key text (warm near-black) */
   --body: #4A3D40;              /* paragraphs */
   --muted: #6B5F62;             /* helper text, placeholders, footnotes */
+  /* micro-labels that can sit on Light Grey: Metal Grey deepened 15% toward ink (>=5:1 on all light surfaces) */
+  --grey-metal-text: color-mix(in srgb, var(--grey-metal) 85%, var(--ink));
 
   /* ── Functional — never brand colours ───────────────────────── */
   --whatsapp: #0F7B6C;          /* WhatsApp buttons & links ONLY */
@@ -49,6 +51,11 @@
      Use this (not --metal-gradient) whenever the gradient is clipped to text. */
   --metal-gradient-text: linear-gradient(175deg, #2E0A0F 0%, #581C25 46%, #8A2C38 83%, #9C4D57 100%);
   --silver-gradient: linear-gradient(180deg, #6E6C6C 0%, #8F8D8D 45%, #BDBBBB 100%);
+  /* On-media crop of the brand ramp, for gradient text sitting on the hero video /
+     scrim. Runs the accent ramp in reverse (pale -> bright) because --metal-gradient-text
+     is graded for a light canvas and its dark end would disappear over footage.
+     Every stop clears 4.5:1 against the scrimmed video. */
+  --metal-gradient-on-media: linear-gradient(175deg, #E3B5B8 0%, #C35A61 46%, #8A2C38 100%);
 
   /* ── Spacing tokens — §7.4 base-4 system ───────────────────────
    * Never use arbitrary values between 28px and 36px (ambiguous spacing).
@@ -67,6 +74,26 @@
   --grid-max: 1360px;
   --grid-gutter: 32px;
   --grid-page-padding: clamp(20px, 5vw, 64px);
+
+  /* ── Type scale (§7.2) ──────────────────────────────────────────
+     One size / line-height / tracking per role. Display tiers are fluid between 375 and 1440;
+     body, label and micro sizes are fixed (readability does not scale with the viewport).
+     Hierarchy: display-xl > display (heroes) > h1 (statements) > h2 (sections) > h3 (cards)
+     > lead-lg > lead > body > sm > label > micro. Decorative type (आलोक, journey years,
+     preloader words) is artwork and sits outside this scale. */
+  --fs-display-xl: clamp(2.75rem, 6.4vw, 5.75rem); --lh-display-xl: 1;    --tr-display-xl: -0.035em;
+  --fs-display:    clamp(2.25rem, 4.8vw, 4.5rem);  --lh-display: 1.04;    --tr-display: -0.03em;
+  --fs-h1:         clamp(2rem, 4vw, 3.5rem);       --lh-h1: 1.06;         --tr-h1: -0.03em;
+  --fs-h2:         clamp(1.75rem, 3.4vw, 2.75rem); --lh-h2: 1.1;          --tr-h2: -0.025em;
+  --fs-h3:         clamp(1.375rem, 2.2vw, 1.75rem); --lh-h3: 1.18;        --tr-h3: -0.015em;
+  --fs-h4:         1.25rem;                        --lh-h4: 1.25;         --tr-h4: -0.01em;
+  --fs-lead-lg:    clamp(1.25rem, 2vw, 1.625rem);  --lh-lead-lg: 1.4;     --tr-lead-lg: -0.01em;
+  --fs-lead:       clamp(1.0625rem, 1.5vw, 1.25rem); --lh-lead: 1.65;
+  --fs-body:       1.0625rem;                      --lh-body: 1.65;
+  --fs-sm:         0.9375rem;                      --lh-sm: 1.55;
+  --fs-label:      0.75rem;                        --lh-label: 1.2;       --tr-label: 0.16em;
+  --fs-stat:       clamp(2.5rem, 5.6vw, 5rem);     --lh-stat: 1;          --tr-stat: -0.04em;
+  --fs-stat-unit:  clamp(1.25rem, 2.2vw, 2rem);
 
   /* ── Layout ──────────────────────────────────────────────────── */
   --radius-card: 2px;   /* §3 row 8: 2px max, no rounded-xl/2xl */

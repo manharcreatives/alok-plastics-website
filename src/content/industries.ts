@@ -1,4 +1,4 @@
-import type { Industry, IndustriesConfig } from './types';
+import type { Industry, IndustriesConfig, IndustryImage } from './types';
 
 // Alok Plastics — Industries content
 // Verbatim from §5.9 — do not edit the line text without client approval
@@ -77,4 +77,7 @@ export const coreMarket = {
   name: 'Water Coolers · Display Counters · Deep Freezers',
   description: 'The primary market: spare parts for water coolers, display counters and deep freezers across India.',
   machines: ['water-cooler', 'display-counter', 'deep-freezer'] as const,
+  // Optional photo for the core-market tile. When set it fades in over the line drawing once
+  // it has loaded; until then (or if it fails) the drawing shows. TODO(client): photo.
+  image: null as IndustryImage | null,
 };

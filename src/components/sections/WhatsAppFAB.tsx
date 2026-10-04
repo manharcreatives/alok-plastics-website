@@ -13,8 +13,8 @@
 
 import { useState, useEffect } from 'react';
 import { WhatsappLogo } from '@phosphor-icons/react/dist/csr/WhatsappLogo';
-import { waGeneral } from '@/lib/whatsapp';
-import { fetchRuntimeSettings, cleanWhatsapp } from '@/lib/runtime-data';
+import { waLink } from '@/lib/whatsapp';
+import { useRuntimeContact } from '@/components/runtime/useRuntime';
 import { trackWhatsAppClick } from '@/lib/analytics';
 
 /* Elements that the FAB must never overlap */
@@ -52,13 +52,12 @@ const FAB_CSS = `
 
 export default function WhatsAppFAB() {
   const [hidden, setHidden] = useState(false);
-  const [runtimeNumber, setRuntimeNumber] = useState<string | null>(null);
-  useEffect(() => {
-    fetchRuntimeSettings().then(s => setRuntimeNumber(cleanWhatsapp(s?.contact?.whatsapp)));
-  }, []);
-  const waHref = waGeneral() ?? (runtimeNumber
-    ? `https://wa.me/${runtimeNumber}?text=${encodeURIComponent('Hello Alok Plastics! I would like to enquire about spare parts.')}`
-    : null);
+  /* The panel's WhatsApp number, overlaid on the build-time one (null until it arrives). */
+  const { whatsapp } = useRuntimeContact();
+  const waHref = waLink(
+    'Hello Alok Plastics! I would like to enquire about spare parts.',
+    whatsapp,
+  );
 
   useEffect(() => {
     if (!waHref || typeof IntersectionObserver === 'undefined') return;

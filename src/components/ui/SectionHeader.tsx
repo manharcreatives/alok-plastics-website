@@ -76,7 +76,7 @@ export default function SectionHeader({
         style={{
           fontFamily: 'var(--font-archivo, sans-serif)',
           fontVariationSettings: '"wdth" 125',
-          fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
+          fontSize: 'var(--fs-h2)',
           lineHeight: 1.1,
           letterSpacing: '-0.025em',
           fontWeight: 650,

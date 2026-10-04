@@ -21,6 +21,7 @@ import { enquiryLines } from '@/lib/whatsapp';
 import { postEnquiry } from '@/lib/enquiry-submit';
 import { trackEnquirySubmit } from '@/lib/analytics';
 import { publishedProducts } from '@/content/products';
+import { useHiddenProductSlugs, useRuntimeProductMap } from '@/components/runtime/useRuntime';
 import EnquiryFallback from './EnquiryFallback';
 import SuccessNext from './SuccessNext';
 import { BUYER_TYPES, FORM_CSS } from './shared';
@@ -52,6 +53,8 @@ export default function ShortEnquiryForm({
   onLight = false,
   prefillProduct = '',
 }: Props) {
+  const hidden = useHiddenProductSlugs();
+  const edits = useRuntimeProductMap();
   const [state, setState] = useState<FormState>('idle');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [fallbackLines, setFallbackLines] = useState<string[]>([]);
@@ -154,7 +157,7 @@ export default function ShortEnquiryForm({
         </p>
         <p style={{ fontSize: '0.9375rem', color: fgMuted, lineHeight: 1.6 }}>
           {/* TODO(client): confirm reply time before launch */}
-          We&rsquo;ll get back to you within 24 hours — usually the same day if you&rsquo;ve sent this before noon IST.
+          We&rsquo;ll get back to you within 24 hours, usually the same day if you&rsquo;ve sent this before noon IST.
         </p>
         <SuccessNext onLight={onLight} />
         <button
@@ -256,9 +259,10 @@ export default function ShortEnquiryForm({
           style={{ ...inputStyle(!!errors.product), cursor: 'pointer' }}
         >
           <option value="" disabled>Select a product or custom requirement&hellip;</option>
-          {PRODUCT_OPTIONS.map(opt => (
-            <option key={opt.value} value={opt.label}>{opt.label}</option>
-          ))}
+          {PRODUCT_OPTIONS.filter(opt => !hidden.has(opt.value)).map(opt => {
+            const label = edits?.get(opt.value)?.name ?? opt.label;
+            return <option key={opt.value} value={label}>{label}</option>;
+          })}
         </select>
         {errors.product && <p id="senq-product-err" role="alert" style={errStyle}>{errors.product}</p>}
       </div>

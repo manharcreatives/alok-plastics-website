@@ -21,9 +21,9 @@ export function absoluteUrl(path = '/'): string {
   return `${SITE_URL}${path.startsWith('/') ? path : `/${path}`}`;
 }
 
-export const HOME_TITLE = 'Alok Plastics, Chandigarh | Plastic Spare Parts Manufacturer — Cooler & Freezer Parts';
+export const HOME_TITLE = 'Alok Plastics, Chandigarh | Plastic Spare Parts Manufacturer for Coolers & Freezers';
 export const HOME_DESCRIPTION =
-  'Chandigarh manufacturer since 1998. Moulded plastic & steel spare parts for water coolers, display counters & deep freezers — float valves, F-bushes, gaskets, nylon & HDPE. OEM & B2B wholesale enquiries welcome.';
+  'Chandigarh manufacturer since 1998. Moulded plastic & steel spare parts for water coolers, display counters & deep freezers: float valves, F-bushes, gaskets, nylon & HDPE. OEM & B2B wholesale enquiries welcome.';
 
 const ctx = { '@context': 'https://schema.org' } as const;
 
@@ -63,7 +63,7 @@ function contactPoint(): Json | null {
 /** Plain-sentence entity statement (§18 GEO) — reused on home meta + llms.txt. */
 export const ENTITY_STATEMENT =
   `${site.name} is a ${site.contact.city}-based plastic parts manufacturer, established in ${site.foundingYear}, ` +
-  'of moulded plastic and steel spare parts for water coolers, display counters and deep freezers — ' +
+  'of moulded plastic and steel spare parts for water coolers, display counters and deep freezers, ' +
   'including float valves, F-bushes, connecting bushes, ventilation jalli, door locks, gaskets and push cocks in nylon, HDPE, PPCP and brass.';
 
 export function organizationJsonLd(): Json {
@@ -151,7 +151,7 @@ export function breadcrumbJsonLd(items: CrumbInput[]): Json {
   };
 }
 
-/** Product schema: no offers, prices, ratings or reviews. Unknown fields omitted. */
+/** Product schema: no offers, ratings or reviews at build time (offers are added at runtime only when the owner sets a price). Unknown fields omitted. */
 export function productJsonLd(p: Product, g: ProductGroup): Json {
   const images = p.images.map(i => absoluteUrl(i.src));
   return {
@@ -212,10 +212,38 @@ export function partTitle(p: Product, g: ProductGroup): string {
   const mat = p.material ? ` ${MATERIAL_LABELS[p.material]}` : '';
   const candidates = [
     `${p.name}${mat} Manufacturer | Alok Plastics, Chandigarh`,
-    `${p.name} | ${g.name} — Alok Plastics, Chandigarh`,
-    `${p.name} | ${g.name} — Alok Plastics`,
+    `${p.name} | ${g.name} | Alok Plastics, Chandigarh`,
+    `${p.name} | ${g.name} | Alok Plastics`,
     `${p.name} Spare Part | Alok Plastics, Chandigarh`,
     `${p.name} Spare Part | Alok Plastics`,
   ];
   return candidates.find(c => c.length <= 60) ?? candidates[candidates.length - 1];
+}
+
+/**
+ * schema.org Offer for a product. Only call this when the owner has set a price (runtime
+ * products.json); build-time Product JSON-LD never carries an offer. On-request availability
+ * is left out rather than guessed.
+ */
+export function productOffer(opts: {
+  price: number;
+  url: string;
+  availability?: 'in-stock' | 'out-of-stock' | 'on-request';
+  discontinued?: boolean;
+}): Json {
+  const avail = opts.discontinued
+    ? 'https://schema.org/Discontinued'
+    : opts.availability === 'in-stock'
+      ? 'https://schema.org/InStock'
+      : opts.availability === 'out-of-stock'
+        ? 'https://schema.org/OutOfStock'
+        : null;
+  return {
+    '@type': 'Offer',
+    price: opts.price.toFixed(2),
+    priceCurrency: 'INR',
+    url: opts.url,
+    ...(avail ? { availability: avail } : {}),
+    seller: { '@id': ID.org },
+  };
 }

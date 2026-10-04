@@ -4,8 +4,10 @@
  *
  * Asymmetric bento: one wide core-market tile (the section's single burgundy block)
  * and seven industry cards in mixed sizes. Each card has a drawn engineering-sheet
- * scene (src/components/art/IndustryScenes.tsx) inside a diagonal-cut mask; a real
- * photo (Industry.image) replaces the scene automatically when supplied.
+ * scene (src/components/art/IndustryScenes.tsx) inside a diagonal-cut mask. The drawing is
+ * part of the first paint and never leaves; a real photo (Industry.image / coreMarket.image),
+ * once supplied, decodes in the background and fades in over it (PhotoOverArt), so a slow or
+ * failed photo never shows an empty box.
  * Hover / keyboard focus: the application line is revealed by a diagonal wipe and the
  * arrow nudges up-right. On touch (hover: none) and under reduced motion the line is
  * always visible. Logo marquee stays hidden until the client supplies logos.
@@ -13,24 +15,49 @@
 
 'use client';
 
-import { useRef } from 'react';
+import { useCallback, useRef, useState, type ReactNode } from 'react';
 import Link from 'next/link';
-import dynamic from 'next/dynamic';
 import { useGSAP } from '@gsap/react';
 import { ArrowUpRight } from '@phosphor-icons/react/dist/csr/ArrowUpRight';
 import { industriesConfig, coreMarket } from '@/content/industries';
+import IndustryScene, { CoreMarketScene } from '@/components/art/IndustryScenes';
 import { gsap, ScrollTrigger, DURATIONS, EASINGS } from '@/lib/motion';
 import FoldEdge, { FOLD_SECTION_CSS } from '@/components/sections/FoldEdge';
 import { useMaskRise } from '@/hooks/useMotion';
-import type { Industry } from '@/content/types';
+import type { Industry, IndustryImage } from '@/content/types';
 
 gsap.registerPlugin(ScrollTrigger);
 
-/* Illustrations are code-split: the section paints with reserved media boxes first. */
-const IndustryScene = dynamic(() => import('@/components/art/IndustryScenes'));
-const CoreMarketScene = dynamic(() =>
-  import('@/components/art/IndustryScenes').then(m => m.CoreMarketScene),
-);
+/* Drawing first, photo second. The line drawing is imported statically so it is in the first
+   paint (no code-split gap, no empty box). A photo, when one exists, is layered above it at
+   opacity 0 and fades in only once it has actually decoded; if it is slow or fails, the drawing
+   simply stays. An image already in cache is caught by the ref check, so it never flashes. */
+function PhotoOverArt({ image, children }: { image?: IndustryImage | null; children: ReactNode }) {
+  const [loaded, setLoaded] = useState(false);
+  const imgRef = useCallback((el: HTMLImageElement | null) => {
+    if (el?.complete && el.naturalWidth > 0) setLoaded(true);
+  }, []);
+  return (
+    <>
+      {children}
+      {image && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          ref={imgRef}
+          src={image.src}
+          alt={image.alt}
+          width={image.w}
+          height={image.h}
+          loading="lazy"
+          decoding="async"
+          className="ind-photo"
+          data-loaded={loaded ? 'true' : 'false'}
+          onLoad={() => setLoaded(true)}
+        />
+      )}
+    </>
+  );
+}
 
 /* Mixed-size bento: spans on the 12-col desktop grid, in source order. */
 const SPANS = ['w7', 'w5', 'w4', 'w4', 'w4', 'w5', 'w7'] as const;
@@ -41,20 +68,9 @@ function IndustryCard({ industry, span }: { industry: Industry; span: string }) 
       <div className="ind-mw">
         <div className="ind-media">
           <div className="ind-art">
-            {industry.image ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={industry.image.src}
-                alt={industry.image.alt}
-                width={industry.image.w}
-                height={industry.image.h}
-                loading="lazy"
-                decoding="async"
-                className="ind-photo"
-              />
-            ) : (
-              industry.scene && <IndustryScene scene={industry.scene} />
-            )}
+            <PhotoOverArt image={industry.image}>
+              {industry.scene && <IndustryScene scene={industry.scene} />}
+            </PhotoOverArt>
           </div>
         </div>
         <svg className="ind-cut" viewBox="0 0 40 40" aria-hidden="true">
@@ -78,21 +94,19 @@ function IndustryCard({ industry, span }: { industry: Industry; span: string }) 
 const CSS = `${FOLD_SECTION_CSS}
 .ind-sec { --pad-top: calc(var(--section-y) + 8px); background: var(--surface); padding-left: var(--grid-page-padding); padding-right: var(--grid-page-padding); padding-bottom: calc(var(--section-y) + 16px); }
 .ind-head { display: flex; flex-direction: column; gap: var(--space-sm); }
-.ind-label { display: flex; align-items: center; gap: 10px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--muted); font-weight: 600; font-family: var(--font-archivo); }
-.ind-label i { width: 24px; height: 2px; background: var(--burgundy); display: inline-block; }
-.ind-head h2 { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(1.75rem, 3.5vw, 2.75rem); line-height: 1.1; letter-spacing: -0.025em; font-weight: 650; color: var(--ink); max-width: 22ch; text-wrap: balance; }
+.ind-label { display: flex; align-items: center; gap: 10px; font-size: var(--fs-label); text-transform: uppercase; letter-spacing: var(--tr-label); color: var(--muted); font-weight: 600; font-family: var(--font-archivo), sans-serif; line-height: var(--lh-label); }
+.ind-head h2 { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-h2); line-height: var(--lh-h2); letter-spacing: var(--tr-h2); font-weight: 650; color: var(--ink); max-width: 22ch; text-wrap: balance; }
 .ind-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-md); margin-top: var(--space-xl); }
 
 /* ── core market (the one burgundy block) ── */
 .ind-core { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); background: var(--burgundy); border-radius: var(--radius-card); box-shadow: inset 0 1px 0 rgba(255,255,255,.18); overflow: hidden; clip-path: polygon(0 0, 100% 0, 100% calc(100% - 56px), calc(100% - 56px) 100%, 0 100%); }
 .ind-core-copy { display: flex; flex-direction: column; gap: var(--space-sm); padding: var(--space-lg); min-width: 0; }
-.ind-core-kicker { display: flex; align-items: center; gap: var(--space-xs); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--rose-pale); font-weight: 600; }
-.ind-core-kicker i { width: 24px; height: 2px; background: var(--rose-pale); display: inline-block; }
-.ind-core-name { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(1.5rem, 2.8vw, 2.25rem); font-weight: 650; color: var(--surface); line-height: 1.12; letter-spacing: -0.02em; text-wrap: balance; }
+.ind-core-kicker { display: flex; align-items: center; gap: var(--space-xs); font-size: var(--fs-label); text-transform: uppercase; letter-spacing: var(--tr-label); color: var(--rose-pale); font-weight: 600; line-height: var(--lh-label); font-family: var(--font-archivo), sans-serif; }
+.ind-core-name { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-h2); font-weight: 650; color: var(--surface); line-height: var(--lh-h2); letter-spacing: var(--tr-h2); text-wrap: balance; }
 .ind-core-desc { font-size: 1rem; color: var(--rose-pale); line-height: 1.6; max-width: 46ch; }
 .ind-core-name span { display: block; }
 .ind-core-name span + span { margin-top: 2px; }
-.ind-core-cta { display: inline-flex; align-items: center; gap: var(--space-xs); align-self: flex-start; margin-top: var(--space-sm); color: var(--surface); font-weight: 600; font-size: 0.9375rem; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--rose); }
+.ind-core-cta { display: inline-flex; align-items: center; min-height: 44px; gap: var(--space-xs); align-self: flex-start; margin-top: var(--space-sm); color: var(--surface); font-weight: 600; font-size: 0.9375rem; text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--rose); }
 .ind-core-cta svg { transition: transform 200ms cubic-bezier(.16,1,.3,1); }
 .ind-core-cta:hover svg, .ind-core-cta:focus-visible svg { transform: translate3d(2px, -2px, 0); }
 .ind-core-art { position: relative; min-height: 220px; padding: var(--space-sm) var(--space-md) 0; display: flex; align-items: flex-end;  }
@@ -106,7 +120,8 @@ const CSS = `${FOLD_SECTION_CSS}
 .ind-media::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(to right, rgba(115,113,113,.07) 1px, transparent 1px), linear-gradient(to bottom, rgba(115,113,113,.07) 1px, transparent 1px); background-size: 16px 16px; -webkit-mask-image: radial-gradient(ellipse at 40% 35%, var(--ink) 0%, transparent 78%); mask-image: radial-gradient(ellipse at 40% 35%, var(--ink) 0%, transparent 78%); }
 .ind-art { position: absolute; inset: 0; transform: translate3d(0,0,0); transition: transform 700ms cubic-bezier(.16,1,.3,1); will-change: transform; }
 .ind-art-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; }
-.ind-photo { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ind-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0; transition: opacity 600ms cubic-bezier(.16,1,.3,1); }
+.ind-photo[data-loaded='true'] { opacity: 1; }
 .ind-card:hover .ind-art, .ind-card:focus-visible .ind-art { transform: translate3d(0,-4px,0) scale(1.03); }
 .ind-cut { position: absolute; right: 0; bottom: 0; width: 40px; height: 40px; overflow: visible; }
 .ind-cut path { fill: none; stroke: var(--grey-warm); stroke-width: 1.5; transition: stroke 200ms cubic-bezier(.16,1,.3,1); }
@@ -127,7 +142,7 @@ const CSS = `${FOLD_SECTION_CSS}
 
 /* precise pointers: hide the line until hover/focus, then wipe it in on the 44-degree diagonal */
 @media not all and (hover: hover) and (pointer: fine) { .ind-hint { display: none; } }
-@media (prefers-reduced-motion: reduce) { .ind-hint { display: none; } }
+@media (prefers-reduced-motion: reduce) { .ind-hint { display: none; } .ind-photo { transition: none; } }
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   .ind-line span { clip-path: polygon(0 0, 0 0, -60% 100%, 0 100%); transition: clip-path 900ms cubic-bezier(.16,1,.3,1); }
   .ind-card:hover .ind-line span, .ind-card:focus-visible .ind-line span { clip-path: polygon(0 0, 160% 0, 100% 100%, 0 100%); }
@@ -182,7 +197,7 @@ export default function IndustriesBento() {
       <FoldEdge />
       <div style={{ maxWidth: 'calc(var(--grid-max) + 2 * var(--grid-page-padding))', margin: '0 auto' }}>
         <div className="ind-head">
-          <div className="ind-label"><i aria-hidden="true" />Industries</div>
+          <div className="ind-label">Industries</div>
           <h2 id="industries-heading" ref={headingRef}>Built for the industries that build India.</h2>
         </div>
 
@@ -190,8 +205,9 @@ export default function IndustriesBento() {
           {/* Core market — the one burgundy block in this section */}
           <div className="ind-core">
             <div className="ind-core-copy">
-              <div className="ind-core-kicker"><i aria-hidden="true" />Core market</div>
-              <p className="ind-core-name" aria-label={coreMarket.name}>
+              <div className="ind-core-kicker">Core market</div>
+              <p className="ind-core-name">
+                <span className="sr-only">{coreMarket.name}</span>
                 {coreMarket.name.split(' · ').map(n => <span key={n} aria-hidden="true">{n}</span>)}
               </p>
               <p className="ind-core-desc">{coreMarket.description}</p>
@@ -199,8 +215,10 @@ export default function IndustriesBento() {
                 Browse the parts <ArrowUpRight weight="light" size={18} aria-hidden="true" />
               </Link>
             </div>
-            <div className="ind-core-art" aria-hidden="true">
-              <CoreMarketScene />
+            <div className="ind-core-art">
+              <PhotoOverArt image={coreMarket.image}>
+                <CoreMarketScene />
+              </PhotoOverArt>
             </div>
           </div>
 

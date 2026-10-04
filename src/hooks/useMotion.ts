@@ -12,7 +12,10 @@
 
 import { useEffect, useRef, type RefObject } from 'react';
 import { useGSAP } from '@gsap/react';
-import { gsap, ScrollTrigger, SplitText, DURATIONS, EASINGS } from '@/lib/motion';
+import { SplitText } from 'gsap/SplitText';
+import { gsap, ScrollTrigger, DURATIONS, EASINGS } from '@/lib/motion';
+
+gsap.registerPlugin(SplitText);
 import { prefersReducedMotion } from './useReducedMotion';
 
 /* ── useGSAP registration ────────────────────────────────────────── */
