@@ -39,7 +39,7 @@ const CSS = FOLD_SECTION_CSS + `
   .tq-sec { --pad-top: calc(var(--section-y) * 1.2); background: var(--surface); padding-bottom: var(--section-y); padding-left: var(--grid-page-padding); padding-right: var(--grid-page-padding); overflow: hidden; }
   .tq-wrap { position: relative; max-width: calc(var(--grid-max) + 2 * var(--grid-page-padding)); margin: 0 auto; }
   .tq-micro { position: relative; display: inline-flex; align-items: center; gap: 10px; margin-bottom: var(--space-md); font-size: var(--fs-label); letter-spacing: var(--tr-label); text-transform: uppercase; font-weight: 600; color: var(--muted); font-family: var(--font-archivo), sans-serif; line-height: var(--lh-label); }
-  .tq-h { position: relative; z-index: 1; font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-h1); font-weight: 650; line-height: var(--lh-h1); letter-spacing: var(--tr-h1); color: var(--ink); max-width: 14ch; text-wrap: balance; }
+  .tq-h { position: relative; font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-h1); font-weight: 650; line-height: var(--lh-h1); letter-spacing: var(--tr-h1); color: var(--ink); max-width: 14ch; text-wrap: balance; }
   .tq-lower { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-lg); margin-top: var(--space-xl); align-items: end; }
   .tq-peak { width: min(100%, 560px); height: auto; overflow: visible; display: block; }
   .tq-peak path { fill: none; stroke: var(--grey-metal); stroke-width: 1.5; stroke-linecap: square; stroke-linejoin: miter; vector-effect: non-scaling-stroke; }
@@ -47,8 +47,15 @@ const CSS = FOLD_SECTION_CSS + `
   .tq-peak path.tq-arm { stroke: var(--grey-metal); stroke-width: 1.5; }
   .tq-rib--b { fill: var(--burgundy); }
   .tq-rib--s { fill: url(#tq-silver); }
-  .tq-wrap::before { content: ""; position: absolute; top: calc(var(--space-xl) * -1); right: calc(var(--grid-page-padding) * -1); width: 26%; height: clamp(300px, 34vw, 520px); background: var(--metal-gradient); opacity: 0.1; clip-path: polygon(44% 0, 100% 0, 100% 100%, 0 100%); pointer-events: none; }
-  .tq-wrap::after { content: ""; position: absolute; top: calc(var(--space-xl) * -1); right: calc(var(--grid-page-padding) * -1); width: 26%; height: clamp(300px, 34vw, 520px); background: var(--burgundy); opacity: 0.5; clip-path: polygon(44% 0, 44.3% 0, 0.3% 100%, 0 100%); pointer-events: none; }
+  /* Background geometry: the pale wedge and its burgundy hairline belong to the heading band,
+     not to the whole section. They hang off .tq-top, so their height follows the heading at every
+     width and both end halfway into the gap above the ledger; they can never reach the table.
+     .tq-top isolates its own stacking context and the shapes sit at z-index -1 inside it, so
+     they always paint behind the label and heading as well. */
+  .tq-top { position: relative; isolation: isolate; }
+  .tq-top::before, .tq-top::after { content: ""; position: absolute; z-index: -1; top: calc(var(--space-xl) * -1); bottom: calc(var(--space-xl) * -0.5); right: calc(var(--grid-page-padding) * -1); width: 26%; pointer-events: none; }
+  .tq-top::before { background: var(--metal-gradient); opacity: 0.1; clip-path: polygon(44% 0, 100% 0, 100% 100%, 0 100%); }
+  .tq-top::after { background: var(--burgundy); opacity: 0.5; clip-path: polygon(44% 0, 44.3% 0, 0.3% 100%, 0 100%); }
   .tq-sheet { position: relative; background: var(--canvas); border: 1px solid var(--grey-metal); clip-path: polygon(0 0, calc(100% - 40px) 0, 100% 40px, 100% 100%, 0 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,.9); }
   .tq-sheet-head { display: flex; justify-content: space-between; gap: var(--space-sm); padding: var(--space-xs) 56px var(--space-xs) var(--space-sm); background: var(--surface-alt); border-bottom: 1px solid var(--grey-metal); font-size: 0.75rem; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; color: var(--muted); }
   .tq-rows { margin: 0; padding: 0; list-style: none; }
@@ -110,11 +117,13 @@ export default function TrustQuote() {
       <style>{CSS}</style>
       <FoldEdge variant="register" />
       <div className="tq-wrap">
-        <p className="tq-micro">Why manufacturers choose Alok Plastics</p>
-        {/* Core value, verbatim — §5.4 */}
-        <h2 id="trust-heading" ref={headingRef} className="tq-h">
-          We don&apos;t just mould plastic. We mould <span className="mt-grad">possibilities.</span>
-        </h2>
+        <div className="tq-top">
+          <p className="tq-micro">Why manufacturers choose Alok Plastics</p>
+          {/* Core value, verbatim — §5.4 */}
+          <h2 id="trust-heading" ref={headingRef} className="tq-h">
+            We don&apos;t just mould plastic. We mould <span className="mt-grad">possibilities.</span>
+          </h2>
+        </div>
 
         <div className="tq-lower">
           {/* The A-peak roof: two nested fold lines + short burgundy arm, drawn */}

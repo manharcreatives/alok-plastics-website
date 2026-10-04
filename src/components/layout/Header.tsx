@@ -1,6 +1,7 @@
 /**
  * Header — §9 glass navbar + states
- * Coordinates: glass navbar (fixed, floating pill → docked on scroll),
+ * Coordinates: glass navbar (fixed, floating pill at every scroll depth; scrolling only
+ * firms up its glass), 
  * NavMegaPanel (products) and Drawer (mobile).
  *
  * Round 2:
@@ -8,8 +9,8 @@
  * - Mega-panel hover-intent is shared between trigger and panel (150ms close
  *   delay) and the panel carries a transparent bridge so the pointer can travel
  *   from trigger to panel without the panel closing.
- * - Active-page indicator: a single burgundy rule + 45° datum notch that glides
- *   between links (transform only).
+ * - Active-page indicator: a single burgundy rule that glides between links
+ *   (transform only). Every link, Home included, gets the same plain rule.
  *
  * The glass element is a sibling of the hero media, never nested inside a
  * transformed / overflow:hidden wrapper (§9.1).
@@ -28,7 +29,6 @@ import Drawer from './Drawer';
 import CartButton from '@/components/cart/CartButton';
 import NavMegaPanel from './NavMegaPanel';
 import { navigation } from '@/content/navigation';
-import { site } from '@/content/site';
 import { isActivePath } from './isActivePath';
 import './glass-nav.css';
 
@@ -172,11 +172,10 @@ export default function Header() {
     hidden ? 'glass-nav--hidden' : '',
   ].filter(Boolean).join(' ');
 
-  /* Logo variant based on hero tone */
-  const heroDark = site.hero.media.tone === 'dark' && !docked;
-  const logoVariant = heroDark ? 'bright' : 'color';
-
-  const megaTop = (docked ? 0 : NAV_TOP_FLOATING) + NAV_HEIGHT + MEGA_GAP;
+  /* The pill is light glass in every state, so the logo is always the original colour lockup
+     (burgundy ribbons + metal-grey core). The 'bright' variant is for logos sitting directly on
+     footage, which the nav logo never does. */
+  const megaTop = NAV_TOP_FLOATING + NAV_HEIGHT + MEGA_GAP;
 
   return (
     <>
@@ -194,7 +193,7 @@ export default function Header() {
               aria-label="Alok Plastics home"
             >
               <Logo
-                variant={logoVariant}
+                variant="color"
                 lockup="full"
                 title=""
                 aria-hidden="true"
@@ -261,10 +260,9 @@ export default function Header() {
                   </li>
                 );
               })}
-              {/* Sliding active-page indicator: datum notch + rule (transform only) */}
+              {/* Sliding active-page indicator: one plain rule (transform only) */}
               <li className="glass-nav__ink" aria-hidden="true">
                 <span className="glass-nav__ink-rule" />
-                <span className="glass-nav__ink-notch" />
               </li>
             </ul>
 

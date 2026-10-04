@@ -158,7 +158,6 @@ export default function ProofStrip() {
         }
         .proof-sec-item:first-child { border-left: none; }
         .proof-sec-head { display: flex; align-items: center; gap: var(--space-xs); }
-        .proof-diamond { width: 6px; height: 6px; background: var(--burgundy); transform: rotate(45deg); flex-shrink: 0; }
         .proof-sec-value {
           font-family: var(--font-archivo); font-size: 0.875rem; font-weight: 600;
           text-transform: uppercase; letter-spacing: 0.1em; color: var(--body); line-height: 1.3;
@@ -199,7 +198,6 @@ export default function ProofStrip() {
             {SECONDARY_STATS.map(stat => (
               <div key={stat.value} className="proof-sec-item">
                 <div className="proof-sec-head">
-                  <span aria-hidden="true" className="proof-diamond" />
                   <span className="proof-sec-value">{stat.value}</span>
                 </div>
                 <span className="proof-sec-label">{stat.label}</span>

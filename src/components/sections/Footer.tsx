@@ -35,11 +35,18 @@ const FOOTER_CSS = `
   background-size: 8px 8px; -webkit-mask-image: radial-gradient(ellipse 60% 80% at 80% 20%, var(--ink), transparent); mask-image: radial-gradient(ellipse 60% 80% at 80% 20%, var(--ink), transparent); }
 .ft__in { position: relative; z-index: 1; max-width: calc(var(--grid-max) + 2 * var(--grid-page-padding)); margin: 0 auto; }
 
-/* Tagline lockup */
+/* Brand lockup — an editorial split. Left: the logo as the anchor, the English line and (where
+   the page has no enquiry band) the CTA beneath it. Right: the Devanagari line set as two lines.
+   On wide screens the lockup shares the column grid below, so the Devanagari starts on the same
+   vertical as the Company column; the two halves sit on one grid rather than at the far edges. */
 .ft__lock { padding-bottom: var(--space-xl); border-bottom: 1px solid color-mix(in srgb, var(--surface) 20%, transparent); display: grid; gap: var(--space-lg); }
-.ft__dev { margin: 0; font-family: var(--font-devanagari); font-weight: 600; font-size: clamp(1.75rem, 6.2vw, 4.75rem); line-height: 1.35; letter-spacing: -0.01em; color: var(--surface); text-wrap: balance; }
-.ft__dev span { color: var(--rose-pale); }
-.ft__en { margin: var(--space-xs) 0 0; font-size: clamp(0.9375rem, 1.4vw, 1.125rem); color: var(--rose-pale); }
+.ft__brand { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-md); min-width: 0; }
+.ft__logo { display: inline-block; }
+.ft__logo svg { height: 68px; width: auto; display: block; }
+.ft__dev { margin: 0; font-family: var(--font-devanagari); font-weight: 600; font-size: clamp(1.75rem, 4.6vw, 3.75rem); line-height: 1.35; letter-spacing: -0.01em; color: var(--surface); }
+.ft__dev-l { display: block; white-space: nowrap; }
+.ft__dev-l + .ft__dev-l { color: var(--rose-pale); }
+.ft__en { margin: 0; font-size: clamp(0.9375rem, 1.4vw, 1.125rem); color: var(--rose-pale); }
 .ft__cta { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-xs); min-height: 56px; padding: 0 var(--space-lg); background: var(--surface); color: var(--burgundy);
   font-weight: 650; font-size: 1.0625rem; text-decoration: none; border-radius: var(--radius-card); clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%); transition: background-color 200ms cubic-bezier(.16,1,.3,1); width: fit-content; }
 .ft__cta:hover { background: var(--pink-soft); }
@@ -75,8 +82,13 @@ body:has(.eb, #enquiry) .ft__cta { display: none; }
 .ft__legal .ft__link { font-size: 0.8125rem; }
 
 @media (min-width: 640px) { .ft__cols { grid-template-columns: 1fr 1fr; gap: var(--space-lg) var(--space-xl); } }
-@media (min-width: 900px) { .ft__lock { grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: var(--space-xl); } }
-@media (min-width: 1100px) { .ft__cols { grid-template-columns: 1.4fr 1fr 1fr 1.4fr; } }
+@media (min-width: 768px) { .ft__lock { grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--space-lg); } }
+@media (min-width: 1100px) {
+  .ft__cols { grid-template-columns: 1.4fr 1fr 1fr 1.4fr; }
+  .ft__lock { grid-template-columns: 1.4fr 1fr 1fr 1.4fr; column-gap: var(--space-xl); }
+  .ft__brand { grid-column: 1 / 3; }
+  .ft__dev { grid-column: 3 / 5; }
+}
 @media (prefers-reduced-motion: reduce) { .ft__cta svg, .ft__ar { transition: none; } }
 `;
 
@@ -104,18 +116,21 @@ export default function Footer() {
       <div className="ft__grid-bg" aria-hidden="true" />
       <div className="ft__in">
 
-        {/* Tagline lockup (§2.7: English line beneath, rose-pale on burgundy) */}
+        {/* Brand lockup (§2.7: English line in rose-pale on burgundy; Devanagari as two lines) */}
         <div className="ft__lock">
-          <div>
-            <Link href="/" aria-label="Alok Plastics, home" style={{ display: 'inline-block', marginBottom: 'var(--space-lg)' }}>
-              <Logo variant="white" style={{ height: 56, width: 'auto', display: 'block' }} />
+          <div className="ft__brand">
+            <Link href="/" aria-label="Alok Plastics, home" className="ft__logo">
+              <Logo variant="white" />
             </Link>
-            <p lang="sa" className="ft__dev">{devA},{' '}<br /><span>{devB}</span></p>
             <p lang="en" className="ft__en">{site.tagline.english}</p>
+            <Link href="/enquiry/" className="ft__cta" onClick={() => trackQuoteCtaClick({ source: 'footer' })}>
+              Get a Quote <ArrowUpRight size={20} weight="light" aria-hidden="true" />
+            </Link>
           </div>
-          <Link href="/enquiry/" className="ft__cta" onClick={() => trackQuoteCtaClick({ source: 'footer' })}>
-            Get a Quote <ArrowUpRight size={20} weight="light" aria-hidden="true" />
-          </Link>
+          <p lang="sa" className="ft__dev">
+            <span className="ft__dev-l">{devA},</span>{' '}
+            <span className="ft__dev-l">{devB}</span>
+          </p>
         </div>
 
         <div className="ft__cols">

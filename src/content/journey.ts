@@ -11,18 +11,21 @@ export const journeyMarkers: JourneyMarker[] = [
     isFuture: false,
   },
   {
-    // TODO(client): verify decade-level narrative
+    // Figures, title and line supplied by the project owner (not in §5.7). Same metric as the
+    // 2020s proof point: cumulative products delivered, in crore. TODO(client): confirm before launch.
     year: '2000s',
-    title: 'Building Customer Relationships',
-    line: 'Built a loyal customer base the old-fashioned way, by showing up, delivering on time, and fixing problems fast.',
+    title: '5+ Crore Products Delivered',
+    line: '5 crore+ precision parts delivered across northern markets. Establishing our baseline for high-volume, reliable supply.',
     isFuture: false,
+    stat: { value: 5, suffix: 'Cr+', label: 'products delivered' },
   },
   {
-    // TODO(client): verify — automatic moulding machine adoption timeframe
+    // Supplied by the project owner, as above. TODO(client): confirm before launch.
     year: '2010s',
-    title: 'Upgrading the Floor',
-    line: 'Switched to automatic injection moulding. Faster turnaround, tighter tolerances, and a customer base that grew across India.',
+    title: '12+ Crore Products Delivered',
+    line: '12 crore+ components delivered as we adopted automatic injection moulding, scaling our footprint to a pan-India customer base.',
     isFuture: false,
+    stat: { value: 12, suffix: 'Cr+', label: 'products delivered' },
   },
   {
     // 20 Cr+ delivered is a verified proof point (site.ts proof). TODO(client): confirm the '2020s' decade placement

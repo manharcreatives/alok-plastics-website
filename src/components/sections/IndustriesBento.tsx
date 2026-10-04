@@ -4,8 +4,10 @@
  *
  * Asymmetric bento: one wide core-market tile (the section's single burgundy block)
  * and seven industry cards in mixed sizes. Each card has a drawn engineering-sheet
- * scene (src/components/art/IndustryScenes.tsx) inside a diagonal-cut mask; a real
- * photo (Industry.image) replaces the scene automatically when supplied.
+ * scene (src/components/art/IndustryScenes.tsx) inside a diagonal-cut mask. The drawing is
+ * part of the first paint and never leaves; a real photo (Industry.image / coreMarket.image),
+ * once supplied, decodes in the background and fades in over it (PhotoOverArt), so a slow or
+ * failed photo never shows an empty box.
  * Hover / keyboard focus: the application line is revealed by a diagonal wipe and the
  * arrow nudges up-right. On touch (hover: none) and under reduced motion the line is
  * always visible. Logo marquee stays hidden until the client supplies logos.
@@ -13,24 +15,49 @@
 
 'use client';
 
-import { useRef } from 'react';
+import { useCallback, useRef, useState, type ReactNode } from 'react';
 import Link from 'next/link';
-import dynamic from 'next/dynamic';
 import { useGSAP } from '@gsap/react';
 import { ArrowUpRight } from '@phosphor-icons/react/dist/csr/ArrowUpRight';
 import { industriesConfig, coreMarket } from '@/content/industries';
+import IndustryScene, { CoreMarketScene } from '@/components/art/IndustryScenes';
 import { gsap, ScrollTrigger, DURATIONS, EASINGS } from '@/lib/motion';
 import FoldEdge, { FOLD_SECTION_CSS } from '@/components/sections/FoldEdge';
 import { useMaskRise } from '@/hooks/useMotion';
-import type { Industry } from '@/content/types';
+import type { Industry, IndustryImage } from '@/content/types';
 
 gsap.registerPlugin(ScrollTrigger);
 
-/* Illustrations are code-split: the section paints with reserved media boxes first. */
-const IndustryScene = dynamic(() => import('@/components/art/IndustryScenes'));
-const CoreMarketScene = dynamic(() =>
-  import('@/components/art/IndustryScenes').then(m => m.CoreMarketScene),
-);
+/* Drawing first, photo second. The line drawing is imported statically so it is in the first
+   paint (no code-split gap, no empty box). A photo, when one exists, is layered above it at
+   opacity 0 and fades in only once it has actually decoded; if it is slow or fails, the drawing
+   simply stays. An image already in cache is caught by the ref check, so it never flashes. */
+function PhotoOverArt({ image, children }: { image?: IndustryImage | null; children: ReactNode }) {
+  const [loaded, setLoaded] = useState(false);
+  const imgRef = useCallback((el: HTMLImageElement | null) => {
+    if (el?.complete && el.naturalWidth > 0) setLoaded(true);
+  }, []);
+  return (
+    <>
+      {children}
+      {image && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          ref={imgRef}
+          src={image.src}
+          alt={image.alt}
+          width={image.w}
+          height={image.h}
+          loading="lazy"
+          decoding="async"
+          className="ind-photo"
+          data-loaded={loaded ? 'true' : 'false'}
+          onLoad={() => setLoaded(true)}
+        />
+      )}
+    </>
+  );
+}
 
 /* Mixed-size bento: spans on the 12-col desktop grid, in source order. */
 const SPANS = ['w7', 'w5', 'w4', 'w4', 'w4', 'w5', 'w7'] as const;
@@ -41,20 +68,9 @@ function IndustryCard({ industry, span }: { industry: Industry; span: string }) 
       <div className="ind-mw">
         <div className="ind-media">
           <div className="ind-art">
-            {industry.image ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={industry.image.src}
-                alt={industry.image.alt}
-                width={industry.image.w}
-                height={industry.image.h}
-                loading="lazy"
-                decoding="async"
-                className="ind-photo"
-              />
-            ) : (
-              industry.scene && <IndustryScene scene={industry.scene} />
-            )}
+            <PhotoOverArt image={industry.image}>
+              {industry.scene && <IndustryScene scene={industry.scene} />}
+            </PhotoOverArt>
           </div>
         </div>
         <svg className="ind-cut" viewBox="0 0 40 40" aria-hidden="true">
@@ -104,7 +120,8 @@ const CSS = `${FOLD_SECTION_CSS}
 .ind-media::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(to right, rgba(115,113,113,.07) 1px, transparent 1px), linear-gradient(to bottom, rgba(115,113,113,.07) 1px, transparent 1px); background-size: 16px 16px; -webkit-mask-image: radial-gradient(ellipse at 40% 35%, var(--ink) 0%, transparent 78%); mask-image: radial-gradient(ellipse at 40% 35%, var(--ink) 0%, transparent 78%); }
 .ind-art { position: absolute; inset: 0; transform: translate3d(0,0,0); transition: transform 700ms cubic-bezier(.16,1,.3,1); will-change: transform; }
 .ind-art-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; }
-.ind-photo { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ind-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0; transition: opacity 600ms cubic-bezier(.16,1,.3,1); }
+.ind-photo[data-loaded='true'] { opacity: 1; }
 .ind-card:hover .ind-art, .ind-card:focus-visible .ind-art { transform: translate3d(0,-4px,0) scale(1.03); }
 .ind-cut { position: absolute; right: 0; bottom: 0; width: 40px; height: 40px; overflow: visible; }
 .ind-cut path { fill: none; stroke: var(--grey-warm); stroke-width: 1.5; transition: stroke 200ms cubic-bezier(.16,1,.3,1); }
@@ -125,7 +142,7 @@ const CSS = `${FOLD_SECTION_CSS}
 
 /* precise pointers: hide the line until hover/focus, then wipe it in on the 44-degree diagonal */
 @media not all and (hover: hover) and (pointer: fine) { .ind-hint { display: none; } }
-@media (prefers-reduced-motion: reduce) { .ind-hint { display: none; } }
+@media (prefers-reduced-motion: reduce) { .ind-hint { display: none; } .ind-photo { transition: none; } }
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   .ind-line span { clip-path: polygon(0 0, 0 0, -60% 100%, 0 100%); transition: clip-path 900ms cubic-bezier(.16,1,.3,1); }
   .ind-card:hover .ind-line span, .ind-card:focus-visible .ind-line span { clip-path: polygon(0 0, 160% 0, 100% 100%, 0 100%); }
@@ -198,8 +215,10 @@ export default function IndustriesBento() {
                 Browse the parts <ArrowUpRight weight="light" size={18} aria-hidden="true" />
               </Link>
             </div>
-            <div className="ind-core-art" aria-hidden="true">
-              <CoreMarketScene />
+            <div className="ind-core-art">
+              <PhotoOverArt image={coreMarket.image}>
+                <CoreMarketScene />
+              </PhotoOverArt>
             </div>
           </div>
 
