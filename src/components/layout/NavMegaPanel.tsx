@@ -13,8 +13,10 @@
 import { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { ArrowUpRight } from '@phosphor-icons/react/dist/csr/ArrowUpRight';
+import ProductText from '@/components/runtime/ProductText';
 import Pictogram from '@/components/brand/Pictogram';
 import { productGroups, products } from '@/content/products';
+import { useHiddenProductSlugs } from '@/components/runtime/useRuntime';
 
 interface NavMegaPanelProps {
   /** id referenced by the trigger's aria-controls */
@@ -41,6 +43,7 @@ export default function NavMegaPanel({
   onPointerLeave,
 }: NavMegaPanelProps) {
   const panelRef = useRef<HTMLDivElement>(null);
+  const hidden = useHiddenProductSlugs();
 
   /* Close on Esc, return focus to the trigger */
   useEffect(() => {
@@ -98,12 +101,11 @@ export default function NavMegaPanel({
           /* Derive the group's products by their anchorParts slugs */
           const groupProducts = group.anchorParts
             .map(slug => products.find(p => p.slug === slug))
-            .filter((p): p is NonNullable<typeof p> => p !== undefined);
+            .filter((p): p is NonNullable<typeof p> => p !== undefined && !hidden.has(p.slug));
 
           return (
             <div key={group.id} className="mega__col">
               <div className="mega__kicker">
-                <span className="mega__dash" aria-hidden />
                 {groupProducts.length} {groupProducts.length === 1 ? 'part' : 'parts'}
               </div>
 
@@ -124,7 +126,7 @@ export default function NavMegaPanel({
                         size={24}
                         className="mega__picto"
                       />
-                      <span>{product.name}</span>
+                      <span><ProductText slug={product.slug} field="name" fallback={product.name} /></span>
                       <ArrowUpRight weight="light" size={14} aria-hidden="true" className="mega__arrow" />
                     </Link>
                   </li>
@@ -140,7 +142,7 @@ export default function NavMegaPanel({
             <div className="mega__tile-kicker">Custom requirement?</div>
             <p className="mega__tile-title">Need a part made to your requirement?</p>
             <p className="mega__tile-body">
-              Share a sample, drawing or photo — we&apos;ll develop and supply it.
+              Share a sample, drawing or photo and we&apos;ll develop and supply it.
             </p>
           </div>
           <Link href="/enquiry" className="mega__tile-cta" onClick={onClose}>
@@ -175,7 +177,6 @@ const MEGA_CSS = `
 .mega__col { padding: var(--space-lg) var(--space-lg) var(--space-md); border-right: 1px solid var(--grey-warm); }
 .mega__kicker { display: flex; align-items: center; gap: 8px; margin-bottom: var(--space-xs);
   font-size: .75rem; text-transform: uppercase; letter-spacing: .16em; font-weight: 600; color: var(--muted); }
-.mega__dash { width: 16px; height: 2px; background: var(--burgundy); flex-shrink: 0; }
 .mega__group { display: block; margin-bottom: var(--space-sm); color: var(--ink); text-decoration: none;
   font: 600 1rem/1.3 var(--font-archivo, sans-serif); }
 .mega__group:hover, .mega__group:focus-visible { color: var(--burgundy); }

@@ -43,12 +43,13 @@ const HERO_STYLES = `
 .hero__line { display: block; overflow: hidden; padding-bottom: 0.14em; margin-bottom: -0.14em; }
 .hero__mi { display: block; }
 .hero__tail { display: inline; }
-/* text-safe crop of the metal gradient: the last glyphs keep >= 4.5:1 on the canvas */
+/* text-safe crop of the metal gradient: the last glyphs keep >= 4.5:1 on the canvas.
+   Over media the ramp is reversed (pale -> bright) so the accent survives the scrim. */
 .hero__accent { background: var(--metal-gradient-text); -webkit-background-clip: text; background-clip: text;
   -webkit-text-fill-color: transparent; color: transparent; }
+.hero[data-tone='dark'] .hero__accent { background-image: var(--metal-gradient-on-media); }
 .hero__sub { font-size: 1.0625rem; line-height: 1.65; max-width: 55ch; margin: 0 0 var(--space-md); text-wrap: pretty; }
 .hero__eyebrow { display: flex; align-items: center; gap: var(--space-sm); margin-bottom: var(--space-md); }
-.hero__eyebrow-bar { width: 24px; height: 2px; background: var(--burgundy); display: inline-block; flex-shrink: 0; transform-origin: left center; }
 
 /* Tagline lockup: [hairline][ Devanagari ][hairline] with the English line centred
    beneath the Devanagari block only (one grid keeps both on the same axis). */
@@ -94,13 +95,30 @@ const HERO_STYLES = `
 /* Entrance start state — armed by the <head> script (html.hero-arm, never set without JS or under
    reduced motion). The timeline un-hides everything; without the class the content is just visible. */
 html.hero-arm .hero__mi { transform: translate3d(0, 110%, 0); }
-html.hero-arm .hero__eyebrow-bar,
 html.hero-arm .hero__rule { transform: scaleX(0); }
 html.hero-arm .hero__eyebrow-text,
 html.hero-arm .hero__sub,
 html.hero-arm .hero__dev,
 html.hero-arm .hero__en,
 html.hero-arm .hero__btn { opacity: 0; }
+
+/* On-media only. The footage carries blown specular highlights that no flat scrim
+   can fully absorb, so each glyph carries its own soft local darkening. Two shadows,
+   no hard edge and no panel: a tight one for stroke separation and a wide one that
+   sinks the surround. Off over the ambient drawing, which has no moving highlights. */
+.hero[data-tone='dark'] .hero__eyebrow-text,
+.hero[data-tone='dark'] .hero__h1,
+.hero[data-tone='dark'] .hero__sub,
+.hero[data-tone='dark'] .hero__dev,
+.hero[data-tone='dark'] .hero__en {
+  text-shadow: 0 1px 2px color-mix(in srgb, var(--ink) 62%, transparent),
+               0 0 18px color-mix(in srgb, var(--ink) 45%, transparent);
+}
+/* a text-shadow paints over a background-clip:text fill and buries the gradient, so the
+   accent takes the same local darkening as a filter instead */
+.hero[data-tone='dark'] .hero__accent { text-shadow: none;
+  filter: drop-shadow(0 1px 2px color-mix(in srgb, var(--ink) 62%, transparent)); }
+.hero[data-tone='dark'] .hero__btn--secondary-dark { text-shadow: 0 1px 2px color-mix(in srgb, var(--ink) 55%, transparent); }
 
 /* ambient light sweep: a single 1200ms pass after the entrance, not a loop */
 .hero--in .hero-ambient__sweep { animation: hero-sweep 1200ms cubic-bezier(.87,0,.13,1) 900ms 1 both; }
@@ -113,7 +131,7 @@ html.hero-arm .hero__btn { opacity: 0; }
 @media (min-width: 768px) {
   /* 3 lines (the tail 'running.' drops to its own line) so the headline ends before the 75deg
      diagonal / schematic at every width; 4.8vw capped at 72px keeps it clear at 1920 too. */
-  .hero__h1 { font-size: clamp(2rem, 4.8vw, 4.5rem); }
+  .hero__h1 { font-size: var(--fs-display); }
   .hero__line { white-space: nowrap; }
   .hero__tail { display: block; }
   .hero__content { padding-bottom: calc(4vw + var(--space-xl)); }
@@ -132,10 +150,12 @@ export default function Hero() {
     (site.hero.media.mode === 'auto' && !site.hero.media.video?.webm && !site.hero.media.video?.mp4);
   const onMedia = isDark && !isAmbient; /* white-on-media treatment */
 
-  const textColor = onMedia ? 'white' : 'var(--ink)';
-  const subColor = onMedia ? 'rgba(255,255,255,0.85)' : 'var(--body)';
-  const mutedColor = onMedia ? 'rgba(255,255,255,0.65)' : 'var(--muted)';
-  const hairColor = onMedia ? 'rgba(255,255,255,0.5)' : 'var(--grey-metal)';
+  /* on media the copy is the brand's Soft White (--canvas), stepped down by opacity for
+     hierarchy, never a pure white that would glare against the footage */
+  const textColor = onMedia ? 'var(--canvas)' : 'var(--ink)';
+  const subColor = onMedia ? 'color-mix(in srgb, var(--canvas) 90%, transparent)' : 'var(--body)';
+  const mutedColor = onMedia ? 'color-mix(in srgb, var(--canvas) 78%, transparent)' : 'var(--muted)';
+  const hairColor = onMedia ? 'color-mix(in srgb, var(--canvas) 50%, transparent)' : 'var(--grey-metal)';
 
   const [line1, line2] = site.hero.headline;
   const [before, after] = line2.split('big machines');
@@ -170,11 +190,10 @@ export default function Hero() {
       disarm();
       tl = gsap.timeline({
         onComplete: () => {
-          gsap.set(q('.hero__mi, .hero__eyebrow-bar, .hero__eyebrow-text, .hero__sub, .hero__rule, .hero__dev, .hero__en, .hero__btn'), { clearProps: 'opacity,transform' });
+          gsap.set(q('.hero__mi, .hero__eyebrow-text, .hero__sub, .hero__rule, .hero__dev, .hero__en, .hero__btn'), { clearProps: 'opacity,transform' });
         },
       });
-      tl.fromTo(q('.hero__eyebrow-bar'), { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: 'power3.inOut' }, 0)
-        .fromTo(q('.hero__eyebrow-text'), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.7, ease: 'expo.out' }, 0.1)
+      tl.fromTo(q('.hero__eyebrow-text'), { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.7, ease: 'expo.out' }, 0.1)
         .fromTo(q('.hero__mi'), { yPercent: 110 }, { yPercent: 0, duration: 0.9, ease: 'expo.out', stagger: 0.08 }, 0.1)
         .fromTo(q('.hero__sub'), { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.7, ease: 'expo.out' }, 0.5)
         .fromTo(q('.hero__rule'), { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: 'power3.inOut' }, 0.6)
@@ -211,7 +230,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <section ref={rootRef} className="hero" aria-label="Hero">
+    <section ref={rootRef} className="hero" aria-label="Hero" data-tone={onMedia ? 'dark' : 'light'}>
       <style>{HERO_STYLES}</style>
 
       {/* Media layer — sits behind all content */}
@@ -220,13 +239,14 @@ export default function Hero() {
       <div className="hero__content">
         {/* Eyebrow — §11.5 (no numbering) */}
         <div className="hero__eyebrow">
-          <span className="hero__eyebrow-bar" aria-hidden="true" />
           <span
             className="hero__eyebrow-text"
             style={{
-              fontSize: '0.75rem',
+              fontSize: 'var(--fs-label)',
+              lineHeight: 'var(--lh-label)',
+              fontFamily: 'var(--font-archivo), sans-serif',
               textTransform: 'uppercase',
-              letterSpacing: '0.16em',
+              letterSpacing: 'var(--tr-label)',
               color: isAmbient ? 'var(--grey-metal)' : mutedColor,
               fontWeight: 600,
             }}
@@ -261,7 +281,9 @@ export default function Hero() {
             aria-hidden="true"
           />
           <p lang="sa" className="hero__dev">
-            <span style={{ color: 'var(--burgundy)' }}>भारते शिल्पितम्, </span>
+            {/* brand accent on canvas is --burgundy; over the scrim it is --rose-pale,
+                the token the ramp reserves for text on burgundy */}
+            <span style={{ color: onMedia ? 'var(--rose-pale)' : 'var(--burgundy)' }}>भारते शिल्पितम्, </span>
             <span style={{ color: isAmbient ? 'var(--grey-metal)' : mutedColor }}>विश्वय निर्मितम्</span>
           </p>
           <span
@@ -291,14 +313,14 @@ export default function Hero() {
       <div className="hero__cue" data-visible={cueVisible ? 'true' : 'false'} style={{ opacity: cueVisible ? 1 : 0 }} aria-hidden="true">
         <span style={{
           fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.16em', fontWeight: 600,
-          fontFamily: 'var(--font-mono, monospace)', color: onMedia ? 'white' : 'var(--burgundy)',
+          fontFamily: 'var(--font-mono, monospace)', color: onMedia ? 'var(--canvas)' : 'var(--burgundy)',
           writingMode: 'vertical-rl',
         }}>
           Scroll
         </span>
-        <div style={{ width: 1, height: 40, background: onMedia ? 'white' : 'var(--burgundy)', opacity: 0.3, position: 'relative' }}>
+        <div style={{ width: 1, height: 40, background: onMedia ? 'var(--canvas)' : 'var(--burgundy)', opacity: 0.3, position: 'relative' }}>
           <div className="hero__cue-dot" style={{
-            width: 4, height: 4, borderRadius: '50%', background: onMedia ? 'white' : 'var(--burgundy)',
+            width: 4, height: 4, borderRadius: '50%', background: onMedia ? 'var(--canvas)' : 'var(--burgundy)',
             position: 'absolute', left: -1.5,
           }} />
         </div>

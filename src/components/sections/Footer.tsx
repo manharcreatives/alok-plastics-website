@@ -23,6 +23,7 @@ import { site, formatAddressLines, telHref, mapsHref, MAPS_ARIA_LABEL } from '@/
 import { navigation, footerProductLinks, footerCompanyLinks } from '@/content/navigation';
 import Logo from '@/components/brand/Logo';
 import { trackPhoneClick, trackQuoteCtaClick } from '@/lib/analytics';
+import { useRuntimeContact, useRuntimeSocial } from '@/components/runtime/useRuntime';
 
 const FOOTER_CSS = `
 .ft { --fold: clamp(28px, 5vw, 72px); position: relative; background: var(--burgundy); color: var(--surface);
@@ -34,11 +35,18 @@ const FOOTER_CSS = `
   background-size: 8px 8px; -webkit-mask-image: radial-gradient(ellipse 60% 80% at 80% 20%, var(--ink), transparent); mask-image: radial-gradient(ellipse 60% 80% at 80% 20%, var(--ink), transparent); }
 .ft__in { position: relative; z-index: 1; max-width: calc(var(--grid-max) + 2 * var(--grid-page-padding)); margin: 0 auto; }
 
-/* Tagline lockup */
+/* Brand lockup — an editorial split. Left: the logo as the anchor, the English line and (where
+   the page has no enquiry band) the CTA beneath it. Right: the Devanagari line set as two lines.
+   On wide screens the lockup shares the column grid below, so the Devanagari starts on the same
+   vertical as the Company column; the two halves sit on one grid rather than at the far edges. */
 .ft__lock { padding-bottom: var(--space-xl); border-bottom: 1px solid color-mix(in srgb, var(--surface) 20%, transparent); display: grid; gap: var(--space-lg); }
-.ft__dev { margin: 0; font-family: var(--font-devanagari); font-weight: 600; font-size: clamp(1.75rem, 6.2vw, 4.75rem); line-height: 1.35; letter-spacing: -0.01em; color: var(--surface); text-wrap: balance; }
-.ft__dev span { color: var(--rose-pale); }
-.ft__en { margin: var(--space-xs) 0 0; font-size: clamp(0.9375rem, 1.4vw, 1.125rem); color: var(--rose-pale); }
+.ft__brand { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-md); min-width: 0; }
+.ft__logo { display: inline-block; }
+.ft__logo svg { height: 68px; width: auto; display: block; }
+.ft__dev { margin: 0; font-family: var(--font-devanagari); font-weight: 600; font-size: clamp(1.75rem, 4.6vw, 3.75rem); line-height: 1.35; letter-spacing: -0.01em; color: var(--surface); }
+.ft__dev-l { display: block; white-space: nowrap; }
+.ft__dev-l + .ft__dev-l { color: var(--rose-pale); }
+.ft__en { margin: 0; font-size: clamp(0.9375rem, 1.4vw, 1.125rem); color: var(--rose-pale); }
 .ft__cta { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-xs); min-height: 56px; padding: 0 var(--space-lg); background: var(--surface); color: var(--burgundy);
   font-weight: 650; font-size: 1.0625rem; text-decoration: none; border-radius: var(--radius-card); clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%); transition: background-color 200ms cubic-bezier(.16,1,.3,1); width: fit-content; }
 .ft__cta:hover { background: var(--pink-soft); }
@@ -52,7 +60,7 @@ body:has(.eb, #enquiry) .ft__cta { display: none; }
 .ft__cols > * { min-width: 0; }
 .ft__h { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--rose-pale); font-weight: 600; margin: 0 0 var(--space-sm); }
 .ft__list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 4px; }
-.ft__link { display: inline-flex; align-items: center; gap: var(--space-xs); min-height: 32px; font-size: 0.9375rem; color: color-mix(in srgb, var(--surface) 88%, transparent); text-decoration: none; transition: color 200ms cubic-bezier(.16,1,.3,1); }
+.ft__link { display: inline-flex; align-items: center; gap: var(--space-xs); min-height: 44px; font-size: 0.9375rem; color: color-mix(in srgb, var(--surface) 88%, transparent); text-decoration: none; transition: color 200ms cubic-bezier(.16,1,.3,1); }
 .ft__link:hover { color: var(--surface); text-decoration: underline; text-underline-offset: 3px; }
 .ft__link--accent { color: var(--rose-pale); font-weight: 600; }
 .ft__link:focus-visible, .ft__cta:focus-visible, .ft__addr:focus-visible, .ft__soc a:focus-visible { outline: 2px solid var(--rose-pale); outline-offset: 2px; }
@@ -74,20 +82,27 @@ body:has(.eb, #enquiry) .ft__cta { display: none; }
 .ft__legal .ft__link { font-size: 0.8125rem; }
 
 @media (min-width: 640px) { .ft__cols { grid-template-columns: 1fr 1fr; gap: var(--space-lg) var(--space-xl); } }
-@media (min-width: 900px) { .ft__lock { grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: var(--space-xl); } }
-@media (min-width: 1100px) { .ft__cols { grid-template-columns: 1.4fr 1fr 1fr 1.4fr; } }
+@media (min-width: 768px) { .ft__lock { grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--space-lg); } }
+@media (min-width: 1100px) {
+  .ft__cols { grid-template-columns: 1.4fr 1fr 1fr 1.4fr; }
+  .ft__lock { grid-template-columns: 1.4fr 1fr 1fr 1.4fr; column-gap: var(--space-xl); }
+  .ft__brand { grid-column: 1 / 3; }
+  .ft__dev { grid-column: 3 / 5; }
+}
 @media (prefers-reduced-motion: reduce) { .ft__cta svg, .ft__ar { transition: none; } }
 `;
 
 export default function Footer() {
   const year = new Date().getFullYear();
-  const c = site.contact;
+  /* Panel values over build-time ones. Address stays build-time — see useRuntimeContact. */
+  const c = useRuntimeContact();
+  const socialLinks = useRuntimeSocial();
   const [addrLine1, addrLine2] = formatAddressLines(c);
   const social = [
-    { key: 'instagram', label: 'Instagram', Icon: InstagramLogo, href: site.social.instagram },
-    { key: 'linkedin',  label: 'LinkedIn',  Icon: LinkedinLogo,  href: site.social.linkedin },
-    { key: 'facebook',  label: 'Facebook',  Icon: FacebookLogo,  href: site.social.facebook },
-    { key: 'youtube',   label: 'YouTube',   Icon: YoutubeLogo,   href: site.social.youtube },
+    { key: 'instagram', label: 'Instagram', Icon: InstagramLogo, href: socialLinks.instagram },
+    { key: 'linkedin',  label: 'LinkedIn',  Icon: LinkedinLogo,  href: socialLinks.linkedin },
+    { key: 'facebook',  label: 'Facebook',  Icon: FacebookLogo,  href: socialLinks.facebook },
+    { key: 'youtube',   label: 'YouTube',   Icon: YoutubeLogo,   href: socialLinks.youtube },
   ].filter(s => !!s.href);
   const [devA, devB] = site.tagline.devanagari.split(', ');
 
@@ -101,18 +116,21 @@ export default function Footer() {
       <div className="ft__grid-bg" aria-hidden="true" />
       <div className="ft__in">
 
-        {/* Tagline lockup (§2.7: English line beneath, rose-pale on burgundy) */}
+        {/* Brand lockup (§2.7: English line in rose-pale on burgundy; Devanagari as two lines) */}
         <div className="ft__lock">
-          <div>
-            <Link href="/" aria-label="Alok Plastics, home" style={{ display: 'inline-block', marginBottom: 'var(--space-lg)' }}>
-              <Logo variant="white" style={{ height: 56, width: 'auto', display: 'block' }} />
+          <div className="ft__brand">
+            <Link href="/" aria-label="Alok Plastics, home" className="ft__logo">
+              <Logo variant="white" />
             </Link>
-            <p lang="sa" className="ft__dev">{devA},<br /><span>{devB}</span></p>
             <p lang="en" className="ft__en">{site.tagline.english}</p>
+            <Link href="/enquiry/" className="ft__cta" onClick={() => trackQuoteCtaClick({ source: 'footer' })}>
+              Get a Quote <ArrowUpRight size={20} weight="light" aria-hidden="true" />
+            </Link>
           </div>
-          <Link href="/enquiry/" className="ft__cta" onClick={() => trackQuoteCtaClick({ source: 'footer' })}>
-            Get a Quote <ArrowUpRight size={20} weight="light" aria-hidden="true" />
-          </Link>
+          <p lang="sa" className="ft__dev">
+            <span className="ft__dev-l">{devA},</span>{' '}
+            <span className="ft__dev-l">{devB}</span>
+          </p>
         </div>
 
         <div className="ft__cols">
@@ -120,7 +138,7 @@ export default function Footer() {
           <div>
             <h2 className="ft__h">Alok Plastics</h2>
             <p className="ft__blurb" style={{ marginTop: 0 }}>
-              B2B spare parts for the appliance and refrigeration industry — made in Chandigarh since {site.foundingYear}.
+              B2B spare parts for the appliance and refrigeration industry, made in Chandigarh since {site.foundingYear}.
               If your cooler or freezer runs on a plastic part, there&rsquo;s a good chance we make it.
             </p>
             {social.length > 0 && (

@@ -1,9 +1,12 @@
 /**
  * AboutArt — the folded A-peak as a lit sheet: light rays from above (आलोक = light),
- * a burgundy leg and a metal-grey leg meeting at a crease, outline wordmark beneath.
+ * a burgundy leg and a metal-grey leg meeting at a crease. The original logo hangs from the crease on a
+ * single fine burgundy suspension line (one hang point, on the same axis as the light source above),
+ * drawn in the same hairline language as the rays, and sways like a hung sign (AboutHang). No other lettering.
  * Pure geometry from the logo's language; no data.
  */
 import { D } from './artCss';
+import AboutHang from './AboutHang';
 
 const RAYS = [-80, 20, 120, 220, 320, 420, 520, 620, 720];
 
@@ -45,9 +48,8 @@ export default function AboutArt() {
         <line x1="320" y1="200" x2="620" y2="512" stroke="var(--surface)" strokeWidth="1.5" opacity="0.8" />
       </g>
 
-      {/* outline wordmark */}
-      <text x="320" y="728" textAnchor="middle" lang="hi" fill="none" stroke="var(--grey-metal)" strokeWidth="1" className="pa-fade"
-        style={{ fontFamily: 'var(--font-devanagari)', fontSize: 120, fontWeight: 700, ...D(1100) }}>आलोक</text>
+      {/* central suspension: anchor at the crease, hairline cable, shackle ring and the original logo */}
+      <AboutHang />
 
       {/* register marks */}
       <g stroke="var(--grey-warm)" strokeWidth="1" fill="none">

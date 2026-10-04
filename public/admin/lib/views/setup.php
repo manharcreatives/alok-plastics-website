@@ -1,5 +1,6 @@
 <?php defined('ALOK_ADMIN') || exit; ?>
 <section class="card narrow">
+  <span class="empty-ico"><?= icon('alert') ?></span>
   <h1>Admin not set up yet</h1>
   <p>This panel needs a private <code>config.php</code> with at least one admin user. No password ships with the site, so nobody can sign in until you create one.</p>
   <ol class="steps">

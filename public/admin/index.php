@@ -18,6 +18,7 @@ require __DIR__ . '/lib/auth.php';
 require __DIR__ . '/lib/query.php';
 require __DIR__ . '/lib/content.php';
 require __DIR__ . '/lib/web.php';
+require __DIR__ . '/lib/products.php';
 
 date_default_timezone_set(AlokConfig::tz()->getName());
 send_security_headers();
@@ -27,7 +28,7 @@ try {
 } catch (Throwable $ex) {
     error_log('[alok-admin] ' . $ex::class . ': ' . $ex->getMessage() . ' @ ' . basename($ex->getFile()) . ':' . $ex->getLine());
     if (!headers_sent()) {
-        render('error', ['title' => 'Something went wrong', 'message' => 'The panel hit an unexpected problem. Nothing was lost. Check the System screen, or ask your developer to read the server error log.', 'bare' => true], 500);
+        render('error', ['title' => 'Something went wrong', 'message' => 'The panel hit an unexpected problem. Nothing was lost. Ask your developer to read the server error log.', 'bare' => true], 500);
     }
 }
 
@@ -52,6 +53,7 @@ function route(): void
         redirect(u('login'));
     }
     if ($isPost && !AlokAuth::csrfOk()) {
+        AlokStore::open()->audit($user['username'], 'csrf_rejected', (string) ($_GET['r'] ?? ''), '', AlokAuth::clientIp());
         render('error', ['title' => 'Request not verified', 'user' => $user,
             'message' => 'Your session may have expired, or the form was opened in another tab. Go back, reload the page and try again.'], 400);
     }
@@ -62,13 +64,12 @@ function route(): void
         'export'         => 'page_export',
         'enquiry'        => 'page_enquiry',
         'enquiry_delete' => 'page_enquiry_delete',
-        'settings'       => 'page_settings',
         'careers'        => 'page_careers',
         'role'           => 'page_role',
         'role_delete'    => 'page_role_delete',
         'products'       => 'page_products',
+        'product'        => 'page_product',
         'audit'          => 'page_audit',
-        'system'         => 'page_system',
         'logout'         => 'action_logout',
     ];
     if (!isset($routes[$r])) {
@@ -118,13 +119,8 @@ function page_dashboard(array $user, bool $isPost): never
 {
     $store = AlokStore::open();
     $stats = alok_stats($store->all());
-    $s = AlokContent::settings();
-    $missing = [];
-    foreach (['phone' => 'phone', 'whatsapp' => 'WhatsApp number', 'email' => 'email'] as $k => $label) {
-        if (empty($s['contact'][$k])) $missing[] = $label;
-    }
     render('dashboard', [
-        'title' => 'Dashboard', 'nav' => 'dashboard', 'user' => $user, 'stats' => $stats, 'missing' => $missing,
+        'title' => 'Dashboard', 'nav' => 'dashboard', 'user' => $user, 'stats' => $stats,
         'recent' => array_slice(array_values(array_filter($store->all(), static fn($r) => !$r['archived'])), 0, 5),
     ]);
 }
@@ -263,57 +259,6 @@ function page_enquiry_delete(array $user, bool $isPost): never
     render('enquiry_delete', ['title' => 'Delete enquiry', 'nav' => 'enquiries', 'user' => $user, 'r' => $row]);
 }
 
-/* ══ Site settings ═══════════════════════════════════════════════════════════ */
-
-/** Flatten saved settings into the form's field names. @return array<string,string> */
-function settings_form(array $s): array
-{
-    $f = [
-        'phone' => (string) ($s['contact']['phone'] ?? ''), 'whatsapp' => (string) ($s['contact']['whatsapp'] ?? ''),
-        'email' => (string) ($s['contact']['email'] ?? ''), 'mapsUrl' => (string) ($s['contact']['mapsUrl'] ?? ''),
-        'gstin' => (string) ($s['contact']['gstin'] ?? ''),
-        'instagram' => (string) ($s['social']['instagram'] ?? ''), 'linkedin' => (string) ($s['social']['linkedin'] ?? ''),
-        'facebook' => (string) ($s['social']['facebook'] ?? ''), 'youtube' => (string) ($s['social']['youtube'] ?? ''),
-        'replyTime' => (string) ($s['replyTime'] ?? ''), 'hoursNote' => (string) ($s['hoursNote'] ?? ''),
-        'banner_enabled' => !empty($s['banner']['enabled']) ? '1' : '',
-        'banner_text' => (string) ($s['banner']['text'] ?? ''), 'banner_href' => (string) ($s['banner']['href'] ?? ''),
-    ];
-    foreach (array_keys(ALOK_DAYS) as $d) {
-        $h = $s['hours'][$d] ?? [];
-        $f['open_' . $d] = (string) ($h['open'] ?? '');
-        $f['close_' . $d] = (string) ($h['close'] ?? '');
-        $f['closed_' . $d] = !empty($h['closed']) ? '1' : '';
-    }
-    return $f;
-}
-
-function page_settings(array $user, bool $isPost): never
-{
-    $errors = [];
-    $form = settings_form(AlokContent::settings());
-    $saved = AlokContent::read('settings.json') !== null;
-    if ($isPost) {
-        $form = [];
-        foreach ($_POST as $k => $v) {
-            if (is_string($v) && $k !== '_csrf') $form[$k] = $v;
-        }
-        [$clean, $errors] = AlokContent::validateSettings($form);
-        if (!$errors) {
-            try {
-                AlokContent::save('settings.json', $clean);
-                AlokStore::open()->audit($user['username'], 'settings', 'settings.json', '', AlokAuth::clientIp());
-                flash_set('ok', 'Settings saved. The website reads them on the next page load.');
-                redirect(u('settings'));
-            } catch (RuntimeException $ex) {
-                $errors['_save'] = 'Could not save: ' . $ex->getMessage();
-            }
-        }
-        $form += settings_form(AlokContent::settingsDefaults()) ; // fill unchecked boxes etc.
-    }
-    render('settings', ['title' => 'Site settings', 'nav' => 'settings', 'user' => $user, 'form' => $form, 'errors' => $errors, 'saved' => $saved],
-        $errors ? 422 : 200);
-}
-
 /* ══ Careers ═════════════════════════════════════════════════════════════════ */
 
 function page_careers(array $user, bool $isPost): never
@@ -398,58 +343,11 @@ function page_role_delete(array $user, bool $isPost): never
     render('role_delete', ['title' => 'Delete role', 'nav' => 'careers', 'user' => $user, 'role' => $role]);
 }
 
-/* ══ Product visibility ══════════════════════════════════════════════════════ */
+/* ══ Products: see lib/products.php (page_products, page_product) ═════════════ */
 
-function page_products(array $user, bool $isPost): never
-{
-    $catalogue = require __DIR__ . '/lib/catalogue.php';
-    $hidden = AlokContent::hiddenProducts();
-    if ($isPost) {
-        $visible = array_map('strval', (array) ($_POST['visible'] ?? []));
-        $known = [];
-        $newHidden = [];
-        foreach ($catalogue as [$slug, , $published]) {
-            $known[$slug] = true;
-            if ($published && !in_array($slug, $visible, true)) $newHidden[] = $slug;
-        }
-        foreach ($hidden as $slug) { // keep entries for slugs this snapshot does not know about
-            if (!isset($known[$slug])) $newHidden[] = $slug;
-        }
-        AlokContent::saveHidden($newHidden);
-        AlokStore::open()->audit($user['username'], 'product_visibility', 'product-overrides.json', count($newHidden) . ' hidden', AlokAuth::clientIp());
-        flash_set('ok', 'Saved. ' . (count($newHidden) ? count($newHidden) . ' product(s) hidden from listings.' : 'All products are shown.'));
-        redirect(u('products'));
-    }
-    render('products', ['title' => 'Product visibility', 'nav' => 'products', 'user' => $user, 'catalogue' => $catalogue, 'hidden' => $hidden]);
-}
-
-/* ══ Activity + System ═══════════════════════════════════════════════════════ */
+/* ══ Activity log ═══════════════════════════════════════════════════════ */
 
 function page_audit(array $user, bool $isPost): never
 {
-    render('audit', ['title' => 'Activity log', 'nav' => 'more', 'user' => $user, 'entries' => AlokStore::open()->auditTail(200)]);
-}
-
-function page_system(array $user, bool $isPost): never
-{
-    $store = AlokStore::open();
-    $pubDir = AlokConfig::publicDataDir();
-    $checks = [];
-    $add = static function (string $label, bool $ok, string $detail, bool $warnOnly = false) use (&$checks): void {
-        $checks[] = ['label' => $label, 'state' => $ok ? 'ok' : ($warnOnly ? 'warn' : 'bad'), 'detail' => $detail];
-    };
-    $add('PHP version', version_compare(PHP_VERSION, '8.0.0', '>='), PHP_VERSION . ' (8.0 or newer needed)');
-    $add('Enquiry storage', true, $store->backend());
-    $add('Private data folder is writable', is_writable(AlokConfig::dataDir()), AlokConfig::dataDir());
-    $add('Private data folder is outside the public web folder', !AlokConfig::dataDirInsideWebroot(),
-        AlokConfig::dataDirInsideWebroot()
-            ? 'It is inside the web root. It is protected by .htaccess, but moving it outside public_html is safer (set data_dir in config.php).'
-            : 'Good — not reachable from the web.', true);
-    $add('Connection is HTTPS', AlokAuth::isHttps(), AlokAuth::isHttps() ? 'Yes' : 'No — sign in only over https:// on the live site.', true);
-    $add('Public data folder is writable', is_dir($pubDir) ? is_writable($pubDir) : is_writable(dirname($pubDir)), $pubDir);
-    $add('Password hashing', function_exists('password_hash'), 'bcrypt / argon2 via password_hash()');
-    $add('Enquiry endpoint wired to the inbox', is_file(dirname(__DIR__) . '/api/enquiry.php')
-        && str_contains((string) file_get_contents(dirname(__DIR__) . '/api/enquiry.php'), 'AlokStore'),
-        'api/enquiry.php stores every valid submission before sending the email.');
-    render('system', ['title' => 'System check', 'nav' => 'more', 'user' => $user, 'checks' => $checks]);
+    render('audit', ['title' => 'Activity log', 'nav' => 'audit', 'user' => $user, 'entries' => AlokStore::open()->auditTail(200)]);
 }

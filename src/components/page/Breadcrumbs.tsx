@@ -12,7 +12,7 @@ const CSS = `
 .bc { margin: 0; }
 .bc ol { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-xs); font-size: 0.8125rem; color: var(--muted); }
 .bc li { display: flex; align-items: center; gap: var(--space-xs); }
-.bc a { color: var(--burgundy); text-decoration: none; display: inline-flex; align-items: center; min-height: 24px; border-bottom: 1px solid transparent; }
+.bc a { color: var(--burgundy); text-decoration: none; display: inline-flex; align-items: center; min-height: 44px; border-bottom: 1px solid transparent; }
 .bc a:hover { border-bottom-color: currentColor; }
 .bc a:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 2px; }
 .bc__sep { width: 14px; height: 1px; background: var(--grey-metal); transform: rotate(-44deg); display: inline-block; }

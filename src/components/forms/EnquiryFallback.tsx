@@ -7,6 +7,7 @@
 'use client';
 
 import type { CSSProperties } from 'react';
+import { useRuntimeContact } from '@/components/runtime/useRuntime';
 import { fallbackChannels } from '@/lib/enquiry-submit';
 
 interface Props {
@@ -17,7 +18,7 @@ interface Props {
 }
 
 export default function EnquiryFallback({ summaryLines, onLight, rateLimited, onRetry }: Props) {
-  const { mailto } = fallbackChannels(summaryLines);
+  const { mailto } = fallbackChannels(summaryLines, useRuntimeContact().email);
   const hasChannel = !!mailto;
   const fg = onLight ? 'var(--ink)' : 'white';
   const fgMuted = onLight ? 'var(--body)' : 'rgba(255,255,255,0.8)';
@@ -35,7 +36,7 @@ export default function EnquiryFallback({ summaryLines, onLight, rateLimited, on
   if (rateLimited) {
     message = 'You have just sent an enquiry. Please wait a moment before sending another.';
   } else if (hasChannel) {
-    message = 'We could not send your enquiry from this page. Your details are safe — send them to us directly instead.';
+    message = 'We could not send your enquiry from this page. Your details are safe. Please send them to us directly instead.';
   } else {
     message = 'We could not send your enquiry right now. Please check your connection and try again.';
   }

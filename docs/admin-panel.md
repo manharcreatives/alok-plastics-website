@@ -1,19 +1,19 @@
 # Admin panel (`/admin/`)
 
+A self-contained PHP app with a custom look that follows the public site (burgundy, Archivo/Inter/JetBrains Mono fonts self-hosted in `assets/fonts/`, sidebar navigation on desktop, bottom tab bar on phones). Shared component classes are listed at the top of `assets/admin.css`; `page_head()` and `icon()` in `lib/web.php` build headers and icons. The Site settings and System check screens were removed; `data/settings.json`, if present, is only read by the public site.
+
 A self-contained PHP app for Hostinger Premium (static files + PHP only). No Node, no Composer, no build step, no database server. Source lives in `public/admin/`; `pnpm build` copies it to `out/admin/` untouched.
 
 ## What it does
 
 | Screen | Purpose |
 |---|---|
-| Dashboard | New / unread / this week / this month counts, 30-day bar chart (inline SVG), status pipeline, most requested products, buyer-type split, latest enquiries. Warns when settings are incomplete or when email notification failed. |
+| Dashboard | New / unread / this week / this month counts, 30-day bar chart (inline SVG), status pipeline, most requested products, buyer-type split, latest enquiries. Warns when an email notification failed. |
 | Enquiries | Every valid website submission, also stored by `api/enquiry.php`. Filters (status, buyer type, product, date range, active/archived), search, sortable columns, pagination, unread marker (unread count shown on the nav tab). CSV export honours the current filters (UTF-8 with BOM for Excel; formula-injection safe). |
 | Enquiry detail | All fields, source page, one-tap Call / WhatsApp (`wa.me`) / Email with a greeting prefilled, status (new, contacted, quoted, won, lost), assign to a person, internal notes log, archive/restore, delete (separate confirm page). |
-| Site settings | Phone, WhatsApp, email, Maps link, GSTIN, social links, typical reply time, opening hours, announcement banner. Writes `data/settings.json`. |
 | Open roles | Add/edit/hide/delete roles for the Careers page. Writes `data/careers.json`. |
-| Products | Hide/show published products in lists. Writes `data/product-overrides.json`. |
-| Activity log | Sign-ins, failed/blocked sign-ins, status changes, notes, exports, deletes, settings saves (anonymous IP code only). |
-| System check | PHP version, storage backend, writable folders, data folder outside web root, HTTPS. |
+| Products | Product manager: every product (published or not) with search/group filter; per product edit name, summary, long description, specs (material, SKU, HSN, MOQ, packing), SEO title + meta description (live counters and Google-style preview) and images (upload, alt text, reorder, delete, first = main). Each field shows the build-time default; empty = default; "Reset all to default" per product. Hide/show still writes `data/product-overrides.json`; edits write `data/products.json`. Also per product: price (INR, optional), availability (In stock / Out of stock / On request, default), stock, keywords, brand, featured, status (Active / Inactive / Archived). The list has search (name, SKU, group, keyword, brand), filters (group, status, availability, hidden, edited), sorting (name, recently edited, price), a "Needs attention" filter (no image / no price / no description) and a bulk quick-edit of price, availability and status for every listed row in one save (plain form POST, works without JavaScript). |
+| Activity log | Sign-ins, failed/blocked sign-ins, status changes, notes, exports, deletes, product and role changes (anonymous IP code only). |
 
 Nothing is pre-filled with invented values: every setting starts empty and the site must fall back to what is built into `src/content/*.ts`.
 
@@ -22,9 +22,9 @@ Nothing is pre-filled with invented values: every setting starts empty and the s
 1. `pnpm build`, then upload `out/` to `public_html/` as usual (this includes `admin/`, `api/`, `data/`). **Never delete `public_html/data/`, `public_html/admin/config.php` or the private data folder when re-uploading** (see "Redeploying").
 2. Make a password hash. Preferred: on your own computer with PHP, `php public/admin/hash.php` (asks twice, 12+ characters). Fallback without PHP: open `https://yoursite/admin/hash.php` once; it only prints a hash, never saves anything, and answers 404 as soon as a real `config.php` exists. Delete `hash.php` from the server afterwards.
 3. In `public_html/admin/` copy `config.php.example` to `config.php` (File Manager), paste the hash for each user. Add one block per person (the display name appears in notes and "assigned to").
-4. Recommended: create a folder **above** `public_html` (for example `/home/uXXXX/alok-private`) and set `'data_dir'` to its absolute path in `config.php`. Enquiries, audit log, sessions and login counters live there, unreachable from the web. If you skip this, they go to `admin/data/` protected by `.htaccess` (the System screen shows an advisory).
+4. Recommended: create a folder **above** `public_html` (for example `/home/uXXXX/alok-private`) and set `'data_dir'` to its absolute path in `config.php`. Enquiries, audit log, sessions and login counters live there, unreachable from the web. If you skip this, they go to `admin/data/` protected by `.htaccess`.
 5. Make sure `public_html/data/` exists and is writable by PHP (normally yes; permissions 755 for folders, 644 for files, and `config.php` 640 if Hostinger allows).
-6. Visit `https://yoursite/admin/`, sign in, open **System check** and clear any "Fix" rows.
+6. Visit `https://yoursite/admin/` and sign in.
 7. Submit a test enquiry from the site; it appears in Enquiries. If the email did not arrive but the enquiry is in the inbox, the record is flagged "email notification failed" and the Dashboard warns; fix SMTP/mail in `api/config.php` (see `deploy-hostinger.md`).
 
 PHP 8.0+ required (8.1/8.2 recommended). Storage uses SQLite through PDO when available (`enquiries.sqlite`), otherwise JSON lines (`enquiries.jsonl`) with file locking. The choice is sticky: if `enquiries.jsonl` already exists it keeps being used. There is no automatic migration between the two.
@@ -70,10 +70,16 @@ export async function fetchRuntime<T>(name: 'settings' | 'careers' | 'product-ov
 
 Rules for consumers: (1) always render the build-time value from `site.ts` first, then overlay a non-null runtime value after hydration (null/empty never overrides); (2) validate shapes again before use (treat the file as untrusted text); (3) never inject as HTML; (4) fetch once per page load and cache in module scope; (5) banner and hours render only when present. Limits to state plainly: prerendered HTML, JSON-LD, `llms.txt` and crawlers see only the build-time values, so a new phone number or address still needs a rebuild to be indexed. The runtime layer is for fast, no-rebuild edits (banner, hours, links, open roles).
 
+## Product data and images
+
+`data/products.json` (v1, public): `{schemaVersion, updatedAt, products:{<slug>:{name?, summary?, description?, material?, sku?, hsn?, moq?, packing?, seoTitle?, seoDescription?, images:[{id,url:"/api/media.php?id=<id>",alt}], updatedAt}}}`. Commerce keys (all optional): `price` (number 0..9999999, INR), `availability` (`in-stock|out-of-stock|on-request`), `stock` (integer 0..100000), `keywords` (string[], max 20, each <= 40 chars, lowercase, deduped), `brand` (<= 60), `featured` (true only), `status` (`active|inactive|archived`). The build-time catalogue has no price or stock, so an unset price means the website shows "Price on request" and unset availability means "On request". Inactive/Archived products are removed from website lists, search and menus; the page shows "no longer available". "Reset all to default" removes these keys too. Only keys the owner set are written (empty or equal-to-default means the build-time value is used). Slugs are whitelisted against the catalogue. Limits: name 120, summary 300, description 3000, seoTitle 70, seoDescription 170, alt 140, 8 images per product. All text is plain text; escape on output.
+
+Images: uploaded in the product screen, re-encoded with PHP GD (JPEG/PNG/WebP only, 8 MB max, longest side 2400 px, EXIF dropped), stored outside the web root at `<data_dir>/uploads/<yyyy-mm>/<slug>-<id>.<ext>` and streamed by `api/media.php?id=` (public, but the id must be listed in `products.json`; fixed content-type map, `nosniff`, one-year cache; unknown id is 404). Deleting an image, or resetting a product, removes the file. Without the GD extension uploads are disabled with a note on the screen; text editing still works. Keep `post_max_size` at 16M or more for multi-image uploads. Back up `<data_dir>/uploads/` with the rest of the private folder.
+
 ## Intentionally out of scope
 
-- Product create/edit/delete and images: product content lives in `src/content/products.ts` and needs a rebuild (or the SRS Node-hosting future scope). The Products screen only hides/shows existing published items in lists; the product page, sitemap and search results are unaffected. Its product list is a snapshot (`public/admin/lib/catalogue.php`, taken 2026-10-01); refresh it when products change, for example `node -e` over `products.ts` extracting `slug`, `name`, `published`.
-- Changing your own password in the UI (edit `config.php` with a new hash from `hash.php`), user roles/permissions, two-factor sign-in, email/WhatsApp sending from the panel (it opens your own apps), bulk actions, file uploads.
+- Creating, deleting or regrouping products, group copy, sizes/variants and machine fit (these live in `src/content/products.ts` and need a rebuild). The product list is a build-time snapshot, `public/admin/lib/catalogue.php`, regenerated by `scripts/generate-catalogue.mjs` (postbuild, or `bash scripts/dev-sync.sh` locally).
+- Changing your own password in the UI (edit `config.php` with a new hash from `hash.php`), user roles/permissions, two-factor sign-in, email/WhatsApp sending from the panel (it opens your own apps), file uploads. Bulk editing is limited to price, availability and status on the Products list.
 - Migration between SQLite and JSON-lines storage; automated backups.
 
 ## Open points for the client / developer

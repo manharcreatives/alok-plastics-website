@@ -4,15 +4,12 @@
  * faster, and the contact details that exist. No WhatsApp CTA (it lives in the floating button).
  */
 import type { Metadata } from 'next';
-import { MapPin } from '@phosphor-icons/react/dist/ssr/MapPin';
-import { Phone } from '@phosphor-icons/react/dist/ssr/Phone';
-import { EnvelopeSimple } from '@phosphor-icons/react/dist/ssr/EnvelopeSimple';
 import EnquiryFormPrefilled from '@/components/products/EnquiryFormPrefilled';
 import PageHero from '@/components/page/PageHero';
 import { EnquiryArt } from '@/components/page/art';
 import Reveal from '@/components/ui/Reveal';
 import { Eyebrow, SECTION_CSS, WRAP_STYLE } from '@/components/about/parts';
-import { site, formatAddressLines, mapsHref, telHref, MAPS_ARIA_LABEL } from '@/content/site';
+import { EnquiryContactRows, EnquiryEmailTip } from '@/components/contact/EnquiryContact';
 
 export const metadata: Metadata = {
   title: 'Get a Quote',
@@ -29,7 +26,7 @@ ${SECTION_CSS}
 .eq-panel { background: var(--surface); border: 1px solid var(--grey-metal); padding: var(--space-lg); position: relative; min-width: 0; }
 .eq-panel::before { content: ''; position: absolute; left: -1px; top: -1px; width: 72px; height: 3px; background: var(--burgundy); }
 .eq-side { display: flex; flex-direction: column; gap: var(--space-lg); min-width: 0; }
-.eq-side h2 { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(1.25rem, 2.2vw, 1.75rem); font-weight: 650; letter-spacing: -0.02em; line-height: 1.15; color: var(--ink); margin: 0 0 var(--space-sm); }
+.eq-side h2 { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-h3); font-weight: 650; letter-spacing: var(--tr-h3); line-height: var(--lh-h3); color: var(--ink); margin: 0 0 var(--space-sm); }
 .eq-list { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--ink); }
 .eq-list li { display: grid; grid-template-columns: 12px minmax(0, 1fr); gap: var(--space-sm); padding: var(--space-sm) 0; border-bottom: 1px solid var(--grey-warm); color: var(--body); line-height: 1.55; font-size: 0.9375rem; }
 .eq-list li::before { content: ''; width: 12px; height: 2px; background: var(--burgundy); margin-top: 0.7em; }
@@ -49,8 +46,6 @@ ${SECTION_CSS}
 `;
 
 export default function EnquiryPage() {
-  const c = site.contact;
-  const [addrLine1, addrLine2] = formatAddressLines(c);
 
   return (
     <>
@@ -92,30 +87,13 @@ export default function EnquiryPage() {
                   <li><span><b>Quantity</b> you need, in pieces or sets.</span></li>
                   <li>
                     <span>
-                      <b>A drawing or photo.</b> Mention it in the message{c.email ? <> or send it to <a href={`mailto:${c.email}`} style={{ color: 'var(--burgundy)', fontWeight: 600 }}>{c.email}</a></> : ''} and we will confirm how to share it.
+                      <b>A drawing or photo.</b> Mention it in the message<EnquiryEmailTip /> and we will confirm how to share it.
                     </span>
                   </li>
                 </ul>
               </div>
 
-              <div className="eq-contact">
-                <a className="row" href={mapsHref(c)} target="_blank" rel="noopener noreferrer" aria-label={MAPS_ARIA_LABEL}>
-                  <MapPin size={22} weight="light" aria-hidden="true" />
-                  <span><b>{site.name}</b>{addrLine1},<br />{addrLine2}</span>
-                </a>
-                {c.phone && (
-                  <a className="row" href={telHref(c.phone)}>
-                    <Phone size={22} weight="light" aria-hidden="true" />
-                    <span><b>Phone</b>{c.phone}</span>
-                  </a>
-                )}
-                {c.email && (
-                  <a className="row" href={`mailto:${c.email}`}>
-                    <EnvelopeSimple size={22} weight="light" aria-hidden="true" />
-                    <span><b>Email</b>{c.email}</span>
-                  </a>
-                )}
-              </div>
+              <EnquiryContactRows />
             </Reveal>
           </div>
         </div>

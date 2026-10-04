@@ -39,11 +39,11 @@ export async function postEnquiry(body: FormData): Promise<SubmitResult> {
 }
 
 /** Fallback channels built from the same summary text; each is null if not configured. */
-export function fallbackChannels(summaryLines: string[]): {
+export function fallbackChannels(summaryLines: string[], emailOverride?: string | null): {
   mailto: string | null;
 } {
   const text = ['Hello Alok Plastics, enquiry from the website:', ...summaryLines].join('\n');
-  const email = site.contact.email;
+  const email = emailOverride || site.contact.email;
   return {
     mailto: email
       ? `mailto:${email}?subject=${encodeURIComponent('Website enquiry')}&body=${encodeURIComponent(text)}`

@@ -17,11 +17,13 @@ import Link from 'next/link';
 import { ArrowUpRight } from '@phosphor-icons/react/dist/csr/ArrowUpRight';
 import { CaretDown } from '@phosphor-icons/react/dist/csr/CaretDown';
 import { CaretUp } from '@phosphor-icons/react/dist/csr/CaretUp';
+import ProductText from '@/components/runtime/ProductText';
 import FoldEdge, { FOLD_SECTION_CSS } from './FoldEdge';
 import Pictogram, { pictogramPaths, type PictogramName } from '@/components/brand/Pictogram';
 import SectionHeader from '@/components/ui/SectionHeader';
 import Tag from '@/components/ui/Tag';
 import { productGroups, productsByGroup, productPath } from '@/content/products';
+import { useHiddenProductSlugs } from '@/components/runtime/useRuntime';
 import type { Product } from '@/content/types';
 
 /* ── Glare effect — cursor-tracked radial highlight ─────────── */
@@ -163,7 +165,6 @@ function GroupCard({
       <div className="pg-in">
         <div className="pg-card-body">
           <div className="pg-card-head">
-            <span aria-hidden="true" className="pg-card-bar" />
             <span className="pg-card-count">{products.length} {products.length === 1 ? 'part' : 'parts'}</span>
           </div>
           <h3 className="pg-card-title">{group.name}</h3>
@@ -188,7 +189,7 @@ function GroupCard({
               <li key={product.slug}>
                 <Link href={productPath(product)} className="pg-part">
                   <PartIcon slug={product.slug} px={20} />
-                  <span className="pg-part-name">{product.name}</span>
+                  <span className="pg-part-name"><ProductText slug={product.slug} field="name" fallback={product.name} /></span>
                   {isExpanded && product.material && (
                     <Tag material={product.material as Parameters<typeof Tag>[0]['material']} />
                   )}
@@ -256,8 +257,7 @@ const CSS = FOLD_SECTION_CSS + `
   .pg-card-body { flex: 1; display: flex; flex-direction: column; padding: var(--space-lg) var(--space-lg) var(--space-md); min-width: 0; }
   .pg-card-head { display: flex; align-items: center; gap: var(--space-xs); margin-bottom: var(--space-sm); }
   .pg-card-count { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; font-weight: 600; color: var(--grey-metal); }
-  .pg-card-bar { width: 24px; height: 2px; background: var(--burgundy); display: inline-block; }
-  .pg-card-title { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(1.375rem, 2.4vw, 1.875rem); line-height: 1.12; font-weight: 650; letter-spacing: -0.02em; color: var(--ink); margin-bottom: var(--space-xs); max-width: 18ch; }
+  .pg-card-title { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-h3); line-height: var(--lh-h3); font-weight: 650; letter-spacing: var(--tr-h3); color: var(--ink); margin-bottom: var(--space-xs); max-width: 18ch; }
   .pg-card-desc { font-size: 0.9375rem; color: var(--body); line-height: 1.55; margin-bottom: var(--space-md); max-width: 52ch; }
   .pg-panel { position: relative; min-height: 248px; flex: 1 0 auto; max-height: 320px; background: var(--surface-alt); border: 1px solid var(--grey-cloud); overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: var(--space-md); }
   .pg-card--single .pg-panel { flex: 0 0 auto; height: 248px; }
@@ -283,7 +283,7 @@ const CSS = FOLD_SECTION_CSS + `
   .pg-dim b:first-of-type { left: 0; } .pg-dim b:last-of-type { right: 0; }
   .pg-tags { display: flex; flex-wrap: wrap; gap: var(--space-xs); margin-bottom: var(--space-xs); }
   .pg-parts { list-style: none; margin: 0; padding: 0; }
-  .pg-part { display: flex; align-items: center; gap: var(--space-xs); padding: var(--space-xs) 0; border-bottom: 1px solid var(--grey-cloud); font-size: 0.9375rem; color: var(--body); min-width: 0; text-decoration: none; transition: color 200ms cubic-bezier(.16,1,.3,1), padding-left 200ms cubic-bezier(.16,1,.3,1); }
+  .pg-part { display: flex; align-items: center; gap: var(--space-xs); min-height: 44px; padding: var(--space-xs) 0; border-bottom: 1px solid var(--grey-cloud); font-size: 0.9375rem; color: var(--body); min-width: 0; text-decoration: none; transition: color 200ms cubic-bezier(.16,1,.3,1), padding-left 200ms cubic-bezier(.16,1,.3,1); }
   .pg-parts li:last-child .pg-part { border-bottom: none; }
   .pg-part:hover, .pg-part:focus-visible { color: var(--burgundy); padding-left: 4px; }
   .pg-part:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 2px; }
@@ -292,11 +292,10 @@ const CSS = FOLD_SECTION_CSS + `
   .pg-part:hover .pg-part-go, .pg-part:focus-visible .pg-part-go { opacity: 1; transform: translate(0, 0); }
   @media (hover: none) { .pg-part-go { opacity: .5; transform: none; } }
   .pg-part-dot { display: inline-block; flex-shrink: 0; position: relative; }
-  .pg-part-dot::after { content: ""; position: absolute; left: 7px; top: 7px; width: 6px; height: 6px; background: var(--grey-warm); transform: rotate(45deg); }
   .pg-cta-row { display: flex; flex-wrap: wrap; gap: var(--space-sm); margin-top: var(--space-md); }
   .pg-card-foot { border-top: 1px solid var(--grey-cloud); padding: var(--space-xs) var(--space-lg); display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); background: var(--canvas); }
   .pg-card--alt .pg-card-foot { padding-left: calc(var(--space-lg) + var(--cut)); }
-  .pg-foot-btn, .pg-foot-link { display: inline-flex; align-items: center; gap: var(--space-xs); background: none; border: none; cursor: pointer; font-size: 0.875rem; color: var(--burgundy); font-weight: 600; padding: var(--space-xs) 0; text-decoration: none; }
+  .pg-foot-btn, .pg-foot-link { display: inline-flex; align-items: center; min-height: 44px; gap: var(--space-xs); background: none; border: none; cursor: pointer; font-size: 0.875rem; color: var(--burgundy); font-weight: 600; padding: var(--space-xs) 0; text-decoration: none; }
   .pg-foot-link svg { transition: transform 200ms cubic-bezier(.16,1,.3,1); }
   .pg-foot-link:hover svg { transform: translate(2px, -2px); }
   .pg-foot-btn:focus-visible, .pg-foot-link:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 2px; }
@@ -305,8 +304,16 @@ const CSS = FOLD_SECTION_CSS + `
   .pg-path--a { background: var(--surface); border-bottom: 1px solid var(--grey-warm); }
   .pg-path--b { background: var(--burgundy); }
   .pg-path-ico { margin-bottom: var(--space-sm); width: 48px; height: 48px; }
-  .pg-path-kicker { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.16em; font-weight: 600; margin-bottom: var(--space-sm); }
-  .pg-path-text { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: clamp(1.1rem, 2vw, 1.5rem); font-weight: 650; line-height: 1.2; margin-bottom: var(--space-md); flex: 1; }
+  /* The option label is the title of each path: set in the brand face, larger and heavier than a
+     micro-label, with one short rule beneath it. Burgundy on the light panel, --surface on burgundy
+     (>= 9:1), so the two read as a matched pair. The rule lengthens while that path's CTA is
+     hovered or focused: the label answers the action, nothing else moves. */
+  .pg-path-kicker { position: relative; font-family: var(--font-archivo), sans-serif; font-size: 0.9375rem; line-height: 1.3; text-transform: uppercase; letter-spacing: 0.14em; font-weight: 700; margin: 0 0 var(--space-sm); padding-bottom: var(--space-sm); }
+  .pg-path-kicker::after { content: ""; position: absolute; left: 0; bottom: 0; width: 32px; height: 2px; background: currentColor; transition: width 400ms cubic-bezier(.16,1,.3,1); }
+  .pg-path:has(.btn:hover, .btn:focus-visible) .pg-path-kicker::after { width: 64px; }
+  .pg-path--a .pg-path-kicker { color: var(--burgundy); }
+  .pg-path--b .pg-path-kicker { color: var(--surface); }
+  .pg-path-text { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-lead-lg); font-weight: 650; line-height: var(--lh-lead-lg); margin-bottom: var(--space-md); flex: 1; }
   .pg-path .btn svg { margin-left: var(--space-xs); transition: transform 200ms cubic-bezier(.16,1,.3,1); }
   .pg-path .btn:hover svg { transform: translate(2px, -2px); }
 
@@ -322,11 +329,12 @@ const CSS = FOLD_SECTION_CSS + `
     .pg-path--b { clip-path: polygon(24px 0, 100% 0, 100% 100%, 0 100%); }
   }
   @media (prefers-reduced-motion: reduce) {
-    .pg-in::before, .pg-picto, .pg-part, .pg-part-go { transition: none; }
+    .pg-in::before, .pg-picto, .pg-part, .pg-part-go, .pg-path-kicker::after { transition: none; }
   }
 `;
 
 export default function ProductGroups() {
+  const hidden = useHiddenProductSlugs();
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const toggle = useCallback((id: string) => {
@@ -350,7 +358,7 @@ export default function ProductGroups() {
         <SectionHeader
           label="Products"
           heading="Parts for water coolers, display counters and deep freezers."
-          lead="Moulded plastic and steel parts for every door, valve and vent — from a single component to a production line's worth."
+          lead="Moulded plastic and steel parts for every door, valve and vent, from a single component to a production line's worth."
           link={{ href: '/products', label: 'All products' }}
         />
 
@@ -363,7 +371,7 @@ export default function ProductGroups() {
             <GroupCard
               key={group.id}
               group={group}
-              products={productsByGroup(group.id)}
+              products={productsByGroup(group.id).filter(p => !hidden.has(p.slug))}
               isExpanded={expandedId === group.id}
               onToggle={() => toggle(group.id)}
               useGlare={i < 2}
@@ -377,15 +385,15 @@ export default function ProductGroups() {
         <div className="pg-paths">
           <div className="pg-path pg-path--a">
             <Glyph name="f-bush" strokeWidth={1.5} className="pg-path-ico" style={{ color: 'var(--grey-metal)' }} />
-            <p className="pg-path-kicker" style={{ color: 'var(--muted)' }}>I need a catalogue part</p>
+            <h3 className="pg-path-kicker">I need a catalogue part</h3>
             <p className="pg-path-text" style={{ color: 'var(--ink)' }}>Browse by group, material or machine.</p>
             <Link href="/products" className="btn btn--secondary btn--md">Browse Products</Link>
           </div>
           <div className="pg-path pg-path--b">
             <Glyph name="sheet-callout" strokeWidth={1.5} className="pg-path-ico" style={{ color: 'var(--rose-pale)' }} />
-            <p className="pg-path-kicker" style={{ color: 'var(--rose-pale)' }}>I need a custom part</p>
+            <h3 className="pg-path-kicker">I need a custom part</h3>
             {/* COPY: drafted */}
-            <p className="pg-path-text" style={{ color: 'white' }}>Share a sample, drawing or photo — we&apos;ll develop and supply it.</p>
+            <p className="pg-path-text" style={{ color: 'var(--surface)' }}>Share a sample, drawing or photo and we&apos;ll develop and supply it.</p>
             <Link href="/enquiry" className="btn btn--on-burgundy btn--md">Enquire <ArrowUpRight size={18} weight="light" aria-hidden="true" /></Link>
           </div>
         </div>

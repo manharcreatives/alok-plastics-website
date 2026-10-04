@@ -36,7 +36,7 @@ final class AlokConfig
         $defaults = [
             'users'               => [],            // username => ['name' => 'Display', 'hash' => password_hash()]
             'data_dir'            => null,          // absolute path; ideally OUTSIDE public_html
-            'public_data_dir'     => null,          // where settings.json / careers.json are written (default: <webroot>/data)
+            'public_data_dir'     => null,          // where careers.json are written (default: <webroot>/data)
             'timezone'            => 'Asia/Kolkata',
             'session_idle_minutes' => 30,
             'session_max_hours'   => 12,
@@ -93,24 +93,11 @@ final class AlokConfig
         return $dir;
     }
 
-    /** Folder served publicly as /data/ (settings.json, careers.json, product-overrides.json). */
+    /** Folder served publicly as /data/ (careers.json, product-overrides.json). */
     public static function publicDataDir(): string
     {
         $dir = self::get('public_data_dir');
         return is_string($dir) && $dir !== '' ? rtrim($dir, '/\\') : dirname(__DIR__, 2) . '/data';
-    }
-
-    public static function dataDirInsideWebroot(): bool
-    {
-        $doc = $_SERVER['DOCUMENT_ROOT'] ?? '';
-        $doc = $doc !== '' ? realpath($doc) : false;
-        $dir = realpath(self::dataDir());
-        if ($doc === false || $dir === false) {
-            return false;
-        }
-        $doc = rtrim(str_replace('\\', '/', $doc), '/') . '/';
-        $dir = rtrim(str_replace('\\', '/', $dir), '/') . '/';
-        return str_starts_with($dir, $doc);
     }
 }
 

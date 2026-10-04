@@ -9,7 +9,8 @@ import PartPicto from './PartPicto';
 import FoldEdge, { FOLD_SECTION_CSS, type FoldVariant } from '@/components/sections/FoldEdge';
 import { productsByGroup } from '@/content/products';
 import type { ProductGroup } from '@/content/types';
-import { PartGrid, pictogramFor } from './PartCard';
+import { PartGrid } from './PartCard';
+import { pictogramFor } from './PartPicto';
 import './products.css';
 
 interface Props {

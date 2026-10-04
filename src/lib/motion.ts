@@ -14,11 +14,11 @@
 
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { SplitText } from 'gsap/SplitText';
-import { Flip } from 'gsap/Flip';
 import Lenis from 'lenis';
 
-gsap.registerPlugin(ScrollTrigger, SplitText, Flip);
+/* SplitText is registered in hooks/useMotion.ts (its only user) so pages without mask-rise headings
+   don't download it. Flip was never used and is not loaded. */
+gsap.registerPlugin(ScrollTrigger);
 
 ScrollTrigger.config({ ignoreMobileResize: true });
 
@@ -59,7 +59,7 @@ export function destroyLenis() {
   }
 }
 
-export { gsap, ScrollTrigger, SplitText, Flip };
+export { gsap, ScrollTrigger };
 
 /* ── Motion vocabulary constants — §12.2 ────────────────────────── */
 

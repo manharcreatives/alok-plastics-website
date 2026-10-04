@@ -53,7 +53,7 @@ const groupsShort = productGroups.map(g => {
   return [
     `### ${g.name}`,
     `${g.description}`,
-    ...parts.map(p => `- [${p.name}](${url(productPath(p))})${p.material ? ` — ${MATERIAL_LABELS[p.material]}` : ''}`),
+    ...parts.map(p => `- [${p.name}](${url(productPath(p))})${p.material ? `: ${MATERIAL_LABELS[p.material]}` : ''}`),
     '',
   ].join('\n');
 }).join('\n');

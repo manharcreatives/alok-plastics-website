@@ -40,19 +40,22 @@ export const site: SiteConfig = {
 
   hero: {
     media: {
-      mode: 'ambient',   // 'auto' | 'video' | 'poster' | 'ambient'
+      mode: 'video',   // 'auto' | 'video' | 'poster' | 'ambient'
       // 'auto' → video if sources exist + device qualifies; else poster; else ambient
       video: {
         webm: null,        // TODO(client): supply footage → /media/hero.webm
-        mp4: null,         // TODO(client): /media/hero.mp4
+        mp4: '/media/hero.mp4',
         mobileMp4: null,   // TODO(client): optional ≤800KB mobile version
       },
       poster: null,        // TODO(client): /media/hero-poster.jpg — see docs/hero-video-brief.md
-      tone: 'light',       // 'light' = colour logo in navbar; 'dark' = bright logo
+      // 'dark' = white text + bright logo in navbar. Required whenever footage plays:
+      // measured across the full loop, --ink over the scrim lands between 1.25:1 and
+      // 3.5:1 (illegible), while white holds 14:1 or better on every frame.
+      tone: 'dark',
     },
     eyebrow: 'EST. 1998 · CHANDIGARH',
     headline: ['The small parts that', 'keep big machines running.'],
-    sub: 'We make the parts water coolers, display counters and deep freezers run on — float valves, F-bushes, connecting bushes, gaskets and more, in nylon, HDPE, PPCP and brass.',
+    sub: 'We make the parts water coolers, display counters and deep freezers run on: float valves, F-bushes, connecting bushes, gaskets and more, in nylon, HDPE, PPCP and brass.',
     ctas: {
       primary: 'Send Your Requirement',
       tertiary: 'Browse products',
@@ -122,7 +125,7 @@ type Contact = SiteConfig['contact'];
 export function formatCityLine(c: Contact = site.contact): string {
   const sameAsCity = !c.state || c.state.trim().toLowerCase() === c.city.trim().toLowerCase();
   const place = sameAsCity ? c.city : `${c.city}, ${c.state}`;
-  return c.pincode ? `${place} \u2014 ${c.pincode}` : place;
+  return c.pincode ? `${place} - ${c.pincode}` : place;
 }
 
 /** Two display lines: street address, then "City[, State] — PIN, Country". */

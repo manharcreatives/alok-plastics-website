@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-01-01T00:00:00Z",
+  "products": {
+    "f-bush": {
+      "name": "F-Bush",
+      "summary": "Short summary.",
+      "description": "Long description, plain text.",
+      "material": "Nylon",
+      "sku": "AP-001",
+      "hsn": "3926",
+      "moq": "500 pcs",
+      "packing": "Bag of 100",
+      "seoTitle": "F-Bush nylon sliding bush",
+      "seoDescription": "Meta description, up to 170 characters.",
+      "price": 125.5,
+      "availability": "in-stock",
+      "stock": 800,
+      "keywords": ["sliding bush", "freezer door", "nylon"],
+      "brand": "Alok",
+      "featured": true,
+      "status": "active",
+      "images": [{ "id": "0123456789abcdef", "url": "/api/media.php?id=0123456789abcdef", "alt": "Front view" }],
+      "updatedAt": "2026-01-01T00:00:00Z"
+    }
+  }
+}
