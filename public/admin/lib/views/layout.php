@@ -22,10 +22,14 @@
 <?php if (!$bare && $user): ?>
 <?php
 $unseen = alok_unseen_count();
+$pendingOrders = shop_pending_orders();
 $items = [
   'dashboard' => ['Dashboard', u(), 'grid'],
   'enquiries' => ['Enquiries', u('enquiries'), 'mail'],
+  'orders'    => ['Orders', u('orders'), 'cart'],
   'products'  => ['Products', u('products'), 'box'],
+  'applications' => ['Applications', u('applications'), 'file'],
+  'customers' => ['Customers', u('customers'), 'users'],
   'careers'   => ['Open roles', u('careers'), 'briefcase'],
   'audit'     => ['Activity log', u('audit'), 'clock'],
 ];
@@ -42,7 +46,7 @@ $initial = mb_strtoupper(mb_substr((string) $user['name'], 0, 1));
     <nav class="side-nav" aria-label="Admin sections">
       <ul>
       <?php foreach ($items as $key => [$label, $href, $ico]): ?>
-        <li><a href="<?= e($href) ?>"<?= $nav === $key ? ' aria-current="page"' : '' ?>><?= icon($ico) ?><span class="nav-label"><?= e($label) ?></span><?php if ($key === 'enquiries' && $unseen > 0): ?><span class="count" aria-label="<?= (int) $unseen ?> unread"><?= (int) $unseen ?></span><?php endif; ?></a></li>
+        <li><a href="<?= e($href) ?>"<?= $nav === $key ? ' aria-current="page"' : '' ?>><?= icon($ico) ?><span class="nav-label"><?= e($label) ?></span><?php if ($key === 'enquiries' && $unseen > 0): ?><span class="count" aria-label="<?= (int) $unseen ?> unread"><?= (int) $unseen ?></span><?php endif; ?><?php if ($key === 'orders' && $pendingOrders > 0): ?><span class="count" aria-label="<?= (int) $pendingOrders ?> pending"><?= (int) $pendingOrders ?></span><?php endif; ?></a></li>
       <?php endforeach; ?>
       </ul>
     </nav>
@@ -73,7 +77,7 @@ $initial = mb_strtoupper(mb_substr((string) $user['name'], 0, 1));
   <nav class="tabbar" aria-label="Admin sections (mobile)">
     <ul>
     <?php foreach ($items as $key => [$label, $href, $ico]): ?>
-      <li><a href="<?= e($href) ?>"<?= $nav === $key ? ' aria-current="page"' : '' ?>><span class="tab-ico"><?= icon($ico) ?><?php if ($key === 'enquiries' && $unseen > 0): ?><span class="tab-dot" aria-label="<?= (int) $unseen ?> unread"><?= (int) $unseen ?></span><?php endif; ?></span><span class="tab-label"><?= e($label === 'Activity log' ? 'Activity' : ($label === 'Open roles' ? 'Roles' : $label)) ?></span></a></li>
+      <li><a href="<?= e($href) ?>"<?= $nav === $key ? ' aria-current="page"' : '' ?>><span class="tab-ico"><?= icon($ico) ?><?php if ($key === 'enquiries' && $unseen > 0): ?><span class="tab-dot" aria-label="<?= (int) $unseen ?> unread"><?= (int) $unseen ?></span><?php endif; ?><?php if ($key === 'orders' && $pendingOrders > 0): ?><span class="tab-dot" aria-label="<?= (int) $pendingOrders ?> pending"><?= (int) $pendingOrders ?></span><?php endif; ?></span><span class="tab-label"><?= e($label === 'Activity log' ? 'Activity' : ($label === 'Open roles' ? 'Roles' : ($label === 'Applications' ? 'Applicants' : $label))) ?></span></a></li>
     <?php endforeach; ?>
     </ul>
   </nav>

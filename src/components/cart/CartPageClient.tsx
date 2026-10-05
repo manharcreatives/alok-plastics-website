@@ -10,11 +10,14 @@ import Link from 'next/link';
 import { z } from 'zod';
 import { WhatsappLogo } from '@phosphor-icons/react/dist/csr/WhatsappLogo';
 import { Copy } from '@phosphor-icons/react/dist/csr/Copy';
+import { CheckCircle } from '@phosphor-icons/react/dist/csr/CheckCircle';
 import { flattenZodErrors, messageField, nameField, phoneField } from '@/lib/enquiry-schema';
-import { orderMessage, waOrder, type OrderCustomer, type OrderLine } from '@/lib/whatsapp';
+import { orderMessage, waLink, waOrder, type OrderCustomer, type OrderLine } from '@/lib/whatsapp';
+import { checkSession, maskPhone, placeOrder, setSession, signOut, useSession, type PlacedOrder } from '@/lib/auth-client';
 import { trackCartOpen, trackOrderRequestWhatsApp } from '@/lib/analytics';
 import { useRuntimeContact } from '@/components/runtime/useRuntime';
 import { formatPrice } from './cart-catalog';
+import CartAuth from './CartAuth';
 import CartLineRow from './CartLineRow';
 import { useCart, useCartLines } from './useCart';
 import './cart.css';
@@ -81,7 +84,48 @@ function CartBody() {
   const [sent, setSent] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [copyFailed, setCopyFailed] = useState(false);
+  const session = useSession();
+  const [legacy, setLegacy] = useState(false);
+  const [placing, setPlacing] = useState(false);
+  const [orderError, setOrderError] = useState('');
+  const [address, setAddress] = useState(initial.address);
+  const [orderNote, setOrderNote] = useState('');
+  const [placed, setPlaced] = useState<{ order: PlacedOrder; href: string | null; items: { name: string; qty: number }[]; name: string } | null>(null);
+  const token = session?.token ?? null;
+  useEffect(() => {
+    if (!token) return;
+    let live = true;
+    checkSession(token).then(r => { if (live && r === 'expired') setSession(null); });
+    return () => { live = false; };
+  }, [token]);
   useEffect(() => { trackCartOpen({ source: 'page', lineCount: lines.length }); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (placed) {
+    return (
+      <div className="cp__done" role="status" aria-live="polite">
+        <span className="cp__done-mark"><CheckCircle weight="light" size={32} aria-hidden="true" /></span>
+        <h2>Thank you, {placed.name.split(' ')[0]}. Your order is placed.</h2>
+        <div className="cp__done-id"><span>Order ID</span><strong>{placed.order.code}</strong></div>
+        <p>
+          {placed.href
+            ? 'We have opened WhatsApp with your order summary. Send it to us so the team can confirm availability, price and delivery.'
+            : 'Our team will contact you on your registered mobile number to confirm availability, price and delivery.'}
+        </p>
+        <ul className="cp__done-list">
+          {placed.items.map((it, i) => <li key={i}><span>{it.name}</span><span>&times; {it.qty}</span></li>)}
+        </ul>
+        <div className="cp__done-actions">
+          {placed.href && (
+            <a className="cbtn cbtn--wa" href={placed.href} target="_blank" rel="noopener noreferrer">
+              <WhatsappLogo weight="fill" size={22} aria-hidden="true" />
+              Send order on WhatsApp
+            </a>
+          )}
+          <Link href="/products/" className="cbtn cbtn--ghost">Continue shopping</Link>
+        </div>
+      </div>
+    );
+  }
 
   if (lines.length === 0) {
     return (
@@ -156,6 +200,36 @@ function CartBody() {
     }
   };
 
+  const onPlace = async (e: FormEvent) => {
+    e.preventDefault();
+    if (blocked || placing || !session) return;
+    const popup = typeof window !== 'undefined' ? window.open('', '_blank') : null;
+    if (popup) popup.opener = null;
+    setPlacing(true);
+    setOrderError('');
+    const noteParts: string[] = [];
+    if (address.trim()) noteParts.push(`Delivery: ${address.trim()}`);
+    if (orderNote.trim()) noteParts.push(orderNote.trim());
+    const res = await placeOrder(
+      session.token,
+      lines.map(l => ({ slug: l.slug, name: l.product?.name ?? l.slug, qty: l.qty, price: l.price })),
+      noteParts.join('\n'),
+    );
+    setPlacing(false);
+    if (!res.ok) {
+      popup?.close();
+      if (res.kind === 'auth') setSession(null);
+      setOrderError(res.kind === 'validation' ? 'Please check your cart and try again.' : res.message);
+      return;
+    }
+    const href = res.order.waText ? waLink(res.order.waText, res.order.waNumber || whatsapp) : null;
+    if (popup && href) popup.location.href = href;
+    else popup?.close();
+    trackOrderRequestWhatsApp({ lineCount: lines.length, unitCount: units });
+    setPlaced({ order: res.order, href, name: session.name, items: lines.map(l => ({ name: l.product?.name ?? l.slug, qty: l.qty })) });
+    cart.clear();
+  };
+
   const err = (k: string) => errors[k];
   const field = (k: (typeof FIELD_ORDER)[number]) => ({
     id: `cf-${k}`,
@@ -195,81 +269,124 @@ function CartBody() {
       </div>
 
       <aside className="cp__aside cp__panel" aria-label="Your details">
-        <h2 className="cp__h2">Your details</h2>
-        <form ref={formRef} className="cf" onSubmit={onSend} noValidate>
-          <div className="cf__field">
-            <label htmlFor="cf-name">Full name *</label>
-            <input {...field('name')} type="text" autoComplete="name" defaultValue={initial.name} aria-required="true" />
-            {err('name') && <p id="cf-name-err" className="cf__err" role="alert">{err('name')}</p>}
-          </div>
-          <div className="cf__field">
-            <label htmlFor="cf-phone">Phone *</label>
-            <input {...field('phone')} type="tel" inputMode="tel" autoComplete="tel" defaultValue={initial.phone} aria-required="true" />
-            {err('phone') && <p id="cf-phone-err" className="cf__err" role="alert">{err('phone')}</p>}
-          </div>
-          <div className="cf__field">
-            <label htmlFor="cf-address">Delivery address / city *</label>
-            <textarea {...field('address')} rows={3} autoComplete="street-address" defaultValue={initial.address} aria-required="true" />
-            {err('address') && <p id="cf-address-err" className="cf__err" role="alert">{err('address')}</p>}
-          </div>
-          <div className="cf__field">
-            <label htmlFor="cf-message">Message <span className="cf__opt">(optional)</span></label>
-            <textarea {...field('message')} rows={3} />
-            {err('message') && <p id="cf-message-err" className="cf__err" role="alert">{err('message')}</p>}
-          </div>
-          <label className="cf__remember">
-            <input type="checkbox" checked={remember} onChange={e => setRemember(e.target.checked)} />
-            Remember my details on this device
-          </label>
+        {legacy ? (
+          <>
+              <h2 className="cp__h2">Your details</h2>
+              <form ref={formRef} className="cf" onSubmit={onSend} noValidate>
+                <div className="cf__field">
+                  <label htmlFor="cf-name">Full name *</label>
+                  <input {...field('name')} type="text" autoComplete="name" defaultValue={initial.name} aria-required="true" />
+                  {err('name') && <p id="cf-name-err" className="cf__err" role="alert">{err('name')}</p>}
+                </div>
+                <div className="cf__field">
+                  <label htmlFor="cf-phone">Phone *</label>
+                  <input {...field('phone')} type="tel" inputMode="tel" autoComplete="tel" defaultValue={initial.phone} aria-required="true" />
+                  {err('phone') && <p id="cf-phone-err" className="cf__err" role="alert">{err('phone')}</p>}
+                </div>
+                <div className="cf__field">
+                  <label htmlFor="cf-address">Delivery address / city *</label>
+                  <textarea {...field('address')} rows={3} autoComplete="street-address" defaultValue={initial.address} aria-required="true" />
+                  {err('address') && <p id="cf-address-err" className="cf__err" role="alert">{err('address')}</p>}
+                </div>
+                <div className="cf__field">
+                  <label htmlFor="cf-message">Message <span className="cf__opt">(optional)</span></label>
+                  <textarea {...field('message')} rows={3} />
+                  {err('message') && <p id="cf-message-err" className="cf__err" role="alert">{err('message')}</p>}
+                </div>
+                <label className="cf__remember">
+                  <input type="checkbox" checked={remember} onChange={e => setRemember(e.target.checked)} />
+                  Remember my details on this device
+                </label>
 
-          {blocked && (
-            <p className="cf__blocked" role="alert">
-              Fix the items marked above before sending: remove unavailable products or lower the quantity.
-            </p>
-          )}
+                {blocked && (
+                  <p className="cf__blocked" role="alert">
+                    Fix the items marked above before sending: remove unavailable products or lower the quantity.
+                  </p>
+                )}
 
-          {whatsapp ? (
-            <button type="submit" className="cbtn cbtn--wa cbtn--block" disabled={blocked}>
-              <WhatsappLogo weight="fill" size={22} aria-hidden="true" />
-              Send order request on WhatsApp
-            </button>
-          ) : (
-            <div>
-              <p className="cf__blocked" style={{ color: 'var(--body)' }}>
-                WhatsApp ordering is not set up yet. Copy your request and send it through the enquiry form instead.
+                {whatsapp ? (
+                  <button type="submit" className="cbtn cbtn--wa cbtn--block" disabled={blocked}>
+                    <WhatsappLogo weight="fill" size={22} aria-hidden="true" />
+                    Send order request on WhatsApp
+                  </button>
+                ) : (
+                  <div>
+                    <p className="cf__blocked" style={{ color: 'var(--body)' }}>
+                      WhatsApp ordering is not set up yet. Copy your request and send it through the enquiry form instead.
+                    </p>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-xs)', marginTop: 'var(--space-xs)' }}>
+                      <button type="button" className="cbtn cbtn--sm" onClick={onCopy} disabled={blocked}>
+                        <Copy weight="light" size={18} aria-hidden="true" /> Copy order message
+                      </button>
+                      <Link href="/enquiry/" className="cbtn cbtn--sm cbtn--ghost">Go to enquiry form</Link>
+                    </div>
+                  </div>
+                )}
+              </form>
+
+              <p className="cp__note">
+                This is an order request, not a confirmed order. Price, stock, delivery and payment are confirmed by Alok Plastics on WhatsApp. No payment is taken on this site.
               </p>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-xs)', marginTop: 'var(--space-xs)' }}>
-                <button type="button" className="cbtn cbtn--sm" onClick={onCopy} disabled={blocked}>
-                  <Copy weight="light" size={18} aria-hidden="true" /> Copy order message
-                </button>
-                <Link href="/enquiry/" className="cbtn cbtn--sm cbtn--ghost">Go to enquiry form</Link>
+
+              {sent && (
+                <div className="cp__sent" role="status" aria-live="polite">
+                  <p style={{ margin: 0, fontWeight: 600, color: 'var(--ink)' }}>
+                    {whatsapp
+                      ? 'Request opened in WhatsApp — if it did not open, copy the message.'
+                      : 'Your order message is ready. Copy it and send it to us.'}
+                  </p>
+                  <label htmlFor="cf-copy" className="sr-only">Order message</label>
+                  <textarea id="cf-copy" readOnly value={sent} onFocus={e => e.currentTarget.select()} />
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-xs)', alignItems: 'center' }}>
+                    <button type="button" className="cbtn cbtn--sm" onClick={onCopy}>
+                      <Copy weight="light" size={18} aria-hidden="true" /> Copy message
+                    </button>
+                    <button type="button" className="clink clink--muted" onClick={() => { cart.clear(); setSent(null); }}>Clear cart</button>
+                  </div>
+                  {copied && <p style={{ margin: 'var(--space-xs) 0 0', fontSize: '0.875rem', color: 'var(--success)' }}>Copied.</p>}
+                  {copyFailed && <p style={{ margin: 'var(--space-xs) 0 0', fontSize: '0.875rem', color: 'var(--error)' }}>Could not copy automatically. Select the text above and copy it.</p>}
+                </div>
+              )}
+          </>
+        ) : session ? (
+          <>
+            <h2 className="cp__h2">Place your order</h2>
+            <div className="cp__who">
+              <div>
+                <p className="cp__who-name">{session.name}</p>
+                <p className="cp__who-phone">{maskPhone(session.phone)}</p>
               </div>
+              <button type="button" className="clink clink--muted" onClick={() => void signOut()}>Sign out</button>
             </div>
-          )}
-        </form>
-
-        <p className="cp__note">
-          This is an order request, not a confirmed order. Price, stock, delivery and payment are confirmed by Alok Plastics on WhatsApp. No payment is taken on this site.
-        </p>
-
-        {sent && (
-          <div className="cp__sent" role="status" aria-live="polite">
-            <p style={{ margin: 0, fontWeight: 600, color: 'var(--ink)' }}>
-              {whatsapp
-                ? 'Request opened in WhatsApp — if it did not open, copy the message.'
-                : 'Your order message is ready. Copy it and send it to us.'}
-            </p>
-            <label htmlFor="cf-copy" className="sr-only">Order message</label>
-            <textarea id="cf-copy" readOnly value={sent} onFocus={e => e.currentTarget.select()} />
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-xs)', alignItems: 'center' }}>
-              <button type="button" className="cbtn cbtn--sm" onClick={onCopy}>
-                <Copy weight="light" size={18} aria-hidden="true" /> Copy message
+            <form className="cf" onSubmit={onPlace} noValidate>
+              <div className="cf__field">
+                <label htmlFor="cf-address">Delivery address / city <span className="cf__opt">(optional)</span></label>
+                <textarea id="cf-address" rows={2} autoComplete="street-address" value={address} onChange={e => setAddress(e.target.value)} maxLength={300} />
+              </div>
+              <div className="cf__field">
+                <label htmlFor="cf-note">Message <span className="cf__opt">(optional)</span></label>
+                <textarea id="cf-note" rows={2} value={orderNote} onChange={e => setOrderNote(e.target.value)} maxLength={600} />
+              </div>
+              {blocked && (
+                <p className="cf__blocked" role="alert">
+                  Fix the items marked above before placing your order: remove unavailable products or lower the quantity.
+                </p>
+              )}
+              {orderError && <p className="cf__blocked" role="alert">{orderError}</p>}
+              <button type="submit" className="cbtn cbtn--block" disabled={blocked || placing}>
+                {placing ? 'Placing order…' : 'Place order'}
               </button>
-              <button type="button" className="clink clink--muted" onClick={() => { cart.clear(); setSent(null); }}>Clear cart</button>
-            </div>
-            {copied && <p style={{ margin: 'var(--space-xs) 0 0', fontSize: '0.875rem', color: 'var(--success)' }}>Copied.</p>}
-            {copyFailed && <p style={{ margin: 'var(--space-xs) 0 0', fontSize: '0.875rem', color: 'var(--error)' }}>Could not copy automatically. Select the text above and copy it.</p>}
-          </div>
+            </form>
+            <p className="cp__note">
+              Your order is saved with us and a WhatsApp message is prepared for you. Price, stock, delivery and payment are confirmed by Alok Plastics. No payment is taken on this site.
+            </p>
+          </>
+        ) : (
+          <>
+            <h2 className="cp__h2">Sign in to order</h2>
+            <CartAuth onUnavailable={() => setLegacy(true)} />
+            <p className="cp__note">We use your mobile number only to confirm your order and contact you about it.</p>
+          </>
         )}
       </aside>
     </div>

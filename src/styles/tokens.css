@@ -96,7 +96,7 @@
   --fs-stat-unit:  clamp(1.25rem, 2.2vw, 2rem);
 
   /* ── Layout ──────────────────────────────────────────────────── */
-  --radius-card: 2px;   /* §3 row 8: 2px max, no rounded-xl/2xl */
+  --radius-card: 6px;   /* buttons, inputs, cards: a soft, engineered corner (rounded-md). No rounded-xl/2xl, no pills. */
   --radius-pill: 999px; /* ONLY for the glass navbar — §9 */
 
   /* ── Transition ──────────────────────────────────────────────── */

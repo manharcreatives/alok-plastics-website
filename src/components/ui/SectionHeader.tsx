@@ -16,6 +16,7 @@ interface SectionHeaderProps {
   link?: { href: string; label: string };
   align?: 'left' | 'center';
   headingAs?: 'h2' | 'h3';
+  headingId?: string;
   className?: string;
 }
 
@@ -27,6 +28,7 @@ export default function SectionHeader({
   link,
   align = 'left',
   headingAs: H = 'h2',
+  headingId,
   className = '',
 }: SectionHeaderProps) {
   const textAlign = align === 'center' ? 'center' : 'left';
@@ -73,6 +75,7 @@ export default function SectionHeader({
       </div>
 
       <H
+        id={headingId}
         style={{
           fontFamily: 'var(--font-archivo, sans-serif)',
           fontVariationSettings: '"wdth" 125',

@@ -130,6 +130,9 @@ function icon(string $name, string $class = ''): string
         'eye'      => '<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>',
         'alert'    => '<path d="M12 4 2.5 20h19L12 4ZM12 10v4m0 3v.01"/>',
         'inbox'    => '<path d="M3 13l3-8h12l3 8v6H3v-6Z"/><path d="M3 13h5l1 3h6l1-3h5"/>',
+        'cart'     => '<circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M3 4h2.5l2.2 11h10.6l2-8H6.5"/>',
+        'file'     => '<path d="M6 3h8l5 5v13H6V3Z"/><path d="M14 3v5h5M9 13h7M9 17h7"/>',
+        'users'    => '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14.5a6 6 0 0 1 3.5 5.5"/>',
         'filter'   => '<path d="M4 5h16l-6 8v6l-4-2v-4L4 5Z"/>',
     ];
     return '<svg class="ico' . ($class !== '' ? ' ' . e($class) : '') . '" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'

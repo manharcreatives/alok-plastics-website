@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 const KEY = 'alok:cart:v1';
-const PART = '/products/water-control/float-valve/';
+const PART = '/products/water-cooler-spare-parts/float-valve/';
 
 async function seed(page: import('@playwright/test').Page, lines: { slug: string; qty: number }[]) {
   await page.addInitScript(([k, v]) => {

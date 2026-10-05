@@ -24,6 +24,7 @@ final class AlokProducts
         'hsn'            => ['HSN code', 120, false],
         'moq'            => ['Minimum order quantity', 120, false],
         'packing'        => ['Packing', 120, false],
+        'fitment'        => ['Fitment (machines or models it fits)', 300, false],
         'seoTitle'       => ['SEO title', 70, false],
         'seoDescription' => ['SEO meta description', 170, true],
     ];
@@ -31,6 +32,7 @@ final class AlokProducts
     public const COMMERCE = ['price', 'availability', 'stock', 'keywords', 'brand', 'featured', 'status'];
     public const AVAILABILITY = ['on-request' => 'On request', 'in-stock' => 'In stock', 'out-of-stock' => 'Out of stock'];
     public const STATUS = ['active' => 'Active', 'inactive' => 'Inactive', 'archived' => 'Archived'];
+    public const MACHINES = ['water-cooler' => 'Water cooler', 'display-counter' => 'Display counter', 'deep-freezer' => 'Deep freezer'];
     public const PRICE_MAX = 9999999;
     public const STOCK_MAX = 100000;
     public const KEYWORDS_MAX = 20;
@@ -45,6 +47,76 @@ final class AlokProducts
     public const TYPES = ['jpg' => 'image/jpeg', 'webp' => 'image/webp', 'png' => 'image/png'];
 
     private static ?array $cat = null;
+    private static ?array $groups = null;
+
+    /** @return array<string,array{id:string,name:string,slug:string}> id => group (the website's product groups, generated at build) */
+    public static function groups(): array
+    {
+        if (self::$groups === null) {
+            self::$groups = [];
+            $f = __DIR__ . '/groups.php';
+            foreach (is_file($f) ? (array) require $f : [] as $g) {
+                if (is_array($g) && isset($g['id'], $g['name'], $g['slug'])) {
+                    self::$groups[(string) $g['id']] = ['id' => (string) $g['id'], 'name' => (string) $g['name'], 'slug' => (string) $g['slug']];
+                }
+            }
+            if (!self::$groups) {
+                foreach (self::catalogue() as $c) {
+                    if (is_array($c['group'])) self::$groups[(string) $c['group']['id']] = $c['group'];
+                }
+                ksort(self::$groups);
+            }
+        }
+        return self::$groups;
+    }
+
+    public static function rowDefaults(): array
+    {
+        return ['group' => null, 'path' => null, 'material' => '', 'sku' => '', 'hsn' => '', 'moq' => '', 'packing' => '',
+            'summary' => '', 'machines' => [], 'variants' => [], 'image' => null,
+            'price' => null, 'availability' => 'on-request', 'stock' => null, 'keywords' => [], 'brand' => '', 'featured' => false, 'status' => 'active', 'custom' => false];
+    }
+
+    /** Built-in catalogue plus products the owner created in the panel (slug => row). */
+    public static function catalogueAll(): array
+    {
+        $cat = self::catalogue();
+        $groups = self::groups();
+        foreach (self::all() as $slug => $s) {
+            if (empty($s['custom']) || isset($cat[$slug])) continue;
+            $cat[$slug] = ['slug' => $slug, 'name' => (string) ($s['name'] ?? $slug), 'published' => true, 'custom' => true,
+                'group' => $groups[(string) ($s['group'] ?? '')] ?? null, 'path' => '/products/item/?s=' . $slug] + self::rowDefaults();
+        }
+        return $cat;
+    }
+
+    /** Machine ids a row fits, saved value over build-time default. @return list<string> */
+    public static function machineIds(array $c, array $saved): array
+    {
+        if (isset($saved['machines']) && is_array($saved['machines'])) {
+            return array_values(array_intersect(array_keys(self::MACHINES), array_map('strval', $saved['machines'])));
+        }
+        return array_values(array_keys(array_intersect(self::MACHINES, (array) ($c['machines'] ?? []))));
+    }
+
+    /** The row with the owner's group and machine choices applied. */
+    public static function placed(array $c, array $saved): array
+    {
+        $g = self::groups()[(string) ($saved['group'] ?? '')] ?? null;
+        if ($g !== null) {
+            $c['group'] = $g;
+            if (empty($c['custom'])) $c['path'] = '/products/' . $g['slug'] . '/' . $c['slug'] . '/';
+        }
+        $c['machines'] = array_values(array_map(static fn(string $id): string => self::MACHINES[$id], self::machineIds($c, $saved)));
+        return $c;
+    }
+
+    public static function slugify(string $name): string
+    {
+        $t = function_exists('iconv') ? (string) @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $name) : $name;
+        $t = trim(preg_replace('/[^a-z0-9]+/', '-', strtolower($t)) ?? '', '-');
+        return $t === '' ? 'product' : substr($t, 0, 60);
+    }
 
     /** @return array<string,array<string,mixed>> slug => row (name, published, + details) */
     public static function catalogue(): array
@@ -53,10 +125,7 @@ final class AlokProducts
             self::$cat = [];
             foreach ((array) require dirname(__DIR__) . '/lib/catalogue.php' as $row) {
                 $d = is_array($row[3] ?? null) ? $row[3] : [];
-                self::$cat[(string) $row[0]] = ['slug' => (string) $row[0], 'name' => (string) $row[1], 'published' => (bool) $row[2]] + $d
-                    + ['group' => null, 'path' => null, 'material' => '', 'sku' => '', 'hsn' => '', 'moq' => '', 'packing' => '',
-                       'summary' => '', 'machines' => [], 'variants' => [], 'image' => null,
-                       'price' => null, 'availability' => 'on-request', 'stock' => null, 'keywords' => [], 'brand' => '', 'featured' => false, 'status' => 'active'];
+                self::$cat[(string) $row[0]] = ['slug' => (string) $row[0], 'name' => (string) $row[1], 'published' => (bool) $row[2]] + $d + self::rowDefaults();
             }
         }
         return self::$cat;
@@ -75,7 +144,7 @@ final class AlokProducts
         $cat = self::catalogue();
         $out = [];
         foreach ($p as $slug => $v) {
-            if (is_string($slug) && isset($cat[$slug]) && is_array($v)) {
+            if (is_string($slug) && is_array($v) && (isset($cat[$slug]) || (!empty($v['custom']) && preg_match('/^[a-z0-9]+(-[a-z0-9]+)*$/', $slug) === 1))) {
                 $out[$slug] = $v;
             }
         }
@@ -95,6 +164,9 @@ final class AlokProducts
             if (($saved[$k] ?? '') !== '') return true;
         }
         foreach (self::COMMERCE as $k) {
+            if (array_key_exists($k, $saved)) return true;
+        }
+        foreach (['group', 'machines', 'custom'] as $k) {
             if (array_key_exists($k, $saved)) return true;
         }
         return !empty($saved['images']);
@@ -385,7 +457,7 @@ final class AlokProducts
 
 function product_default_for_form(array $c): array
 {
-    return ['name' => $c['name'], 'summary' => $c['summary'], 'description' => '', 'material' => $c['material'], 'sku' => $c['sku'],
+    return ['name' => !empty($c['custom']) ? '' : $c['name'], 'summary' => $c['summary'], 'description' => '', 'fitment' => '', 'material' => $c['material'], 'sku' => $c['sku'],
         'hsn' => $c['hsn'], 'moq' => $c['moq'], 'packing' => $c['packing'], 'seoTitle' => '', 'seoDescription' => ''];
 }
 
@@ -407,7 +479,7 @@ function products_filters(array $src): array
 
 function page_products(array $user, bool $isPost): never
 {
-    $cat = AlokProducts::catalogue();
+    $cat = AlokProducts::catalogueAll();
     $hidden = AlokContent::hiddenProducts();
     $f = products_filters($isPost ? $_POST : $_GET);
     $keep = array_filter($f, static fn($v) => $v !== '');
@@ -480,15 +552,15 @@ function page_products(array $user, bool $isPost): never
     }
 
     $groups = [];
-    foreach ($cat as $c) {
-        $key = $c['group']['slug'] ?? '-';
-        $groups[$key] = $c['group']['name'] ?? 'Not on website yet';
+    foreach (AlokProducts::groups() as $g) {
+        $groups[$g['slug']] = $g['name'];
     }
     $saved = AlokProducts::all();
     $rows = [];
     $attnCount = ['img' => 0, 'price' => 0, 'desc' => 0, 'any' => 0];
     foreach ($cat as $slug => $c) {
         $s = $saved[$slug] ?? [];
+        $c = AlokProducts::placed($c, $s);
         $name = (string) ($s['name'] ?? $c['name']);
         $eff = AlokProducts::effective($c, $s);
         $isHidden = in_array($slug, $hidden, true);
@@ -542,18 +614,29 @@ function page_products(array $user, bool $isPost): never
 
 function page_product(array $user, bool $isPost): never
 {
-    $cat = AlokProducts::catalogue();
+    $cat = AlokProducts::catalogueAll();
     $slug = (string) ($_GET['slug'] ?? '');
-    if (!isset($cat[$slug])) {
+    $isNew = $slug === '' && isset($_GET['new']);
+    if ($isNew) {
+        $c = ['slug' => '', 'name' => '', 'published' => true, 'custom' => true] + ['group' => null, 'path' => null] + AlokProducts::rowDefaults();
+    } elseif (!isset($cat[$slug])) {
         render('error', ['title' => 'Product not found', 'user' => $user, 'message' => 'That product does not exist.'], 404);
+    } else {
+        $c = $cat[$slug];
     }
-    $c = $cat[$slug];
-    $def = product_default_for_form($c);
+    $isCustom = !empty($c['custom']);
     $all = AlokProducts::all();
     $saved = $all[$slug] ?? [];
+    $c = AlokProducts::placed($c, $saved);
+    $def = product_default_for_form($c);
+    $groups = AlokProducts::groups();
+    $defaultGroup = (string) (($isCustom ? '' : ($cat[$slug]['group']['id'] ?? '')));
+    $defaultMachines = $isCustom ? [] : AlokProducts::machineIds($cat[$slug], []);
+    $gform = (string) ($c['group']['id'] ?? '');
+    $mform = AlokProducts::machineIds($c, $saved);
     $hidden = AlokContent::hiddenProducts();
     $isHidden = in_array($slug, $hidden, true);
-    $self = u('product', ['slug' => $slug]);
+    $self = $isNew ? u('product', ['new' => 1]) : u('product', ['slug' => $slug]);
     $ip = AlokAuth::clientIp();
     $errors = [];
     $form = [];
@@ -569,6 +652,29 @@ function page_product(array $user, bool $isPost): never
     if ($isPost) {
         $do = (string) ($_POST['do'] ?? 'save');
 
+        if ($do === 'delete') {
+            if (($_POST['confirm'] ?? '') !== 'yes' || $isNew) {
+                flash_set('err', 'Tick the box to confirm.');
+                redirect($self);
+            }
+            if ($isCustom) {
+                foreach ((array) ($all[$slug]['images'] ?? []) as $im) AlokProducts::deleteFile((string) ($im['id'] ?? ''));
+                unset($all[$slug]);
+                AlokProducts::saveAll($all);
+                AlokContent::saveHidden(array_values(array_diff($hidden, [$slug])));
+                AlokStore::open()->audit($user['username'], 'product_delete', $slug, (string) $c['name'], $ip);
+                flash_set('ok', '"' . $c['name'] . '" was permanently deleted.');
+            } else {
+                $entry = AlokProducts::storeCommerce($all[$slug] ?? [], ['status' => 'archived'], AlokProducts::commerceDefaults($cat[$slug]));
+                $entry['updatedAt'] = gmdate('Y-m-d\TH:i:s\Z');
+                $all[$slug] = $entry;
+                AlokProducts::saveAll($all);
+                AlokStore::open()->audit($user['username'], 'product_remove', $slug, 'archived', $ip);
+                flash_set('ok', '"' . $c['name'] . '" was removed from the website. Set its status back to Active to bring it back.');
+            }
+            redirect(u('products'));
+        }
+
         if ($do === 'reset') {
             if (isset($all[$slug])) {
                 foreach ((array) ($all[$slug]['images'] ?? []) as $im) AlokProducts::deleteFile((string) ($im['id'] ?? ''));
@@ -580,7 +686,20 @@ function page_product(array $user, bool $isPost): never
             redirect($self);
         }
 
-        [$clean, $errors] = AlokProducts::validateText($_POST, $def);
+        $gIn = (string) ($_POST['group'] ?? '');
+        if (isset($groups[$gIn])) {
+            $gform = $gIn;
+        } else {
+            $errors['group'] = 'Choose which product group this belongs to.';
+        }
+        $mIn = array_values(array_intersect(array_keys(AlokProducts::MACHINES), array_map('strval', (array) ($_POST['machines'] ?? []))));
+        $mform = $mIn;
+
+        [$clean, $textErrors] = AlokProducts::validateText($_POST, $def);
+        $errors += $textErrors;
+        if ($isCustom && ($clean['name'] ?? '') === '' && !isset($errors['name'])) {
+            $errors['name'] = 'Enter the product name.';
+        }
         foreach ($clean as $k => $v) $form[$k] = $v;
         foreach (array_keys(AlokProducts::FIELDS) as $k) if (!isset($clean[$k]) && !isset($errors[$k])) $form[$k] = '';
         [$cvals, $cerr] = AlokProducts::validateCommerce($_POST);
@@ -589,6 +708,13 @@ function page_product(array $user, bool $isPost): never
         $cform['featured'] = !empty($_POST['featured']) ? '1' : '';
         if (!isset($cerr['status'])) $cform['status'] = $cvals['status']; else $cform['status'] = $ceff['status'];
         if (isset($cerr['availability'])) $cform['availability'] = $ceff['availability'];
+
+        if ($isNew && !$errors) {
+            $base = AlokProducts::slugify((string) $clean['name']);
+            $slug = $base;
+            for ($i = 2; isset($cat[$slug]) || isset($all[$slug]); $i++) $slug = $base . '-' . $i;
+            $self = u('product', ['slug' => $slug]);
+        }
 
         // Existing images: alt, order, removal (ids come only from what is already stored).
         $byId = [];
@@ -634,11 +760,22 @@ function page_product(array $user, bool $isPost): never
         if (!$errors) {
             $entry = AlokProducts::storeCommerce($clean, $cvals, $cdef);
             if ($keepImgs) $entry['images'] = $keepImgs;
+            if ($isCustom) {
+                $entry['custom'] = true;
+                $entry['group'] = $gform;
+                $entry['machines'] = $mform;
+                $entry['createdAt'] = (string) ($saved['createdAt'] ?? gmdate('Y-m-d\TH:i:s\Z'));
+            } else {
+                if ($gform !== $defaultGroup) $entry['group'] = $gform;
+                if ($mform !== $defaultMachines) $entry['machines'] = $mform;
+            }
             $before = $saved;
             $changed = [];
             foreach (array_keys(AlokProducts::FIELDS) as $k) if (($before[$k] ?? '') !== ($entry[$k] ?? '')) $changed[] = $k;
             foreach (AlokProducts::COMMERCE as $k) if (json_encode($before[$k] ?? null) !== json_encode($entry[$k] ?? null)) $changed[] = $k;
             if (json_encode($before['images'] ?? []) !== json_encode($entry['images'] ?? [])) $changed[] = 'images';
+            foreach (['group', 'machines'] as $k) if (json_encode($before[$k] ?? null) !== json_encode($entry[$k] ?? null)) $changed[] = $k;
+            if ($isNew) $changed = ['created'];
             $visChanged = $c['published'] && $wantShow === $isHidden;
             try {
                 if ($changed) {
@@ -652,7 +789,7 @@ function page_product(array $user, bool $isPost): never
                     AlokStore::open()->audit($user['username'], 'product_visibility', 'product-overrides.json', ($wantShow ? 'showed ' : 'hid ') . $slug, $ip);
                     $changed[] = 'visibility';
                 }
-                $msg = $changed ? 'Saved: ' . implode(', ', $changed) . '. The website picks it up on the next page load.' : 'Nothing changed.';
+                $msg = $isNew ? 'Product added. The website picks it up on the next page load.' : ($changed ? 'Saved: ' . implode(', ', $changed) . '. The website picks it up on the next page load.' : 'Nothing changed.');
                 if ($uploadNotes) { flash_set('err', $msg . ' ' . implode(' ', $uploadNotes)); } else { flash_set('ok', $msg); }
                 redirect($self);
             } catch (RuntimeException $ex) {
@@ -666,7 +803,8 @@ function page_product(array $user, bool $isPost): never
         $isHidden = !$wantShow && $c['published'];
     }
 
-    render('product', ['title' => $saved['name'] ?? $c['name'], 'nav' => 'products', 'user' => $user, 'c' => $c, 'def' => $def, 'form' => $form,
+    render('product', ['title' => $isNew ? 'Add product' : ($saved['name'] ?? $c['name']), 'nav' => 'products', 'user' => $user, 'c' => $c, 'def' => $def, 'form' => $form,
         'images' => $images, 'errors' => $errors, 'cform' => $cform, 'cdef' => $cdef, 'gd' => $gd, 'isHidden' => $isHidden, 'self' => $self,
+        'isNew' => $isNew, 'isCustom' => $isCustom, 'groups' => $groups, 'gform' => $gform, 'mform' => $mform,
         'edited' => AlokProducts::isEdited($saved), 'updatedAt' => (string) ($saved['updatedAt'] ?? '')], $errors ? 422 : 200);
 }

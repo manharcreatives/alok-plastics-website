@@ -1,5 +1,6 @@
 <?php defined('ALOK_ADMIN') || exit; ?>
 <?php /** @var array<string,mixed> $c @var array<string,string> $def @var array<string,string> $form @var list<array<string,string>> $images
+         @var bool $isNew @var bool $isCustom @var array<string,array<string,string>> $groups @var string $gform @var list<string> $mform
          @var array<string,string> $errors @var bool $gd @var bool $isHidden @var string $self @var bool $edited @var string $updatedAt @var array<string,string> $cform @var array<string,mixed> $cdef */
 /** One text field with its default shown, a counter and a reset control. */
 $field = static function (string $k, string $hint = '') use ($form, $def, $errors): string {
@@ -24,16 +25,18 @@ $host = (string) ($_SERVER['HTTP_HOST'] ?? 'alokplastics.com');
 <p class="crumb"><a href="<?= e(u('products')) ?>">← Products</a></p>
 <div class="row-between">
   <div>
-    <h1><?= e($form['name'] !== '' ? $form['name'] : $c['name']) ?></h1>
+    <h1><?= e($isNew ? 'Add product' : ($form['name'] !== '' ? $form['name'] : $c['name'])) ?></h1>
     <p class="pbadges">
-      <?php if ($c['published']): ?><span class="badge badge-won">On website</span><?php if ($isHidden): ?> <span class="badge badge-lost">Hidden from lists</span><?php endif; ?>
+      <?php if ($isNew): ?><span class="badge badge-new">New</span>
+      <?php elseif ($c['published']): ?><span class="badge badge-won">On website</span><?php if ($isHidden): ?> <span class="badge badge-lost">Hidden from lists</span><?php endif; ?>
       <?php else: ?><span class="badge badge-quoted">Not on website yet</span><?php endif; ?>
-      <?php if ($edited): ?><span class="badge badge-new">Edited</span><?php endif; ?>
+      <?php if ($edited && !$isCustom): ?><span class="badge badge-new">Edited</span><?php endif; ?>
+      <?php if ($isCustom && !$isNew): ?><span class="badge tone-brand">Added in admin</span><?php endif; ?>
       <?php if ($cform['status'] !== 'active'): ?><span class="badge badge-quoted"><?= e(AlokProducts::STATUS[$cform['status']] ?? '') ?></span><?php endif; ?>
       <span class="meta"><?= e($c['group']['name'] ?? 'No group yet') ?></span>
     </p>
   </div>
-  <?php if ($c['published'] && $c['path']): ?><a class="btn btn-secondary" href="<?= e($c['path']) ?>" target="_blank" rel="noopener">View on website</a><?php endif; ?>
+  <?php if (!$isNew && $c['published'] && $c['path']): ?><a class="btn btn-secondary" href="<?= e($c['path']) ?>" target="_blank" rel="noopener">View on website</a><?php endif; ?>
 </div>
 <?php if (!$c['published']): ?>
 <div class="flash flash-info" role="note"><b>This product is not on the website yet.</b> You can still prepare its details and photos here; they are stored and will be used once your developer publishes it.</div>
@@ -51,6 +54,26 @@ $host = (string) ($_SERVER['HTTP_HOST'] ?? 'alokplastics.com');
     <?= $field('name') ?>
     <?= $field('summary') ?>
     <?= $field('description', 'Plain text. A blank line starts a new paragraph.') ?>
+  </fieldset>
+
+  <fieldset>
+    <legend>Group and fitment</legend>
+    <div class="field">
+      <label for="f-group">Product group<?= $isCustom ? ' *' : '' ?></label>
+      <select id="f-group" name="group"<?= aria_inv($errors, 'group') ?>>
+        <?php if ($gform === ''): ?><option value="" selected disabled>Choose a group</option><?php endif; ?>
+        <?php foreach ($groups as $gid => $g): ?><option value="<?= e($gid) ?>"<?= $gform === (string) $gid ? ' selected' : '' ?>><?= e($g['name']) ?></option><?php endforeach; ?>
+      </select>
+      <p class="meta">The group decides where the product appears on the website. Moving a built-in product changes its group in lists, search and filters.</p>
+      <?= field_err($errors, 'group') ?>
+    </div>
+    <fieldset class="check-group">
+      <legend>Machines it fits</legend>
+      <?php foreach (AlokProducts::MACHINES as $mid => $mlabel): ?>
+      <label class="check"><input type="checkbox" name="machines[]" value="<?= e($mid) ?>"<?= in_array($mid, $mform, true) ? ' checked' : '' ?>> <?= e($mlabel) ?></label>
+      <?php endforeach; ?>
+    </fieldset>
+    <?= $field('fitment', 'For example: Voltas 2 tap water cooler, 4 ft display counter. Shown on the product page.') ?>
   </fieldset>
 
   <fieldset>
@@ -191,12 +214,22 @@ $host = (string) ($_SERVER['HTTP_HOST'] ?? 'alokplastics.com');
   </fieldset>
 
   <div class="sticky-actions">
-    <button class="btn btn-primary" type="submit">Save changes</button>
+    <button class="btn btn-primary" type="submit"><?= $isNew ? 'Add product' : 'Save changes' ?></button>
     <a class="btn btn-quiet" href="<?= e(u('products')) ?>">Cancel</a>
   </div>
 </form>
 
-<?php if ($edited): ?>
+<?php if (!$isNew): ?>
+<form class="card danger-zone" method="post" action="<?= e($self) ?>">
+  <?= csrf_field() ?><input type="hidden" name="do" value="delete">
+  <h2><?= $isCustom ? 'Delete this product' : 'Remove from website' ?></h2>
+  <p class="meta"><?= $isCustom ? 'Permanently deletes this product and its uploaded images. This cannot be undone.' : 'Built-in products cannot be erased. This sets the status to Archived so it disappears from lists, search and menus; set the status back to Active to restore it.' ?></p>
+  <label class="check"><input type="checkbox" name="confirm" value="yes" required> <?= $isCustom ? 'Yes, delete this product permanently' : 'Yes, remove this product from the website' ?></label>
+  <button class="btn btn-danger" type="submit"><?= $isCustom ? 'Delete product' : 'Remove from website' ?></button>
+</form>
+<?php endif; ?>
+
+<?php if ($edited && !$isCustom): ?>
 <form class="card danger-zone" method="post" action="<?= e($self) ?>">
   <?= csrf_field() ?><input type="hidden" name="do" value="reset">
   <h2>Reset this product</h2>

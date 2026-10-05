@@ -153,6 +153,22 @@ const capped = (max: number) =>
       return t === '' || t.length > max ? null : t;
     });
 
+const GROUP_IDS = ['01', '02', '03', '04', '05'] as const;
+const MACHINE_IDS = ['water-cooler', 'display-counter', 'deep-freezer'] as const;
+
+const machineList = z
+  .array(z.unknown())
+  .max(10)
+  .catch([])
+  .transform(list => {
+    const out: (typeof MACHINE_IDS)[number][] = [];
+    for (const m of list) {
+      const id = MACHINE_IDS.find(x => x === m);
+      if (id && !out.includes(id)) out.push(id);
+    }
+    return out;
+  });
+
 const AVAILABILITY_IDS = ['in-stock', 'out-of-stock', 'on-request'] as const;
 const STATUS_IDS = ['active', 'inactive', 'archived'] as const;
 
@@ -204,6 +220,10 @@ const productOverride = z.object({
   packing: capped(120),
   seoTitle: capped(120),
   seoDescription: capped(320),
+  fitment: capped(300),
+  group: z.enum(GROUP_IDS).nullable().catch(null),
+  machines: machineList,
+  custom: z.boolean().catch(false),
   price: boundedNumber(9_999_999),
   availability: z.enum(AVAILABILITY_IDS).nullable().catch(null),
   stock: boundedNumber(100_000, true),

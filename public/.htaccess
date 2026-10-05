@@ -33,6 +33,14 @@ RewriteRule ^(.*)$ https://alokplastics.com/$1/ [L,R=301]
 # ── 3. Legacy WordPress URLs ──────────────────────────────────────────────
 # TODO(client): once the old alokplastics.com URL list is exported, add one
 # "RewriteRule ^old-path/?$ /new-path/ [R=301,L]" per line here (see docs/seo-geo.md).
+
+# Product groups were reorganised into five groups: keep every old product and group URL alive.
+RewriteRule ^products/sliding-door-systems/connecting-bush/?$ https://alokplastics.com/products/water-cooler-spare-parts/connecting-bush/ [R=301,L]
+RewriteRule ^products/sliding-door-systems/([a-z0-9-]+)/?$ https://alokplastics.com/products/deep-freezer-display-counter-parts/$1/ [R=301,L]
+RewriteRule ^products/sealing/([a-z0-9-]+)/?$ https://alokplastics.com/products/deep-freezer-display-counter-parts/$1/ [R=301,L]
+RewriteRule ^products/(water-control|ventilation-levelling)/([a-z0-9-]+)/?$ https://alokplastics.com/products/water-cooler-spare-parts/$2/ [R=301,L]
+RewriteRule ^products/(sliding-door-systems|sealing)/?$ https://alokplastics.com/products/deep-freezer-display-counter-parts/ [R=301,L]
+RewriteRule ^products/(water-control|ventilation-levelling)/?$ https://alokplastics.com/products/water-cooler-spare-parts/ [R=301,L]
 </IfModule>
 
 # ── 4. Custom 404 (Next writes out/404.html) ────────────────────────────────
