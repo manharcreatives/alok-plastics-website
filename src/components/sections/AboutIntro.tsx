@@ -1,15 +1,12 @@
 /**
- * S2b · AboutIntro — short company intro + proof numbers (merged ProofStrip, see ADR-011).
+ * S2b · AboutIntro — manufacturer snapshot + proof numbers (merged ProofStrip, see ADR-011).
  *
- * Composition: an editorial split across the full width. Left = micro-label + mask-rise
- * headline; right = the two intro sentences and "Read our story ↗", bottom-aligned to the
- * headline. (The giant आलोक + title block that used to fill the right side was removed; the
- * intro copy now occupies that column instead.) Below = the numbers band (20 Cr+, 70%+, 1998,
- * 100%) that counts up slowly and evenly (~3.2s) once on scroll-in, then a light sweep lands
- * across the numerals.
+ * Composition: an editorial split. Left = label, the company name as the headline and a quiet
+ * descriptor; right = four ruled fact rows (Works, Process, Focus, Business Type) and
+ * "Read our story". Below = the numbers band (20 Cr+, 70%+, 1998, 100%) that counts up slowly
+ * and evenly (~3.2s) once on scroll-in.
  *
- * Facts only from MASTER_PROMPT §5 (see §19). Drafted lines are flagged for approval.
- * Reduced motion: final values, no reveals.
+ * Facts come from src/content/site.ts (client-supplied). Reduced motion: final values, no reveals.
  */
 
 'use client';
@@ -20,15 +17,8 @@ import { ArrowUpRight } from '@phosphor-icons/react/dist/csr/ArrowUpRight';
 import { gsap } from '@/lib/motion';
 import { prefersReducedMotion } from '@/hooks/useReducedMotion';
 import { useMaskRise } from '@/hooks/useMotion';
-import { site } from '@/content/site';
+import { site, manufacturerSnapshot } from '@/content/site';
 import { METAL_TEXT_CSS } from './FoldEdge';
-
-/* COPY: drafted, needs client approval — restates §5.1 / §5.12 facts only */
-const HEADLINE = 'Small, strong parts. Made in Chandigarh.';
-const INTRO = [
-  'Alok Plastics is a Chandigarh manufacturer of plastic and steel parts for water coolers, display counters and deep freezers, moulded from plastic granules for B2B customers.',
-  'Alok means light. Customers keep coming back to us for it.',
-];
 
 const NUMERIC = site.proof.filter(p => p.isNumeric);
 const WORDS = site.proof.filter(p => !p.isNumeric);
@@ -101,14 +91,18 @@ const CSS = METAL_TEXT_CSS + `
             mask-image: radial-gradient(ellipse 70% 60% at 70% 40%, white 0%, transparent 75%);
   }
   .ap-wrap { position: relative; max-width: calc(var(--grid-max) + 2 * var(--grid-page-padding)); margin: 0 auto; padding: 0 var(--grid-page-padding); }
-  .ap-top { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-lg); align-items: end; }
+  .ap-top { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-lg); align-items: start; }
   .ap-micro { display: inline-flex; align-items: center; gap: 10px; margin-bottom: var(--space-md); font-size: var(--fs-label); letter-spacing: var(--tr-label); text-transform: uppercase; font-weight: 600; color: var(--muted); font-family: var(--font-archivo), sans-serif; line-height: var(--lh-label); }
   .ap-h {
     font-family: var(--font-archivo); font-variation-settings: "wdth" 125;
     font-size: var(--fs-h1); font-weight: 650; line-height: var(--lh-h1); letter-spacing: var(--tr-h1);
-    color: var(--ink); max-width: 15ch; margin: 0; text-wrap: balance;
+    color: var(--ink); max-width: 12ch; margin: 0; text-wrap: balance;
   }
-  .ap-p { font-size: 1.0625rem; line-height: 1.65; color: var(--body); max-width: 52ch; margin-bottom: var(--space-sm); }
+  .ap-desc { margin: var(--space-md) 0 0; font-size: var(--fs-lead); line-height: 1.5; color: var(--muted); max-width: 28ch; }
+  .ap-facts { margin: 0; border-top: 1px solid var(--ink); }
+  .ap-fact { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px var(--space-md); padding: var(--space-sm) 0; border-bottom: 1px solid var(--grey-warm); }
+  .ap-fact dt { font-family: var(--font-archivo), sans-serif; font-size: var(--fs-label); line-height: var(--lh-label); letter-spacing: var(--tr-label); text-transform: uppercase; font-weight: 600; color: var(--grey-metal-text); }
+  .ap-fact dd { margin: 0; font-size: var(--fs-body); line-height: 1.5; color: var(--ink); text-wrap: pretty; }
   .ap-link {
     display: inline-flex; align-items: center; gap: var(--space-xs); margin-top: var(--space-md);
     min-height: 44px; padding: var(--space-xs) 0; font-weight: 600; font-size: 0.9375rem; color: var(--burgundy);
@@ -119,7 +113,6 @@ const CSS = METAL_TEXT_CSS + `
   .ap-link:hover svg { transform: translate(2px, -2px); }
   .ap-link:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 4px; }
 
-  .ap-body .ap-p:last-of-type { margin-bottom: 0; }
 
   /* Numbers band */
   .ap-band { position: relative; margin-top: var(--space-xl); }
@@ -156,13 +149,14 @@ const CSS = METAL_TEXT_CSS + `
   .ap-word strong::before { content: ""; width: 12px; height: 2px; background: var(--burgundy); flex-shrink: 0; }
   .ap-word span { font-size: 0.875rem; color: var(--muted); padding-left: 20px; }
 
+  @media (min-width: 640px) { .ap-fact { grid-template-columns: 9.5rem minmax(0, 1fr); align-items: baseline; padding: var(--space-md) 0; } }
   @media (min-width: 768px) {
     .ap-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-md); }
     .ap-stat + .ap-stat { border-left: 1px solid var(--grey-cloud); padding-left: var(--space-md); }
     .ap-words { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-md); }
   }
   @media (min-width: 1024px) {
-    .ap-top { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--space-xl); }
+    .ap-top { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--space-xl); }
     .ap-band-in { clip-path: polygon(0 0, 100% 0, 100% calc(100% - 56px), calc(100% - 56px) 100%, 0 100%); padding-bottom: var(--space-lg); }
   }
   @media (prefers-reduced-motion: reduce) { .ap-swept::after { animation: none; } }
@@ -180,11 +174,16 @@ export default function AboutIntro() {
       <div className="ap-wrap">
         <div className="ap-top">
           <div>
-            <p className="ap-micro">About Alok</p>
-            <h2 id="about-intro-heading" ref={headingRef} className="ap-h">{HEADLINE}</h2>
+            <p className="ap-micro">About</p>
+            <h2 id="about-intro-heading" ref={headingRef} className="ap-h">{manufacturerSnapshot.name}</h2>
+            <p className="ap-desc">{manufacturerSnapshot.descriptor}</p>
           </div>
           <div className="ap-body">
-            {INTRO.map(t => <p key={t} className="ap-p">{t}</p>)}
+            <dl className="ap-facts">
+              {manufacturerSnapshot.rows.map(r => (
+                <div key={r.label} className="ap-fact"><dt>{r.label}</dt><dd>{r.value}</dd></div>
+              ))}
+            </dl>
             <Link href="/about/" className="ap-link">
               Read our story <ArrowUpRight size={18} weight="light" aria-hidden="true" />
             </Link>

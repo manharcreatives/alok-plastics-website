@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-const routes = ['/', '/about/', '/products/', '/products/water-control/', '/products/water-control/float-valve/', '/industries/', '/career/', '/contact/', '/enquiry/', '/privacy/'];
+const routes = ['/', '/about/', '/products/', '/products/water-cooler-spare-parts/', '/products/water-cooler-spare-parts/float-valve/', '/industries/', '/career/', '/contact/', '/enquiry/', '/privacy/'];
 
 for (const r of routes) {
   test(`axe: ${r}`, async ({ page }) => {

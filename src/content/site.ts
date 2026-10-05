@@ -27,7 +27,7 @@ export const site: SiteConfig = {
     pincode: '160003',
     country: 'India',
     phone: null,       // TODO(client): phone number
-    whatsapp: null,    // TODO(client): WhatsApp number — single source for ALL WhatsApp links in the site
+    whatsapp: process.env.NEXT_PUBLIC_CLIENT_WHATSAPP || null,
     email: null,       // TODO(client): enquiry email address
     mapsUrl: null,     // TODO(client): Google Maps place URL or embed URL
     gstin: null,       // TODO(client): GSTIN
@@ -116,6 +116,19 @@ export const site: SiteConfig = {
     youtube: null,    // TODO(client)
   },
 };
+
+/* ── Manufacturer snapshot (home About) — facts supplied by the client ── */
+
+export const manufacturerSnapshot = {
+  name: 'Alok Plastics',
+  descriptor: 'Precision Plastic Components for OEMs & Replacements',
+  rows: [
+    { label: 'Works', value: `${site.contact.address}, ${site.contact.city}` },
+    { label: 'Process', value: 'Moulds + Plastic Granules' },
+    { label: 'Focus', value: 'Water Coolers · Display Counters · Deep Freezers' },
+    { label: 'Business Type', value: 'B2B Manufacturing' },
+  ],
+} as const;
 
 /* ── Contact formatting helpers (no values invented — read from site.contact) ── */
 

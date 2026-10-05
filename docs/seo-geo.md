@@ -29,9 +29,9 @@ Seeded only from product and group names in the catalogue. Volume, competition a
 |---|---|---|
 | `/` | water cooler spare parts; display counter spare parts; deep freezer spare parts | spare parts manufacturer Chandigarh |
 | `/products/` | water cooler parts; freezer spare parts list | part finder, spare parts catalogue |
-| `/products/sliding-door-systems/` | display counter door parts; freezer door hinge | sliding door bush, door lock, door spring |
-| `/products/water-control/` | water cooler float valve; water cooler waste pipe | push cock, waste coupling |
-| `/products/ventilation-levelling/` | ventilation jalli; adjustable leg insert | cooler leg insert |
+| `/products/deep-freezer-display-counter-parts/` | display counter spare parts; deep freezer spare parts | door hinge, door lock, door spring |
+| `/products/water-cooler-spare-parts/` | water cooler spare parts; water cooler float valve; water cooler waste pipe | push cock, waste coupling |
+| `/products/commercial-kitchen-spare-parts/`, `/products/caster-wheel/`, `/products/on-demand-customized-products/` | to be researched once the client supplies products for these groups | Information required from client |
 | `/products/sealing/` | freezer door gasket; display counter gasket | refrigeration gasket |
 | `/products/…/f-bush/` | display counter F-bush; sliding door bush | nylon bush |
 | `/products/…/connecting-bush/` | connecting bush brass; connecting bush nylon | 2 / 2.5 / 3 inch |

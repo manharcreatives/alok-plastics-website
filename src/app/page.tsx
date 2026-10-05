@@ -11,6 +11,7 @@ import { HOME_DESCRIPTION, HOME_TITLE, localBusinessJsonLd, organizationJsonLd, 
 import Hero from '@/components/hero/Hero';
 import AboutIntro from '@/components/sections/AboutIntro';
 import ProductGroups from '@/components/sections/ProductGroups';
+import NeedPartBlock from '@/components/sections/NeedPartBlock';
 import RequirementToRepeat from '@/components/sections/RequirementToRepeat';
 import IndustriesBento from '@/components/sections/IndustriesBento';
 import JourneyOrbit from '@/components/sections/JourneyOrbit';
@@ -34,6 +35,8 @@ export default function HomePage() {
       <AboutIntro />
       {/* S4 · Product groups bento */}
       <ProductGroups />
+      {/* S4b · Catalogue or custom part */}
+      <NeedPartBlock />
       {/* S5 · Requirement → Repeat chain */}
       <RequirementToRepeat />
       {/* S6 · Industries bento */}

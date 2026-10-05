@@ -22,11 +22,10 @@ import FoldEdge, { FOLD_SECTION_CSS } from './FoldEdge';
 
 const LEDGER: { k: string; v: string }[] = [
   { k: 'Quality', v: 'Consistent manufacturing, order after order. Same spec, same finish, every batch.' },
-  { k: 'Price', v: 'Fair pricing. We\'ll tell you upfront if an order doesn\'t work for either side.' },
-  { k: 'Supply', v: 'Reliable supply a production line can plan around. No surprise stockouts.' },
-  { k: 'Delivery', v: 'Timely delivery, to the date we agree. Not "around" that date.' },
-  // TODO(client): confirm "24 hours" is the actual quote turnaround before publishing
-  { k: 'Response', v: 'Quote back to you within 24 hours of your requirement, usually the same day.' },
+  { k: 'Fitment', v: 'Parts that fit the machine they are made for, so a replacement goes in the first time.' },
+  { k: 'Supply', v: 'Practical order quantities and supply a production line can plan around.' },
+  { k: 'B2B first', v: 'Built around OEMs, dealers and distributors: clear quotes, repeat orders, no retail runaround.' },
+  { k: 'Focus', v: 'Spares that keep coolers, counters and freezers running.' },
 ];
 
 /* Testimonials — hidden until client provides verified, attributed quotes */
@@ -39,7 +38,7 @@ const CSS = FOLD_SECTION_CSS + `
   .tq-sec { --pad-top: calc(var(--section-y) * 1.2); background: var(--surface); padding-bottom: var(--section-y); padding-left: var(--grid-page-padding); padding-right: var(--grid-page-padding); overflow: hidden; }
   .tq-wrap { position: relative; max-width: calc(var(--grid-max) + 2 * var(--grid-page-padding)); margin: 0 auto; }
   .tq-micro { position: relative; display: inline-flex; align-items: center; gap: 10px; margin-bottom: var(--space-md); font-size: var(--fs-label); letter-spacing: var(--tr-label); text-transform: uppercase; font-weight: 600; color: var(--muted); font-family: var(--font-archivo), sans-serif; line-height: var(--lh-label); }
-  .tq-h { position: relative; font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-h1); font-weight: 650; line-height: var(--lh-h1); letter-spacing: var(--tr-h1); color: var(--ink); max-width: 14ch; text-wrap: balance; }
+  .tq-h { position: relative; font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-h1); font-weight: 650; line-height: var(--lh-h1); letter-spacing: var(--tr-h1); color: var(--ink); max-width: 18ch; margin: 0; text-wrap: balance; }
   .tq-lower { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-lg); margin-top: var(--space-xl); align-items: end; }
   .tq-peak { width: min(100%, 560px); height: auto; overflow: visible; display: block; }
   .tq-peak path { fill: none; stroke: var(--grey-metal); stroke-width: 1.5; stroke-linecap: square; stroke-linejoin: miter; vector-effect: non-scaling-stroke; }
@@ -47,17 +46,9 @@ const CSS = FOLD_SECTION_CSS + `
   .tq-peak path.tq-arm { stroke: var(--grey-metal); stroke-width: 1.5; }
   .tq-rib--b { fill: var(--burgundy); }
   .tq-rib--s { fill: url(#tq-silver); }
-  /* Background geometry: the pale wedge and its burgundy hairline belong to the heading band,
-     not to the whole section. They hang off .tq-top, so their height follows the heading at every
-     width and both end halfway into the gap above the ledger; they can never reach the table.
-     .tq-top isolates its own stacking context and the shapes sit at z-index -1 inside it, so
-     they always paint behind the label and heading as well. */
-  .tq-top { position: relative; isolation: isolate; }
-  .tq-top::before, .tq-top::after { content: ""; position: absolute; z-index: -1; top: calc(var(--space-xl) * -1); bottom: calc(var(--space-xl) * -0.5); right: calc(var(--grid-page-padding) * -1); width: 26%; pointer-events: none; }
-  .tq-top::before { background: var(--metal-gradient); opacity: 0.1; clip-path: polygon(44% 0, 100% 0, 100% 100%, 0 100%); }
-  .tq-top::after { background: var(--burgundy); opacity: 0.5; clip-path: polygon(44% 0, 44.3% 0, 0.3% 100%, 0 100%); }
+  .tq-top { position: relative; max-width: 40rem; }
   .tq-sheet { position: relative; background: var(--canvas); border: 1px solid var(--grey-metal); clip-path: polygon(0 0, calc(100% - 40px) 0, 100% 40px, 100% 100%, 0 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,.9); }
-  .tq-sheet-head { display: flex; justify-content: space-between; gap: var(--space-sm); padding: var(--space-xs) 56px var(--space-xs) var(--space-sm); background: var(--surface-alt); border-bottom: 1px solid var(--grey-metal); font-size: 0.75rem; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; color: var(--muted); }
+  .tq-sheet-head { display: block; padding: var(--space-sm) 56px var(--space-sm) var(--space-sm); background: var(--surface-alt); border-bottom: 1px solid var(--grey-metal); font-size: 0.75rem; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; color: var(--muted); }
   .tq-rows { margin: 0; padding: 0; list-style: none; }
   .tq-row { position: relative; display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; padding: var(--space-sm) var(--space-sm); border-bottom: 1px solid var(--grey-cloud); }
   .tq-row::after { content: ""; position: absolute; left: 0; bottom: -1px; height: 1px; width: 100%; background: var(--burgundy); transform: scaleX(0); transform-origin: left; transition: transform 0.4s cubic-bezier(.16,1,.3,1); }
@@ -71,15 +62,13 @@ const CSS = FOLD_SECTION_CSS + `
   .tq-go:hover svg { transform: translate(2px, -2px); }
   .tq-go:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 4px; }
   @media (min-width: 768px) {
-    .tq-lower { grid-template-columns: 220px minmax(0, 1fr); gap: var(--space-lg); }
     .tq-row { grid-template-columns: 140px minmax(0, 1fr); gap: var(--space-md); align-items: baseline; padding: var(--space-md) var(--space-md); }
     .tq-foot { padding: var(--space-sm) var(--space-md); }
   }
   @media (min-width: 1024px) {
     .tq-lower { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--space-xl); }
   }
-  @media (max-width: 767px) { .tq-peak { width: min(70%, 300px); } }
-  @media (min-width: 768px) and (max-width: 1023px) { .tq-row { grid-template-columns: minmax(0, 1fr); } }
+  @media (max-width: 1023px) { .tq-peak { display: none; } }
   .tq-t { margin-top: var(--space-xl); border-top: 1px solid var(--grey-cloud); padding-top: var(--space-xl); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: var(--space-lg); }
 `;
 
@@ -143,7 +132,7 @@ export default function TrustQuote() {
           </svg>
 
           <div className="tq-sheet">
-            <div className="tq-sheet-head"><span>What you can hold us to</span><span>Alok Plastics</span></div>
+            <div className="tq-sheet-head">What you can hold us to</div>
             <ul className="tq-rows">
               {LEDGER.map(r => (
                 <li key={r.k} className="tq-row">

@@ -83,3 +83,13 @@ _All items above are flagged `// COPY: drafted, needs client approval` in the so
 
 | 31 | Which regions/countries do you ship to? Confirm before we label the world arcs as dispatch (today they are illustrative ambition only) | `PanIndiaMap.tsx` |
 | 32 | Photos for the 7 industries (replace the drawn scenes via `industries.ts` `image`) | `IndustriesBento.tsx` |
+
+## Added in the premium revamp
+| # | Question | Where |
+|---|---|---|
+| 33 | Which products belong to Commercial Kitchen Spare parts, Caster wheel and On demand Customized Products? Those groups are empty until supplied (Information required from client) | `products.ts`, admin Products |
+| 34 | Confirm the provisional group for each existing product (Water Cooler vs Deep freezer & Display counter) | `products.ts` |
+| 35 | Client WhatsApp number for order messages | `NEXT_PUBLIC_CLIENT_WHATSAPP`, `api/config.php` |
+| 36 | SMS provider account and approved DLT template for OTP (MSG91 or Fast2SMS) | `api/config.php` `$ALOK_OTP` |
+| 37 | Google account that will own the Apps Script, Sheet and Drive folder; client email for career and order alerts | `docs/google-apps-script/README.md` |
+| 38 | Confirm each decade line on the journey timeline (2000s to 2020s) | `journey.ts` |

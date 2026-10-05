@@ -25,3 +25,22 @@ $ALOK_SMTP_PASS = 'YOUR_EMAIL_PASSWORD_HERE';   // TODO(client): never commit th
 // Writable directory for rate-limit files
 // Hostinger: /tmp or sys_get_temp_dir() usually works
 $ALOK_RATE_DIR = sys_get_temp_dir();
+
+// WhatsApp number that receives order messages, with country code (digits only is fine). TODO(client)
+$ALOK_WHATSAPP = '91XXXXXXXXXX';
+
+// Google Apps Script web app (see docs/google-apps-script/README.md). Leave empty to skip the Sheet/Drive step.
+$ALOK_GAS_URL = '';
+$ALOK_GAS_SECRET = '';
+
+// Customer sign-in code (OTP). provider: 'msg91' | 'fast2sms' | 'webhook'. Leave provider empty until an SMS account exists.
+// msg91: key = authkey, template = DLT-approved OTP template id. fast2sms: key = API key.
+// webhook: your own endpoint (n8n, Make, WhatsApp provider) that receives {phone, otp, name, message}.
+// dev_mode true returns the code in the API response for testing ONLY. Never enable it on the live site.
+$ALOK_OTP = [
+    'provider' => '',
+    'key' => '',
+    'template' => '',
+    'webhook' => '',
+    'dev_mode' => false,
+];

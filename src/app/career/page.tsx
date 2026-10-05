@@ -10,6 +10,7 @@ import { CareerArt } from '@/components/page/art';
 import FoldEdge, { FOLD_SECTION_CSS } from '@/components/sections/FoldEdge';
 import Reveal from '@/components/ui/Reveal';
 import RoleList from '@/components/career/RoleList';
+import CareerApplyForm from '@/components/career/CareerApplyForm';
 import { useRuntimeContact } from '@/components/runtime/useRuntime';
 import { careerConfig } from '@/content/career';
 import { Eyebrow, SECTION_CSS, SectionHead, WRAP_STYLE } from '@/components/about/parts';
@@ -50,6 +51,7 @@ ${FOLD_SECTION_CSS}
 
 /* Roles */
 .cr-roles { background: var(--canvas); }
+.cr-apply { background: var(--surface); }
 .cr-roles__grid { display: grid; gap: var(--space-xl); }
 .cr-role-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--grey-warm); }
 .cr-role-list li { padding: var(--space-sm) 0; border-bottom: 1px solid var(--grey-warm); }
@@ -158,6 +160,16 @@ export default function CareerPage() {
             </header>
             <RoleList />
           </div>
+        </div>
+      </section>
+
+      <section id="apply" aria-labelledby="apply-h" className="cp-section cr-apply">
+        <div style={WRAP_STYLE}>
+          <header style={{ marginBottom: 'var(--space-lg)' }}>
+            <Eyebrow>Apply</Eyebrow>
+            <h2 id="apply-h" className="cp-h2">Tell us about yourself</h2>
+          </header>
+          <CareerApplyForm />
         </div>
       </section>
     </>

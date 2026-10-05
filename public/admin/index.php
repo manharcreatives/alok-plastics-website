@@ -19,6 +19,8 @@ require __DIR__ . '/lib/query.php';
 require __DIR__ . '/lib/content.php';
 require __DIR__ . '/lib/web.php';
 require __DIR__ . '/lib/products.php';
+require __DIR__ . '/lib/shop.php';
+require __DIR__ . '/lib/shop_pages.php';
 
 date_default_timezone_set(AlokConfig::tz()->getName());
 send_security_headers();
@@ -64,6 +66,12 @@ function route(): void
         'export'         => 'page_export',
         'enquiry'        => 'page_enquiry',
         'enquiry_delete' => 'page_enquiry_delete',
+        'orders'         => 'page_orders',
+        'order'          => 'page_order',
+        'applications'   => 'page_applications',
+        'application'    => 'page_application',
+        'resume'         => 'page_resume',
+        'customers'      => 'page_customers',
         'careers'        => 'page_careers',
         'role'           => 'page_role',
         'role_delete'    => 'page_role_delete',

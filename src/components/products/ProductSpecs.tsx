@@ -5,7 +5,7 @@
  * replace them in place. Nothing is ever blanked: see applyProductOverride.
  */
 import Tag from '@/components/ui/Tag';
-import { MATERIAL_LABELS } from '@/content/products';
+import { MATERIAL_LABELS, getGroup } from '@/content/products';
 import type { Product } from '@/content/types';
 import { useCommerce } from './useCommerce';
 import './products.css';
@@ -13,12 +13,14 @@ import './pdp.css';
 
 export default function ProductSpecs({ product, groupName }: { product: Product; groupName: string }) {
   const { product: p, commerce } = useCommerce(product);
-  const cells: { label: string; value: string; wide?: boolean }[] = [{ label: 'Group', value: groupName, wide: true }];
+  const liveGroup = p.group ? getGroup(p.group)?.name : undefined;
+  const cells: { label: string; value: string; wide?: boolean }[] = [{ label: 'Group', value: liveGroup ?? groupName, wide: true }];
   if (p.material) cells.push({ label: 'Material', value: MATERIAL_LABELS[p.material] });
   if (p.sku) cells.push({ label: 'Drg no.', value: p.sku });
   if (p.hsn) cells.push({ label: 'HSN', value: p.hsn });
   if (p.moq) cells.push({ label: 'MOQ', value: p.moq });
   if (p.packing) cells.push({ label: 'Packing', value: p.packing });
+  if (p.fitment) cells.push({ label: 'Fitment', value: p.fitment, wide: true });
 
   return (
     <>

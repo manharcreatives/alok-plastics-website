@@ -17,49 +17,30 @@
 
 import { useRef, useState } from 'react';
 import { useGSAP } from '@gsap/react';
+import { Blueprint } from '@phosphor-icons/react/dist/csr/Blueprint';
+import { PencilRuler } from '@phosphor-icons/react/dist/csr/PencilRuler';
+import { Factory } from '@phosphor-icons/react/dist/csr/Factory';
+import { Truck } from '@phosphor-icons/react/dist/csr/Truck';
+import { ArrowsClockwise } from '@phosphor-icons/react/dist/csr/ArrowsClockwise';
 import { gsap } from '@/lib/motion';
 import { prefersReducedMotion } from '@/hooks/useReducedMotion';
 import { useMaskRise } from '@/hooks/useMotion';
 import { uspChain, uspPullQuote } from '@/content/journey';
 import FoldEdge, { FOLD_SECTION_CSS } from './FoldEdge';
 
-/* Process pictograms — drawn on a 48 grid, 1.5px squared stroke, currentColor.
-   understand = sample/drawing sheet with callout · develop = mould tool opened on its cavity ·
-   manufacture = moulded part with sprue · supply = crate dispatched up-and-right · repeat = loop arc */
-const STEP_GLYPH: Record<string, string[]> = {
-  Understand: [
-    'M 6 4 L 26 4 L 34 12 L 34 36 L 6 36 Z', 'M 26 4 L 26 12 L 34 12',
-    'M 12 18 L 24 18 M 12 24 L 20 24 M 12 30 L 18 30',
-    'M 28 30 L 42 30 L 42 44 L 28 44 Z', 'M 22 26 L 28 30',
-  ],
-  Develop: [
-    'M 6 8 L 42 8 L 42 22 L 30 22 L 30 17 L 18 17 L 18 22 L 6 22 Z',
-    'M 6 26 L 18 26 L 18 31 L 30 31 L 30 26 L 42 26 L 42 40 L 6 40 Z',
-    'M 12 3 L 12 8 M 36 3 L 36 8 M 12 40 L 12 45 M 36 40 L 36 45',
-  ],
-  Manufacture: [
-    'M 14 14 L 34 14 L 34 34 L 14 34 Z', 'M 20 20 L 28 20 L 28 28 L 20 28 Z',
-    'M 8 34 L 40 34 L 40 40 L 8 40 Z', 'M 24 14 L 24 5 M 19 5 L 29 5',
-  ],
-  Supply: [
-    'M 4 20 L 30 20 L 30 44 L 4 44 Z', 'M 4 28 L 30 28 M 4 36 L 30 36',
-    'M 34 24 L 44 14 M 34 14 L 44 14 L 44 24',
-  ],
-  Repeat: [
-    'M 40 24 A 16 16 0 1 1 24 8', 'M 24 8 L 31 3 M 24 8 L 31 13',
-    'M 19 19 L 29 19 L 29 29 L 19 29 Z',
-  ],
-};
+/* Process icons: Phosphor, light weight, the same set as the rest of the site. */
+const STEP_ICON = {
+  Understand: Blueprint,
+  Develop: PencilRuler,
+  Manufacture: Factory,
+  Supply: Truck,
+  Repeat: ArrowsClockwise,
+} as const;
 
 function StepGlyph({ name }: { name: string }) {
-  const d = STEP_GLYPH[name];
-  if (!d) return null;
-  return (
-    <svg className="usp-ico" width="44" height="44" viewBox="0 0 48 48" fill="none" stroke="currentColor"
-      strokeWidth="1.5" strokeLinecap="square" strokeLinejoin="miter" aria-hidden="true">
-      {d.map((p, i) => <path key={i} d={p} />)}
-    </svg>
-  );
+  const Icon = STEP_ICON[name as keyof typeof STEP_ICON];
+  if (!Icon) return null;
+  return <Icon className="usp-ico" size={40} weight="light" aria-hidden="true" />;
 }
 
 const HIGHLIGHT = 'orders that keep coming back';

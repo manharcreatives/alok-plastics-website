@@ -41,3 +41,16 @@ RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 
 # TODO(client): add redirects once old URL list is provided
 ```
+
+## Product group reorganisation (five groups)
+
+The four earlier groups were replaced by five. `public/.htaccess` section 3 redirects the old group and product URLs (301):
+
+| Old URL | New URL |
+|---|---|
+| `/products/sliding-door-systems/` and `/products/sealing/` | `/products/deep-freezer-display-counter-parts/` |
+| `/products/water-control/` and `/products/ventilation-levelling/` | `/products/water-cooler-spare-parts/` |
+| `/products/sliding-door-systems/<part>/` and `/products/sealing/<part>/` | `/products/deep-freezer-display-counter-parts/<part>/` (except `connecting-bush`, which moves to `/products/water-cooler-spare-parts/connecting-bush/`) |
+| `/products/water-control/<part>/` and `/products/ventilation-levelling/<part>/` | `/products/water-cooler-spare-parts/<part>/` |
+
+The product-to-group assignment is provisional until the client confirms it (see `docs/client-questions.md`).

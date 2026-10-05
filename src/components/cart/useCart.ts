@@ -14,7 +14,7 @@
 import { createContext, useContext, useMemo, useSyncExternalStore } from 'react';
 import { products as allProducts } from '@/content/products';
 import type { Product } from '@/content/types';
-import { useHiddenProductSlugs, useRuntimeProducts } from '@/components/runtime/useRuntime';
+import { useHiddenProductSlugs, useRuntimeCustomProducts, useRuntimeProducts } from '@/components/runtime/useRuntime';
 import { CART_QTY_CEILING, availabilityOf, isListable, maxOrderQty, priceOf, type Availability } from './cart-catalog';
 
 export const CART_KEY = 'alok:cart:v1';
@@ -159,9 +159,10 @@ export interface ResolvedLine {
 export function useCartLines(): ResolvedLine[] {
   const { lines } = useCart();
   const merged = useRuntimeProducts(allProducts);
+  const customs = useRuntimeCustomProducts();
   const hidden = useHiddenProductSlugs();
   return useMemo(() => {
-    const bySlug = new Map(merged.map(p => [p.slug, p]));
+    const bySlug = new Map([...merged, ...customs].map(p => [p.slug, p]));
     return lines.map((l): ResolvedLine => {
       const product = bySlug.get(l.slug) ?? null;
       const unavailable = !product || hidden.has(l.slug) || !isListable(product);
@@ -179,5 +180,5 @@ export function useCartLines(): ResolvedLine[] {
         outOfStock: !unavailable && availability === 'out-of-stock',
       };
     });
-  }, [lines, merged, hidden]);
+  }, [lines, merged, customs, hidden]);
 }

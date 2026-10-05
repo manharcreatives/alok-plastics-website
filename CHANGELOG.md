@@ -1,5 +1,13 @@
 # Changelog
 
+## Premium revamp: five product groups, customer sign-in orders, careers form, admin additions
+
+- Five product groups, simplified product cards, catalogue and custom-part block, manufacturer snapshot in About, Why-choose layout fix, rebalanced footer, one icon set (Phosphor).
+- Cart: name and mobile sign-in with OTP, order saved on the server, structured WhatsApp message, success screen with Order ID.
+- Careers: application form with resume upload or link, saved in the admin, emailed and logged to Google Sheet.
+- Admin: Orders, Applications, Customers; Products can be added, moved between groups, given fitment and removed.
+- Old group and product URLs redirect to the new groups.
+
 ## 0.2.0 — 2026-10-01
 **Fix pass (Phases 1–6)** — glass nav centring/overflow fixed; preloader mounted (logo → Sanskrit tagline → navbar hand-off, failsafes); real logo vectorised (98.4% pixel match); hero H1/CTAs/scroll cue fixed; WhatsApp CTA; counters, product bento, industries bento, USP chain rebuilt; journey dead-scroll removed (~500vh → ~275vh, static on mobile); dot-matrix India map; honesty-rule copy cleanup; footer address/contact; forms (optional notes, a11y errors, offline fallback); local fonts (offline-safe build).
 **Phase 7** — /about, /products (finder + filters), /products/[group], /products/[group]/[part] (17 parts), /industries, /career, /contact, /privacy, /terms, /refund (placeholders, noindex), branded 404; shared Footer/FAB in layout.

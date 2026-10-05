@@ -68,17 +68,17 @@ const HERO_STYLES = `
 .hero__ctas { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-sm); }
 .hero__btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-xs);
   min-height: 48px; padding: 0 var(--space-md); border-radius: var(--radius-card);
-  font-weight: 600; font-size: 1rem; line-height: 1; text-decoration: none;
+  font-weight: 600; font-size: 0.9375rem; letter-spacing: 0.005em; line-height: 1; text-decoration: none;
   transition: background-color 200ms cubic-bezier(.16,1,.3,1), color 200ms cubic-bezier(.16,1,.3,1), border-color 200ms cubic-bezier(.16,1,.3,1); white-space: nowrap; }
 .hero__btn:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 3px; }
 .hero__btn svg { transition: transform 200ms cubic-bezier(.16,1,.3,1); }
 .hero__btn:hover svg, .hero__btn:focus-visible svg { transform: translate3d(2px, -2px, 0); }
 .hero__btn--primary { background: var(--burgundy); color: var(--surface); border: 1px solid var(--burgundy); }
 .hero__btn--primary:hover, .hero__btn--primary:focus-visible { background: var(--burgundy-deep); border-color: var(--burgundy-deep); }
-.hero__btn--secondary { background: var(--surface); color: var(--burgundy); border: 1px solid var(--burgundy); }
-.hero__btn--secondary:hover, .hero__btn--secondary:focus-visible { background: var(--blush); }
-.hero__btn--secondary-dark { background: transparent; color: var(--surface); border: 1px solid var(--surface); }
-.hero__btn--secondary-dark:hover, .hero__btn--secondary-dark:focus-visible { background: color-mix(in srgb, var(--surface) 16%, transparent); }
+.hero__btn--secondary { background: transparent; color: var(--burgundy); border: 1px solid color-mix(in srgb, var(--burgundy) 45%, transparent); }
+.hero__btn--secondary:hover, .hero__btn--secondary:focus-visible { background: var(--blush); border-color: var(--burgundy); }
+.hero__btn--secondary-dark { background: transparent; color: var(--surface); border: 1px solid color-mix(in srgb, var(--surface) 55%, transparent); }
+.hero__btn--secondary-dark:hover, .hero__btn--secondary-dark:focus-visible { background: color-mix(in srgb, var(--surface) 12%, transparent); border-color: var(--surface); }
 
 .hero__cue { position: absolute; right: var(--grid-page-padding); bottom: calc(4vw + var(--space-lg));
   display: flex; flex-direction: column; align-items: center; gap: 4px; z-index: 3;
@@ -304,7 +304,6 @@ export default function Hero() {
           </Link>
           <Link href="/products" className={`hero__btn ${onMedia ? 'hero__btn--secondary-dark' : 'hero__btn--secondary'}`}>
             Browse Products
-            <ArrowUpRight weight="light" size={20} aria-hidden="true" />
           </Link>
         </div>
       </div>

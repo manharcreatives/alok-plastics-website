@@ -144,12 +144,30 @@ export function applyProductOverride(p: Product, o: RuntimeProductOverride | und
     stock: o.stock ?? p.stock,
     keywords: o.keywords.length > 0 ? o.keywords : p.keywords,
     brand: o.brand ?? p.brand,
+    fitment: o.fitment ?? p.fitment,
+    group: o.group ?? p.group,
+    machine: o.machines.length > 0 ? o.machines : p.machine,
     featured: o.featured ?? p.featured,
     status: o.status ?? p.status,
     images: o.images.length > 0
       ? o.images.map(i => ({ src: i.url, alt: i.alt || o.name || p.name, w: 0, h: 0 }))
       : p.images,
   };
+}
+
+/** Products created in the admin panel (they have no static page), built from products.json. */
+export function customProductsFrom(map: RuntimeProducts['products'] | null): Product[] {
+  const out: Product[] = [];
+  map?.forEach((o, slug) => {
+    if (!o.custom || !o.name || !o.group) return;
+    out.push(applyProductOverride({ slug, name: o.name, group: o.group, machine: 'TODO', images: [], published: true, custom: true }, o));
+  });
+  return out;
+}
+
+export function useRuntimeCustomProducts(): Product[] {
+  const map = useRuntimeProductMap();
+  return useMemo(() => customProductsFrom(map), [map]);
 }
 
 /** The raw override for one slug, or undefined. */
@@ -184,10 +202,21 @@ export function useRuntimeProducts(list: Product[]): Product[] {
  */
 export function useCatalogProducts(): Product[] {
   const merged = useRuntimeProducts(publishedProducts);
+  const customs = useRuntimeCustomProducts();
   const hidden = useHiddenProductSlugs();
   return useMemo(
-    () => merged.filter(p => p.group !== null && isListable(p) && !hidden.has(p.slug)),
-    [merged, hidden],
+    () => [...merged, ...customs].filter(p => p.group !== null && isListable(p) && !hidden.has(p.slug)),
+    [merged, customs, hidden],
+  );
+}
+
+/** One group's parts: the static list until products.json arrives, then the live catalogue (moves, additions, removals). */
+export function useGroupProducts(groupId: string, items: Product[]): Product[] {
+  const { products } = useRuntime();
+  const catalog = useCatalogProducts();
+  return useMemo(
+    () => (products && products.products.size > 0 ? catalog.filter(p => p.group === groupId) : items),
+    [products, catalog, groupId, items],
   );
 }
 

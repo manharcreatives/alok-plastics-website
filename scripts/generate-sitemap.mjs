@@ -21,7 +21,7 @@ const STATIC = {
 const DEFAULT = [0.5, 'monthly'];
 
 const entries = new Map();
-const NOINDEX = new Set(['/privacy/', '/terms/', '/refund/', '/cart/']); // privacy/terms/refund: noindex until legal text is published; cart: always noindex
+const NOINDEX = new Set(['/privacy/', '/terms/', '/refund/', '/cart/', '/products/item/']); // privacy/terms/refund: noindex until legal text is published; cart: always noindex
 for (const r of scanStaticRoutes()) if (!NOINDEX.has(r)) entries.set(r, STATIC[r] ?? DEFAULT);
 for (const g of productGroups) entries.set(`/products/${g.slug}/`, [0.8, 'weekly']);
 for (const p of publishedProducts) {

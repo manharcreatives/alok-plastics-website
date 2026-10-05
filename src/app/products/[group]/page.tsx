@@ -6,7 +6,7 @@ import { ArrowUpRight } from '@phosphor-icons/react/dist/ssr/ArrowUpRight';
 import PageHero from '@/components/page/PageHero';
 import EnquiryBand from '@/components/page/EnquiryBand';
 import FoldEdge, { FOLD_SECTION_CSS } from '@/components/sections/FoldEdge';
-import GroupParts from '@/components/products/GroupParts';
+import GroupRange from '@/components/products/GroupRange';
 import { GroupBlueprintArt } from '@/components/products/art';
 import { describe } from '@/lib/seo';
 import { getGroupBySlug, productGroups, productsByGroup } from '@/content/products';
@@ -34,7 +34,8 @@ export default async function GroupPage({ params }: { params: Promise<{ group: s
   const g = getGroupBySlug(slug);
   if (!g) notFound();
   const items = productsByGroup(g.id);
-  const others = productGroups.filter(o => o.id !== g.id && productsByGroup(o.id).length > 0);
+  const custom = g.id === '05';
+  const others = productGroups.filter(o => o.id !== g.id);
 
   return (
     <>
@@ -48,18 +49,7 @@ export default async function GroupPage({ params }: { params: Promise<{ group: s
         layout="center"
       />
 
-      <section aria-labelledby="parts-h" className="p-section p-section--surface">
-        <div className="pw">
-          <div className="pg-bar">
-            <div>
-              <p className="p-eyebrow">The range</p>
-              <h2 id="parts-h" className="p-h2">Parts in {g.name}</h2>
-            </div>
-            <span className="pg-meta">{items.length} {items.length === 1 ? 'part' : 'parts'}</span>
-          </div>
-          <GroupParts groupId={g.id} items={items} />
-        </div>
-      </section>
+      <GroupRange group={{ id: g.id, name: g.name }} items={items} />
 
       {others.length > 0 && (
         <section aria-labelledby="sib-h" className="p-section p-section--canvas fold-sec fold-sec--step">
@@ -84,7 +74,7 @@ export default async function GroupPage({ params }: { params: Promise<{ group: s
           </div>
         </section>
       )}
-      <EnquiryBand variant="lock" fold="diag" heading={`Need ${g.name.toLowerCase()} parts?`} text="Share the part name, quantity and use, and we will reply with a quote." />
+      <EnquiryBand variant="lock" fold="diag" heading={custom ? 'Have a part in mind?' : `Looking for ${g.name.toLowerCase()}?`} text="Share the part name, quantity and use, and we will reply with a quote." />
     </>
   );
 }

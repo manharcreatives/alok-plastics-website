@@ -1,7 +1,7 @@
 // Alok Plastics — Content type definitions
 // All content is sourced from src/content/*.ts — never hardcode in components
 
-export type ProductGroupId = '01' | '02' | '03' | '04';
+export type ProductGroupId = '01' | '02' | '03' | '04' | '05';
 export type MachineId = 'water-cooler' | 'display-counter' | 'deep-freezer';
 export type MaterialId = 'nylon' | 'hdpe' | 'ppcp' | 'brass' | 'ss';
 export type BuyerType = 'oem' | 'dealer' | 'distributor' | 'repair-workshop' | 'other';
@@ -52,6 +52,8 @@ export type Product = {
   packing?: string;                 // TODO(client)
   summary?: string;                 // COPY: drafted, needs client approval
   description?: string;             // longer copy; set at runtime via admin products.json
+  fitment?: string;                 // which machines or models it fits; set at runtime via admin products.json
+  custom?: boolean;                 // created in the admin panel; has no static page (see /products/item/)
   images: ProductImage[];
   published: boolean;
 };

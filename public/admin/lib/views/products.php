@@ -19,8 +19,9 @@ $sel = static function (string $name, array $opts, string $cur, string $any = ''
 <div class="row-between">
   <h1>Products</h1>
   <p class="meta"><?= (int) $total ?> products · <?= (int) $hiddenCount ?> hidden from lists</p>
+  <a class="btn btn-primary" href="<?= e(u('product', ['new' => 1])) ?>"><?= icon('plus') ?>Add product</a>
 </div>
-<p class="lead">Every product on the website. Open one to change its name, description, price, availability, details, SEO tags and photos. Empty fields use the website’s built-in text; with no price, customers see “Price on request”.</p>
+<p class="lead">Every product on the website. Add new products, or open one to change its group, name, description, price, availability, fitment, SEO tags and photos. Empty fields use the website’s built-in text; with no price, customers see “Price on request”.</p>
 
 <form class="card filters pfilters" method="get" action="index.php">
   <input type="hidden" name="r" value="products">
@@ -91,6 +92,7 @@ $sel = static function (string $name, array $opts, string $cur, string $any = ''
           <?php if ($c['published']): ?>
             <span class="badge badge-won">On website</span>
             <?php if ($r['hidden']): ?><span class="badge badge-lost">Hidden from lists</span><?php endif; ?>
+            <?php if (!empty($c['custom'])): ?><span class="badge tone-brand">Added in admin</span><?php endif; ?>
           <?php else: ?><span class="badge badge-quoted">Not on website yet</span><?php endif; ?>
           <?php if ($e['status'] !== 'active'): ?><span class="badge tone-warn"><?= e(AlokProducts::STATUS[$e['status']]) ?></span><?php endif; ?>
           <span class="badge <?= $e['availability'] === 'in-stock' ? 'tone-ok' : ($e['availability'] === 'out-of-stock' ? 'tone-warn' : 'tone-info') ?>"><?= e(AlokProducts::AVAILABILITY[$e['availability']]) ?><?= $e['stock'] !== null ? ' · ' . (int) $e['stock'] : '' ?></span>
@@ -137,4 +139,4 @@ $sel = static function (string $name, array $opts, string $cur, string $any = ''
   </div>
 </form>
 <?php endif; ?>
-<p class="meta">Hiding removes a product from the website’s lists and menus; its own page stays reachable. Status “Inactive” or “Archived” also removes it from lists, search and menus, and the page shows “no longer available”. Adding or removing whole products is a developer task.</p>
+<p class="meta">Hiding removes a product from the website’s lists and menus; its own page stays reachable. Status “Inactive” or “Archived” also removes it from lists, search and menus, and the page shows “no longer available”. Products you add here appear on the website straight away in their group; built-in products can be moved between groups or removed from the website from their edit screen.</p>

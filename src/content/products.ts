@@ -10,55 +10,55 @@ import type { MachineId, MaterialId, Product, ProductGroup } from './types';
 export const productGroups: ProductGroup[] = [
   {
     id: '01',
-    name: 'Sliding & Door Systems',
-    slug: 'sliding-door-systems',
-    // COPY: drafted, needs client approval
-    tagline: 'Parts that keep doors moving and closing smoothly.',
-    // COPY: drafted, needs client approval
-    description: 'Bushes, locks, hinges and springs for the sliding and hinged doors of display counters, deep freezers and industrial enclosures.',
-    anchorParts: ['f-bush', 'connecting-bush', 'door-lock', 'hinge'],
-  },
-  {
-    id: '02',
-    name: 'Water Control',
-    slug: 'water-control',
-    // COPY: drafted, needs client approval
-    tagline: 'Parts that manage water flow inside coolers and dispensers.',
-    // COPY: drafted, needs client approval
-    description: 'Float valves, push cocks and waste pipes for water coolers, dispensers and related equipment.',
+    name: 'Water Cooler spare parts',
+    slug: 'water-cooler-spare-parts',
+    tagline: 'Valves, taps, drain and levelling parts for water coolers.',
+    description: 'Float valves, push cocks, waste pipes, couplings, ventilation jalli and adjustable leg inserts for water coolers and dispensers.',
     anchorParts: ['float-valve', 'push-cock', 'waste-pipe'],
   },
   {
+    id: '02',
+    name: 'Deep freezer & Display counter Parts',
+    slug: 'deep-freezer-display-counter-parts',
+    tagline: 'Parts that keep doors sliding, closing and sealing.',
+    description: 'Sliding bushes, locks, hinges, springs and gaskets for the doors of display counters and deep freezers.',
+    anchorParts: ['f-bush', 'door-lock', 'hinge', 'gasket'],
+  },
+  {
     id: '03',
-    name: 'Ventilation & Levelling',
-    slug: 'ventilation-levelling',
-    // COPY: drafted, needs client approval
-    tagline: 'Parts that keep equipment breathing and standing level.',
-    // COPY: drafted, needs client approval
-    description: 'Ventilation jalli for airflow and adjustable leg inserts for levelling coolers, counters and freezers on uneven surfaces.',
-    anchorParts: ['ventilation-jalli', 'adjustable-leg-insert'],
+    name: 'Commercial Kitchen Spare parts',
+    slug: 'commercial-kitchen-spare-parts',
+    tagline: 'Spare parts for commercial kitchen equipment.',
+    description: 'Tell us the part and the equipment it belongs to, and we will confirm availability and quote.',
+    anchorParts: [],
   },
   {
     id: '04',
-    name: 'Sealing',
-    slug: 'sealing',
-    // COPY: drafted, needs client approval
-    tagline: 'Parts that seal and protect against leaks and heat loss.',
-    // COPY: drafted, needs client approval
-    description: 'Gaskets for sealing refrigeration compartments, door frames and water-tight joints.',
-    anchorParts: ['gasket'],
+    name: 'Caster wheel',
+    slug: 'caster-wheel',
+    tagline: 'Caster wheels for equipment and trolleys.',
+    description: 'Share the size and load requirement and we will confirm availability and quote.',
+    anchorParts: [],
+  },
+  {
+    id: '05',
+    name: 'On demand Customized Products',
+    slug: 'on-demand-customized-products',
+    tagline: 'Share a sample, drawing or photo and we will develop and supply it.',
+    description: 'Parts made to your sample or drawing, from mould development to supply.',
+    anchorParts: [],
   },
 ];
 
 // ─── Products ─────────────────────────────────────────────────────────────────
 
 export const products: Product[] = [
-  // ── Group 01: Sliding & Door Systems ────────────────────────────────────────
+  // ── Door, sliding and sealing parts ────────────────────────────────────────
 
   {
     slug: 'f-bush',
     name: 'F-Bush',
-    group: '01',
+    group: '02',
     machine: 'TODO', // TODO(client): which machines use this part
     material: 'nylon',
     variants: [],     // TODO(client): sizes/variants from catalogue
@@ -101,7 +101,7 @@ export const products: Product[] = [
   {
     slug: 'door-lock',
     name: 'Door Lock',
-    group: '01',
+    group: '02',
     machine: ['display-counter', 'deep-freezer'],
     material: undefined, // TODO(client): confirm material from catalogue
     variants: [],        // TODO(client): variants/sizes
@@ -116,7 +116,7 @@ export const products: Product[] = [
   {
     slug: 'hinge',
     name: 'Hinge',
-    group: '01',
+    group: '02',
     machine: ['display-counter', 'deep-freezer'],
     material: undefined, // TODO(client): confirm material
     variants: [],        // TODO(client): L-Type and other types
@@ -129,7 +129,7 @@ export const products: Product[] = [
   {
     slug: 'handle-lock',
     name: 'Handle Lock',
-    group: '01',
+    group: '02',
     machine: 'TODO', // TODO(client)
     material: undefined, // TODO(client)
     variants: [],
@@ -144,7 +144,7 @@ export const products: Product[] = [
   {
     slug: 'bracket-handle',
     name: 'Bracket Handle',
-    group: '01',
+    group: '02',
     machine: 'TODO', // TODO(client)
     material: undefined, // TODO(client)
     variants: [],
@@ -160,7 +160,7 @@ export const products: Product[] = [
   {
     slug: 'ss-kabja',
     name: 'SS Kabja',
-    group: '01',
+    group: '02',
     machine: 'TODO', // TODO(client)
     material: 'ss',  // SS = stainless steel implied — TODO(client): confirm
     variants: [],    // TODO(client)
@@ -175,7 +175,7 @@ export const products: Product[] = [
   {
     slug: 'l-type-hinge',
     name: 'L-Type Hinge',
-    group: '01',
+    group: '02',
     machine: 'TODO', // TODO(client)
     material: undefined, // TODO(client)
     variants: [],    // TODO(client): sizes
@@ -190,7 +190,7 @@ export const products: Product[] = [
   {
     slug: 'u-type-door-spring',
     name: 'U-Type Door Spring',
-    group: '01',
+    group: '02',
     machine: 'TODO', // TODO(client)
     material: undefined, // TODO(client)
     variants: [],
@@ -205,7 +205,7 @@ export const products: Product[] = [
   {
     slug: 'l-hinge-door-spring',
     name: 'L-Hinge Door Spring',
-    group: '01',
+    group: '02',
     machine: 'TODO', // TODO(client)
     material: undefined, // TODO(client)
     variants: [],
@@ -217,12 +217,12 @@ export const products: Product[] = [
     published: true,
   },
 
-  // ── Group 02: Water Control ──────────────────────────────────────────────────
+  // ── Water, drain and vent parts ──────────────────────────────────────────────────
 
   {
     slug: 'float-valve',
     name: 'Float Valve',
-    group: '02',
+    group: '01',
     machine: ['water-cooler'],
     material: 'nylon',
     variants: [],
@@ -240,7 +240,7 @@ export const products: Product[] = [
   {
     slug: 'push-cock',
     name: 'Push Cock',
-    group: '02',
+    group: '01',
     machine: ['water-cooler'],
     material: 'brass',
     variants: [
@@ -261,7 +261,7 @@ export const products: Product[] = [
   {
     slug: 'waste-pipe',
     name: 'Waste Pipe',
-    group: '02',
+    group: '01',
     machine: ['water-cooler', 'display-counter'],
     material: 'ppcp',
     variants: [],
@@ -278,7 +278,7 @@ export const products: Product[] = [
   {
     slug: 'waste-coupling',
     name: 'Waste Coupling',
-    group: '02',
+    group: '01',
     machine: 'TODO', // TODO(client)
     material: undefined, // TODO(client)
     variants: [],
@@ -290,12 +290,12 @@ export const products: Product[] = [
     published: true,
   },
 
-  // ── Group 03: Ventilation & Levelling ────────────────────────────────────────
+  // ── Ventilation and levelling parts ────────────────────────────────────────
 
   {
     slug: 'ventilation-jalli',
     name: 'Ventilation Jalli',
-    group: '03',
+    group: '01',
     machine: ['water-cooler', 'display-counter', 'deep-freezer'],
     material: 'ppcp',
     variants: [
@@ -316,7 +316,7 @@ export const products: Product[] = [
   {
     slug: 'adjustable-leg-insert',
     name: 'Adjustable Leg Insert',
-    group: '03',
+    group: '01',
     machine: ['water-cooler', 'display-counter', 'deep-freezer'],
     material: 'hdpe',
     variants: [
@@ -345,7 +345,7 @@ export const products: Product[] = [
   {
     slug: 'gasket',
     name: 'Gasket',
-    group: '04',
+    group: '02',
     machine: ['display-counter', 'deep-freezer'],
     material: undefined, // TODO(client): confirm material from catalogue
     variants: [],        // TODO(client): sizes and types
@@ -434,7 +434,9 @@ export const getGroupBySlug = (slug: string) =>
 
 /** Canonical path for a published, grouped product (trailing slash). */
 export const productPath = (p: Product): string => {
-  const g = p.group ? getGroup(p.group) : undefined;
+  if (p.custom) return `/products/item/?s=${encodeURIComponent(p.slug)}`;
+  const built = getProduct(p.slug) ?? p;
+  const g = built.group ? getGroup(built.group) : undefined;
   return g ? `/products/${g.slug}/${p.slug}/` : '/products/';
 };
 
