@@ -159,7 +159,7 @@ export default function EnquiryArt() {
         fontFamily="var(--font-mono, monospace)" fontSize={13}
         fill="var(--grey-metal)" letterSpacing="0.06em"
         className="pa-fade" style={D(950)}
-      >Ø — mm</text>
+      >Ø</text>
 
       {/* ── Callout lines + labels ────────────────────────────────────── */}
       {CALLOUTS.map((c, i) => (

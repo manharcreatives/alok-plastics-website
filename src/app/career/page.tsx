@@ -5,6 +5,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowUpRight } from '@phosphor-icons/react/dist/ssr/ArrowUpRight';
 import { EnvelopeSimple } from '@phosphor-icons/react/dist/ssr/EnvelopeSimple';
+import Highlight from '@/components/ui/Highlight';
 import PageHero from '@/components/page/PageHero';
 import { CareerArt } from '@/components/page/art';
 import FoldEdge, { FOLD_SECTION_CSS } from '@/components/sections/FoldEdge';
@@ -113,9 +114,6 @@ export default function CareerPage() {
               </div>
             ))}
           </div>
-          <div className="cr-hero-sheet__foot">
-            <span>Joyful</span><span>Supportive</span><span>Trustworthy</span>
-          </div>
         </div>
       </PageHero>
 
@@ -125,7 +123,7 @@ export default function CareerPage() {
             <div>
               <Eyebrow>Culture</Eyebrow>
               <h2 id="culture-h" className="cr-culture__statement">A workplace where people <em>enjoy working</em> and take pride in what they create.</h2>
-              {paragraphs.map((p, i) => <Reveal as="p" key={i} className="p">{p}</Reveal>)}
+              {paragraphs.map((p, i) => <Reveal as="p" key={i} className="p">{i === 0 ? <Highlight keywords={['joyful, supportive, and trustworthy']}>{p}</Highlight> : p}</Reveal>)}
             </div>
             <ul className="cr-words" aria-label="Our culture in three words">
               {['Joyful', 'Supportive', 'Trustworthy'].map((w, i) => (

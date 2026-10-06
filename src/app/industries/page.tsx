@@ -4,6 +4,7 @@
  * (SEND below) is DRAFTED by us, not client-supplied: flagged for client approval. No numbering in labels/titles.
  */
 import type { Metadata } from 'next';
+import Highlight from '@/components/ui/Highlight';
 import PageHero from '@/components/page/PageHero';
 import EnquiryBand from '@/components/page/EnquiryBand';
 import FoldEdge, { FOLD_SECTION_CSS } from '@/components/sections/FoldEdge';
@@ -11,12 +12,10 @@ import Pictogram, { type PictogramName } from '@/components/brand/Pictogram';
 import IndustryScene, { CoreMarketScene } from '@/components/art/IndustryScenes';
 import { IndustriesHeroArt } from '@/components/products/art';
 import { industriesConfig, coreMarket } from '@/content/industries';
-import { ArrowUpRight } from '@phosphor-icons/react/dist/ssr/ArrowUpRight';
 import { Cube } from '@phosphor-icons/react/dist/ssr/Cube';
 import { Blueprint } from '@phosphor-icons/react/dist/ssr/Blueprint';
 import { Stack } from '@phosphor-icons/react/dist/ssr/Stack';
 import { Gear } from '@phosphor-icons/react/dist/ssr/Gear';
-import Link from 'next/link';
 import '@/components/products/products.css';
 
 export const metadata: Metadata = {
@@ -130,7 +129,7 @@ export default function IndustriesPage() {
         crumbs={[{ label: 'Industries' }]}
         label="Industries"
         title="Built for the industries that build India."
-        lead="Our core market is spare parts for water coolers, display counters and deep freezers. The industries below are our wider reach."
+        lead={<Highlight keywords={['core market']}>Our core market first, then the seven industries beyond it.</Highlight>}
         art={<IndustriesHeroArt />}
         enter="rise"
       />
@@ -189,7 +188,6 @@ export default function IndustriesPage() {
             <p className="in-eyebrow">Before you enquire</p>
             <h2 id="send-h" className="in-h2">What to send us.</h2>
             <p className="ip__lead">Any one of these is enough to start. Whichever industry the part is for, the more you share, the faster we can quote.</p>
-            <Link href="/enquiry/" className="ip__cta">Start an enquiry <ArrowUpRight size={20} weight="light" aria-hidden="true" /></Link>
           </header>
           <div className="ip__sheet">
             <div className="ip__bar"><b>Submission sheet</b><span>Any one to begin</span></div>

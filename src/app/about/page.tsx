@@ -5,6 +5,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowUpRight } from '@phosphor-icons/react/dist/ssr/ArrowUpRight';
+import Highlight from '@/components/ui/Highlight';
 import PageHero from '@/components/page/PageHero';
 import EnquiryBand from '@/components/page/EnquiryBand';
 import { AboutArt } from '@/components/page/art';
@@ -34,7 +35,7 @@ function renderStory(p: { text: string; strong?: string[] }) {
     });
   }
   return parts.map((part, i) =>
-    typeof part === 'string' ? part : <mark key={i} className="ab-mark">{part.s}</mark>,
+    typeof part === 'string' ? part : <mark key={i} className="kw">{part.s}</mark>,
   );
 }
 
@@ -47,7 +48,6 @@ function splitValue(t: string): [string, string] {
 const CSS = `
 ${SECTION_CSS}
 ${FOLD_SECTION_CSS}
-.ab-mark { background: linear-gradient(transparent 62%, var(--pink-soft) 62%); color: var(--ink); font-weight: 650; padding: 0 2px; }
 
 /* Brand idea */
 .ab-idea { background: var(--surface); }
@@ -115,17 +115,6 @@ ${FOLD_SECTION_CSS}
 .ab-plate__name { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-weight: 650; font-size: var(--fs-h2); letter-spacing: var(--tr-h2); line-height: var(--lh-h2); color: var(--ink); margin: 0; padding: var(--space-lg) var(--space-sm) var(--space-sm); }
 .ab-plate__foot { padding: 0 var(--space-sm) var(--space-sm); font-size: 0.875rem; color: var(--muted); margin: 0; }
 
-/* Company record: a drawing-sheet title block of facts already stated in the story */
-.ab-rec { background: var(--surface-alt); --pad-top: var(--section-y); }
-.ab-rec__grid { display: grid; gap: var(--space-xl); align-items: start; }
-.ab-rec__sheet { margin: 0; border: 1.5px solid var(--grey-metal); background: var(--surface); position: relative; }
-.ab-rec__sheet::before { content: ''; position: absolute; left: -2px; top: -2px; width: 72px; height: 3px; background: var(--burgundy); }
-.ab-rec__head { display: flex; justify-content: space-between; gap: var(--space-sm); padding: var(--space-xs) var(--space-md); border-bottom: 1.5px solid var(--grey-metal); background: var(--canvas); font-family: var(--font-mono, monospace); font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--grey-metal); }
-.ab-rec__row { display: grid; grid-template-columns: minmax(96px, 1fr) minmax(0, 2.4fr); gap: var(--space-sm); align-items: baseline; padding: var(--space-sm) var(--space-md); border-bottom: 1px solid var(--grey-cloud); }
-.ab-rec__row dt { font-size: 0.75rem; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; color: var(--grey-metal); }
-.ab-rec__row dd { margin: 0; font-family: var(--font-archivo); font-variation-settings: "wdth" 115; font-weight: 650; font-size: var(--fs-lead-lg); line-height: var(--lh-lead-lg); letter-spacing: var(--tr-lead-lg); color: var(--ink); }
-.ab-rec__row:first-of-type dd { font-size: var(--fs-h1); line-height: var(--lh-h1); letter-spacing: var(--tr-h1); }
-.ab-rec__foot { display: flex; justify-content: space-between; gap: var(--space-sm); padding: var(--space-xs) var(--space-md); font-family: var(--font-mono, monospace); font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--grey-metal); }
 
 /* Culture teaser */
 .ab-culture { background: var(--surface); }
@@ -150,7 +139,6 @@ ${FOLD_SECTION_CSS}
   .ab-vm__panel--m { margin-top: 0; margin-left: calc(var(--seam) * -1); padding-top: var(--section-y); padding-left: calc(var(--grid-page-padding) + var(--seam)); clip-path: polygon(var(--seam) 0, 100% 0, 100% 100%, 0 100%); }
   .ab-vm__panel--v { padding-left: max(var(--grid-page-padding), calc((100vw - var(--grid-max)) / 2)); padding-right: var(--space-xl); display: flex; justify-content: flex-end; }
   .ab-vm__panel--m { padding-right: max(var(--grid-page-padding), calc((100vw - var(--grid-max)) / 2)); }
-  .ab-rec__grid { grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); }
 }
 @media (min-width: 1024px) {
   .ab-vals__list { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--space-md); }
@@ -159,15 +147,6 @@ ${FOLD_SECTION_CSS}
 }
 @media (prefers-reduced-motion: reduce) { .ab-culture__arrow { transition: none; } }
 `;
-
-/** Facts restated from the story (MASTER_PROMPT 5.6) and site config; no new claims, no repeated stats. */
-const record: { k: string; v: string }[] = [
-  { k: 'Established', v: String(site.foundingYear) },
-  { k: 'Based in', v: site.contact.city },
-  { k: 'Makes', v: 'Plastic components from moulds and plastic granules, and steel parts' },
-  { k: 'Serves', v: 'Industrial and B2B customers across India' },
-  { k: 'Principle', v: 'Good products build business. Trust builds relationships.' },
-];
 
 export default function AboutPage() {
   const owners = site.owners;
@@ -180,7 +159,7 @@ export default function AboutPage() {
         crumbs={[{ label: 'About' }]}
         label="About"
         title="About Alok Plastics, Chandigarh."
-        lead="Alok Plastics is a Chandigarh-based manufacturer, established in 1998, of moulded plastic and steel spare parts for water coolers, display counters and deep freezers."
+        lead={<Highlight keywords={['moulded plastic and steel spare parts']}>Alok Plastics is a Chandigarh-based manufacturer, established in 1998, of moulded plastic and steel spare parts for water coolers, display counters and deep freezers.</Highlight>}
         art={<AboutArt />}
         enter="rise"
         layout="center"
@@ -298,36 +277,13 @@ export default function AboutPage() {
             {owners.map((o, i) => (
               <li key={o.name}>
                 <Reveal className="cp-sheet ab-plate" delay={i * 120}>
-                  <div className="ab-plate__head"><b>{o.title}</b><span>Alok Plastics</span></div>
+                  <div className="ab-plate__head"><b>{o.title}</b></div>
                   <p className="ab-plate__name">{o.name}</p>
-                  <p className="ab-plate__foot">{o.title}, Alok Plastics</p>
+                  <p className="ab-plate__foot">Alok Plastics</p>
                 </Reveal>
               </li>
             ))}
           </ul>
-        </div>
-      </section>
-
-      {/* Company record: facts already stated in the story, set as a title block */}
-      <section aria-labelledby="rec-h" className="fold-sec cp-section ab-rec">
-        <FoldEdge />
-        <div style={WRAP_STYLE}>
-          <div className="ab-rec__grid">
-            <header>
-              <Eyebrow>Company record</Eyebrow>
-              <h2 id="rec-h" className="cp-h2">On the record.</h2>
-              <p className="cp-lead">What Alok Plastics is, in the plainest terms.</p>
-            </header>
-            <Reveal variant="wipe">
-              <dl className="ab-rec__sheet">
-                <div className="ab-rec__head" aria-hidden="true"><span>Alok Plastics</span><span>Company record</span></div>
-                {record.map(r => (
-                  <div key={r.k} className="ab-rec__row"><dt>{r.k}</dt><dd>{r.v}</dd></div>
-                ))}
-                <div className="ab-rec__foot" aria-hidden="true"><span>Not to scale</span><span>Chandigarh</span></div>
-              </dl>
-            </Reveal>
-          </div>
         </div>
       </section>
 

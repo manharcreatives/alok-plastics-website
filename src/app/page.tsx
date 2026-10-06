@@ -1,8 +1,9 @@
 // Alok Plastics — Home page
 // S1: Hero · S3: AboutIntro (incl. proof numbers) · S4: ProductGroups
-// S5: RequirementToRepeat · S6: IndustriesBento · S7: JourneyOrbit
+// S5: RequirementToRepeat · S6: IndustriesBento
 // S8: PanIndiaMap · S10: TrustQuote · S11: EnquirySection
 // S12 Footer + S13 WhatsAppFAB now live in layout.tsx (shared by every route)
+// (S7 JourneyOrbit lives on /about only: same content, same numbers as the proof band above)
 // (S9 CultureTeaser cut from home — no team photos available, see docs/decisions.md)
 
 import type { Metadata } from 'next';
@@ -14,7 +15,6 @@ import ProductGroups from '@/components/sections/ProductGroups';
 import NeedPartBlock from '@/components/sections/NeedPartBlock';
 import RequirementToRepeat from '@/components/sections/RequirementToRepeat';
 import IndustriesBento from '@/components/sections/IndustriesBento';
-import JourneyOrbit from '@/components/sections/JourneyOrbit';
 import PanIndiaMap from '@/components/sections/PanIndiaMap';
 import TrustQuote from '@/components/sections/TrustQuote';
 import EnquirySection from '@/components/sections/EnquirySection';
@@ -41,8 +41,6 @@ export default function HomePage() {
       <RequirementToRepeat />
       {/* S6 · Industries bento */}
       <IndustriesBento />
-      {/* S7 · Journey orbit (emotional peak) */}
-      <JourneyOrbit />
       {/* S8 · Pan India map */}
       <PanIndiaMap />
       {/* S10 · Trust quote (S9 cut — see decisions.md) */}

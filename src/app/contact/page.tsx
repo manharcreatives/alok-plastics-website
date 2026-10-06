@@ -4,6 +4,7 @@
  * (it lives in the floating button only).
  */
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import PageHero from '@/components/page/PageHero';
 import { ContactArt } from '@/components/page/art';
 import FoldEdge, { FOLD_SECTION_CSS } from '@/components/sections/FoldEdge';
@@ -46,7 +47,8 @@ ${FOLD_SECTION_CSS}
 .ct-link:hover { color: var(--burgundy-bright); text-decoration: underline; text-underline-offset: 3px; }
 .ct-link:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 2px; }
 .ct-row svg { color: var(--grey-metal); }
-.ct-note { padding: var(--space-md); color: var(--body); line-height: 1.65; margin: 0; font-size: 0.9375rem; }
+.ct-more { margin: var(--space-md) 0 0; font-size: 0.9375rem; line-height: 1.6; color: var(--body); }
+.ct-more__link { color: var(--burgundy); font-weight: 600; text-decoration: underline; text-underline-offset: 4px; }
 .ct-form { background: var(--surface); border: 1px solid var(--grey-metal); padding: var(--space-lg); position: relative; }
 .ct-form::before { content: ''; position: absolute; left: -1px; top: -1px; width: 72px; height: 3px; background: var(--burgundy); }
 .ct-find { background: var(--surface); --pad-top: var(--section-y); padding-bottom: var(--section-y); padding-left: var(--grid-page-padding); padding-right: var(--grid-page-padding); }
@@ -91,6 +93,7 @@ export default function ContactPage() {
               <section aria-labelledby="ct-form-h" className="ct-form">
                 <h2 id="ct-form-h" className="ct-h2" style={{ marginBottom: 'var(--space-md)' }}>Send an enquiry</h2>
                 <ShortEnquiryForm source="enquiry-page" onLight />
+                <p className="ct-more">Several parts, or a custom part? <Link href="/enquiry/" className="ct-more__link">Use the full enquiry form</Link>.</p>
               </section>
             </Reveal>
           </div>

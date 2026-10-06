@@ -3,7 +3,7 @@
  * bg: --surface, register-mark top edge.
  *
  * Replaces the old three-icon "why choose" row. Now: ONE statement (§5.4, verbatim) and a
- * ruled commitments ledger — a drawing-sheet title block listing the four things the story
+ * ruled commitments ledger — a drawing-sheet title block listing the things the story
  * (§5.6) says customers look for: quality, competitive pricing, reliable supply, timely
  * delivery. Wording only — no numbers (the stats live once, in AboutIntro).
  * No testimonials until the client supplies verified quotes (§19).
@@ -25,7 +25,6 @@ const LEDGER: { k: string; v: string }[] = [
   { k: 'Fitment', v: 'Parts that fit the machine they are made for, so a replacement goes in the first time.' },
   { k: 'Supply', v: 'Practical order quantities and supply a production line can plan around.' },
   { k: 'B2B first', v: 'Built around OEMs, dealers and distributors: clear quotes, repeat orders, no retail runaround.' },
-  { k: 'Focus', v: 'Spares that keep coolers, counters and freezers running.' },
 ];
 
 /* Testimonials — hidden until client provides verified, attributed quotes */

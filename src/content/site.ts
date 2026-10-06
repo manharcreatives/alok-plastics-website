@@ -125,7 +125,6 @@ export const manufacturerSnapshot = {
   rows: [
     { label: 'Works', value: `${site.contact.address}, ${site.contact.city}` },
     { label: 'Process', value: 'Moulds + Plastic Granules' },
-    { label: 'Focus', value: 'Water Coolers · Display Counters · Deep Freezers' },
     { label: 'Business Type', value: 'B2B Manufacturing' },
   ],
 } as const;
@@ -134,11 +133,11 @@ export const manufacturerSnapshot = {
 
 type Contact = SiteConfig['contact'];
 
-/** "Chandigarh — 160003" — city/state de-duplicated when equal (case-insensitive). */
+/** "Chandigarh 160003" — city/state de-duplicated when equal (case-insensitive). */
 export function formatCityLine(c: Contact = site.contact): string {
   const sameAsCity = !c.state || c.state.trim().toLowerCase() === c.city.trim().toLowerCase();
   const place = sameAsCity ? c.city : `${c.city}, ${c.state}`;
-  return c.pincode ? `${place} - ${c.pincode}` : place;
+  return c.pincode ? `${place} ${c.pincode}` : place;
 }
 
 /** Two display lines: street address, then "City[, State] — PIN, Country". */

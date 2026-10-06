@@ -83,7 +83,6 @@ function IndustryCard({ industry, span }: { industry: Industry; span: string }) 
       <div className="ind-body">
         <h3 className="ind-name">{industry.name}</h3>
         <div className="ind-lw">
-          <span className="ind-hint" aria-hidden="true"><i /></span>
           <p className="ind-line"><span>{industry.line}</span></p>
         </div>
       </div>
@@ -130,23 +129,15 @@ const CSS = `${FOLD_SECTION_CSS}
 .ind-card:hover .ind-go, .ind-card:focus-visible .ind-go { transform: translate3d(2px, -2px, 0); }
 .ind-body { display: flex; flex-direction: column; gap: var(--space-xs); padding: var(--space-md); padding-top: var(--space-sm); padding-bottom: var(--space-sm); flex: 1; }
 .ind-name { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: 1.125rem; font-weight: 650; color: var(--ink); letter-spacing: -0.01em; line-height: 1.25; max-width: 24ch; }
-.ind-hint { position: absolute; left: 0; top: 10px; display: flex; align-items: center; }
-.ind-hint i { width: 24px; height: 1px; background: var(--grey-metal); display: inline-block; transition: width 400ms cubic-bezier(.16,1,.3,1), background-color 400ms cubic-bezier(.16,1,.3,1); }
-.ind-card:hover .ind-hint i, .ind-card:focus-visible .ind-hint i { width: 48px; background: var(--burgundy); }
-.ind-lw { position: relative; min-height: 3.1em; }
+.ind-lw { position: relative; }
 .ind-line { font-size: 0.9375rem; color: var(--body); line-height: 1.55; max-width: 44ch; }
 .ind-line span { display: block; background: var(--surface); position: relative; }
 .ind-card::after { content: ''; position: absolute; left: 0; bottom: 0; height: 2px; width: 100%; background: var(--burgundy); transform: scaleX(0); transform-origin: left; transition: transform .7s cubic-bezier(.16,1,.3,1); }
 .ind-card:hover::after, .ind-card:focus-visible::after { transform: scaleX(1); }
 .ind-card:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 2px; }
 
-/* precise pointers: hide the line until hover/focus, then wipe it in on the 44-degree diagonal */
-@media not all and (hover: hover) and (pointer: fine) { .ind-hint { display: none; } }
-@media (prefers-reduced-motion: reduce) { .ind-hint { display: none; } .ind-photo { transition: none; } }
-@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  .ind-line span { clip-path: polygon(0 0, 0 0, -60% 100%, 0 100%); transition: clip-path 900ms cubic-bezier(.16,1,.3,1); }
-  .ind-card:hover .ind-line span, .ind-card:focus-visible .ind-line span { clip-path: polygon(0 0, 160% 0, 100% 100%, 0 100%); }
-}
+/* the application line is always visible: it is the card's only description, so it is never hidden behind hover */
+@media (prefers-reduced-motion: reduce) { .ind-photo { transition: none; } }
 
 @media (min-width: 640px) {
   .ind-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }

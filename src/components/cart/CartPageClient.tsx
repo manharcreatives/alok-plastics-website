@@ -332,7 +332,7 @@ function CartBody() {
                 <div className="cp__sent" role="status" aria-live="polite">
                   <p style={{ margin: 0, fontWeight: 600, color: 'var(--ink)' }}>
                     {whatsapp
-                      ? 'Request opened in WhatsApp — if it did not open, copy the message.'
+                      ? 'Request opened in WhatsApp. If it did not open, copy the message.'
                       : 'Your order message is ready. Copy it and send it to us.'}
                   </p>
                   <label htmlFor="cf-copy" className="sr-only">Order message</label>

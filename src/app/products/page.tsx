@@ -1,5 +1,6 @@
 /** /products — part finder in the hero stage + all four groups (§8.2). */
 import type { Metadata } from 'next';
+import Highlight from '@/components/ui/Highlight';
 import PageHero from '@/components/page/PageHero';
 import EnquiryBand from '@/components/page/EnquiryBand';
 import { FinderProvider, FinderHeroBar, FinderResults } from '@/components/products/PartFinder';
@@ -23,7 +24,7 @@ export default function ProductsPage() {
         crumbs={[{ label: 'Products' }]}
         label="Spare parts catalogue"
         title="Find the part you need"
-        lead="Spare parts for water coolers, display counters and deep freezers, grouped by what the part does inside the machine."
+        lead={<Highlight keywords={['spare parts']}>Spare parts for water coolers, display counters and deep freezers, grouped by what the part does inside the machine.</Highlight>}
         art={<CatalogueSheetArt />}
         enter="wipe"
         layout="top"
