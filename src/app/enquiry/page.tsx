@@ -61,7 +61,7 @@ export default function EnquiryPage() {
             </span>
           </>
         }
-        lead="Share the part name, quantity and any material or size preference, or just describe what the part does in your equipment. We manufacture and supply across India."
+        lead="Tell us the part and the quantity. We manufacture and supply across India and reply with a quote."
         art={<EnquiryArt />}
         enter="rise"
         layout="mirror-end"

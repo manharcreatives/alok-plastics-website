@@ -256,3 +256,30 @@
   transform-origin: left center;
   margin: var(--space-lg) 0;
 }
+
+/* ── Keyword highlight ─────────────────────────────────────────
+   A true inline highlighter: the tint fills the line box of the word from ascender to
+   descender, so p/g/y/q/j are never cut and the band never floats under the baseline.
+   Everything is in em, so it scales from body copy to display headings. When the phrase
+   wraps, box-decoration-break: clone gives every line its own rounded ends.
+   Colours are explicit: the browser's yellow <mark> never shows, and the text fill is
+   restored in case a parent uses gradient text. Static, dropped in print. */
+.kw {
+  display: inline;
+  vertical-align: baseline;
+  padding: 0.02em 0.2em;
+  margin: 0 -0.02em;
+  border-radius: 0.2em;
+  background-color: var(--pink-soft);
+  color: var(--ink);
+  -webkit-text-fill-color: var(--ink);
+  font-weight: 650;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.kw--on-dark {
+  background-color: color-mix(in srgb, var(--rose-pale) 30%, transparent);
+  color: var(--surface);
+  -webkit-text-fill-color: var(--surface);
+}
+@media print { .kw, .kw--on-dark { background: none; } }

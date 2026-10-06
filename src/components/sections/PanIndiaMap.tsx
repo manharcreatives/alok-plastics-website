@@ -20,6 +20,7 @@
 
 'use client';
 
+import Highlight from '@/components/ui/Highlight';
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useGSAP } from '@gsap/react';
@@ -277,8 +278,9 @@ export default function PanIndiaMap() {
             <h2 id="map-heading" ref={headingRef} className="pim-h2">From Chandigarh to every corner of India.</h2>
             {/* COPY: drafted from verified facts (§5.10; Chandigarh base; Pan Bharat delivery network) — needs client approval */}
             <p className="pim-lead">
-              From a single component to thousands of parts for a production line, we manufacture for businesses that build.
-              Dispatch is from {site.contact.city} through our Pan Bharat delivery network.
+              <Highlight keywords={['Pan Bharat delivery network']}>
+                {`From a single component to thousands of parts for a production line, we manufacture for businesses that build. Dispatch is from ${site.contact.city} through our Pan Bharat delivery network.`}
+              </Highlight>
             </p>
           </div>
           <ul className="pim-legend">
@@ -381,7 +383,7 @@ export default function PanIndiaMap() {
           <div>
             <h3 className="pim-man-h">What leaves {site.contact.city}.</h3>
             <p className="pim-man-sub">Every symbol is one part in our catalogue, grouped by what it does inside the machine. Tap a part to see it.</p>
-            <p className="pim-man-total"><b>{MANIFEST_TOTAL}</b><span>parts across {MANIFEST.length} families</span></p>
+            <p className="pim-man-total"><b>{MANIFEST_TOTAL}</b><span>parts across {MANIFEST.length} groups</span></p>
           </div>
           <ul className="pim-rows">
             {MANIFEST.map((r, ri) => {

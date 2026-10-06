@@ -13,7 +13,7 @@
 - Company-reported: 70%+ repeat customers
 
 ## Contact
-- Address: Plot No-06, Industrial Area Phase II, Ram Darbar, Chandigarh - 160003, India
+- Address: Plot No-06, Industrial Area Phase II, Ram Darbar, Chandigarh 160003, India
 - Enquiries and quotes: https://alokplastics.com/enquiry/ (prices are shared on request, per part and quantity)
 
 ## Key pages
@@ -26,109 +26,113 @@
 
 # Full parts list
 
-## Sliding & Door Systems
-URL: https://alokplastics.com/products/sliding-door-systems/
-Bushes, locks, hinges and springs for the sliding and hinged doors of display counters, deep freezers and industrial enclosures.
-
-### F-Bush
-URL: https://alokplastics.com/products/sliding-door-systems/f-bush/
-A nylon sliding bush for display counter door channels, reducing friction and ensuring smooth door travel.
-- Material: Nylon
+## Water Cooler spare parts
+URL: https://alokplastics.com/products/water-cooler-spare-parts/
+Float valves, push cocks, waste pipes, couplings, ventilation jalli and adjustable leg inserts for water coolers and dispensers.
 
 ### Connecting Bush
-URL: https://alokplastics.com/products/sliding-door-systems/connecting-bush/
+URL: https://alokplastics.com/products/water-cooler-spare-parts/connecting-bush/
 A connecting bush available in brass and nylon, used to join pipes and fittings in water cooler and deep freezer systems.
 - Material: Brass
 - Sizes / variants: 2"; 2.5"; 3"; Nylon variant
 
-### Door Lock
-URL: https://alokplastics.com/products/sliding-door-systems/door-lock/
-A locking mechanism for display counter and deep freezer doors.
-- Used in: Display counter, Deep freezer
-
-### Hinge
-URL: https://alokplastics.com/products/sliding-door-systems/hinge/
-Hinges for the doors of display counters and deep freezers.
-- Used in: Display counter, Deep freezer
-
-### Handle Lock
-URL: https://alokplastics.com/products/sliding-door-systems/handle-lock/
-A combined handle and lock component.
-
-### Bracket Handle
-URL: https://alokplastics.com/products/sliding-door-systems/bracket-handle/
-A bracket-style handle for equipment doors and panels.
-
-### SS Kabja
-URL: https://alokplastics.com/products/sliding-door-systems/ss-kabja/
-A stainless steel hinge (kabja) for equipment doors.
-- Material: SS
-
-### L-Type Hinge
-URL: https://alokplastics.com/products/sliding-door-systems/l-type-hinge/
-An L-type hinge for door and panel applications.
-
-### U-Type Door Spring
-URL: https://alokplastics.com/products/sliding-door-systems/u-type-door-spring/
-A U-type spring for self-closing door mechanisms.
-
-### L-Hinge Door Spring
-URL: https://alokplastics.com/products/sliding-door-systems/l-hinge-door-spring/
-A spring mechanism for L-type hinged doors.
-
-## Water Control
-URL: https://alokplastics.com/products/water-control/
-Float valves, push cocks and waste pipes for water coolers, dispensers and related equipment.
-
 ### Float Valve
-URL: https://alokplastics.com/products/water-control/float-valve/
+URL: https://alokplastics.com/products/water-cooler-spare-parts/float-valve/
 A nylon float valve that controls the water level inside water coolers and dispensers.
 - Material: Nylon
 - Used in: Water cooler
 
 ### Push Cock
-URL: https://alokplastics.com/products/water-control/push-cock/
+URL: https://alokplastics.com/products/water-cooler-spare-parts/push-cock/
 A brass push-type tap for water dispensing on water coolers. Available in light and heavy duty.
 - Material: Brass
 - Used in: Water cooler
 - Sizes / variants: Light; Heavy
 
 ### Waste Pipe
-URL: https://alokplastics.com/products/water-control/waste-pipe/
+URL: https://alokplastics.com/products/water-cooler-spare-parts/waste-pipe/
 A PPCP waste pipe for draining overflow water from water coolers and display counters.
 - Material: PPCP
 - Used in: Water cooler, Display counter
 
 ### Waste Coupling
-URL: https://alokplastics.com/products/water-control/waste-coupling/
+URL: https://alokplastics.com/products/water-cooler-spare-parts/waste-coupling/
 A coupling connector for waste pipe assemblies.
 
-## Ventilation & Levelling
-URL: https://alokplastics.com/products/ventilation-levelling/
-Ventilation jalli for airflow and adjustable leg inserts for levelling coolers, counters and freezers on uneven surfaces.
-
 ### Ventilation Jalli
-URL: https://alokplastics.com/products/ventilation-levelling/ventilation-jalli/
+URL: https://alokplastics.com/products/water-cooler-spare-parts/ventilation-jalli/
 A PPCP ventilation grille that fits water coolers, display counters and deep freezers to allow airflow while keeping out debris.
 - Material: PPCP
 - Used in: Water cooler, Display counter, Deep freezer
 - Sizes / variants: RS 60; RS 75; RS 80; RS 130
 
 ### Adjustable Leg Insert
-URL: https://alokplastics.com/products/ventilation-levelling/adjustable-leg-insert/
+URL: https://alokplastics.com/products/water-cooler-spare-parts/adjustable-leg-insert/
 An HDPE adjustable insert for equipment legs, allowing fine height adjustment and protecting floors. Available in round and square tube sections, five sizes.
 - Material: HDPE
 - Used in: Water cooler, Display counter, Deep freezer
 - Sizes / variants: 1" Round; 1" Square; 1.25" Round; 1.25" Square; 1.5" Round; 1.5" Square; 1.75" Round; 1.75" Square; 2" Round; 2" Square
 
-## Sealing
-URL: https://alokplastics.com/products/sealing/
-Gaskets for sealing refrigeration compartments, door frames and water-tight joints.
+## Deep freezer & Display counter Parts
+URL: https://alokplastics.com/products/deep-freezer-display-counter-parts/
+Sliding bushes, locks, hinges, springs and gaskets for the doors of display counters and deep freezers.
+
+### F-Bush
+URL: https://alokplastics.com/products/deep-freezer-display-counter-parts/f-bush/
+A nylon sliding bush for display counter door channels, reducing friction and ensuring smooth door travel.
+- Material: Nylon
+
+### Door Lock
+URL: https://alokplastics.com/products/deep-freezer-display-counter-parts/door-lock/
+A locking mechanism for display counter and deep freezer doors.
+- Used in: Display counter, Deep freezer
+
+### Hinge
+URL: https://alokplastics.com/products/deep-freezer-display-counter-parts/hinge/
+Hinges for the doors of display counters and deep freezers.
+- Used in: Display counter, Deep freezer
+
+### Handle Lock
+URL: https://alokplastics.com/products/deep-freezer-display-counter-parts/handle-lock/
+A combined handle and lock component.
+
+### Bracket Handle
+URL: https://alokplastics.com/products/deep-freezer-display-counter-parts/bracket-handle/
+A bracket-style handle for equipment doors and panels.
+
+### SS Kabja
+URL: https://alokplastics.com/products/deep-freezer-display-counter-parts/ss-kabja/
+A stainless steel hinge (kabja) for equipment doors.
+- Material: SS
+
+### L-Type Hinge
+URL: https://alokplastics.com/products/deep-freezer-display-counter-parts/l-type-hinge/
+An L-type hinge for door and panel applications.
+
+### U-Type Door Spring
+URL: https://alokplastics.com/products/deep-freezer-display-counter-parts/u-type-door-spring/
+A U-type spring for self-closing door mechanisms.
+
+### L-Hinge Door Spring
+URL: https://alokplastics.com/products/deep-freezer-display-counter-parts/l-hinge-door-spring/
+A spring mechanism for L-type hinged doors.
 
 ### Gasket
-URL: https://alokplastics.com/products/sealing/gasket/
+URL: https://alokplastics.com/products/deep-freezer-display-counter-parts/gasket/
 A door gasket that seals the frame of display counters and deep freezers, preventing heat exchange and moisture ingress.
 - Used in: Display counter, Deep freezer
+
+## Commercial Kitchen Spare parts
+URL: https://alokplastics.com/products/commercial-kitchen-spare-parts/
+Tell us the part and the equipment it belongs to, and we will confirm availability and quote.
+
+## Caster wheel
+URL: https://alokplastics.com/products/caster-wheel/
+Share the size and load requirement and we will confirm availability and quote.
+
+## On demand Customized Products
+URL: https://alokplastics.com/products/on-demand-customized-products/
+Parts made to your sample or drawing, from mould development to supply.
 
 ## Industries
 - OEM & Manufacturing

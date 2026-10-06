@@ -11,7 +11,6 @@ import { useRuntimeContact, useRuntimeHours } from '@/components/runtime/useRunt
 export function ContactSheet() {
   const c = useRuntimeContact();
   const [line1, line2] = formatAddressLines(c);
-  const noDirect = !c.phone && !c.email;
 
   return (
     <div className="cp-sheet">
@@ -41,9 +40,6 @@ export function ContactSheet() {
           <div><span className="ct-label">GSTIN</span><span className="ct-val">{c.gstin}</span></div>
         </div>
       )}
-      {noDirect && (
-        <p className="ct-note">The enquiry form is the quickest way to reach us. Tell us the part, the quantity and where it is used.</p>
-      )}
     </div>
   );
 }
@@ -52,7 +48,7 @@ export function ContactSheet() {
 export function VisitingHours() {
   const hours = useRuntimeHours();
   if (!hours || (hours.rows.length === 0 && !hours.note)) {
-    return <dd>To be confirmed. Send an enquiry first and we will reply.</dd>;
+    return <dd>Please send an enquiry first and we will reply.</dd>;
   }
   return (
     <dd>

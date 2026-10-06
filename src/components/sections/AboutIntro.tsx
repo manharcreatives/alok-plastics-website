@@ -13,6 +13,7 @@
 
 import { useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Highlight from '@/components/ui/Highlight';
 import { ArrowUpRight } from '@phosphor-icons/react/dist/csr/ArrowUpRight';
 import { gsap } from '@/lib/motion';
 import { prefersReducedMotion } from '@/hooks/useReducedMotion';
@@ -176,7 +177,7 @@ export default function AboutIntro() {
           <div>
             <p className="ap-micro">About</p>
             <h2 id="about-intro-heading" ref={headingRef} className="ap-h">{manufacturerSnapshot.name}</h2>
-            <p className="ap-desc">{manufacturerSnapshot.descriptor}</p>
+            <p className="ap-desc"><Highlight keywords={['Plastic Components']}>{manufacturerSnapshot.descriptor}</Highlight></p>
           </div>
           <div className="ap-body">
             <dl className="ap-facts">

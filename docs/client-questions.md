@@ -93,3 +93,6 @@ _All items above are flagged `// COPY: drafted, needs client approval` in the so
 | 36 | SMS provider account and approved DLT template for OTP (MSG91 or Fast2SMS) | `api/config.php` `$ALOK_OTP` |
 | 37 | Google account that will own the Apps Script, Sheet and Drive folder; client email for career and order alerts | `docs/google-apps-script/README.md` |
 | 38 | Confirm each decade line on the journey timeline (2000s to 2020s) | `journey.ts` |
+| 39 | The home "We don't just mould plastic. We mould possibilities." is core value 1 but the About "Core values" section shows only values 2 and 3. Show all three on About (value 1 would then leave Home), or keep as is? | `TrustQuote.tsx`, `aboutContent.ts` |
+| 40 | The journey timeline now lives on /about only (it repeated the home proof numbers). OK to keep it off Home? The 2000s/2010s/2020s figures in `journey.ts` still await confirmation (#38) | `app/page.tsx`, `journey.ts` |
+| 41 | Visiting hours and any landmark directions for the Contact page (currently "Please send an enquiry first and we will reply.") | `ContactSheet.tsx` |

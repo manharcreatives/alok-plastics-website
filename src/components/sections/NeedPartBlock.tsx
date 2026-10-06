@@ -5,6 +5,7 @@
  */
 
 import Link from 'next/link';
+import Highlight from '@/components/ui/Highlight';
 import { ArrowUpRight } from '@phosphor-icons/react/dist/ssr/ArrowUpRight';
 import { MagnifyingGlass } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass';
 import { PencilRuler } from '@phosphor-icons/react/dist/ssr/PencilRuler';
@@ -43,7 +44,7 @@ export default function NeedPartBlock() {
       <div className="np-in">
         <div className="np-head">
           <span className="np-k">Two ways to start</span>
-          <h2 id="need-part-h" className="np-h">Need the right spare part?</h2>
+          <h2 id="need-part-h" className="np-h"><Highlight keywords={['spare part']}>Need the right spare part?</Highlight></h2>
           <p className="np-sub">Find from our catalogue or tell us what you need.</p>
         </div>
         <div className="np-cards">
