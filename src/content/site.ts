@@ -44,11 +44,12 @@ export const site: SiteConfig = {
       mode: 'video',   // 'auto' | 'video' | 'poster' | 'ambient'
       // 'auto' → video if sources exist + device qualifies; else poster; else ambient
       video: {
-        webm: null,        // TODO(client): supply footage → /media/hero.webm
+        webm: null, // no VP9 build of the 74s film; H.264 mp4 plays everywhere
+        // (old 40s hero.webm is stale - delete public/media/hero.webm)
         mp4: '/media/hero.mp4',
         mobileMp4: null,   // TODO(client): optional ≤800KB mobile version
       },
-      poster: null,        // TODO(client): /media/hero-poster.jpg — see docs/hero-video-brief.md
+      poster: '/media/hero-poster.jpg', // first frame of the hero film (Flow-generated, 1920x1080)
       photo: '/images/hero/home.webp', // generated 16:9 still (1920x1080); see docs/images/manifest.hero-home.json
       // 'dark' = white text + bright logo in navbar. Required whenever footage plays:
       // measured across the full loop, --ink over the scrim lands between 1.25:1 and
