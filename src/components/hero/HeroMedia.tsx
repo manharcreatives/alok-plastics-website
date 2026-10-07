@@ -275,7 +275,7 @@ function PosterBackground({ src, alt }: { src: string; alt?: string }) {
 /* ── Video mode ──────────────────────────────────────────────── */
 function VideoBackground({ webm, mp4, poster }: { webm?: string | null; mp4?: string | null; poster?: string | null }) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isPlaying] = useState(true); // pause/play button removed; video autoplays + loops
   /* the video stays invisible until it is genuinely playing, so a missing / failed file never
      paints a black box over the photo and placeholder art underneath */
   const [live, setLive] = useState(false);
@@ -321,12 +321,6 @@ function VideoBackground({ webm, mp4, poster }: { webm?: string | null; mp4?: st
     };
   }, [isPlaying, canAutoplay]);
 
-  const togglePlay = () => {
-    const video = videoRef.current;
-    if (!video) return;
-    if (isPlaying) { video.pause(); setIsPlaying(false); }
-    else { video.play().catch(() => {}); setIsPlaying(true); }
-  };
 
   /* SSR: show poster img (LCP); the photo layer and placeholder art sit underneath either way */
   if (!mounted) {
@@ -363,35 +357,6 @@ function VideoBackground({ webm, mp4, poster }: { webm?: string | null; mp4?: st
         {webm && <source src={webm} type="video/webm" />}
         {mp4 && <source src={mp4} type="video/mp4" />}
       </video>
-
-      {/* Pause/play control — WCAG 2.2.2 (moving content > 5s must be pausable). Only offered once
-          there is moving content to pause. Sits clear of the exit diagonal, bottom-right. */}
-      {live && (
-        <button
-          type="button"
-          onClick={togglePlay}
-          aria-label={isPlaying ? 'Pause hero video' : 'Play hero video'}
-          style={{
-            position: 'absolute',
-            top: 'calc(96px + var(--space-sm))',
-            right: 'var(--grid-page-padding)',
-            width: 44,
-            height: 44,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            background: 'color-mix(in srgb, var(--canvas) 80%, transparent)',
-            border: 'none',
-            borderRadius: 'var(--radius-card)',
-            cursor: 'pointer',
-            color: 'var(--ink)',
-            fontSize: '1.25rem',
-            zIndex: 2,
-          }}
-        >
-          {isPlaying ? '⏸' : '▶'}
-        </button>
-      )}
     </div>
   );
 }

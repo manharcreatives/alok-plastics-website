@@ -51,8 +51,8 @@ The feeling should be: **precision, craft, light on material**. The same feeling
 bash scripts/encode-hero.sh
 
 # Output:
-# public/media/hero.mp4    ≤ 2.5 MB, seamless loop
-# public/media/hero.webm   ≤ 1.5 MB, seamless loop
+# public/media/hero.mp4    ~10 MB (shipped: 39.8 s, 1080p H.264, crf 29), seamless loop (graphite dip)
+# public/media/hero.webm   ~5 MB (shipped: VP9 crf 46), seamless loop
 # public/media/hero-poster.jpg  (first keyframe, used as LCP element)
 ```
 
