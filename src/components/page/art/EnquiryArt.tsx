@@ -7,7 +7,6 @@
  */
 import { D } from './artCss';
 
-const LABEL_SIZE = 14;
 const HEADING_SIZE = 11;
 
 // cx=208, cy=295 for front-view centre

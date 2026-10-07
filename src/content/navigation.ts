@@ -34,8 +34,11 @@ export const navigation: NavigationConfig = {
     // Company
     { label: 'About', href: '/about/' },
     { label: 'Industries', href: '/industries/' },
+    // Blogs lives in the footer only (not in the primary nav). Route is created by the Blogs work.
+    { label: 'Blogs', href: '/blogs/' },
     { label: 'Career', href: '/career/' },
     { label: 'Contact', href: '/contact/' },
+    { label: 'Request a Quote', href: '/enquiry/' },
   ],
 
   legal: [

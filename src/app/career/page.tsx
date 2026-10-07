@@ -2,9 +2,7 @@
  * /career: culture (§5.11 verbatim), four teams, open roles from config, contact CTA (§8.2).
  */
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { ArrowUpRight } from '@phosphor-icons/react/dist/ssr/ArrowUpRight';
-import { EnvelopeSimple } from '@phosphor-icons/react/dist/ssr/EnvelopeSimple';
 import Highlight from '@/components/ui/Highlight';
 import PageHero from '@/components/page/PageHero';
 import { CareerArt } from '@/components/page/art';
@@ -12,7 +10,6 @@ import FoldEdge, { FOLD_SECTION_CSS } from '@/components/sections/FoldEdge';
 import Reveal from '@/components/ui/Reveal';
 import RoleList from '@/components/career/RoleList';
 import CareerApplyForm from '@/components/career/CareerApplyForm';
-import { useRuntimeContact } from '@/components/runtime/useRuntime';
 import { careerConfig } from '@/content/career';
 import { Eyebrow, SECTION_CSS, SectionHead, WRAP_STYLE } from '@/components/about/parts';
 
@@ -61,7 +58,7 @@ ${FOLD_SECTION_CSS}
 .cr-empty p { color: var(--body); line-height: 1.65; margin: var(--space-sm) 0 0; max-width: 44ch; }
 
 /* Hero team sheet (in document flow below lead text) */
-.cr-hero-sheet { font-family: var(--font-mono, monospace); border: 1px solid color-mix(in srgb, var(--grey-metal) 38%, transparent); max-width: min(100%, 580px); font-size: 0.6875rem; letter-spacing: 0.13em; text-transform: uppercase; }
+.cr-hero-sheet { background: color-mix(in srgb, var(--surface) 86%, transparent); font-family: var(--font-mono, monospace); border: 1px solid color-mix(in srgb, var(--grey-metal) 38%, transparent); max-width: min(100%, 580px); font-size: 0.6875rem; letter-spacing: 0.13em; text-transform: uppercase; }
 .cr-hero-sheet__head { display: flex; justify-content: space-between; align-items: center; padding: 5px 10px; border-bottom: 1px solid color-mix(in srgb, var(--grey-metal) 38%, transparent); color: var(--grey-metal); }
 .cr-hero-sheet__cells { display: grid; grid-template-columns: repeat(2, 1fr); }
 .cr-hero-sheet__cell { padding: 9px 10px; border-right: 1px solid color-mix(in srgb, var(--grey-metal) 38%, transparent); color: var(--ink); font-weight: 700; line-height: 1.3; }
@@ -70,6 +67,8 @@ ${FOLD_SECTION_CSS}
 .cr-hero-sheet__cell--accent { color: var(--burgundy); background: color-mix(in srgb, var(--burgundy) 6%, transparent); }
 .cr-hero-sheet__foot { display: flex; justify-content: space-between; padding: 4px 10px; border-top: 1px solid color-mix(in srgb, var(--grey-metal) 38%, transparent); color: var(--grey-metal); }
 
+/* Hero action row */
+.cr-hero-actions { display: flex; flex-wrap: wrap; gap: var(--space-sm); margin-top: var(--space-sm); }
 /* Closing */
 .cr-cta { background: var(--surface-alt); --pad-top: var(--section-y); padding-bottom: var(--section-y); padding-left: var(--grid-page-padding); padding-right: var(--grid-page-padding); }
 .cr-cta__in { display: grid; gap: var(--space-lg); align-items: end; }
@@ -94,13 +93,13 @@ export default function CareerPage() {
       <style>{CSS}</style>
       <PageHero
         crumbs={[{ label: 'Career' }]}
-        label="Career"
-        title="Grow alongside the company."
-        lead="A strong company is built by strong people."
+        label="Careers at Alok Plastics"
+        title="Make parts. Make a career."
+        lead="A strong company is built by strong people. Join one of four teams and grow alongside the company."
         art={<CareerArt />}
+        photo={{ src: '/images/heroes/career.webp', position: 'center 40%' }}
         enter="wipe"
         layout="stack"
-        scrollHint
       >
         <div className="cr-hero-sheet">
           <div className="cr-hero-sheet__head">
@@ -115,13 +114,17 @@ export default function CareerPage() {
             ))}
           </div>
         </div>
+        <div className="cr-hero-actions">
+          <a href="#roles-h" className="ph__btn">See open roles <ArrowUpRight size={18} weight="light" aria-hidden="true" /></a>
+          <a href="#apply" className="ph__btn ph__btn--ghost">Send your CV</a>
+        </div>
       </PageHero>
 
       <section aria-labelledby="culture-h" className="cp-section cr-culture">
         <div style={WRAP_STYLE}>
           <div className="cr-culture__grid">
             <div>
-              <Eyebrow>Culture</Eyebrow>
+              <Eyebrow>How we work together</Eyebrow>
               <h2 id="culture-h" className="cr-culture__statement">A workplace where people <em>enjoy working</em> and take pride in what they create.</h2>
               {paragraphs.map((p, i) => <Reveal as="p" key={i} className="p">{i === 0 ? <Highlight keywords={['joyful, supportive, and trustworthy']}>{p}</Highlight> : p}</Reveal>)}
             </div>
@@ -137,7 +140,7 @@ export default function CareerPage() {
       <section aria-labelledby="teams-h" className="fold-sec fold-sec--step cp-section cr-teams">
         <FoldEdge variant="step" />
         <div style={WRAP_STYLE}>
-          <SectionHead id="teams-h" label="Teams" title="Four teams, one company." />
+          <SectionHead id="teams-h" label="Teams" title="Four teams. Find where you fit." />
           <ul className="cr-team-list">
             {teams.map(t => (
               <li key={t.id} className="cr-team">
@@ -154,7 +157,7 @@ export default function CareerPage() {
           <div className="cr-roles__grid">
             <header>
               <Eyebrow>Open roles</Eyebrow>
-              <h2 id="roles-h" className="cp-h2">Current openings</h2>
+              <h2 id="roles-h" className="cp-h2">Open roles at Alok Plastics</h2>
             </header>
             <RoleList />
           </div>
@@ -165,7 +168,7 @@ export default function CareerPage() {
         <div style={WRAP_STYLE}>
           <header style={{ marginBottom: 'var(--space-lg)' }}>
             <Eyebrow>Apply</Eyebrow>
-            <h2 id="apply-h" className="cp-h2">Tell us about yourself</h2>
+            <h2 id="apply-h" className="cp-h2">Introduce yourself to the team.</h2>
           </header>
           <CareerApplyForm />
         </div>

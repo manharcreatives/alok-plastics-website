@@ -41,8 +41,20 @@ export default function LegalPage({ title, label, sections }: Props) {
   return (
     <>
       <style>{CSS}</style>
-      <PageHero crumbs={[{ label: title }]} label={label} title={title} art={<LegalArt title={title} />} enter="draw" calm layout="top"
-        lead="This page is being finalised. The outline below shows what it will cover." />
+      <PageHero
+        crumbs={[{ label: title }]}
+        label={label}
+        title={title}
+        lead="This page is being finalised. The outline below shows what it will cover."
+        specs={[{ k: 'Document', v: title }, { k: 'Status', v: 'Being finalised' }]}
+        art={<LegalArt title={title} />}
+        photo={{ src: '/images/heroes/legal.webp', position: '70% center' }}
+        enter="draw"
+        calm
+        layout="spec"
+      >
+        <Link href="/contact/" className="ph__btn ph__btn--ghost">Ask us a question <ArrowUpRight size={18} weight="light" aria-hidden="true" /></Link>
+      </PageHero>
       <div className="lg">
         <div className="lg__in">
           <nav className="lg__rail" aria-label="On this page">

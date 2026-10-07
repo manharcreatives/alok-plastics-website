@@ -7,6 +7,9 @@
  * Note: backdrop-filter is applied inline to avoid needing a CSS import
  * (glass-nav.css is the other file; combined = 2 files total, within limit).
  *
+ * Products row: the label navigates to /products/; a separate chevron button expands the five
+ * categories inline (accordion). aria-expanded / aria-controls live on the chevron.
+ *
  * Round 2: WhatsApp CTA removed (WhatsApp lives only in the floating button);
  * Phosphor Light icons; the active page is marked by a plain burgundy rule, the
  * same language as the desktop nav.
@@ -14,14 +17,16 @@
 
 'use client';
 
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useId, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { X } from '@phosphor-icons/react/dist/csr/X';
 import { ArrowUpRight } from '@phosphor-icons/react/dist/csr/ArrowUpRight';
+import { CaretDown } from '@phosphor-icons/react/dist/csr/CaretDown';
 import { Phone } from '@phosphor-icons/react/dist/csr/Phone';
 import Logo from '@/components/brand/Logo';
 import { navigation } from '@/content/navigation';
+import { productGroups } from '@/content/products';
 import { site } from '@/content/site';
 import { useRuntimeContact } from '@/components/runtime/useRuntime';
 import { isActivePath } from './isActivePath';
@@ -51,6 +56,21 @@ const DRAWER_CSS = `
 .drawer-link--active .drawer-link__notch { transform: scaleY(1); }
 .drawer-link__arrow { color: var(--muted); transition: transform 200ms cubic-bezier(.16,1,.3,1); }
 .drawer-link:hover .drawer-link__arrow { transform: translate3d(2px,-2px,0); }
+.drawer-row { display: flex; align-items: stretch; border-bottom: 1px solid var(--grey-cloud); }
+.drawer-row .drawer-link { flex: 1; border-bottom: 0; }
+.drawer-expand { flex-shrink: 0; width: 48px; display: flex; align-items: center; justify-content: center; background: none;
+  border: 0; border-left: 1px solid var(--grey-cloud); color: var(--ink); cursor: pointer;
+  transition: color 200ms cubic-bezier(.16,1,.3,1), background-color 200ms cubic-bezier(.16,1,.3,1); }
+.drawer-expand:hover, .drawer-expand:focus-visible, .drawer-expand[aria-expanded='true'] { color: var(--burgundy); background: var(--blush); }
+.drawer-expand:focus-visible { outline: 2px solid var(--burgundy); outline-offset: -2px; }
+.drawer-expand svg { transition: transform 400ms cubic-bezier(.16,1,.3,1); }
+.drawer-expand[aria-expanded='true'] svg { transform: rotate(180deg); }
+.drawer-sub { list-style: none; margin: 0; padding: 0 0 var(--space-xs) var(--space-sm); border-bottom: 1px solid var(--grey-cloud); }
+.drawer-sub__link { display: flex; align-items: center; justify-content: space-between; min-height: 44px; padding: 8px var(--space-xs) 8px var(--space-sm);
+  border-left: 2px solid var(--pink-soft); color: var(--body); font-size: 0.9375rem; text-decoration: none;
+  transition: color 200ms cubic-bezier(.16,1,.3,1), border-color 200ms cubic-bezier(.16,1,.3,1); }
+.drawer-sub__link:hover, .drawer-sub__link:focus-visible { color: var(--burgundy); border-left-color: var(--burgundy); }
+.drawer-sub__link:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 2px; }
 .drawer-cta { --cut: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px;
   color: var(--surface); background: var(--burgundy); font-weight: 600; font-size: 1rem; text-decoration: none;
   clip-path: polygon(0 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% 100%, var(--cut) 100%, 0 calc(100% - var(--cut))); }
@@ -61,12 +81,14 @@ const DRAWER_CSS = `
 .drawer-call:hover, .drawer-call:focus-visible { border-color: var(--burgundy); color: var(--burgundy); }
 @media (prefers-reduced-motion: reduce) {
   .drawer-panel { animation: none; }
-  .drawer-link, .drawer-link__notch, .drawer-link__arrow { transition: none; }
+  .drawer-link, .drawer-link__notch, .drawer-link__arrow, .drawer-expand, .drawer-expand svg, .drawer-sub__link { transition: none; }
 }
 `;
 
 export default function Drawer({ isOpen, onClose }: DrawerProps) {
   const pathname = usePathname();
+  const [productsOpen, setProductsOpen] = useState(false);
+  const subId = useId();
   const drawerRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -200,18 +222,44 @@ export default function Drawer({ isOpen, onClose }: DrawerProps) {
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
             {navigation.primary.map(item => {
               const active = isActivePath(pathname, item.href);
+              const isProducts = item.label === 'Products';
+              const link = (
+                <Link
+                  href={item.href}
+                  onClick={onClose}
+                  className={`drawer-link${active ? ' drawer-link--active' : ''}`}
+                  aria-current={active ? 'page' : undefined}
+                >
+                  <span className="drawer-link__notch" aria-hidden="true" />
+                  {item.label}
+                  <ArrowUpRight weight="light" size={18} aria-hidden="true" className="drawer-link__arrow" />
+                </Link>
+              );
+              if (!isProducts) return <li key={item.href}>{link}</li>;
               return (
                 <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    onClick={onClose}
-                    className={`drawer-link${active ? ' drawer-link--active' : ''}`}
-                    aria-current={active ? 'page' : undefined}
-                  >
-                    <span className="drawer-link__notch" aria-hidden="true" />
-                    {item.label}
-                    <ArrowUpRight weight="light" size={18} aria-hidden="true" className="drawer-link__arrow" />
-                  </Link>
+                  <div className="drawer-row">
+                    {link}
+                    <button
+                      type="button"
+                      className="drawer-expand"
+                      aria-expanded={productsOpen}
+                      aria-controls={subId}
+                      aria-label="Product categories"
+                      onClick={() => setProductsOpen(v => !v)}
+                    >
+                      <CaretDown weight="light" size={18} aria-hidden="true" />
+                    </button>
+                  </div>
+                  <ul id={subId} className="drawer-sub" hidden={!productsOpen}>
+                    {productGroups.map(g => (
+                      <li key={g.id}>
+                        <Link href={`/products/${g.slug}/`} onClick={onClose} className="drawer-sub__link">
+                          {g.name}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
                 </li>
               );
             })}

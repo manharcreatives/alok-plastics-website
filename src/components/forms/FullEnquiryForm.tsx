@@ -16,12 +16,11 @@ import { fullEnquirySchema, flattenZodErrors } from '@/lib/enquiry-schema';
 import { enquiryLines } from '@/lib/whatsapp';
 import { postEnquiry } from '@/lib/enquiry-submit';
 import { trackEnquirySubmit } from '@/lib/analytics';
-import { publishedProducts } from '@/content/products';
 import { useHiddenProductSlugs, useRuntimeProductMap } from '@/components/runtime/useRuntime';
 import EnquiryFallback from './EnquiryFallback';
 import SuccessNext from './SuccessNext';
 import { Check } from '@phosphor-icons/react/dist/ssr/Check';
-import { BUYER_TYPES, FORM_CSS } from './shared';
+import { BUYER_TYPES, FORM_CSS, productOptionGroups } from './shared';
 
 type FormState = 'idle' | 'submitting' | 'success' | 'error';
 
@@ -31,10 +30,7 @@ interface LineItem {
   unit: 'pcs' | 'sets';
 }
 
-const PRODUCT_OPTIONS = [
-  ...publishedProducts.map(p => p.name),
-  'Custom part / Other',
-];
+const CUSTOM_OPTION = 'Custom part / Other';
 
 const INITIAL_LINE: LineItem = { product: '', quantity: '', unit: 'pcs' };
 
@@ -91,10 +87,7 @@ export default function FullEnquiryForm({ prefillProduct }: { prefillProduct?: s
   const hidden = useHiddenProductSlugs();
   const edits = useRuntimeProductMap();
   /* owner-edited names win for the label and the value that gets submitted */
-  const productOptions = [
-    ...publishedProducts.filter(p => !hidden.has(p.slug)).map(p => edits?.get(p.slug)?.name ?? p.name),
-    PRODUCT_OPTIONS[PRODUCT_OPTIONS.length - 1],
-  ];
+  const optionGroups = productOptionGroups(hidden, edits);
   const [state, setState] = useState<FormState>('idle');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [fallbackLines, setFallbackLines] = useState<string[]>([]);
@@ -375,9 +368,12 @@ export default function FullEnquiryForm({ prefillProduct }: { prefillProduct?: s
                       style={{ ...inputStyle(!!pErr), cursor: 'pointer' }}
                     >
                       <option value="" disabled>Select product&hellip;</option>
-                      {productOptions.map(opt => (
-                        <option key={opt} value={opt}>{opt}</option>
+                      {optionGroups.map(g => (
+                        <optgroup key={g.id} label={g.label}>
+                          {g.items.map(it => <option key={it.slug} value={it.name}>{it.name}</option>)}
+                        </optgroup>
                       ))}
+                      <option value={CUSTOM_OPTION}>{CUSTOM_OPTION}</option>
                     </select>
                   </div>
                   <div className="enq-line-qty enq-field">

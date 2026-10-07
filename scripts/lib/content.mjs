@@ -31,6 +31,7 @@ export async function loadContent() {
     publishedProducts: productsM.publishedProducts,
     productsByGroup: productsM.productsByGroup,
     productPath: productsM.productPath,
+    productPhoto: productsM.productPhoto,
     MATERIAL_LABELS: productsM.MATERIAL_LABELS,
     MACHINE_LABELS: productsM.MACHINE_LABELS,
     industries: industriesM.industriesConfig.industries,

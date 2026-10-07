@@ -78,9 +78,12 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     images: [OG_IMAGE_PATH],
   },
-  // /favicon.ico comes from the src/app/favicon.ico file convention.
+  // /favicon.ico (16/32/48) comes from the src/app/favicon.ico file convention. Every icon below is the
+  // FULL Alok lockup (mark + wordmark) on a white rounded square, built from public/brand/alok-logo-primary.png.
   icons: {
     icon: [
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
       { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
       { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
     ],

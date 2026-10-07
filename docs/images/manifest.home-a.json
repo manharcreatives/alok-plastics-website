@@ -1,0 +1,182 @@
+[
+  {
+    "slot": "products-section-bg",
+    "path": "/images/backgrounds/products-section.webp",
+    "aspect": "16:9",
+    "size": "1920x1080",
+    "usedIn": "ProductGroups (section backdrop, opacity 0.14)",
+    "alt": "",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, product shown in context, unchanged product. Top-down flat-lay of assorted moulded plastic and steel spare parts (bushes, hinges, valves, gaskets) arranged in loose rows on a pale warm-grey workbench, soft even daylight, lots of negative space. No text, no logos, no brand names, no watermark.",
+    "concept": "people: none / top-down / neutral warm grey, low contrast"
+  },
+  {
+    "slot": "category-water-cooler",
+    "path": "/images/categories/water-cooler.webp",
+    "aspect": "4:3",
+    "size": "1200x900",
+    "usedIn": "ProductGroups (card reveal on hover/focus/tap)",
+    "alt": "Water cooler spare parts: float valve, push cock and waste pipe on a workbench",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, product shown in context, unchanged product. Macro close-up of a nylon float valve set and a brass push cock beside a coiled waste pipe, water droplets on the parts, shallow depth of field, cool steel-blue highlights with a hint of burgundy in the background blur. No text, no logos, no brand names, no watermark.",
+    "concept": "people: none / macro / cool steel with burgundy accent"
+  },
+  {
+    "slot": "category-deep-freezer-display-counter",
+    "path": "/images/categories/deep-freezer-display-counter.webp",
+    "aspect": "4:3",
+    "size": "1200x900",
+    "usedIn": "ProductGroups (card reveal on hover/focus/tap)",
+    "alt": "Door bushes, hinges and gaskets for deep freezers and display counters",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, product shown in context, unchanged product. Low-angle shot of sliding-door bushes, L-type hinges and a rubber gasket strip laid against the glass door edge of a commercial display counter, frost texture, neutral steel palette. No text, no logos, no brand names, no watermark.",
+    "concept": "people: none / low angle / neutral steel and frosted glass"
+  },
+  {
+    "slot": "category-commercial-kitchen",
+    "path": "/images/categories/commercial-kitchen.webp",
+    "aspect": "4:3",
+    "size": "1200x900",
+    "usedIn": "ProductGroups (card reveal on hover/focus/tap)",
+    "alt": "Spare parts for commercial kitchen equipment",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, product shown in context, unchanged product. Wide documentary view of a stainless steel commercial kitchen pass with a technician's hands only, holding a small plastic knob part against an appliance panel, warm tungsten kitchen light. No text, no logos, no brand names, no watermark.",
+    "concept": "people: 1 pair of hands only / wide documentary / warm tungsten"
+  },
+  {
+    "slot": "category-caster-wheel",
+    "path": "/images/categories/caster-wheel.webp",
+    "aspect": "4:3",
+    "size": "1200x900",
+    "usedIn": "ProductGroups (card reveal on hover/focus/tap)",
+    "alt": "Caster wheels for equipment and trolleys",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, product shown in context, unchanged product. Three-quarter hero shot of a set of caster wheels on a concrete workshop floor beside a steel trolley frame, hard side light with long shadows, artistic and graphic, burgundy accent on a background panel. No text, no logos, no brand names, no watermark.",
+    "concept": "people: none / three-quarter hero / burgundy accent, high contrast"
+  },
+  {
+    "slot": "category-on-demand-custom",
+    "path": "/images/categories/on-demand-custom.webp",
+    "aspect": "4:3",
+    "size": "1200x900",
+    "usedIn": "ProductGroups (card reveal on hover/focus/tap)",
+    "alt": "Custom plastic part developed from a sample",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, product shown in context, unchanged product. Overhead view of a hand-drawn part sketch, a physical sample part and calipers on a drafting table next to a freshly moulded prototype part, blueprint-like cool light. No text, no logos, no brand names, no watermark.",
+    "concept": "people: hands only (2) / overhead / cool blueprint tones"
+  },
+  {
+    "slot": "card-send-requirement",
+    "path": "/images/cards/send-requirement.webp",
+    "aspect": "4:3",
+    "size": "1200x900",
+    "usedIn": "NeedPartBlock (custom route card)",
+    "alt": "Two colleagues reviewing a plastic sample part and a drawing together",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, product shown in context, unchanged product. Two people at a work table reviewing a physical plastic sample part and a technical drawing together, mid-conversation, warm office light, eye-level documentary framing, burgundy-toned background out of focus, subject on the right third leaving the left clear for text. No text, no logos, no brand names, no watermark.",
+    "concept": "people: 2 / eye-level documentary / warm with burgundy accent"
+  },
+  {
+    "slot": "card-browse-catalogue",
+    "path": "/images/cards/browse-catalogue.webp",
+    "aspect": "4:3",
+    "size": "1200x900",
+    "usedIn": "NeedPartBlock (catalogue route card)",
+    "alt": "Hands choosing small plastic parts from a shelf of labelled bins",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, product shown in context, unchanged product. Close hands-only shot of a buyer picking a small plastic bush from rows of blank, unlabelled bins on an industrial shelf, shallow depth of field, cool neutral steel palette, subject on the right third leaving the left clear for text. No text, no logos, no brand names, no watermark.",
+    "concept": "people: hands only / close eye-level / neutral steel"
+  },
+  {
+    "slot": "bg-how-we-work",
+    "path": "/images/backgrounds/how-we-work.webp",
+    "aspect": "16:9",
+    "size": "1920x1080",
+    "usedIn": "RequirementToRepeat (3D ring backdrop, opacity 0.55)",
+    "alt": "",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, product shown in context, unchanged product. Dark, moody wide shot of an injection moulding shop floor at dusk: rows of automatic moulding machines receding in deep perspective, a single warm spotlight from above, faint haze, polished floor reflections, deep burgundy-black shadows. Centre of frame kept dark and uncluttered. No text, no logos, no brand names, no watermark.",
+    "concept": "people: none / wide low-angle perspective / dark burgundy-black, dramatic"
+  },
+  {
+    "slot": "bg-ceo-quote",
+    "path": "/images/backgrounds/ceo-quote.webp",
+    "aspect": "16:9",
+    "size": "1920x1080",
+    "usedIn": "CeoQuote (backdrop, opacity 0.28)",
+    "alt": "",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, product shown in context, unchanged product. Soft-focus abstract of a production floor: a stack of freshly moulded plastic parts in crates in the foreground, blurred machines beyond, warm window light from the left, calm and quiet, large smooth areas for text. No text, no logos, no brand names, no watermark.",
+    "concept": "people: none / shallow-depth macro-wide / warm neutral, very soft"
+  },
+  {
+    "slot": "industry-oem-manufacturing",
+    "path": "/images/industries/oem-manufacturing.webp",
+    "aspect": "4:3",
+    "size": "1200x900",
+    "usedIn": "IndustriesBento (card photo over drawn scene)",
+    "alt": "OEM & Manufacturing application",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, product shown in context, unchanged product. Overhead of an assembly line station where a worker's gloved hands fit a moulded plastic housing into a product, bright cool factory light. No text, no logos, no brand names, no watermark.",
+    "concept": "people: hands only (2) / overhead / cool bright factory"
+  },
+  {
+    "slot": "industry-engineering-machinery",
+    "path": "/images/industries/engineering-machinery.webp",
+    "aspect": "4:3",
+    "size": "1200x900",
+    "usedIn": "IndustriesBento (card photo over drawn scene)",
+    "alt": "Engineering & Machinery application",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, product shown in context, unchanged product. Macro of a moulded plastic gear bushing sitting beside a machined metal shaft on an engineer's bench, calipers nearby, warm side light. No text, no logos, no brand names, no watermark.",
+    "concept": "people: none / macro / warm side light, steel"
+  },
+  {
+    "slot": "industry-automotive",
+    "path": "/images/industries/automotive.webp",
+    "aspect": "4:3",
+    "size": "1200x900",
+    "usedIn": "IndustriesBento (card photo over drawn scene)",
+    "alt": "Automotive application",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, product shown in context, unchanged product. Low-angle shot of a plastic clip and cable holder installed in an engine bay, soft garage light, graphite and burgundy tones. No text, no logos, no brand names, no watermark.",
+    "concept": "people: none / low angle / graphite with burgundy accent"
+  },
+  {
+    "slot": "industry-electrical-electronics",
+    "path": "/images/industries/electrical-electronics.webp",
+    "aspect": "4:3",
+    "size": "1200x900",
+    "usedIn": "IndustriesBento (card photo over drawn scene)",
+    "alt": "Electrical & Electronics application",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, product shown in context, unchanged product. Top-down artistic arrangement of plastic insulating housings and connectors on a dark matte surface, crisp cool rim light. No text, no logos, no brand names, no watermark.",
+    "concept": "people: none / top-down artistic / dark cool"
+  },
+  {
+    "slot": "industry-gas-kitchen",
+    "path": "/images/industries/gas-kitchen.webp",
+    "aspect": "4:3",
+    "size": "1200x900",
+    "usedIn": "IndustriesBento (card photo over drawn scene)",
+    "alt": "Gas & Kitchen Equipment application",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, product shown in context, unchanged product. Wide documentary view of a commercial kitchen line with a technician fitting a plastic knob on a gas range panel, steam haze, warm light. No text, no logos, no brand names, no watermark.",
+    "concept": "people: 1 / wide documentary / warm kitchen light"
+  },
+  {
+    "slot": "industry-agriculture",
+    "path": "/images/industries/agriculture.webp",
+    "aspect": "4:3",
+    "size": "1200x900",
+    "usedIn": "IndustriesBento (card photo over drawn scene)",
+    "alt": "Agriculture & Equipment application",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, product shown in context, unchanged product. Three-quarter shot of a plastic component fitted on a farm machine in an open shed, soft overcast daylight, earthy neutral palette. No text, no logos, no brand names, no watermark.",
+    "concept": "people: none / three-quarter / earthy neutral overcast"
+  },
+  {
+    "slot": "industry-packaging",
+    "path": "/images/industries/packaging.webp",
+    "aspect": "4:3",
+    "size": "1200x900",
+    "usedIn": "IndustriesBento (card photo over drawn scene)",
+    "alt": "Packaging & Specialized Applications application",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, product shown in context, unchanged product. Eye-level shot of a packaging line with moulded plastic parts moving on a conveyor, shallow depth of field, clean neutral grey with burgundy accent. No text, no logos, no brand names, no watermark.",
+    "concept": "people: none / eye-level / clean grey with burgundy accent"
+  },
+  {
+    "slot": "industry-core-market",
+    "path": "/images/industries/core-market.webp",
+    "aspect": "4:3",
+    "size": "1200x900",
+    "usedIn": "IndustriesBento (card photo over drawn scene)",
+    "alt": "Water coolers, display counters and deep freezers spare parts",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, product shown in context, unchanged product. Wide hero of a water cooler, a display counter and a deep freezer side by side in a clean showroom, parts visible, soft studio light. No text, no logos, no brand names, no watermark.",
+    "concept": "people: none / wide hero / clean neutral studio"
+  }
+]

@@ -10,8 +10,12 @@
  * Bharat delivery network, today), and a few longer, lighter arcs fanning across the
  * world to carry the *ambition* ("Crafted in Bharat, made for the world.").
  *
- * HONESTY (§19): no export or country claims, no country / city names, no flags. The
- * world arcs are illustrative direction, and the caption says so. See ADR-012.
+ * Below the map: "beyond the catalogue" — custom parts made to a sample, drawing or photo,
+ * many industries, repeat orders across India. The old catalogue unit chart and the
+ * part-symbol badges were removed (client brief): the catalogue is not the limit of the work.
+ *
+ * HONESTY (§19): no export or country claims, no country / city names, no flags, no capacity
+ * figures. The world arcs are illustrative direction, and the caption says so. See ADR-012.
  *
  * Motion (once, on scroll-in): outline draws, India dots settle, domestic arcs draw, a
  * light dot travels each arc once, then the world arcs fan out. transform / opacity /
@@ -21,15 +25,13 @@
 'use client';
 
 import Highlight from '@/components/ui/Highlight';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useGSAP } from '@gsap/react';
 import { gsap, ScrollTrigger, DURATIONS, EASINGS } from '@/lib/motion';
 import { useMaskRise } from '@/hooks/useMotion';
 import { site } from '@/content/site';
-import { pictogramPaths, type PictogramName } from '@/components/brand/Pictogram';
-import PartPicto from '@/components/products/PartPicto';
-import { productGroups, productsByGroup } from '@/content/products';
+import { ArrowUpRight } from '@phosphor-icons/react/dist/ssr/ArrowUpRight';
 import {
   WORLD_DOTS, INDIA_DOTS, INDIA_OUTLINE, INDIA_ISLANDS,
   STEP_WORLD_U, STEP_INDIA_U, INDIA_SCALE, INDIA_CLON, INDIA_CLAT, project,
@@ -59,21 +61,6 @@ const DOMESTIC: [number, number][] = [
 const WORLD: [number, number][] = [
   [8, 48], [-8, 8], [26, -22], [46, 28], [122, 14], [122, 38], [140, 36], [134, -26], [-40, -12], [18, 18],
 ];
-
-/* Ten domestic endpoints carry a part symbol from the catalogue (the parts we dispatch); the rest
-   stay plain studs. Illustrative only: no part is claimed for any particular region. */
-const BADGE: Partial<Record<number, PictogramName>> = {
-  13: 'float-valve', 0: 'push-cock', 1: 'waste-pipe', 2: 'ventilation-jalli', 14: 'gasket',
-  3: 'door-lock', 4: 'hinge', 6: 'adjustable-leg-insert', 7: 'connecting-bush', 8: 'f-bush',
-};
-const BADGE_R = 10.5;
-const ICON = 13; /* pictogram size inside a badge, in map units */
-
-/* The catalogue as a unit chart: one row per product family, one symbol tile per published part. */
-const MANIFEST = productGroups
-  .map(g => ({ g, parts: productsByGroup(g.id) }))
-  .filter(r => r.parts.length > 0);
-const MANIFEST_TOTAL = MANIFEST.reduce((n, r) => n + r.parts.length, 0);
 
 const VB = { x: 0, y: 30, w: 1075, h: 505 };
 const inFrame = (p: { x: number; y: number }) =>
@@ -122,41 +109,26 @@ const CSS = `
   .pim.live .pim-ring.b { animation-delay: 1.5s; }
 }
 @keyframes pim-pulse { 0% { transform: scale(.4); opacity: .7; } 70%, 100% { transform: scale(1); opacity: 0; } }
-.pim-badge-ring { fill: var(--surface); stroke: var(--burgundy); stroke-width: 1.2; }
-.pim-badge-icon { fill: none; stroke: var(--burgundy); stroke-linecap: square; stroke-linejoin: miter; }
 
-/* "What leaves Chandigarh": unit chart, one symbol tile per published part */
-.pim-man { margin-top: var(--space-xl); display: grid; gap: var(--space-lg); }
-.pim-man-h { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-h3); font-weight: 650; letter-spacing: var(--tr-h3); color: var(--ink); margin: 0 0 var(--space-xs); }
-.pim-man-sub { font-size: 0.9375rem; line-height: 1.6; color: var(--body); margin: 0; max-width: 44ch; }
-.pim-man-total { display: flex; align-items: baseline; gap: var(--space-xs); margin-top: var(--space-md); }
-.pim-man-total b { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-stat); font-weight: 650; line-height: var(--lh-stat); letter-spacing: var(--tr-stat); color: var(--burgundy); }
-.pim-man-total span { font-size: 0.75rem; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 600; color: var(--muted); }
-.pim-rows { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-sm); }
-.pim-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-xs); padding-bottom: var(--space-sm); border-bottom: 1px solid var(--grey-cloud); }
-.pim-row-k { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-sm); }
-.pim-row-name { display: inline-flex; align-items: center; min-height: 44px; font-size: 0.9375rem; font-weight: 600; color: var(--ink); text-decoration: none; }
-.pim-row-name:hover { color: var(--burgundy); }
-.pim-row-n { font-family: var(--font-mono, monospace); font-size: 0.8125rem; color: var(--muted); white-space: nowrap; }
-.pim-tiles { display: flex; flex-wrap: wrap; gap: 4px; }
-.pim-tile { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px;
-  background: var(--surface); border: 1px solid var(--grey-warm); color: var(--burgundy); border-radius: var(--radius-card);
-  transition: background-color 200ms cubic-bezier(.16,1,.3,1), color 200ms cubic-bezier(.16,1,.3,1), border-color 200ms; }
-.pim-tile:hover, .pim-tile:focus-visible { background: var(--burgundy); border-color: var(--burgundy); color: var(--surface); }
-.pim-tile:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 2px; }
-.pim-tile::after { content: attr(data-name); position: absolute; left: 50%; bottom: calc(100% + 6px); transform: translateX(-50%);
-  padding: 4px 8px; background: var(--ink); color: var(--surface); font-size: 0.75rem; font-weight: 600; white-space: nowrap;
-  border-radius: var(--radius-card); opacity: 0; pointer-events: none; transition: opacity 150ms; z-index: 2; }
-.pim-tile:hover::after, .pim-tile:focus-visible::after { opacity: 1; }
-.pim-man[data-armed='true'] .pim-tile { opacity: 0; transform: translate3d(0, 8px, 0) scale(.9); }
-.pim-man[data-armed='true'][data-in='true'] .pim-tile { opacity: 1; transform: none;
-  transition: opacity 500ms cubic-bezier(.16,1,.3,1) calc(var(--k) * 60ms), transform 500ms cubic-bezier(.16,1,.3,1) calc(var(--k) * 60ms),
-    background-color 200ms, color 200ms, border-color 200ms; }
-@media (prefers-reduced-motion: reduce) { .pim-man[data-armed='true'] .pim-tile { opacity: 1; transform: none; transition: none; } }
+/* Beyond the catalogue: three typographic columns under the map */
+.pim-bey { margin-top: var(--space-xl); display: grid; gap: var(--space-lg); }
+.pim-bey-h { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-h3); font-weight: 650; letter-spacing: var(--tr-h3); line-height: var(--lh-h3); color: var(--ink); margin: 0; max-width: 22ch; text-wrap: balance; }
+.pim-bey-sub { font-size: 0.9375rem; line-height: 1.6; color: var(--body); margin: var(--space-sm) 0 0; max-width: 40ch; }
+.pim-bey-cols { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-md); }
+.pim-bey-col { position: relative; padding-top: var(--space-sm); border-top: 1px solid var(--grey-warm); }
+.pim-bey-col::before { content: ""; position: absolute; left: 0; top: -1px; width: 40px; height: 3px; background: var(--burgundy); }
+.pim-bey-k { font-size: var(--fs-label); line-height: var(--lh-label); letter-spacing: var(--tr-label); text-transform: uppercase; font-weight: 600; color: var(--burgundy); font-family: var(--font-archivo), sans-serif; }
+.pim-bey-t { margin: var(--space-xs) 0 0; font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-lead-lg); line-height: var(--lh-lead-lg); letter-spacing: var(--tr-lead-lg); font-weight: 600; color: var(--ink); text-wrap: balance; }
+.pim-bey-p { margin: var(--space-xs) 0 0; font-size: 0.9375rem; line-height: 1.6; color: var(--body); max-width: 36ch; }
+.pim-bey-cta { display: flex; flex-wrap: wrap; gap: var(--space-sm) var(--space-md); margin-top: var(--space-md); }
+.pim-go { display: inline-flex; align-items: center; gap: var(--space-xs); min-height: 44px; font-weight: 600; font-size: 0.9375rem; color: var(--burgundy); border-bottom: 2px solid var(--burgundy); text-decoration: none; }
+.pim-go svg { transition: transform 200ms cubic-bezier(.16,1,.3,1); }
+.pim-go:hover svg { transform: translate3d(2px, -2px, 0); }
+.pim-go:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 4px; }
+@media (prefers-reduced-motion: reduce) { .pim-go svg { transition: none; } }
 @media (min-width: 900px) {
-  .pim-man { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: var(--space-xl); align-items: start; }
-  .pim-row { grid-template-columns: 220px minmax(0, 1fr); align-items: center; }
-  .pim-row-k { flex-direction: column; gap: 2px; }
+  .pim-bey { grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: var(--space-xl); align-items: start; }
+  .pim-bey-cols { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-md); }
 }
 @media (min-width: 720px) {
   .pim-svg { width: 100%; margin-left: 0; }
@@ -169,22 +141,7 @@ const CSS = `
 export default function PanIndiaMap() {
   const sectionRef = useRef<HTMLElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
-  const manRef = useRef<HTMLDivElement>(null);
-  const [manArmed, setManArmed] = useState(false);
-  const [manIn, setManIn] = useState(false);
   useMaskRise(headingRef);
-
-  /* manifest tiles rise in once, in reading order, when the chart scrolls into view */
-  useEffect(() => {
-    const el = manRef.current;
-    if (!el || typeof IntersectionObserver === 'undefined' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const io = new IntersectionObserver(([e]) => {
-      setManArmed(true);
-      if (e.isIntersecting) { setManIn(true); io.disconnect(); }
-    }, { threshold: 0.3 });
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
 
   /* looping pulse runs only while the section is on screen */
   useEffect(() => {
@@ -275,11 +232,11 @@ export default function PanIndiaMap() {
         <div className="pim-head">
           <div>
             <div className="pim-label">Pan Bharat</div>
-            <h2 id="map-heading" ref={headingRef} className="pim-h2">From Chandigarh to every corner of India.</h2>
-            {/* COPY: drafted from verified facts (§5.10; Chandigarh base; Pan Bharat delivery network) — needs client approval */}
+            <h2 id="map-heading" ref={headingRef} className="pim-h2">The catalogue is only where we begin.</h2>
+            {/* COPY: drafted from verified facts (§5.10; custom development from sample/drawing/photo; Pan Bharat delivery network) — needs client approval */}
             <p className="pim-lead">
               <Highlight keywords={['Pan Bharat delivery network']}>
-                {`From a single component to thousands of parts for a production line, we manufacture for businesses that build. Dispatch is from ${site.contact.city} through our Pan Bharat delivery network.`}
+                {`Alok Plastics makes far more than the parts you see listed. We develop and supply parts to your sample or drawing, for equipment across many industries, and dispatch from ${site.contact.city} through our Pan Bharat delivery network.`}
               </Highlight>
             </p>
           </div>
@@ -302,15 +259,6 @@ export default function PanIndiaMap() {
                 <path d="M2 17Q11 2 20 6" fill="none" stroke="var(--burgundy)" strokeOpacity="0.55" strokeWidth="1.3" />
               </svg>
               The ambition: a globally recognised Indian manufacturing brand
-            </li>
-            <li>
-              <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true">
-                <circle cx="11" cy="11" r="9.5" fill="var(--surface)" stroke="var(--burgundy)" strokeWidth="1.2" />
-                <g transform="translate(5 5) scale(0.25)" fill="none" stroke="var(--burgundy)" strokeWidth="5">
-                  {pictogramPaths['float-valve'].paths.map((d, i) => <path key={i} d={d} />)}
-                </g>
-              </svg>
-              Parts on the move, drawn from our catalogue
             </li>
           </ul>
         </div>
@@ -341,22 +289,9 @@ export default function PanIndiaMap() {
               {domestic.map((a, i) => (
                 <path key={`d${i}`} className="pim-arc-d" d={a.d} pathLength={1} stroke="var(--burgundy)" strokeOpacity="0.8" strokeWidth="1.2" strokeLinecap="round" />
               ))}
-              {[...domestic, ...world].map((a, i) => {
-                const badge = i < domestic.length ? BADGE[i] : undefined;
-                if (badge) {
-                  const k = ICON / 48;
-                  return (
-                    <g key={`e${i}`} className="pim-end" transform={`translate(${round(a.p.x)} ${round(a.p.y)})`}>
-                      <title>{pictogramPaths[badge].title}</title>
-                      <circle className="pim-badge-ring" r={BADGE_R} />
-                      <g className="pim-badge-icon" transform={`translate(${-ICON / 2} ${-ICON / 2}) scale(${k})`} strokeWidth={1 / k}>
-                        {pictogramPaths[badge].paths.map((d, j) => <path key={j} d={d} />)}
-                      </g>
-                    </g>
-                  );
-                }
-                return <circle key={`e${i}`} visibility={inFrame(a.p) ? 'visible' : 'hidden'} className="pim-end" cx={a.p.x} cy={a.p.y} r={i < domestic.length ? 2.3 : 3} fill="var(--surface)" stroke="var(--burgundy)" strokeWidth="1.1" />;
-              })}
+              {[...domestic, ...world].map((a, i) => (
+                <circle key={`e${i}`} visibility={inFrame(a.p) ? 'visible' : 'hidden'} className="pim-end" cx={a.p.x} cy={a.p.y} r={i < domestic.length ? 2.3 : 3} fill="var(--surface)" stroke="var(--burgundy)" strokeWidth="1.1" />
+              ))}
               {[...domestic, ...world].map((_, i) => (
                 <circle key={`l${i}`} className="pim-light" r="2.8" fill="var(--burgundy-bright)" />
               ))}
@@ -374,38 +309,39 @@ export default function PanIndiaMap() {
           </div>
 
           <figcaption className="pim-foot">
-            <p className="pim-note">Illustrative. Arcs show direction of travel, not delivery destinations. Part symbols show what we make, not where each part goes.</p>
+            <p className="pim-note">Illustrative. Arcs show direction of travel, not delivery destinations.</p>
           </figcaption>
         </figure>
 
-        {/* What leaves Chandigarh: the published catalogue as a unit chart */}
-        <div ref={manRef} className="pim-man" data-armed={manArmed ? 'true' : undefined} data-in={manIn ? 'true' : undefined}>
+        {/* Beyond the catalogue: custom parts, many industries, repeat orders */}
+        <div className="pim-bey">
           <div>
-            <h3 className="pim-man-h">What leaves {site.contact.city}.</h3>
-            <p className="pim-man-sub">Every symbol is one part in our catalogue, grouped by what it does inside the machine. Tap a part to see it.</p>
-            <p className="pim-man-total"><b>{MANIFEST_TOTAL}</b><span>parts across {MANIFEST.length} groups</span></p>
+            <h3 className="pim-bey-h">More made here than any catalogue shows.</h3>
+            <p className="pim-bey-sub">The catalogue is where most buyers begin. If your part is not listed, it may still be one we can make.</p>
           </div>
-          <ul className="pim-rows">
-            {MANIFEST.map((r, ri) => {
-              const before = MANIFEST.slice(0, ri).reduce((n, x) => n + x.parts.length, 0);
-              return (
-                <li key={r.g.id} className="pim-row">
-                  <div className="pim-row-k">
-                    <Link href={`/products/${r.g.slug}/`} className="pim-row-name">{r.g.name}</Link>
-                    <span className="pim-row-n">{r.parts.length} {r.parts.length === 1 ? 'part' : 'parts'}</span>
-                  </div>
-                  <div className="pim-tiles">
-                    {r.parts.map((p, pi) => (
-                      <Link key={p.slug} href={`/products/${r.g.slug}/${p.slug}/`} className="pim-tile" data-name={p.name}
-                        aria-label={p.name} style={{ ['--k' as string]: before + pi }}>
-                        <PartPicto slug={p.slug} size={32} />
-                      </Link>
-                    ))}
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
+          <div>
+            <ul className="pim-bey-cols">
+              <li className="pim-bey-col">
+                <span className="pim-bey-k">Made to your sample</span>
+                <p className="pim-bey-t">Bring a sample, drawing or photo.</p>
+                <p className="pim-bey-p">We develop the part and supply it, from mould development onward.</p>
+              </li>
+              <li className="pim-bey-col">
+                <span className="pim-bey-k">Many industries</span>
+                <p className="pim-bey-t">Not just coolers and freezers.</p>
+                <p className="pim-bey-p">Parts for the industries we serve, wherever a plastic part has a job to do.</p>
+              </li>
+              <li className="pim-bey-col">
+                <span className="pim-bey-k">Repeat orders</span>
+                <p className="pim-bey-t">Ordered once, ordered again.</p>
+                <p className="pim-bey-p">Buyers across India come back with the next order, and we dispatch it the same way.</p>
+              </li>
+            </ul>
+            <div className="pim-bey-cta">
+              <Link href="/enquiry/" className="pim-go">Send a sample or drawing <ArrowUpRight size={18} weight="light" aria-hidden="true" /></Link>
+              <Link href="/industries/" className="pim-go">See the industries we serve <ArrowUpRight size={18} weight="light" aria-hidden="true" /></Link>
+            </div>
+          </div>
         </div>
       </div>
     </section>

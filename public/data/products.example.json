@@ -22,6 +22,15 @@
       "status": "active",
       "images": [{ "id": "0123456789abcdef", "url": "/api/media.php?id=0123456789abcdef", "alt": "Front view" }],
       "updatedAt": "2026-01-01T00:00:00Z"
+    },
+    "jumbo-heavy-burner": {
+      "machines": ["gas-stove"],
+      "moq": "8 pcs",
+      "packing": "8 pcs",
+      "keywords": ["gas burner", "bhatti burner"],
+      "availability": "on-request",
+      "status": "active",
+      "updatedAt": "2026-01-01T00:00:00Z"
     }
   }
 }

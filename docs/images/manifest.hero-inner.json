@@ -1,0 +1,222 @@
+[
+  {
+    "slot": "hero-about",
+    "path": "/images/heroes/about.webp",
+    "aspect": "16:9",
+    "size": "1920x1080",
+    "usedIn": "/about hero (PageHero photo)",
+    "alt": "Two people reviewing a moulded part on a factory floor",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, 16:9 landscape. Subject and visual weight sit in the RIGHT 60% of the frame; the LEFT 40% stays calm, low-detail and light-toned (soft negative space for headline text). Wide documentary shot of a clean, bright plastics factory floor, eye level, 24mm lens. Two people in plain neutral work clothing (no logos), seen three-quarter from behind-left, stand together examining one moulded white plastic spare part held up to daylight; automatic injection moulding machines recede softly into the background on the right. Warm neutral palette with a small burgundy accent (a tool tray or machine panel). Natural light from high windows. No text, no logos, no brand names, no watermark.",
+    "concept": "2 people / wide eye-level / warm neutral + burgundy accent / documentary"
+  },
+  {
+    "slot": "hero-products",
+    "path": "/images/heroes/products.webp",
+    "aspect": "16:9",
+    "size": "1920x1080",
+    "usedIn": "/products hero",
+    "alt": "Top-down flat lay of water cooler and freezer spare parts on a steel bench",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, 16:9 landscape. Subject and visual weight sit in the RIGHT 60% of the frame; the LEFT 40% stays calm, low-detail and light-toned (soft negative space for headline text). Top-down knolling flat-lay on a brushed stainless-steel workbench: float valve, nylon F-bushes, push cocks, ventilation jalli, gaskets, door hinges and an adjustable leg insert, evenly spaced with a steel calliper and a folded burgundy cloth as the only colour accent. Parts shown exactly as real catalogue parts, unmodified. Crisp cool steel palette, even soft box lighting, no people. No text, no logos, no brand names, no watermark.",
+    "concept": "none / top-down flat-lay / cool steel + one burgundy accent / commercial-artistic"
+  },
+  {
+    "slot": "hero-industries",
+    "path": "/images/heroes/industries.webp",
+    "aspect": "16:9",
+    "size": "1920x1080",
+    "usedIn": "/industries hero",
+    "alt": "Three industrial scenes side by side",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, 16:9 landscape. Subject and visual weight sit in the RIGHT 60% of the frame; the LEFT 40% stays calm, low-detail and light-toned (soft negative space for headline text). A triptych composition of three adjoining frames separated by thin steel dividers, each a different industry scene shot in the same cool-neutral grade: (1) macro of a machined bush beside a gear on a bench, (2) an appliance assembly line detail with two gloved hands fitting a plastic part, (3) cartons on a packaging conveyor with motion blur. Weight the richest detail in the right two frames; keep the left frame pale and soft. No text, no logos, no brand names, no watermark.",
+    "concept": "hands only (1 pair) / triptych, mixed macro and mid / cool neutral / documentary-editorial"
+  },
+  {
+    "slot": "hero-career",
+    "path": "/images/heroes/career.webp",
+    "aspect": "16:9",
+    "size": "1920x1080",
+    "usedIn": "/career hero",
+    "alt": "Four colleagues gathered at an injection moulding machine",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, 16:9 landscape. Subject and visual weight sit in the LOWER 60% of the frame; the UPPER 40% stays calm, low-detail and light-toned (soft negative space for headline text). Documentary mid-shot at a slight low angle, 35mm. Four colleagues of different ages in neutral work clothing (no logos, faces natural and relaxed) gather around an automatic injection moulding machine, one pointing at the control panel while the others lean in and smile. Warm daylight, deep burgundy machine guard in the background. Optimistic, human, uncluttered floor. No text, no logos, no brand names, no watermark.",
+    "concept": "4 people / low-angle mid-shot / warm daylight + burgundy / documentary"
+  },
+  {
+    "slot": "hero-contact",
+    "path": "/images/heroes/contact.webp",
+    "aspect": "16:9",
+    "size": "1920x1080",
+    "usedIn": "/contact hero",
+    "alt": "A dispatch counter with a packed carton ready for handover",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, 16:9 landscape. Subject and visual weight sit in the LEFT 60% of the frame; the RIGHT 40% stays calm, low-detail and light-toned (soft negative space for headline text). Shallow-depth-of-field shot of a tidy reception and dispatch counter in a small factory office: a sealed brown carton, a closed notebook, a desk phone and a pen on a light wood counter. One person's hands only (no face) slide the carton across the counter. Side window light, cool-white wall, one burgundy folder as accent. 50mm, eye-level with the counter. No text, no logos, no brand names, no watermark.",
+    "concept": "1 pair of hands / counter-level eye line / cool white + wood / documentary, shallow DOF"
+  },
+  {
+    "slot": "hero-enquiry",
+    "path": "/images/heroes/enquiry.webp",
+    "aspect": "16:9",
+    "size": "1920x1080",
+    "usedIn": "/enquiry hero",
+    "alt": "A desk set up to prepare a quote with a catalogue and sample part",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, 16:9 landscape. Subject and visual weight sit in the LEFT 60% of the frame; the RIGHT 40% stays calm, low-detail and light-toned (soft negative space for headline text). Still-life of a quoting desk seen from a 45-degree overhead angle: an open product catalogue, a small moulded nylon part, a steel ruler, a pencil and a desk phone, with a burgundy notebook. Warm low-sun side light with long soft shadows. No people. Calm, organised, inviting. No text, no logos, no brand names, no watermark.",
+    "concept": "none / 45-degree overhead still-life / warm low-sun + burgundy / artistic"
+  },
+  {
+    "slot": "hero-cart",
+    "path": "/images/heroes/cart.webp",
+    "aspect": "16:9",
+    "size": "1920x1080",
+    "usedIn": "/cart hero",
+    "alt": "Parts packed in cartons ready for dispatch",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, 16:9 landscape. Subject and visual weight sit in the RIGHT 60% of the frame; the LEFT 40% stays calm, low-detail and light-toned (soft negative space for headline text). Low-angle view along a row of neatly stacked, sealed brown cartons and a plastic parts tray on a warehouse shelf, receding to a soft focus. No people. Neutral warm-grey tones, even diffused light, subtle burgundy tape roll in the foreground. No text, no logos, no brand names, no watermark.",
+    "concept": "none / low-angle receding row / warm-grey neutral / documentary"
+  },
+  {
+    "slot": "hero-legal",
+    "path": "/images/heroes/legal.webp",
+    "aspect": "16:9",
+    "size": "1920x1080",
+    "usedIn": "/privacy /terms /refund hero (shared)",
+    "alt": "A quiet desk with a paper document and pen",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, 16:9 landscape. Subject and visual weight sit in the RIGHT 60% of the frame; the LEFT 40% stays calm, low-detail and light-toned (soft negative space for headline text). Minimalist artistic photo of a plain document, a steel pen and a closed folder resting on a pale desk, shot from a slight angle with a very shallow depth of field and large calm negative space. No people, no legible text on the paper. Muted cool-grey palette with the faintest burgundy pen detail. No text, no logos, no brand names, no watermark.",
+    "concept": "none / angled close, minimal / muted cool-grey / artistic, quiet"
+  },
+  {
+    "slot": "hero-group-water-cooler",
+    "path": "/images/heroes/group-water-cooler.webp",
+    "aspect": "16:9",
+    "size": "1920x1080",
+    "usedIn": "/products/water-cooler-spare-parts hero",
+    "alt": "Float valve and push cock with water droplets on stainless steel",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, 16:9 landscape. Subject and visual weight sit in the RIGHT 60% of the frame; the LEFT 40% stays calm, low-detail and light-toned (soft negative space for headline text). Macro commercial shot of a nylon float valve and a brass push cock on wet brushed stainless steel with crisp water droplets and a soft blue-grey reflection. Parts unmodified. No people. Cool aqua-grey palette with a single burgundy highlight in the background bokeh. No text, no logos, no brand names, no watermark.",
+    "concept": "none / macro / cool aqua-grey + burgundy bokeh / commercial-artistic"
+  },
+  {
+    "slot": "hero-group-deep-freezer-display-counter",
+    "path": "/images/heroes/group-deep-freezer-display-counter.webp",
+    "aspect": "16:9",
+    "size": "1920x1080",
+    "usedIn": "/products/deep-freezer-display-counter-parts hero",
+    "alt": "A sliding display-counter door with an F-bush and hinge in frosty light",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, 16:9 landscape. Subject and visual weight sit in the RIGHT 60% of the frame; the LEFT 40% stays calm, low-detail and light-toned (soft negative space for headline text). Low-angle detail of a glass sliding door on a display counter in cold white light, a nylon F-bush and a hinge clearly visible in the track, a light frost haze on the steel. One person's hand only, easing the door open. Icy cool-white palette, minimal colour, crisp. No text, no logos, no brand names, no watermark.",
+    "concept": "1 hand / low-angle detail / icy cool white / commercial documentary"
+  },
+  {
+    "slot": "hero-group-commercial-kitchen",
+    "path": "/images/heroes/group-commercial-kitchen.webp",
+    "aspect": "16:9",
+    "size": "1920x1080",
+    "usedIn": "/products/commercial-kitchen-spare-parts hero",
+    "alt": "A stainless commercial kitchen bay with spare parts on a prep table",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, 16:9 landscape. Subject and visual weight sit in the RIGHT 60% of the frame; the LEFT 40% stays calm, low-detail and light-toned (soft negative space for headline text). Wide documentary shot of a busy but orderly commercial kitchen: stainless prep table in the right foreground with a few spare parts laid out, two cooks softly out of focus in the background. Warm kitchen light with steel highlights, gentle steam. 28mm, slightly raised eye level. No text, no logos, no brand names, no watermark.",
+    "concept": "2 people (soft background) / wide, slightly raised / warm steel + steam / documentary"
+  },
+  {
+    "slot": "hero-group-caster-wheel",
+    "path": "/images/heroes/group-caster-wheel.webp",
+    "aspect": "16:9",
+    "size": "1920x1080",
+    "usedIn": "/products/caster-wheel hero",
+    "alt": "Caster wheels on a trolley on a concrete floor",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, 16:9 landscape. Subject and visual weight sit in the RIGHT 60% of the frame; the LEFT 40% stays calm, low-detail and light-toned (soft negative space for headline text). Ground-level shot, 35mm, of two caster wheels on a steel trolley frame on a smooth warm-grey concrete floor, with a subtle motion streak behind as if it has just rolled, long raking light. No people. Neutral concrete palette, single burgundy trolley handle in the background. No text, no logos, no brand names, no watermark.",
+    "concept": "none / ground-level / warm concrete + burgundy / artistic-documentary"
+  },
+  {
+    "slot": "hero-group-on-demand",
+    "path": "/images/heroes/group-on-demand.webp",
+    "aspect": "16:9",
+    "size": "1920x1080",
+    "usedIn": "/products/on-demand-customized-products hero",
+    "alt": "Hands measuring a sample part against a technical drawing",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, 16:9 landscape. Subject and visual weight sit in the RIGHT 60% of the frame; the LEFT 40% stays calm, low-detail and light-toned (soft negative space for headline text). Close, slightly overhead shot of two hands holding a steel calliper to a sample moulded plastic part, next to a rough technical drawing (no readable text or numbers) and a freshly moulded custom part. Warm desk lamp pool of light, deep dark-warm surround, burgundy pencil. Craft and precision mood. No text, no logos, no brand names, no watermark.",
+    "concept": "2 hands / close overhead / warm lamp, low-key + burgundy / artistic craft"
+  },
+  {
+    "slot": "hero-not-found",
+    "path": "/images/heroes/not-found.webp",
+    "aspect": "16:9",
+    "size": "1920x1080",
+    "usedIn": "not-found (404) hero",
+    "alt": "One lone part on an otherwise empty steel shelf in a tidy storeroom",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, 16:9 landscape. Subject and visual weight sit in the RIGHT 60% of the frame; the LEFT 40% stays calm, low-detail and light-toned (soft negative space for headline text). Symmetrical wide shot of a long, tidy storeroom with rows of empty grey bins and steel shelving receding to a vanishing point, with a single small nylon connecting bush placed alone on one shelf in the right of frame. No people. Soft neutral steel-grey light, gentle humour, calm. No text, no logos, no brand names, no watermark.",
+    "concept": "none / symmetrical one-point wide / neutral steel-grey / artistic, wry"
+  },
+  {
+    "slot": "industry-core-market",
+    "path": "/images/industries/core-market.webp",
+    "aspect": "4:3",
+    "size": "1200x900",
+    "usedIn": "/industries core-market tile",
+    "alt": "Water cooler, display counter and deep freezer lined up in a showroom",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, 4:3 landscape. A clean, bright showroom line-up of a water cooler, a glass display counter and a chest deep freezer, wide frame, slightly raised angle, seamless pale wall, soft shadows. Products unchanged and generic. No people. Cool white with a thin burgundy floor stripe. No text, no logos, no brand names, no watermark.",
+    "concept": "none / wide raised line-up / cool white + burgundy / commercial"
+  },
+  {
+    "slot": "industry-oem-manufacturing",
+    "path": "/images/industries/oem-manufacturing.webp",
+    "aspect": "4:3",
+    "size": "1200x900",
+    "usedIn": "/industries card photo",
+    "alt": "An OEM appliance production line",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, 4:3 landscape. Wide shot of an appliance assembly line, two workers (soft, mid-distance) fitting plastic components, parts bins in foreground. Warm industrial daylight. No text, no logos, no brand names, no watermark.",
+    "concept": "2 people / wide / warm daylight / documentary"
+  },
+  {
+    "slot": "industry-engineering-machinery",
+    "path": "/images/industries/engineering-machinery.webp",
+    "aspect": "4:3",
+    "size": "1200x900",
+    "usedIn": "/industries card photo",
+    "alt": "Machined bushes and a gear on an engineering bench",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, 4:3 landscape. Macro of nylon and brass bushes next to a steel gear on a machinist bench, oil sheen, shallow depth of field. Cool steel palette. No people. No text, no logos, no brand names, no watermark.",
+    "concept": "none / macro / cool steel / commercial"
+  },
+  {
+    "slot": "industry-automotive",
+    "path": "/images/industries/automotive.webp",
+    "aspect": "4:3",
+    "size": "1200x900",
+    "usedIn": "/industries card photo",
+    "alt": "A plastic automotive component on a dark bench",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, 4:3 landscape. Low-key studio-style shot of a black moulded automotive clip and bracket on a dark bench, one soft burgundy edge light. No people. No text, no logos, no brand names, no watermark.",
+    "concept": "none / low-key close / dark + burgundy edge light / artistic"
+  },
+  {
+    "slot": "industry-electrical-electronics",
+    "path": "/images/industries/electrical-electronics.webp",
+    "aspect": "4:3",
+    "size": "1200x900",
+    "usedIn": "/industries card photo",
+    "alt": "Plastic components inside an electrical enclosure",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, 4:3 landscape. Top-down view into an open electrical panel with neat white plastic cable guides and insulating components, clean wiring. No people. Cool neutral light. No text, no logos, no brand names, no watermark.",
+    "concept": "none / top-down / cool neutral / documentary"
+  },
+  {
+    "slot": "industry-gas-kitchen",
+    "path": "/images/industries/gas-kitchen.webp",
+    "aspect": "4:3",
+    "size": "1200x900",
+    "usedIn": "/industries card photo",
+    "alt": "A gas burner assembly in a commercial kitchen",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, 4:3 landscape. Mid shot of a commercial gas burner with a faint blue flame and knobs, a cook's hand only turning a control. Warm kitchen glow with steel reflections. No text, no logos, no brand names, no watermark.",
+    "concept": "1 hand / mid shot / warm + blue flame / documentary"
+  },
+  {
+    "slot": "industry-agriculture",
+    "path": "/images/industries/agriculture.webp",
+    "aspect": "4:3",
+    "size": "1200x900",
+    "usedIn": "/industries card photo",
+    "alt": "An agricultural implement in a field",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, 4:3 landscape. Low-angle outdoor shot of a farm implement attachment in a field at golden hour, a plastic component clearly visible on its housing. No people. Warm earthy palette, dust in the air. No text, no logos, no brand names, no watermark.",
+    "concept": "none / low-angle outdoor / golden hour warm / documentary"
+  },
+  {
+    "slot": "industry-packaging",
+    "path": "/images/industries/packaging.webp",
+    "aspect": "4:3",
+    "size": "1200x900",
+    "usedIn": "/industries card photo",
+    "alt": "Cartons moving on a packaging conveyor",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, 4:3 landscape. Overhead angled shot of sealed cartons on a packaging conveyor with gentle motion blur and a plastic guide component in sharp focus. No people. Neutral grey with a small burgundy label-free box. No text, no logos, no brand names, no watermark.",
+    "concept": "none / overhead angled / neutral grey + burgundy / documentary"
+  }
+]

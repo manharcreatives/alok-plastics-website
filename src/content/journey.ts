@@ -87,3 +87,11 @@ export const uspPullQuote = {
   quote: 'We don\'t measure success by the order we deliver. We measure it by the orders that keep coming back.',
   attribution: 'Aalok Kumar, CEO, Alok Plastics',
 };
+
+// "How we work" section header (home). COPY: drafted, needs client approval.
+// 70%+ repeat customers is a verified proof point (site.ts proof).
+export const howWeWork = {
+  label: 'How we work',
+  title: 'How one sample becomes a repeat order.',
+  lead: 'Understand, develop, manufacture, supply, repeat: the same five steps behind every part we make, and the reason more than 70% of our customers order again.',
+};

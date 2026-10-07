@@ -4,7 +4,10 @@
  * (SEND below) is DRAFTED by us, not client-supplied: flagged for client approval. No numbering in labels/titles.
  */
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import Highlight from '@/components/ui/Highlight';
+import PhotoBg from '@/components/ui/PhotoBg';
+import { ArrowDown } from '@phosphor-icons/react/dist/ssr/ArrowDown';
 import PageHero from '@/components/page/PageHero';
 import EnquiryBand from '@/components/page/EnquiryBand';
 import FoldEdge, { FOLD_SECTION_CSS } from '@/components/sections/FoldEdge';
@@ -19,9 +22,9 @@ import { Gear } from '@phosphor-icons/react/dist/ssr/Gear';
 import '@/components/products/products.css';
 
 export const metadata: Metadata = {
-  title: { absolute: 'Industries We Serve | OEM Plastic Parts Supplier | Alok Plastics, Chandigarh' },
+  title: { absolute: 'Industries We Serve | OEM Plastic Parts | Alok Plastics' },
   description:
-    'Plastic & steel spare parts for OEM manufacturers, engineering, automotive, electrical, gas & kitchen equipment, agriculture and packaging. Water coolers, display counters, deep freezers, with pan-India supply from Chandigarh.',
+    'Plastic and steel spare parts for OEMs, engineering, automotive, electrical, gas and kitchen equipment, agriculture and packaging, supplied from Chandigarh.',
   alternates: { canonical: '/industries/' },
   robots: { index: true, follow: true },
 };
@@ -55,6 +58,7 @@ ${FOLD_SECTION_CSS}
 .ic__list { list-style: none; margin: var(--space-lg) 0 0; padding: 0; border-top: 1px solid color-mix(in srgb, var(--surface) 24%, transparent); }
 .ic__list li { display: flex; align-items: center; gap: var(--space-sm); padding: var(--space-sm) 0; border-bottom: 1px solid color-mix(in srgb, var(--surface) 24%, transparent); font-family: var(--font-archivo); font-variation-settings: "wdth" 118; font-weight: 650; font-size: 1.25rem; letter-spacing: -0.01em; }
 .ic__list svg { color: var(--rose-pale); flex: none; }
+.ic__scene { position: relative; overflow: hidden; }
 .ic__scene .ind-art-svg { width: 100%; height: auto; display: block; }
 @media (min-width: 1024px) { .ic__in { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--space-xl); } }
 
@@ -127,12 +131,18 @@ export default function IndustriesPage() {
       <style>{CSS}</style>
       <PageHero
         crumbs={[{ label: 'Industries' }]}
-        label="Industries"
-        title="Built for the industries that build India."
-        lead={<Highlight keywords={['core market']}>Our core market first, then the seven industries beyond it.</Highlight>}
+        label="Industries we serve"
+        title="OEM plastic and steel parts for the industries that build India."
+        size="md"
+        lead={<Highlight keywords={['core market']}>Our core market first: water coolers, display counters and deep freezers. Then the seven industries beyond it.</Highlight>}
         art={<IndustriesHeroArt />}
+        photo={{ src: '/images/heroes/industries.webp', position: '65% center' }}
         enter="rise"
-      />
+        layout="center"
+      >
+        <a href="#ind-h" className="ph__btn">See the industries <ArrowDown size={18} weight="light" aria-hidden="true" /></a>
+        <Link href="/enquiry/" className="ph__btn ph__btn--ghost">Get a quote</Link>
+      </PageHero>
 
       <section aria-labelledby="core-h" className="ic">
         <div className="pw ic__in">
@@ -146,7 +156,10 @@ export default function IndustriesPage() {
               ))}
             </ul>
           </div>
-          <div className="ic__scene" aria-hidden="true"><CoreMarketScene /></div>
+          <div className="ic__scene" aria-hidden="true">
+            <CoreMarketScene />
+            <PhotoBg src="/images/industries/core-market.webp" />
+          </div>
         </div>
       </section>
 
@@ -155,7 +168,7 @@ export default function IndustriesPage() {
         <div className="pw">
           <header className="ib__head">
             <p className="in-eyebrow">Wider reach</p>
-            <h2 id="ind-h" className="in-h2">Components for seven industries.</h2>
+            <h2 id="ind-h" className="in-h2">Beyond the cooler: components for seven industries.</h2>
             <p className="ib__lead">The same moulding and supply discipline, applied beyond the cooler and the counter.</p>
           </header>
           <ul className="ib__grid">
@@ -167,7 +180,10 @@ export default function IndustriesPage() {
                       // eslint-disable-next-line @next/next/no-img-element
                       <img className="ib__img" src={i.image.src} alt={i.image.alt} width={i.image.w} height={i.image.h} loading="lazy" />
                     ) : (
-                      <IndustryScene scene={i.scene ?? i.id} />
+                      <>
+                        <IndustryScene scene={i.scene ?? i.id} />
+                        <PhotoBg src={`/images/industries/${i.slug}.webp`} />
+                      </>
                     )}
                   </div>
                   <div className="ib__body">
@@ -186,7 +202,7 @@ export default function IndustriesPage() {
         <div className="pw ip__in">
           <header>
             <p className="in-eyebrow">Before you enquire</p>
-            <h2 id="send-h" className="in-h2">What to send us.</h2>
+            <h2 id="send-h" className="in-h2">Send us any one of these to get started.</h2>
             <p className="ip__lead">Any one of these is enough to start. Whichever industry the part is for, the more you share, the faster we can quote.</p>
           </header>
           <div className="ip__sheet">
@@ -207,7 +223,7 @@ export default function IndustriesPage() {
         </div>
       </section>
 
-      <EnquiryBand variant="wide" fold="register" heading="Tell us your requirement." text="Share the part, quantity and the industry it is for, and we will reply with a quote." />
+      <EnquiryBand variant="wide" fold="register" heading="Which part does your industry need?" text="Share the part, quantity and the industry it is for, and we will reply with a quote." />
     </>
   );
 }

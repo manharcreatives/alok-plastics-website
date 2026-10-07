@@ -2,8 +2,8 @@
 // All content is sourced from src/content/*.ts — never hardcode in components
 
 export type ProductGroupId = '01' | '02' | '03' | '04' | '05';
-export type MachineId = 'water-cooler' | 'display-counter' | 'deep-freezer';
-export type MaterialId = 'nylon' | 'hdpe' | 'ppcp' | 'brass' | 'ss';
+export type MachineId = 'water-cooler' | 'display-counter' | 'deep-freezer' | 'gas-stove' | 'commercial-kitchen';
+export type MaterialId = 'nylon' | 'hdpe' | 'ppcp' | 'brass' | 'ss' | 'cast-iron';
 export type BuyerType = 'oem' | 'dealer' | 'distributor' | 'repair-workshop' | 'other';
 export type LogoVariant = 'color' | 'white' | 'bright';
 export type HeroMediaMode = 'auto' | 'video' | 'poster' | 'ambient';
@@ -25,7 +25,13 @@ export type ProductImage = {
 
 export type ProductPrice = {
   amount: number;
-  unit: 'pc' | 'set';
+  unit: 'pc' | 'set' | 'kg' | 'inch';   // as printed in the catalogue (Rs. x/pc, /set, /kg, per inch)
+};
+
+/** One printed catalogue spec that is not a variant (weight, plate thickness...). Shown on the part page. */
+export type ProductSpec = {
+  label: string;
+  value: string;
 };
 
 export type Availability = 'in-stock' | 'out-of-stock' | 'on-request';
@@ -39,6 +45,9 @@ export type Product = {
   material?: MaterialId;
   variants?: ProductVariant[];
   catalogPrice?: ProductPrice;      // printed-catalogue list price — stored, never shown or used for sorting/cart
+  catalogNote?: string;             // internal: printed price text that could not be mapped to a variant. Never rendered
+  specs?: ProductSpec[];            // printed catalogue specs that are not variants (weight, application...)
+  photo?: string;                   // override of the product photo path; default is /images/products/<slug>.webp (see productPhoto)
   price?: number;                   // INR, ONLY from the admin (runtime products.json). Absent = "Price on request"
   availability?: Availability;      // admin-set only; absent + no stock = "On request"
   stock?: number;                   // integer 0..100000, admin-set only
@@ -155,6 +164,8 @@ export type HeroMediaConfig = {
     mobileMp4: string | null;
   };
   poster: string | null;
+  /** Generated 16:9 photograph layered under the video, over the placeholder art. Renders nothing until the file exists. */
+  photo?: string | null;
   tone: 'light' | 'dark';
 };
 
@@ -171,7 +182,8 @@ export type ContactInfo = {
   state: string;
   pincode: string;
   country: string;
-  phone: string | null;             // TODO(client)
+  phone: string | null;
+  phone2?: string | null;
   whatsapp: string | null;          // TODO(client) — single source for all WhatsApp links
   email: string | null;             // TODO(client)
   mapsUrl: string | null;           // TODO(client)
@@ -194,10 +206,17 @@ export type SiteConfig = {
     media: HeroMediaConfig;
     eyebrow: string;
     headline: string[];
+    /** Phrase inside `headline` that carries the gradient accent */
+    headlineAccent?: string;
     sub: string;
     ctas: {
       primary: string;
       tertiary: string;
+    };
+    /** Spec rail: engineered detail strip under the CTAs */
+    rail: {
+      facts: string[];
+      index: string[];
     };
   };
   proof: ProofPoint[];

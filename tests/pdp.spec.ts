@@ -83,3 +83,12 @@ test('lightbox: opens, traps focus, closes on Escape (needs a product with image
   await page.keyboard.press('Escape');
   await expect(dlg).toHaveCount(0);
 });
+
+test('product photo layer points at /images/products/<slug>.webp over the pictogram placeholder', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto(url);
+  // the photo file may not exist yet: PhotoBg then stays hidden/removed, but the slot is in the server HTML
+  const html = await (await page.request.get(url)).text();
+  expect(html).toContain(`/images/products/${first!.slug}.webp`);
+  await expect(page.locator('.p-gallery__plate svg.p-picto, .p-gallery__plate .p-plate').first()).toBeAttached();
+});

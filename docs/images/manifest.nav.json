@@ -1,0 +1,52 @@
+[
+  {
+    "slot": "nav-water-cooler",
+    "path": "/images/nav/water-cooler.webp",
+    "aspect": "4:3",
+    "size": "1200x900",
+    "usedIn": "NavMegaPanel (Products mega menu, column 1)",
+    "alt": "Water cooler spare parts: float valve, push cock and waste pipe laid out on a bench",
+    "prompt": "Ultra-realistic commercial product photography, industrial B2B catalogue style. Top-down flat lay on a pale warm-grey bench: a nylon float valve set, a brass push cock and a white waste pipe, arranged on a loose diagonal with generous negative space. Soft diffused daylight from the left, crisp shadows, shallow depth. Parts shown exactly as real moulded water cooler spares, unchanged. No text, no logos, no brand names, no watermark.",
+    "concept": "no people / top-down flat lay / cool neutral steel with a faint burgundy accent / documentary"
+  },
+  {
+    "slot": "nav-deep-freezer-display-counter",
+    "path": "/images/nav/deep-freezer-display-counter.webp",
+    "aspect": "4:3",
+    "size": "1200x900",
+    "usedIn": "NavMegaPanel (Products mega menu, column 2)",
+    "alt": "Sliding door bush, hinge and door lock for display counters and deep freezers",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B. Macro close-up at a slight low angle: a nylon sliding-door bush and a steel hinge fitted on the glass door track of a display counter, with a deep freezer lid blurred in the background. Cool white light with a warm rim highlight, very shallow depth of field. Parts unchanged and accurate. No people, no text, no logos, no brand names, no watermark.",
+    "concept": "no people / macro low angle / cool white with warm rim light / artistic documentary"
+  },
+  {
+    "slot": "nav-commercial-kitchen",
+    "path": "/images/nav/commercial-kitchen.webp",
+    "aspect": "4:3",
+    "size": "1200x900",
+    "usedIn": "NavMegaPanel (Products mega menu, column 3)",
+    "alt": "Commercial kitchen equipment with replacement parts being fitted",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B. Wide shot of a clean stainless-steel commercial kitchen line, two technicians in plain work clothes seen from behind at mid distance fitting a replacement part to a unit. Warm tungsten practical lights against stainless steel, neutral background, natural documentary feel. Equipment generic and unbranded. No text, no logos, no brand names, no watermark.",
+    "concept": "2 people from behind / wide eye-level / warm tungsten on neutral steel / documentary"
+  },
+  {
+    "slot": "nav-caster-wheel",
+    "path": "/images/nav/caster-wheel.webp",
+    "aspect": "4:3",
+    "size": "1200x900",
+    "usedIn": "NavMegaPanel (Products mega menu, column 4)",
+    "alt": "Caster wheels fitted under an equipment trolley",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B. Low-angle shot at floor level of a swivel caster wheel on an equipment trolley, polished concrete floor, a second wheel softly blurred behind. Moody cool grey light with one burgundy-toned accent reflected on the metal. Caster shown unchanged. No people, no text, no logos, no brand names, no watermark.",
+    "concept": "no people / floor-level low angle / cool grey with burgundy accent / artistic"
+  },
+  {
+    "slot": "nav-on-demand-custom",
+    "path": "/images/nav/on-demand-custom.webp",
+    "aspect": "4:3",
+    "size": "1200x900",
+    "usedIn": "NavMegaPanel (Products mega menu, column 5)",
+    "alt": "A customer sample, a drawing and a freshly moulded plastic part on a workbench",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B. Four hands only, from above at a 45-degree angle, comparing a customer's sample part, a technical drawing and a freshly moulded plastic part on a clean workbench, calipers resting beside them. Warm neutral palette, soft window light, natural skin, no faces. No text on the drawing, no logos, no brand names, no watermark.",
+    "concept": "4 hands only / high 45-degree angle / warm neutrals / documentary"
+  }
+]

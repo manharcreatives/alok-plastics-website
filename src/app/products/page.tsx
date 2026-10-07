@@ -10,9 +10,9 @@ import { CatalogueSheetArt } from '@/components/products/art';
 import { productGroups, productsByGroup } from '@/content/products';
 
 export const metadata: Metadata = {
-  title: 'Plastic Spare Parts Catalogue | Water Cooler, Freezer & Counter Parts',
+  title: { absolute: 'Spare Parts Catalogue | Coolers, Freezers | Alok Plastics' },
   description:
-    'Browse moulded plastic & steel spare parts for water coolers, display counters and deep freezers: float valves, F-bushes, connecting bushes, gaskets, door locks, nylon & HDPE. Search by name or material and request a quote.',
+    'Browse spare parts for water coolers, display counters, deep freezers and commercial kitchens: valves, bushes, hinges, burners. Search and request a quote.',
   alternates: { canonical: '/products/' },
 };
 
@@ -23,9 +23,11 @@ export default function ProductsPage() {
       <PageHero
         crumbs={[{ label: 'Products' }]}
         label="Spare parts catalogue"
-        title="Find the part you need"
-        lead={<Highlight keywords={['spare parts']}>Spare parts for water coolers, display counters and deep freezers, grouped by what the part does inside the machine.</Highlight>}
+        title="Water cooler, counter and freezer spare parts. Find the one that fits."
+        size="md"
+        lead={<Highlight keywords={['spare parts']}>Moulded plastic and steel spare parts for water coolers, display counters and deep freezers, grouped by what the part does inside the machine. Search by name or material.</Highlight>}
         art={<CatalogueSheetArt />}
+        photo={{ src: '/images/heroes/products.webp', position: '70% center' }}
         enter="wipe"
         layout="top"
       >

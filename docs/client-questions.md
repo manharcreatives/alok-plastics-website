@@ -96,3 +96,43 @@ _All items above are flagged `// COPY: drafted, needs client approval` in the so
 | 39 | The home "We don't just mould plastic. We mould possibilities." is core value 1 but the About "Core values" section shows only values 2 and 3. Show all three on About (value 1 would then leave Home), or keep as is? | `TrustQuote.tsx`, `aboutContent.ts` |
 | 40 | The journey timeline now lives on /about only (it repeated the home proof numbers). OK to keep it off Home? The 2000s/2010s/2020s figures in `journey.ts` still await confirmation (#38) | `app/page.tsx`, `journey.ts` |
 | 41 | Visiting hours and any landmark directions for the Contact page (currently "Please send an enquiry first and we will reply.") | `ContactSheet.tsx` |
+
+## Added in the home sections pass (Why Alok Plastics, Pan Bharat, Enquiry, Footer)
+| # | Question | Where |
+|---|---|---|
+| 42 | Home "Why Alok Plastics" now lists four commitments (Quality, Fitment, Supply, B2B first) using the previously approved wording. No guarantee (for example a multi-year guarantee), certification or quantity is claimed. If the client offers a guarantee or warranty, send the exact terms and we will add it. Please also confirm the section title "Four reasons buyers reorder." | `TrustQuote.tsx` |
+| 43 | "Beyond the catalogue" copy under the map says parts are developed to a sample, drawing or photo and supplied for many industries, with repeat orders across India. Confirm wording; supply real figures only if they want any (none are shown). | `PanIndiaMap.tsx` |
+| 44 | Approve new drafted lines: enquiry H2 "Send us the part. We'll take it from there.", the "What to send us." panel, and the closing sign-off "Every part starts with a conversation." | `EnquirySection.tsx`, `ClosingNote.tsx` |
+| 45 | Footer shows both phone numbers, WhatsApp, email and address. Still unknown, so not shown: GSTIN, business hours, Google Maps place link. | `Footer.tsx`, `site.ts` |
+
+## Added with the blogs section
+| # | Question | Where |
+|---|---|---|
+| 42 | Approve the five launch guides (copy is drafted from catalogue facts only). Any statement you would rather not publish? | `src/content/blogs.ts` |
+| 43 | For the custom-parts guide: do you want to state a typical sample-approval step, mould development lead time, minimum order quantity or tooling arrangement? Today the guide says only that timing and cost are confirmed per requirement | `blogs.ts` (custom parts guide) |
+| 44 | Confirm "SS Kabja" is stainless steel (the materials guide mentions it as stainless steel) and the material of the Gasket, Door Lock and Hinge, so the guides can name them | `blogs.ts`, `products.ts` |
+| 45 | Confirm the heavy and light Push Cock variants: is "heavy suits busy locations" an accurate way to describe them? | `blogs.ts` (float valve guide) |
+| 46 | Who should be named as the author of guides (currently "Alok Plastics Team"), and may we publish new guides monthly? | `blogs.ts` |
+
+## Added with the commercial kitchen products pass (gas stove catalogue + burner/valve screenshots)
+Numbers continue after the home-sections pass (rows 42 to 46 are also used by the blogs list above).
+| # | Question | Where |
+|---|---|---|
+| 47 | The Commercial Gas Stoves catalogue contains whole stoves and bhattis, not only spare parts. They are listed in group 03 "Commercial Kitchen Spare parts" because it is the closest of the five fixed groups. OK, or should the group be renamed (for example "Commercial Kitchen")? | `products.ts` group 03 |
+| 48 | Does Alok Plastics manufacture the burners, valves, adaptors and stoves, or supply them? The site avoids the word "manufacturer" for group 03 (page titles and Product schema) until this is confirmed. | `lib/seo.ts`, `products.ts` |
+| 49 | Stove sizes are printed without a unit (10x10x6, 12x30x8 ...). Are they inches? Also confirm the meaning of "Double Buff", "3RV burner" and "2RV burner". They are shown exactly as printed. | `products.ts` stove variants |
+| 50 | Three bhatti pages are all titled "Stainless Steel Bhatti", and the second Square Heavy page is titled the same as the first (only its price sheet says "Extra Hight"). We added suffixes to tell them apart: "(Twin Burner)", "(Twin Burner, Shelf)", "(Round, Extra Heavy)" and "(Extra Height)". Please give the names you want customers to see. | `products.ts` |
+| 51 | "5year Guarantee" is printed beside the extra-heavy SS ring sizes. It is NOT shown on the site. If it is a real guarantee, send the exact terms and what it covers. | `ss-bhatti-round-extra-heavy` |
+| 52 | Price pairs and triples printed without labels: Delux Canteen Heavy With Ring 1060/1105, Jumbo Canteen Heavy With Ring 1532/1582, Pilot Burner 105/132 (three types: Lite, Medium, Heavy). Which price belongs to what? The canteen valves (87/98/114 for 65/75/85 gm) were matched in print order: please confirm. Prices are stored only, never shown. | `catalogNote`, variants |
+| 53 | Pilot Burner weights differ: caption says Lite 68 gm and Medium 90 gm, the photo says Lite 65 gm, Medium 85 gm, Heavy 95 gm. Which is right? Weights are not shown for it until confirmed. | `pilot-burner` |
+| 54 | Some screenshot cards are cut off: Jumbo Canteen Heavy With Ring (below the price), SS Puffer Plate (after "Making 3mm Plate with Heavy Duty") and HP Adaptor CI Nojal (below weight and packing). Please send the full pages, including MOQ. | `products.ts` |
+| 55 | Possible typos in the stove sheets: Square Extra Height 18x18x18 weighs "7 kg", the same as 15x15x15; the Bhatti with shelf 10x30x18 is "7 kg" while the lower 10x30x8 is "9 kg". | `products.ts` |
+| 56 | Material is not printed for the Jumbo Lite / Jumbo Heavy burners, Delux / Jumbo Canteen with ring, Korian Ring Burner, Door Lock, Gasket, Hinge and Three Core Plug, so none is shown. "CI" in HP Adaptor CI Nojal was read as cast iron: confirm. | `products.ts` |
+| 57 | Three products were unpublished until a group was confirmed. They are now published provisionally: Three Core Plug in Water Cooler spare parts, PUF Chemical and Bright Chrome in Deep freezer & Display counter Parts. Confirm the group for each, and where PUF Chemical and Bright Chrome are used. | `products.ts` |
+| 58 | The catalogue has two pages titled "Handle Lock": page 6 (black nylon lever, Rs 70) and page 12 (chrome lever sold as "Door lock big" Rs 260 / "Door lock small" Rs 160). The site keeps "Handle Lock" for page 6 and "Door Lock" for page 12. Confirm the names. | `handle-lock`, `door-lock` |
+| 59 | Ventilation Jalli: the old site labels "RS 60, RS 75, RS 80, RS 130" were prices. Variants are now the printed sizes 11" x 11", 14" x 14", 14" x 17", 18.5" x 10". Also, the catalogue does not say which machines the Adjustable Leg Insert, Ventilation Jalli and Waste Pipe fit (the site lists machines from the earlier brief): confirm. The generic "Hinge" has no catalogue page: keep or remove? | `products.ts` |
+| 60 | Gasket: 47 profile codes are listed exactly as printed (including "HOSHIZAKI"); the last row of each gasket sheet has no labels. Do you have size, material and price per profile? | `gasket` |
+| 61 | The supplied photos carry other companies' marks (a retail box on the HP adaptor, brand lettering on valve knobs, a logo on the pilot burner, brand names on the spray cans). The new product photos will be generated without any brand marks. Please confirm, or send unbranded originals. | product photos |
+| 62 | Caster wheel (04) and On demand Customized Products (05) still have no products. Please send names, sizes and prices (see also #33). | `products.ts` |
+| 63 | MOQ and packing printed for kitchen parts (for example MOQ 100 pcs, packing 25 pcs pouch, 8 pcs, 200 pcs) are shown on the part pages. OK to publish them? Prices stay hidden. | part pages |
+| 64 | "SS Kabja 202": is 202 the stainless steel grade, and may "12 gauge heavy duty" be shown (it is printed on the catalogue sheet)? | `ss-kabja` |

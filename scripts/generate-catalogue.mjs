@@ -11,7 +11,7 @@ import { dirname, join } from 'node:path';
 import { loadContent } from './lib/content.mjs';
 
 const ROOT = join(import.meta.dirname, '..');
-const { products, productGroups, MATERIAL_LABELS, MACHINE_LABELS, productPath } = await loadContent();
+const { products, productGroups, MATERIAL_LABELS, MACHINE_LABELS, productPath, productPhoto } = await loadContent();
 
 const q = s => "'" + String(s).split("\\").join("\\\\").split("'").join("\\'") + "'";
 const lit = v => {
@@ -25,7 +25,10 @@ const lit = v => {
 
 const rows = products.map(p => {
   const g = p.group ? productGroups.find(x => x.id === p.group) : null;
-  const img = p.images && p.images[0];
+  // Admin preview image: the product photo (/images/products/<slug>.webp), but only once the file exists in public/
+  // (photos are generated later; a missing file would show a broken image in the panel). Old catalogue crops are not used.
+  const photo = productPhoto(p);
+  const img = photo && existsSync(join(ROOT, 'public', photo)) ? { src: photo, alt: `${p.name}, Alok Plastics` } : null;
   const details = {
     group: g ? { id: g.id, name: g.name, slug: g.slug } : null,
     path: g ? productPath(p) : null,

@@ -4,7 +4,7 @@
  *
  * Machine filter never claims a machine for a product whose fit is unconfirmed ('TODO').
  */
-import { MATERIAL_LABELS, knownMachines, publishedProducts } from '@/content/products';
+import { MACHINE_LABELS, MATERIAL_LABELS, knownMachines, publishedProducts } from '@/content/products';
 import type { MachineId, MaterialId, Product } from '@/content/types';
 import { applyProductOverride } from '@/components/runtime/useRuntime';
 import type { RuntimeProducts } from '@/lib/runtime-schema';
@@ -12,7 +12,7 @@ import { DEFAULT_QUERY, isListable, searchCatalog } from '@/lib/catalog-search';
 
 /** Machines that at least one product is confirmed for. */
 export const availableMachines: MachineId[] = (
-  ['water-cooler', 'display-counter', 'deep-freezer'] as MachineId[]
+  Object.keys(MACHINE_LABELS) as MachineId[]
 ).filter(m => publishedProducts.some(p => knownMachines(p).includes(m)));
 
 /** Materials that at least one product declares. */

@@ -3,7 +3,8 @@
  * Light section (--surface-alt) with ONE burgundy accent panel (the "tell us the part" block).
  * The footer below is burgundy too, so this section stays light and the footer opens on a folded
  * edge: never two burgundy blocks adjacent (ADR in docs/decisions.md).
- * The address lives only in the footer (it used to repeat here). Form is ShortEnquiryForm (§14 single source). No WhatsApp CTA here (floating button only).
+ * The address lives only in the footer (it used to repeat here). Form is ShortEnquiryForm (§14 single source).
+ * The aside lists every direct line from the runtime contact: phone, second phone, email, WhatsApp.
  */
 
 'use client';
@@ -11,8 +12,10 @@
 import ShortEnquiryForm from '@/components/forms/ShortEnquiryForm';
 import { Phone } from '@phosphor-icons/react/dist/ssr/Phone';
 import { EnvelopeSimple } from '@phosphor-icons/react/dist/ssr/EnvelopeSimple';
+import { WhatsappLogo } from '@phosphor-icons/react/dist/ssr/WhatsappLogo';
 import { telHref } from '@/content/site';
-import { trackPhoneClick } from '@/lib/analytics';
+import { waGeneral } from '@/lib/whatsapp';
+import { trackPhoneClick, trackWhatsAppClick } from '@/lib/analytics';
 import { useRuntimeContact } from '@/components/runtime/useRuntime';
 
 const SECTION_CSS = `
@@ -45,6 +48,7 @@ a.enq-sec-row:hover .enq-sec-ar { transform: translate3d(2px, -2px, 0); }
 
 export default function EnquirySection() {
   const c = useRuntimeContact();
+  const waHref = waGeneral(c.whatsapp);
 
   return (
     <section id="enquiry" aria-labelledby="enquiry-heading" className="enq-sec">
@@ -52,10 +56,10 @@ export default function EnquirySection() {
       <div className="enq-sec__bg" aria-hidden="true" />
       <div className="enq-sec__in">
         <div className="enq-sec-head">
-          <p className="enq-sec-eyebrow">Enquire</p>
+          <p className="enq-sec-eyebrow">Start a conversation</p>
           {/* COPY: drafted, needs client approval */}
           <h2 id="enquiry-heading" style={{ fontFamily: 'var(--font-archivo)', fontVariationSettings: '"wdth" 125', fontSize: 'var(--fs-h1)', fontWeight: 650, lineHeight: 1.05, letterSpacing: '-0.03em', color: 'var(--ink)', margin: 0 }}>
-            Let&rsquo;s talk parts.
+            Send us the part. We&rsquo;ll take it from there.
           </h2>
         </div>
 
@@ -67,17 +71,27 @@ export default function EnquirySection() {
           <aside className="enq-sec-aside" aria-label="Other ways to reach us">
             <div>
               {/* COPY: drafted, needs client approval */}
-              <h3>Tell us the part.</h3>
+              <h3>What to send us.</h3>
               <p style={{ marginTop: 'var(--space-xs)' }}>
-                Share the part name, quantity and any size or material preference, or describe what the part does in your equipment.
+                The part name, quantity and any size or material preference. Or a sample, drawing or photo if it is not in the catalogue, or a note on what the part does in your equipment.
               </p>
             </div>
-            {(c.phone || c.email) && (
+            {(c.phone || c.phone2 || c.email || waHref) && (
             <div className="rule">
               <span className="enq-sec-lbl">Prefer to talk?</span>
               {c.phone && (
                 <a className="enq-sec-row" href={telHref(c.phone)} onClick={() => trackPhoneClick('enquiry-section')}>
                   <Phone size={20} weight="light" aria-hidden="true" /><span>{c.phone}</span><span />
+                </a>
+              )}
+              {c.phone2 && (
+                <a className="enq-sec-row" href={telHref(c.phone2)} onClick={() => trackPhoneClick('enquiry-section-2')}>
+                  <Phone size={20} weight="light" aria-hidden="true" /><span>{c.phone2}</span><span />
+                </a>
+              )}
+              {waHref && (
+                <a className="enq-sec-row" href={waHref} target="_blank" rel="noopener noreferrer" onClick={() => trackWhatsAppClick({ source: 'enquiry-section' })}>
+                  <WhatsappLogo size={20} weight="light" aria-hidden="true" /><span>Message us on WhatsApp</span><span />
                 </a>
               )}
               {c.email && (

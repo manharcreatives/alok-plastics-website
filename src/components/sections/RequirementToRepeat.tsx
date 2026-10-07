@@ -1,6 +1,7 @@
 /**
- * S5 · RequirementToRepeat — §13
- * bg: --canvas, folded-diagonal top edge into the section.
+ * S5 · RequirementToRepeat — "How we work" (§13)
+ * bg: --burgundy-night with a 3D-set backdrop slot (/images/backgrounds/how-we-work.webp over a
+ * drawn spotlight + perspective-floor placeholder). Stepped fold edge into the section.
  *
  * Understand → Develop → Manufacture → Supply → Repeat as a 3D cycle: the five folded-corner
  * tiles stand on a tilted ring (a turntable seen from slightly above). On desktop the section
@@ -11,6 +12,7 @@
  * Desktop ≥1024 + motion allowed: 3D ring (data-ring="on", set by JS).
  * Desktop without JS / reduced motion: five tiles in a row. Below 1024: vertical stack on a rail.
  * COPY: node descriptions are drafted and flagged for client approval (journey.ts).
+ * The CEO pull-quote now lives in its own section (CeoQuote).
  */
 
 'use client';
@@ -25,7 +27,8 @@ import { ArrowsClockwise } from '@phosphor-icons/react/dist/csr/ArrowsClockwise'
 import { gsap } from '@/lib/motion';
 import { prefersReducedMotion } from '@/hooks/useReducedMotion';
 import { useMaskRise } from '@/hooks/useMotion';
-import { uspChain, uspPullQuote } from '@/content/journey';
+import { uspChain, howWeWork } from '@/content/journey';
+import PhotoBg from '@/components/ui/PhotoBg';
 import FoldEdge, { FOLD_SECTION_CSS } from './FoldEdge';
 
 /* Process icons: Phosphor, light weight, the same set as the rest of the site. */
@@ -43,7 +46,6 @@ function StepGlyph({ name }: { name: string }) {
   return <Icon className="usp-ico" size={40} weight="light" aria-hidden="true" />;
 }
 
-const HIGHLIGHT = 'orders that keep coming back';
 const N = uspChain.length;
 const STEP_DEG = 360 / N;
 /* Floor track in the ring's own plane: starts under Understand (front, +z) and runs the same way
@@ -51,15 +53,25 @@ const STEP_DEG = 360 / N;
 const TRACK = 'M 0 100 A 100 100 0 0 0 0 -100 A 100 100 0 0 0 0 100';
 
 const CSS = FOLD_SECTION_CSS + `
-  .usp-sec { --pad-top: calc(var(--section-y) * 0.9); background: var(--canvas); padding-bottom: calc(var(--section-y) * 1.2); padding-left: var(--grid-page-padding); padding-right: var(--grid-page-padding); overflow: hidden; }
-  .usp-micro { display: inline-flex; align-items: center; gap: 10px; margin-bottom: var(--space-sm); font-size: var(--fs-label); letter-spacing: var(--tr-label); text-transform: uppercase; font-weight: 600; color: var(--muted); font-family: var(--font-archivo), sans-serif; line-height: var(--lh-label); }
-  .usp-h { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-h2); font-weight: 650; line-height: var(--lh-h2); letter-spacing: var(--tr-h2); color: var(--ink); margin-bottom: var(--space-sm); }
-  .usp-lead { font-size: 1.0625rem; color: var(--body); line-height: 1.65; max-width: 60ch; }
+  .usp-sec { --pad-top: calc(var(--section-y) * 0.9); background: var(--burgundy-night); padding-bottom: calc(var(--section-y) * 0.6); padding-left: var(--grid-page-padding); padding-right: var(--grid-page-padding); overflow: hidden; isolation: isolate; }
+  /* the set behind the ring: spotlight from above, a perspective floor grid, then the photograph, then a legibility shade */
+  .usp-bg { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+  .usp-bg-art { position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 55% at 50% 38%, color-mix(in srgb, var(--burgundy-bright) 45%, transparent) 0%, transparent 70%), linear-gradient(180deg, var(--burgundy-deep) 0%, var(--burgundy-night) 70%); }
+  .usp-bg-art::after { content: ""; position: absolute; left: -20%; right: -20%; bottom: 0; height: 55%; opacity: .55;
+    background-image: linear-gradient(color-mix(in srgb, var(--rose-pale) 16%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--rose-pale) 16%, transparent) 1px, transparent 1px);
+    background-size: 48px 48px; transform: perspective(520px) rotateX(62deg); transform-origin: 50% 100%;
+    -webkit-mask-image: linear-gradient(0deg, var(--ink) 0%, transparent 85%); mask-image: linear-gradient(0deg, var(--ink) 0%, transparent 85%); }
+  .usp-bg-shade { position: absolute; inset: 0; background: linear-gradient(180deg, color-mix(in srgb, var(--burgundy-night) 70%, transparent) 0%, color-mix(in srgb, var(--burgundy-night) 25%, transparent) 45%, color-mix(in srgb, var(--burgundy-night) 70%, transparent) 100%); }
+  .usp-in { position: relative; z-index: 1; max-width: calc(var(--grid-max) + 2 * var(--grid-page-padding)); margin: 0 auto; }
+  .usp-micro { display: inline-flex; align-items: center; gap: 10px; margin-bottom: var(--space-sm); font-size: var(--fs-label); letter-spacing: var(--tr-label); text-transform: uppercase; font-weight: 600; color: var(--rose-pale); font-family: var(--font-archivo), sans-serif; line-height: var(--lh-label); }
+  .usp-h { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-h2); font-weight: 650; line-height: var(--lh-h2); letter-spacing: var(--tr-h2); color: var(--surface); margin-bottom: var(--space-sm); max-width: 20ch; text-wrap: balance; }
+  .usp-lead { font-size: 1.0625rem; color: var(--pink-soft); line-height: 1.65; max-width: 60ch; }
 
   /* Chain — mobile: vertical on a rail. The rail alone marks the run; each step is
        identified by its own 01/05 mono index, so no node ornament sits on it. */
   .usp-chain { list-style: none; margin: var(--space-xl) 0 0; padding: 0 0 0 var(--space-md); display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-md); position: relative; }
-  .usp-chain::before { content: ""; position: absolute; left: 0; top: 8px; bottom: 8px; width: 2px; background: linear-gradient(180deg, var(--burgundy) 0%, var(--grey-warm) 100%); }
+  .usp-chain::before { content: ""; position: absolute; left: 0; top: 8px; bottom: 8px; width: 2px; background: linear-gradient(180deg, var(--rose) 0%, var(--grey-metal) 100%); }
   .usp-node { position: relative; display: flex; min-width: 0; }
   .usp-shape { flex: 1; display: flex; min-width: 0; padding: 1px; background: var(--grey-warm); clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 0 100%); }
   .usp-node-in { flex: 1; min-width: 0; background: var(--surface); padding: var(--space-md); box-shadow: inset 0 1px 0 rgba(255,255,255,.9); clip-path: polygon(0 0, calc(100% - 23px) 0, 100% 23px, 100% 100%, 0 100%); }
@@ -73,26 +85,15 @@ const CSS = FOLD_SECTION_CSS + `
   .usp-node-desc { font-size: 0.9375rem; color: var(--body); line-height: 1.5; }
   .usp-floor, .usp-dots { display: none; }
 
-  /* Quote */
-  .usp-quote { margin-top: calc(var(--space-xl) * 1.5); display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-md); align-items: center; }
-  .usp-peak { position: relative; width: 144px; height: 112px; flex-shrink: 0; }
-  .usp-peak i { position: absolute; left: 0; top: 0; bottom: 0; width: 56%; background: var(--burgundy); clip-path: polygon(0 100%, 44% 0, 100% 0, 56% 100%); }
-  .usp-peak b { position: absolute; left: 44%; right: 0; top: 0; bottom: 0; background: var(--silver-gradient); clip-path: polygon(44% 0, 100% 0, 56% 100%, 0 100%); opacity: .55; }
-  .usp-quote-text { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-h1); font-weight: 650; line-height: var(--lh-h1); letter-spacing: var(--tr-h1); color: var(--ink); max-width: 24ch; text-wrap: balance; margin-bottom: var(--space-md); }
-  .usp-quote-hl { background: linear-gradient(175deg, var(--burgundy-night) 0%, var(--burgundy) 55%, var(--burgundy-bright) 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: var(--burgundy); }
-  .usp-quote-attr { display: flex; align-items: center; gap: var(--space-sm); font-size: 0.875rem; color: var(--body); font-weight: 600; }
-
   @media (min-width: 640px) { .usp-chain { grid-template-columns: repeat(2, minmax(0, 1fr)); } .usp-node--last { grid-column: 1 / -1; } }
   @media (min-width: 1024px) {
     /* static desktop (no JS / reduced motion): five tiles in a row */
     .usp-chain { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--space-md); padding: 0; align-items: stretch; }
     .usp-chain::before { display: none; }
     .usp-node--last { grid-column: auto; }
-    .usp-quote { grid-template-columns: 200px minmax(0, 1fr); gap: var(--space-lg); margin-top: calc(var(--space-xl) * 1.8); }
-    .usp-peak { width: 200px; height: 156px; }
 
     /* ── 3D ring ─────────────────────────────────────────────────────── */
-    .usp-sec[data-ring='on'] .usp-stage { position: relative; height: 620px; isolation: isolate; margin-top: var(--space-lg);
+    .usp-sec[data-ring='on'] .usp-stage { position: relative; height: 560px; isolation: isolate; margin-top: var(--space-lg);
       perspective: 1700px; perspective-origin: 50% 20%; }
     .usp-sec[data-ring='on'] .usp-ring { --r: 360px; position: absolute; left: 50%; top: 38%; width: 0; height: 0; z-index: 1;
       transform-style: preserve-3d; transform: rotateX(-11deg) rotateY(var(--ry, 0deg)); }
@@ -100,33 +101,32 @@ const CSS = FOLD_SECTION_CSS + `
       display: block; margin: 0; padding: 0; transform-style: preserve-3d; }
     .usp-sec[data-ring='on'] .usp-node { position: absolute; left: -132px; top: -128px; width: 264px; height: 256px;
       transform: rotateY(calc(var(--i) * ${STEP_DEG}deg)) translateZ(var(--r)) rotateY(calc(-1 * (var(--i) * ${STEP_DEG}deg + var(--ry, 0deg)))) rotateX(11deg); }
-    .usp-sec[data-ring='on'] .usp-node[data-active='true'] .usp-shape { background: var(--burgundy); }
+    .usp-sec[data-ring='on'] .usp-node[data-active='true'] .usp-shape { background: var(--rose); }
     /* the floor the tiles stand on: a solid track, drawn as the ring turns */
     .usp-sec[data-ring='on'] .usp-floor { display: block; position: absolute; left: calc(-1 * var(--r)); top: calc(-1 * var(--r));
       width: calc(2 * var(--r)); height: calc(2 * var(--r)); overflow: visible;
       transform: translateY(176px) rotateX(90deg); pointer-events: none; }
     /* the floor lives in its own layer under the tiles so the track never crosses their text */
     .usp-sec[data-ring='on'] .usp-ring--floor { z-index: 0; }
-    /* depth: an opaque wash of the page colour (not opacity) so tiles behind never show through */
-    .usp-sec[data-ring='on'] .usp-node::after { content: ""; position: absolute; inset: -1px; background: var(--canvas);
+    /* depth: an opaque wash of the section colour (not opacity) so tiles behind never show through */
+    .usp-sec[data-ring='on'] .usp-node::after { content: ""; position: absolute; inset: -1px; background: var(--burgundy-night);
       opacity: var(--fog, 0); pointer-events: none; }
-    .usp-floor .t { fill: none; stroke: var(--grey-warm); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
-    .usp-floor .p { fill: none; stroke: var(--burgundy); stroke-width: 0.9; }
-    .usp-floor .s { fill: var(--surface); stroke: var(--burgundy); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
-    .usp-floor .s[data-on='true'] { fill: var(--burgundy); }
+    .usp-floor .t { fill: none; stroke: var(--grey-metal); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+    .usp-floor .p { fill: none; stroke: var(--rose); stroke-width: 0.9; }
+    .usp-floor .s { fill: var(--burgundy-night); stroke: var(--rose); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+    .usp-floor .s[data-on='true'] { fill: var(--rose); }
     /* step index under the stage — a rule, matching the nav/drawer active language */
     .usp-sec[data-ring='on'] .usp-dots { display: flex; justify-content: center; gap: var(--space-md); margin: 0; padding: 0; list-style: none; }
-    .usp-dots li { display: flex; align-items: center; gap: var(--space-xs); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600; color: var(--muted); transition: color 300ms; }
-    .usp-dots li i { width: 2px; height: 12px; background: var(--grey-warm); flex-shrink: 0; transition: background-color 300ms; }
-    .usp-dots li[data-on='true'] { color: var(--burgundy); }
-    .usp-dots li[data-on='true'] i { background: var(--burgundy); }
+    .usp-dots li { display: flex; align-items: center; gap: var(--space-xs); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600; color: var(--rose-pale); transition: color 300ms; }
+    .usp-dots li i { width: 2px; height: 12px; background: var(--grey-metal); flex-shrink: 0; transition: background-color 300ms; }
+    .usp-dots li[data-on='true'] { color: var(--surface); }
+    .usp-dots li[data-on='true'] i { background: var(--rose); }
   }
 `;
 
 export default function RequirementToRepeat() {
   const sectionRef = useRef<HTMLElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
-  const quoteRef = useRef<HTMLParagraphElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const chainRef = useRef<HTMLOListElement>(null);
   const progRef = useRef<SVGPathElement>(null);
@@ -134,7 +134,6 @@ export default function RequirementToRepeat() {
   const [active, setActive] = useState(0);
 
   useMaskRise(headingRef);
-  useMaskRise(quoteRef);
 
   useGSAP(() => {
     if (prefersReducedMotion()) return;
@@ -188,17 +187,20 @@ export default function RequirementToRepeat() {
     return () => mm.revert();
   }, { scope: sectionRef });
 
-  const [pre, post] = uspPullQuote.quote.split(HIGHLIGHT);
-
   return (
     <section ref={sectionRef} aria-labelledby="usp-heading" className="fold-sec fold-sec--step usp-sec" data-ring={ring ? 'on' : undefined}>
       <style>{CSS}</style>
+      <div aria-hidden="true" className="usp-bg">
+        <div className="usp-bg-art" />
+        <PhotoBg src="/images/backgrounds/how-we-work.webp" opacity={0.55} position="center" />
+        <div className="usp-bg-shade" />
+      </div>
       <FoldEdge variant="step" />
-      <div style={{ maxWidth: 'calc(var(--grid-max) + 2 * var(--grid-page-padding))', margin: '0 auto' }}>
-        <p className="usp-micro">How we work</p>
-        <h2 id="usp-heading" ref={headingRef} className="usp-h">From Requirement to Repeat Supply.</h2>
+      <div className="usp-in">
+        <p className="usp-micro">{howWeWork.label}</p>
+        <h2 id="usp-heading" ref={headingRef} className="usp-h">{howWeWork.title}</h2>
         {/* COPY: drafted, needs client approval */}
-        <p className="usp-lead">We don&apos;t just manufacture plastic components. We build reliable, repeatable supply partnerships.</p>
+        <p className="usp-lead">{howWeWork.lead}</p>
 
         <div ref={stageRef} className="usp-stage">
           <div className="usp-ring usp-ring--floor" aria-hidden="true">
@@ -238,15 +240,6 @@ export default function RequirementToRepeat() {
           {uspChain.map((n, i) => <li key={n.step} data-on={ring && i <= active ? 'true' : undefined}><i />{n.label}</li>)}
         </ol>
 
-        <div className="usp-quote">
-          <div className="usp-peak" aria-hidden="true"><i /><b /></div>
-          <div>
-            <p ref={quoteRef} className="usp-quote-text">
-              {pre}<span className="usp-quote-hl">{HIGHLIGHT}</span>{post}
-            </p>
-            <p className="usp-quote-attr">{uspPullQuote.attribution}</p>
-          </div>
-        </div>
       </div>
     </section>
   );

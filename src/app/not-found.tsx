@@ -31,10 +31,13 @@ export default function NotFound() {
       <PageHero
         crumbs={[{ label: 'Page not found' }]}
         label="Error 404"
-        title="This part isn’t in our catalogue."
+        title="That page isn’t on our shelf. Let’s find your part."
+        size="md"
         lead="The page you were looking for does not exist or has moved. Search our parts below, or head back to a main page."
         art={<NotFoundArt />}
+        photo={{ src: '/images/heroes/not-found.webp', position: '70% center' }}
         enter="wipe"
+        layout="center"
       >
         <div className="nf-tools">
           <NotFoundFinder />

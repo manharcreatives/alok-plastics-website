@@ -1,10 +1,9 @@
 // Alok Plastics — Home page
-// S1: Hero · S3: AboutIntro (incl. proof numbers) · S4: ProductGroups
-// S5: RequirementToRepeat · S6: IndustriesBento
-// S8: PanIndiaMap · S10: TrustQuote · S11: EnquirySection
-// S12 Footer + S13 WhatsAppFAB now live in layout.tsx (shared by every route)
-// (S7 JourneyOrbit lives on /about only: same content, same numbers as the proof band above)
-// (S9 CultureTeaser cut from home — no team photos available, see docs/decisions.md)
+// Flow: Hero · AboutIntro (teaser) · ProductGroups · NeedPartBlock (two ways to start) ·
+// RequirementToRepeat (how we work) · IndustriesBento · TrustQuote (why choose us) · PanIndiaMap ·
+// CeoQuote · StatsBand (the numbers) · BlogsSection · EnquirySection · ClosingNote.
+// Footer + WhatsApp FAB live in layout.tsx (shared by every route).
+// (JourneyOrbit lives on /about only. CultureTeaser cut from home, see docs/decisions.md)
 
 import type { Metadata } from 'next';
 import JsonLd from '@/components/seo/JsonLd';
@@ -17,7 +16,11 @@ import RequirementToRepeat from '@/components/sections/RequirementToRepeat';
 import IndustriesBento from '@/components/sections/IndustriesBento';
 import PanIndiaMap from '@/components/sections/PanIndiaMap';
 import TrustQuote from '@/components/sections/TrustQuote';
+import CeoQuote from '@/components/sections/CeoQuote';
+import StatsBand from '@/components/sections/StatsBand';
+import BlogsSection from '@/components/sections/BlogsSection';
 import EnquirySection from '@/components/sections/EnquirySection';
+import ClosingNote from '@/components/sections/ClosingNote';
 
 export const metadata: Metadata = {
   title: { absolute: HOME_TITLE },
@@ -29,24 +32,31 @@ export default function HomePage() {
   return (
     <>
       <JsonLd data={[organizationJsonLd(), localBusinessJsonLd(), websiteJsonLd()]} />
-      {/* S1 · Hero */}
       <Hero />
-      {/* S3 · About intro + proof numbers (ProofStrip merged in — ADR-011) */}
+      {/* About: short teaser, full story on /about/ */}
       <AboutIntro />
-      {/* S4 · Product groups bento */}
+      {/* Product categories */}
       <ProductGroups />
-      {/* S4b · Catalogue or custom part */}
+      {/* Two ways to start: catalogue or custom */}
       <NeedPartBlock />
-      {/* S5 · Requirement → Repeat chain */}
+      {/* How we work */}
       <RequirementToRepeat />
-      {/* S6 · Industries bento */}
+      {/* Industries we serve */}
       <IndustriesBento />
-      {/* S8 · Pan India map */}
-      <PanIndiaMap />
-      {/* S10 · Trust quote (S9 cut — see decisions.md) */}
+      {/* Why choose us */}
       <TrustQuote />
-      {/* S11 · Enquiry */}
+      {/* Pan Bharat map */}
+      <PanIndiaMap />
+      {/* CEO quote */}
+      <CeoQuote />
+      {/* The numbers */}
+      <StatsBand />
+      {/* Blogs */}
+      <BlogsSection />
+      {/* Enquiry */}
       <EnquirySection />
+      {/* Closing note */}
+      <ClosingNote />
     </>
   );
 }

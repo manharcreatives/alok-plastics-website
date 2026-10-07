@@ -1,0 +1,52 @@
+[
+  {
+    "slot": "blog-water-cooler-float-valve-overflow-leakage",
+    "path": "/images/blog/water-cooler-float-valve-overflow-leakage.webp",
+    "aspect": "16:9",
+    "size": "1600x900",
+    "usedIn": "BlogCover (blog index, blog post header, home BlogsSection)",
+    "alt": "Float valve and tap fittings of a water cooler on a workshop bench",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B. A nylon float valve set (float ball, valve body and rod) and a brass push-type tap laid on a clean workshop bench beside the open tank of a water cooler, shallow depth of field, a technician's hands entering the frame from the right to hold the float, cool neutral steel palette with a subtle burgundy accent on a tool handle, soft window light. Product unchanged and shown in context. No text, no logos, no brand names, no watermark.",
+    "concept": "2 hands only / low three-quarter angle / cool neutral steel with burgundy accent / documentary"
+  },
+  {
+    "slot": "blog-display-counter-sliding-door-parts-guide",
+    "path": "/images/blog/display-counter-sliding-door-parts-guide.webp",
+    "aspect": "16:9",
+    "size": "1600x900",
+    "usedIn": "BlogCover (blog index, blog post header, home BlogsSection)",
+    "alt": "Sliding glass door of a display counter with its bush, lock and hinge hardware",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B. Macro close-up of a display counter sliding glass door channel with a white nylon F-bush seated in the track, a chrome door lock and a hinge visible at the edge, shallow depth of field, warm retail-kitchen light, warm neutrals with a hint of burgundy in the background out of focus. No people. Product unchanged and shown in context. No text, no logos, no brand names, no watermark.",
+    "concept": "no people / macro eye-level / warm neutrals / artistic detail"
+  },
+  {
+    "slot": "blog-hdpe-nylon-ppcp-brass-cooler-spare-parts",
+    "path": "/images/blog/hdpe-nylon-ppcp-brass-cooler-spare-parts.webp",
+    "aspect": "16:9",
+    "size": "1600x900",
+    "usedIn": "BlogCover (blog index, blog post header, home BlogsSection)",
+    "alt": "Moulded nylon, HDPE and PPCP parts beside brass fittings on a neutral surface",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B. Top-down flat lay on a pale warm-grey surface: an adjustable leg insert, a waste pipe section, a ventilation jalli, a nylon bush and a brass push cock arranged in a clean grid with even spacing, soft overhead light, long soft shadows, burgundy accent card edge at the corner. No people. Parts unchanged. No text, no logos, no brand names, no watermark.",
+    "concept": "no people / top-down flat lay / neutral warm grey with burgundy accent / catalogue-clean"
+  },
+  {
+    "slot": "blog-deep-freezer-door-gasket-hinge-replacement-guide",
+    "path": "/images/blog/deep-freezer-door-gasket-hinge-replacement-guide.webp",
+    "aspect": "16:9",
+    "size": "1600x900",
+    "usedIn": "BlogCover (blog index, blog post header, home BlogsSection)",
+    "alt": "Close view of a deep freezer door edge showing the gasket and hinge",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B. Wide low-angle view of a white chest deep freezer in a clean storeroom with the lid slightly raised, the door gasket and a steel hinge sharply visible, light frost near the edge, two service technicians in the background out of focus, cool blue-white refrigeration light balanced with a warm burgundy crate in the foreground. Product unchanged. No text, no logos, no brand names, no watermark.",
+    "concept": "2 people background / wide low angle / cool light with burgundy accent / documentary"
+  },
+  {
+    "slot": "blog-custom-plastic-moulded-parts-sample-to-supply",
+    "path": "/images/blog/custom-plastic-moulded-parts-sample-to-supply.webp",
+    "aspect": "16:9",
+    "size": "1600x900",
+    "usedIn": "BlogCover (blog index, blog post header, home BlogsSection)",
+    "alt": "A sample plastic part beside a technical drawing and a calliper on a workshop table",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B. A worn sample plastic part next to a freshly moulded replacement, a hand-drawn dimensioned sketch and a steel calliper on a workshop table, four hands only (two reviewing the drawing, two measuring the part), over-the-shoulder angle, warm tungsten light with burgundy accents on the drawing folder, artistic shallow depth of field. No faces. No text, no logos, no brand names, no watermark.",
+    "concept": "4 hands only / over-the-shoulder / warm tungsten with burgundy / artistic"
+  }
+]

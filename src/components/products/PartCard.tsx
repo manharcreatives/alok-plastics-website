@@ -1,7 +1,9 @@
 'use client';
 /**
- * PartCard — a catalogue plate: the part drawn on a grid with crop marks (no photos exist yet,
- * so the pictogram is the honest placeholder; a real photo replaces it automatically).
+ * PartCard — a catalogue plate: the part drawn on a grid with crop marks. The pictogram is the
+ * placeholder; the product photo (/images/products/<slug>.webp, 1:1) fades in over it once the file
+ * exists (PhotoBg renders nothing when the file is missing). Photos an owner uploads in the admin
+ * replace the plate entirely.
  * Price only when the admin set one, else "Price on request". Availability only claims
  * "In stock" when the admin set it (availabilityOf). Unknown fields are omitted.
  */
@@ -11,24 +13,31 @@ import Link from 'next/link';
 import { ArrowUpRight } from '@phosphor-icons/react/dist/ssr/ArrowUpRight';
 import PartPicto, { pictogramFor } from './PartPicto';
 import Tag from '@/components/ui/Tag';
+import PhotoBg from '@/components/ui/PhotoBg';
 import AddToCart from '@/components/cart/AddToCart';
-import { getGroup, productPath } from '@/content/products';
+import { getGroup, productPath, productPhoto } from '@/content/products';
 import type { Product } from '@/content/types';
 import { availabilityOf, formatPrice, type Availability } from '@/lib/catalog-search';
 import './products.css';
 
 export { pictogramFor };
 
-export function PartArt({ product: base }: { product: Product }) {
+export function PartArt({ product: base, photoAlt = '', priority = false, photo: withPhoto = true }: { product: Product; photoAlt?: string; priority?: boolean; photo?: boolean }) {
   const product = useRuntimeProduct(base);
-  const img = product.images[0];
+  const img = product.images[0]; // only photos uploaded in the admin panel live here; the old catalogue crops are not shown
   if (img) {
     // eslint-disable-next-line @next/next/no-img-element
     return <img src={img.src} alt={img.alt} width={img.w || undefined} height={img.h || undefined} loading="lazy" decoding="async" />;
   }
   const name = pictogramFor(product.slug);
-  return name ? <PartPicto slug={name} size={48} className="p-picto" /> : (
-    <span aria-hidden="true" className="p-plate"><span className="p-plate__cap">Drawing to come</span></span>
+  const photo = withPhoto ? productPhoto(product) : null;
+  return (
+    <>
+      {name ? <PartPicto slug={name} size={48} className="p-picto" /> : (
+        <span aria-hidden="true" className="p-plate"><span className="p-plate__cap">Drawing to come</span></span>
+      )}
+      {photo && <PhotoBg src={photo} alt={photoAlt} width={1200} height={1200} priority={priority} />}
+    </>
   );
 }
 

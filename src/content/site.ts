@@ -26,9 +26,10 @@ export const site: SiteConfig = {
     state: 'Chandigarh',
     pincode: '160003',
     country: 'India',
-    phone: null,       // TODO(client): phone number
-    whatsapp: process.env.NEXT_PUBLIC_CLIENT_WHATSAPP || null,
-    email: null,       // TODO(client): enquiry email address
+    phone: '+91 74794 97003',   // client catalogue — verified
+    phone2: '+91 99157 45414',  // client catalogue — secondary line
+    whatsapp: process.env.NEXT_PUBLIC_CLIENT_WHATSAPP || '917479497003',
+    email: 'alokplastics24@gmail.com', // client catalogue — verified
     mapsUrl: null,     // TODO(client): Google Maps place URL or embed URL
     gstin: null,       // TODO(client): GSTIN
     geo: null,         // TODO(client): { lat, lng } of the unit — JSON-LD omits geo until set
@@ -48,17 +49,23 @@ export const site: SiteConfig = {
         mobileMp4: null,   // TODO(client): optional ≤800KB mobile version
       },
       poster: null,        // TODO(client): /media/hero-poster.jpg — see docs/hero-video-brief.md
+      photo: '/images/hero/home.webp', // generated 16:9 still (1920x1080); see docs/images/manifest.hero-home.json
       // 'dark' = white text + bright logo in navbar. Required whenever footage plays:
       // measured across the full loop, --ink over the scrim lands between 1.25:1 and
       // 3.5:1 (illegible), while white holds 14:1 or better on every frame.
       tone: 'dark',
     },
-    eyebrow: 'EST. 1998 · CHANDIGARH',
-    headline: ['The small parts that', 'keep big machines running.'],
-    sub: 'We make the parts water coolers, display counters and deep freezers run on: float valves, F-bushes, connecting bushes, gaskets and more, in nylon, HDPE, PPCP and brass.',
+    eyebrow: 'Alok Plastics · Spare parts',
+    headline: ['Every cold glass', 'starts with a part', 'you never see.'],
+    headlineAccent: 'you never see.',
+    sub: 'We make the parts inside water coolers, display counters and deep freezers: float valves, F-bushes, connecting bushes, gaskets and more, in nylon, HDPE, PPCP and brass.',
     ctas: {
       primary: 'Send Your Requirement',
       tertiary: 'Browse products',
+    },
+    rail: {
+      facts: ['Est. 1998', 'Chandigarh'],
+      index: ['Water coolers', 'Display counters', 'Deep freezers'],
     },
   },
 

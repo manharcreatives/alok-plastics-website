@@ -8,6 +8,7 @@
  */
 
 import type { SVGProps } from 'react';
+import { extraPictos, type ExtraPictoName } from '@/components/products/art/extraPictos';
 
 export type PictogramSize = 24 | 32 | 48;
 
@@ -31,13 +32,16 @@ export type PictogramName =
   | 'gas-kitchen'
   | 'agriculture'
   | 'packaging'
-  /* Machines (3) */
+  /* Machines (5) */
   | 'water-cooler'
   | 'display-counter'
-  | 'deep-freezer';
+  | 'deep-freezer'
+  | 'gas-stove'
+  | 'commercial-kitchen';
 
 interface PictogramProps extends Omit<SVGProps<SVGSVGElement>, 'ref'> {
-  name: PictogramName;
+  /** A brand pictogram, or any catalogue part drawn in products/art/extraPictos (same grammar). */
+  name: PictogramName | ExtraPictoName;
   size?: PictogramSize;
   title?: string;
 }
@@ -352,6 +356,40 @@ const paths: Record<PictogramName, { paths: string[]; title: string }> = {
       'M 36 26 L 36 38 M 34 38 L 38 38',
     ],
   },
+
+  'gas-stove': {
+    title: 'Gas Stove',
+    paths: [
+      /* Burner head and pan rim */
+      'M 14 22 L 34 22',
+      /* Flame ticks */
+      'M 18 18 L 18 14 M 24 18 L 24 10 M 30 18 L 30 14',
+      /* Stove body */
+      'M 8 22 L 40 22 L 40 38 L 8 38 Z',
+      /* Control knobs */
+      'M 14 30 m -2 0 a 2 2 0 1 0 4 0 a 2 2 0 1 0 -4 0',
+      'M 24 30 m -2 0 a 2 2 0 1 0 4 0 a 2 2 0 1 0 -4 0',
+      'M 34 30 m -2 0 a 2 2 0 1 0 4 0 a 2 2 0 1 0 -4 0',
+      /* Legs */
+      'M 12 38 L 12 43 M 36 38 L 36 43',
+    ],
+  },
+
+  'commercial-kitchen': {
+    title: 'Commercial Kitchen',
+    paths: [
+      /* Stock pot */
+      'M 12 14 L 36 14 L 36 30 L 12 30 Z',
+      /* Lid line and knob */
+      'M 10 14 L 38 14 M 22 10 L 26 10',
+      /* Pot handles */
+      'M 7 20 L 12 20 M 36 20 L 41 20',
+      /* Flames */
+      'M 18 38 L 20 34 L 22 38 M 26 38 L 28 34 L 30 38',
+      /* Stove base */
+      'M 10 41 L 38 41',
+    ],
+  },
 };
 
 export default function Pictogram({
@@ -361,7 +399,7 @@ export default function Pictogram({
   className,
   ...props
 }: PictogramProps) {
-  const def = paths[name];
+  const def = (paths as Record<string, { paths: string[]; title: string }>)[name] ?? (extraPictos as Record<string, { paths: string[]; title: string }>)[name];
   if (!def) return null;
 
   const scale = size / 48;

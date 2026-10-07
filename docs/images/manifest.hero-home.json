@@ -1,0 +1,12 @@
+[
+  {
+    "slot": "hero-home",
+    "path": "/images/hero/home.webp",
+    "aspect": "16:9",
+    "size": "1920x1080",
+    "usedIn": "Hero (home) via HeroMedia PhotoBg; also the video poster fallback",
+    "alt": "",
+    "prompt": "Ultra-realistic commercial photography, industrial B2B, low-key 16:9 wide shot. Two gloved hands fitting a nylon float valve set inside the open rear panel of a stainless-steel water cooler cabinet, product shown unchanged and in context, a display counter and a deep freezer softly out of focus in the workshop behind. Shallow depth of field, cool steel-blue highlights with a single warm burgundy practical light accent on the far right. The left 55% of the frame falls into deep, clean shadow with no detail (negative space reserved for a headline); the subject sits in the right third, slightly below centre. No text, no logos, no brand names, no watermark.",
+    "concept": "2 hands only / eye-level wide-to-medium / low-key cool steel + burgundy accent / documentary with dark left negative space"
+  }
+]
