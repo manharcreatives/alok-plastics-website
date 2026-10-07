@@ -44,7 +44,7 @@ test('active role shows with description; inactive role is hidden', async ({ pag
     },
   });
   await page.goto('/career/');
-  await expect(page.getByText('Mould Designer')).toBeVisible();
+  await expect(page.locator('strong', { hasText: 'Mould Designer' })).toBeVisible();
   await expect(page.getByText('Design tooling.')).toBeVisible();
   await expect(page.getByText('Paused Role')).toHaveCount(0);
 });

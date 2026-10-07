@@ -20,11 +20,10 @@ import { validateShortForm } from '@/lib/enquiry-schema';
 import { enquiryLines } from '@/lib/whatsapp';
 import { postEnquiry } from '@/lib/enquiry-submit';
 import { trackEnquirySubmit } from '@/lib/analytics';
-import { publishedProducts } from '@/content/products';
 import { useHiddenProductSlugs, useRuntimeProductMap } from '@/components/runtime/useRuntime';
 import EnquiryFallback from './EnquiryFallback';
 import SuccessNext from './SuccessNext';
-import { BUYER_TYPES, FORM_CSS } from './shared';
+import { BUYER_TYPES, FORM_CSS, productOptionGroups } from './shared';
 
 type FormState = 'idle' | 'submitting' | 'success' | 'error';
 type Source = 'home-enquiry' | 'enquiry-page' | 'product-page' | 'footer';
@@ -35,11 +34,8 @@ interface Props {
   prefillProduct?: string;
 }
 
-/* Product options — from published products + "Custom part" */
-const PRODUCT_OPTIONS = [
-  ...publishedProducts.map(p => ({ value: p.slug, label: p.name })),
-  { value: 'custom', label: 'Custom part / Other requirement' },
-];
+/* Product options: published products grouped like the catalogue, plus "Custom part" */
+const CUSTOM_OPTION = { value: 'custom', label: 'Custom part / Other requirement' };
 
 /* DOM order — used to focus the first invalid field */
 const FIELD_ORDER = ['name', 'company', 'phone', 'product', 'quantity', 'message'] as const;
@@ -55,6 +51,7 @@ export default function ShortEnquiryForm({
 }: Props) {
   const hidden = useHiddenProductSlugs();
   const edits = useRuntimeProductMap();
+  const optionGroups = productOptionGroups(hidden, edits);
   const [state, setState] = useState<FormState>('idle');
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [fallbackLines, setFallbackLines] = useState<string[]>([]);
@@ -259,10 +256,12 @@ export default function ShortEnquiryForm({
           style={{ ...inputStyle(!!errors.product), cursor: 'pointer' }}
         >
           <option value="" disabled>Select a product or custom requirement&hellip;</option>
-          {PRODUCT_OPTIONS.filter(opt => !hidden.has(opt.value)).map(opt => {
-            const label = edits?.get(opt.value)?.name ?? opt.label;
-            return <option key={opt.value} value={label}>{label}</option>;
-          })}
+          {optionGroups.map(g => (
+            <optgroup key={g.id} label={g.label}>
+              {g.items.map(it => <option key={it.slug} value={it.name}>{it.name}</option>)}
+            </optgroup>
+          ))}
+          <option value={CUSTOM_OPTION.label}>{CUSTOM_OPTION.label}</option>
         </select>
         {errors.product && <p id="senq-product-err" role="alert" style={errStyle}>{errors.product}</p>}
       </div>

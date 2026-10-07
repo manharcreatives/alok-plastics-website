@@ -1,13 +1,16 @@
 'use client';
 /**
  * ProductGallery — main image + thumbnails (desktop), swipe track + dots (mobile), a hover
- * zoom, and a solid lightbox (arrows, Esc, focus trap). Real photos when supplied; until then
- * the slot shows the part's pictogram on a drawing sheet, honestly captioned. Never fakes a photo.
+ * zoom, and a solid lightbox (arrows, Esc, focus trap). Photos an owner uploads in the admin are shown
+ * as a gallery. Otherwise the slot shows the part's pictogram on a drawing sheet with the product photo
+ * (/images/products/<slug>.webp, 1:1) fading in over it once the file exists. Never fakes a photo.
  * No gallery library: CSS scroll-snap does the swiping.
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Product } from '@/content/types';
 import { PartArt } from './PartCard';
+import PhotoBg from '@/components/ui/PhotoBg';
+import { productPhoto } from '@/content/products';
 import { useRuntimeProduct } from '@/components/runtime/useRuntime';
 import './products.css';
 import './pdp.css';
@@ -72,15 +75,17 @@ export default function ProductGallery({ product: base }: { product: Product }) 
   const close = useCallback(() => setOpen(false), []);
 
   if (imgs.length === 0) {
+    const photo = productPhoto(product);
     return (
       <div className="p-gallery">
-        <div className="p-gallery__main" role="img" aria-label={`${product.name}, drawn illustration. Product photo coming soon.`}>
+        <div className="p-gallery__main p-gallery__plate">
           <div className="p-ph">
             <span className="p-ph__frame" aria-hidden="true" />
-            <span style={{ position: 'relative', display: 'contents' }}><PartArt product={product} /></span>
+            <span aria-hidden="true" style={{ position: 'relative', display: 'contents' }}><PartArt product={product} photo={false} /></span>
             <span className="p-fine" style={{ position: 'relative' }}>Product photo coming soon</span>
             <span className="p-ph__sub" style={{ position: 'relative' }}>Need a photo or drawing? Ask us.</span>
           </div>
+          {photo && <PhotoBg src={photo} alt={`${product.name}, Alok Plastics`} width={1200} height={1200} priority />}
         </div>
       </div>
     );

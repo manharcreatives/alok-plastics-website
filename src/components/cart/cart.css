@@ -62,7 +62,8 @@
 
 /* ── Lines (mini-cart and /cart) ─────────────────────────── */
 .cl { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: var(--space-sm); padding: var(--space-sm) 0; border-bottom: 1px solid var(--grey-cloud); }
-.cl__img { width: 72px; height: 72px; background: var(--surface-alt); border: 1px solid var(--grey-cloud); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.cl__img { position: relative; width: 72px; height: 72px; background: var(--surface-alt); border: 1px solid var(--grey-cloud); display: flex; align-items: center; justify-content: center; overflow: hidden; color: var(--burgundy); }
+.cl__img svg { width: 32px; height: 32px; }
 .cl__img img { width: 100%; height: 100%; object-fit: contain; }
 .cl__name { margin: 0; font-weight: 650; color: var(--ink); line-height: 1.3; }
 .cl__name a { color: inherit; text-decoration: none; }

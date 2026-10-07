@@ -15,6 +15,7 @@ export const PICTO_BOX: Partial<Record<PictogramName, [number, number, number, n
   'float-valve': [6, 2, 36, 32], 'push-cock': [6, 10, 36, 32], 'waste-pipe': [6, 14, 36, 20], 'ventilation-jalli': [8, 8, 32, 32],
   'adjustable-leg-insert': [12, 14, 24, 30], gasket: [6, 6, 36, 36],
   'water-cooler': [10, 8, 28, 34], 'display-counter': [6, 14, 36, 28], 'deep-freezer': [6, 14, 36, 28],
+  'gas-stove': [8, 10, 32, 33], 'commercial-kitchen': [7, 10, 34, 31],
 };
 
 /**

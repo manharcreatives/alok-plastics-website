@@ -3,14 +3,14 @@
  * Inline label for materials, machines, categories.
  * Variants: default (blush + burgundy), muted, material
  * 2px radius, 0.6875rem micro type, uppercase.
- * Material preset: NYLON · HDPE · PPCP · BRASS · SS
+ * Material preset: NYLON · HDPE · PPCP · BRASS · SS · CAST IRON
  */
 
 import '@/styles/ui.css';
 
 export type TagVariant = 'default' | 'muted' | 'material';
 
-export type MaterialName = 'nylon' | 'hdpe' | 'ppcp' | 'brass' | 'ss';
+export type MaterialName = 'nylon' | 'hdpe' | 'ppcp' | 'brass' | 'ss' | 'cast-iron';
 
 const MATERIAL_LABELS: Record<MaterialName, string> = {
   nylon: 'Nylon',
@@ -18,6 +18,7 @@ const MATERIAL_LABELS: Record<MaterialName, string> = {
   ppcp: 'PPCP',
   brass: 'Brass',
   ss: 'SS',
+  'cast-iron': 'Cast iron',
 };
 
 interface TagProps {

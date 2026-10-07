@@ -3,6 +3,10 @@
  * Three render modes: ambient / poster / video
  * Default mode: 'ambient' (no client assets yet).
  *
+ * Layer stack (video / poster modes), bottom to top:
+ *   placeholder art (AmbientBackground, dark variant) → PhotoBg (generated still, fades in only
+ *   once the file exists) → video (fades in only once it is actually playing) → scrim.
+ *
  * Ambient: ≤6KB CSS/SVG, technical grid, slow light sweep across A+K silhouette,
  * part silhouettes with pointer parallax (desktop only, ≤6px), pauses off-screen.
  *
@@ -12,8 +16,8 @@
 
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import Image from 'next/image';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import PhotoBg from '@/components/ui/PhotoBg';
 import type { HeroMediaConfig } from '@/content/types';
 import { prefersReducedMotion } from '@/hooks/useReducedMotion';
 
@@ -24,7 +28,9 @@ interface HeroMediaProps {
 }
 
 /* ── Ambient mode ────────────────────────────────────────────── */
-function AmbientBackground() {
+/* `dark` re-points the art's ink-on-light tokens to a night variant so the placeholder carries
+   Soft White copy: same drawing, same silhouettes, dark ground. */
+function AmbientBackground({ dark = false }: { dark?: boolean }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const sweepRef = useRef<HTMLDivElement>(null);
   const sihouettesRef = useRef<HTMLDivElement>(null);
@@ -71,14 +77,21 @@ function AmbientBackground() {
         inset: 0,
         overflow: 'hidden',
         pointerEvents: 'none',
+        ...(dark ? ({
+          '--grey-metal': 'var(--rose-pale)',
+          '--grey-warm': 'var(--rose-pale)',
+          '--burgundy': 'var(--burgundy-bright)',
+        } as CSSProperties) : null),
       }}
       aria-hidden="true"
     >
-      {/* Canvas → surface-alt vertical wash */}
+      {/* Canvas → surface-alt vertical wash (night variant: burgundy-night → ink) */}
       <div style={{
         position: 'absolute',
         inset: 0,
-        background: 'linear-gradient(180deg, var(--surface-alt) 0%, var(--canvas) 100%)',
+        background: dark
+          ? 'linear-gradient(180deg, var(--burgundy-night) 0%, var(--ink) 100%)'
+          : 'linear-gradient(180deg, var(--surface-alt) 0%, var(--canvas) 100%)',
       }} />
 
       {/* Technical grid — fine 8px + major 64px lines, faded toward the text side */}
@@ -129,7 +142,7 @@ function AmbientBackground() {
           transform: 'translateY(-50%)',
           width: 'min(440px, 30vw)',
           height: 'auto',
-          opacity: 0.55,
+          opacity: dark ? 0.32 : 0.55,
         }}
         viewBox="0 0 520 440"
         fill="none"
@@ -207,7 +220,7 @@ function AmbientBackground() {
         style={{
           position: 'absolute',
           inset: '-50%',
-          background: 'linear-gradient(45deg, transparent 35%, rgba(255,255,255,0.35) 50%, transparent 65%)',
+          background: `linear-gradient(45deg, transparent 35%, color-mix(in srgb, var(--surface) ${dark ? 14 : 35}%, transparent) 50%, transparent 65%)`,
           /* parked off the sheet; Hero adds .hero--in and the single 1200ms pass runs (CSS in Hero.tsx) */
           transform: 'translate(-60%, 60%)',
           pointerEvents: 'none',
@@ -234,22 +247,20 @@ function AmbientBackground() {
 function PosterBackground({ src, alt }: { src: string; alt?: string }) {
   return (
     <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
-      <Image
-        src={src}
-        alt={alt ?? ''}
-        fill
-        priority
-        fetchPriority="high"
-        sizes="100vw"
+      {/* PhotoBg: invisible until decoded, renders nothing if the file is missing (no broken-image icon) */}
+      <div
         className="hero-ken"
         style={{
-          objectFit: 'cover',
+          position: 'absolute',
+          inset: 0,
           /* Very slow Ken Burns — scale 1→1.04 over 20s, transform only */
           animation: 'ken-burns 20s cubic-bezier(.65,0,.35,1) infinite alternate',
           transformOrigin: 'center center',
           willChange: 'transform',
         }}
-      />
+      >
+        <PhotoBg src={src} alt={alt ?? ''} priority width={1920} height={1080} />
+      </div>
       <style>{`
         @media (prefers-reduced-motion: reduce) { .hero-ken { animation: none !important; } }
         @keyframes ken-burns {
@@ -265,12 +276,21 @@ function PosterBackground({ src, alt }: { src: string; alt?: string }) {
 function VideoBackground({ webm, mp4, poster }: { webm?: string | null; mp4?: string | null; poster?: string | null }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(true);
+  /* the video stays invisible until it is genuinely playing, so a missing / failed file never
+     paints a black box over the photo and placeholder art underneath */
+  const [live, setLive] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   /* Inject video client-side after first paint (§11.2 — never competes with LCP) */
   const [mounted, setMounted] = useState(false);
   // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional post-hydration mount flag
   useEffect(() => { setMounted(true); }, []);
+
+  /* No autoplay < 768px, coarse pointer or reduced motion (§11.2) */
+  const canAutoplay = mounted &&
+    window.innerWidth >= 768 &&
+    matchMedia('(pointer: fine)').matches &&
+    !prefersReducedMotion();
 
   /* Pause when off-screen */
   useEffect(() => {
@@ -299,7 +319,7 @@ function VideoBackground({ webm, mp4, poster }: { webm?: string | null; mp4?: st
       io.disconnect();
       document.removeEventListener('visibilitychange', handleVisibility);
     };
-  }, [isPlaying]);
+  }, [isPlaying, canAutoplay]);
 
   const togglePlay = () => {
     const video = videoRef.current;
@@ -308,130 +328,116 @@ function VideoBackground({ webm, mp4, poster }: { webm?: string | null; mp4?: st
     else { video.play().catch(() => {}); setIsPlaying(true); }
   };
 
-  /* SSR: show poster img */
+  /* SSR: show poster img (LCP); the photo layer and placeholder art sit underneath either way */
   if (!mounted) {
     return poster ? (
       <div style={{ position: 'absolute', inset: 0 }}>
-        <Image src={poster} alt="" fill priority fetchPriority="high" sizes="100vw" style={{ objectFit: 'cover' }} />
+        <PhotoBg src={poster} priority width={1920} height={1080} />
       </div>
-    ) : <AmbientBackground />;
+    ) : null;
   }
 
-  /* No autoplay < 768px or coarse pointer (§11.2) */
-  const canAutoplay =
-    typeof window !== 'undefined' &&
-    window.innerWidth >= 768 &&
-    matchMedia('(pointer: fine)').matches;
+  if (!canAutoplay) return poster ? <PosterBackground src={poster} /> : null;
 
   return (
     <div ref={containerRef} style={{ position: 'absolute', inset: 0 }}>
-      {poster && !canAutoplay ? (
-        <PosterBackground src={poster} />
-      ) : (
-        <>
-          <video
-            ref={videoRef}
-            autoPlay={canAutoplay}
-            muted
-            loop
-            playsInline
-            preload="metadata"
-            poster={poster ?? undefined}
-            aria-hidden="true"
-            tabIndex={-1}
-            width={1920}
-            height={1080}
-            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
-          >
-            {webm && <source src={webm} type="video/webm" />}
-            {mp4 && <source src={mp4} type="video/mp4" />}
-          </video>
+      <video
+        ref={videoRef}
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        poster={poster ?? undefined}
+        aria-hidden="true"
+        tabIndex={-1}
+        width={1920}
+        height={1080}
+        onPlaying={() => setLive(true)}
+        onError={() => setLive(false)}
+        style={{
+          position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover',
+          opacity: live ? 1 : 0, transition: 'opacity 600ms ease',
+        }}
+      >
+        {webm && <source src={webm} type="video/webm" />}
+        {mp4 && <source src={mp4} type="video/mp4" />}
+      </video>
 
-          {/* Pause/play control — WCAG 2.2.2 (moving content > 5s must be pausable) */}
-          <button
-            type="button"
-            onClick={togglePlay}
-            aria-label={isPlaying ? 'Pause hero video' : 'Play hero video'}
-            style={{
-              position: 'absolute',
-              bottom: 16,
-              right: 16,
-              width: 44,
-              height: 44,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              background: 'rgba(248,247,247,0.80)',
-              border: 'none',
-              borderRadius: 'var(--radius-card)',
-              cursor: 'pointer',
-              color: 'var(--ink)',
-              fontSize: '1.25rem',
-              zIndex: 2,
-            }}
-          >
-            {isPlaying ? '⏸' : '▶'}
-          </button>
-        </>
+      {/* Pause/play control — WCAG 2.2.2 (moving content > 5s must be pausable). Only offered once
+          there is moving content to pause. Sits clear of the exit diagonal, bottom-right. */}
+      {live && (
+        <button
+          type="button"
+          onClick={togglePlay}
+          aria-label={isPlaying ? 'Pause hero video' : 'Play hero video'}
+          style={{
+            position: 'absolute',
+            top: 'calc(96px + var(--space-sm))',
+            right: 'var(--grid-page-padding)',
+            width: 44,
+            height: 44,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'color-mix(in srgb, var(--canvas) 80%, transparent)',
+            border: 'none',
+            borderRadius: 'var(--radius-card)',
+            cursor: 'pointer',
+            color: 'var(--ink)',
+            fontSize: '1.25rem',
+            zIndex: 2,
+          }}
+        >
+          {isPlaying ? '⏸' : '▶'}
+        </button>
       )}
     </div>
   );
 }
 
 /* ── Scrim (video + poster modes) ──────────────────────────────
-   The copy is one left-aligned block: eyebrow + headline sit high (y~22-48%),
-   sub + tagline + CTAs sit low (y~51-78%), and the block runs from x=64 to x~780
-   at 1440. The footage behind it has blown specular highlights that reach 0.78
-   relative luminance, so a flat wash cannot carry the type on its own.
+   The copy is one left-aligned block anchored bottom-left (headline, sub, tagline, CTAs, rail).
+   Instead of a stack of per-glyph text shadows, the legibility is a soft local scrim behind that
+   zone, built from --ink only so it can never drift off the brand's warm near-black:
 
-   Three gradients grade that block instead, all built from --ink so the overlay can
-   never drift off the brand's warm near-black:
-     directional  even protection down the length of the column, clearing to nothing
-                  past ~66% so the right of frame stays open and the footage reads
-     head         a short guard that starts below the nav pill (the light glass must sit on
-                  open footage, or it greys over and the colour logo loses its wordmark) and
-                  peaks above the headline so it never sits on a flare
-     seat         a short guard off the bottom for the CTA row and the exit diagonal
-   The pair of guards is what keeps the block readable top and bottom; the local
-   glyph-level guarantee is the text-shadow in Hero.tsx. */
+     zone    two gradients that composite into a bottom-left pool of shade: one rises from the
+             bottom edge (also seats the rail and the exit diagonal), one runs in from the left edge
+             and clears to nothing past ~90% so the right of frame stays open and the footage reads.
+             The strengths are set for blown highlights (up to ~0.78 relative luminance) under
+             Soft White copy at 88%+ opacity: every stop keeps the small labels >= 4.5:1.
+     mask    keeps the nav band (pill = 16px + 64px) clear, so the light glass sits on open footage
+
+   Below 768px the copy spans the full width, so the horizontal falloff is dropped for a plain
+   bottom-up gradient that is deep behind the text and eases off above the headline. */
 const SCRIM_CSS = `
 .hero-scrim { position: absolute; inset: 0; pointer-events: none; }
-/* every darkening layer stays out of the nav band (pill = 16px + 64px): light glass has to sit
-   on open footage, or it greys over and the colour logo's metal-grey wordmark sinks into it */
-.hero-scrim__directional { position: absolute; inset: 0;
+.hero-scrim__zone { position: absolute; inset: 0;
   -webkit-mask-image: linear-gradient(to bottom, transparent 0, transparent 84px, var(--ink) 132px);
           mask-image: linear-gradient(to bottom, transparent 0, transparent 84px, var(--ink) 132px);
-  background: linear-gradient(96deg,
-    color-mix(in srgb, var(--ink) 68%, transparent) 0%,
-    color-mix(in srgb, var(--ink) 58%, transparent) 26%,
-    color-mix(in srgb, var(--ink) 36%, transparent) 46%,
-    color-mix(in srgb, var(--ink) 11%, transparent) 66%,
-    transparent 88%); }
-.hero-scrim__head { position: absolute; inset: 0;
-  background: linear-gradient(to bottom,
-    transparent 0,
-    transparent 96px,
-    color-mix(in srgb, var(--ink) 24%, transparent) 18%,
-    color-mix(in srgb, var(--ink) 10%, transparent) 28%,
-    transparent 44%); }
-.hero-scrim__seat { position: absolute; inset: 0;
-  background: linear-gradient(to top,
-    color-mix(in srgb, var(--ink) 52%, transparent) 0%,
-    color-mix(in srgb, var(--ink) 18%, transparent) 22%,
-    transparent 48%); }
+  background:
+    linear-gradient(to top,
+      color-mix(in srgb, var(--ink) 84%, transparent) 0%,
+      color-mix(in srgb, var(--ink) 66%, transparent) 30%,
+      color-mix(in srgb, var(--ink) 30%, transparent) 58%,
+      transparent 84%),
+    linear-gradient(97deg,
+      color-mix(in srgb, var(--ink) 74%, transparent) 0%,
+      color-mix(in srgb, var(--ink) 62%, transparent) 36%,
+      color-mix(in srgb, var(--ink) 38%, transparent) 56%,
+      color-mix(in srgb, var(--ink) 12%, transparent) 74%,
+      transparent 92%); }
 /* flat burgundy wash. Deliberately NOT mix-blend-mode: overlay — that mode pushes
    the footage's own highlights further up, so bright frames bloom behind the text. */
-.hero-scrim__tint { position: absolute; inset: 0; background: var(--burgundy); opacity: .07; }
+.hero-scrim__tint { position: absolute; inset: 0; background: var(--burgundy); opacity: .06; }
 .hero-scrim__grain { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .04; }
 
-/* Below 768px the copy spans the full width, so there is no right-hand side left to
-   clear: the horizontal falloff would go light exactly where the sub-headline sits.
-   Flatten to a near-even wash and keep the two guards. */
 @media (max-width: 767px) {
-  .hero-scrim__directional { background: linear-gradient(180deg,
-    color-mix(in srgb, var(--ink) 62%, transparent) 0%,
-    color-mix(in srgb, var(--ink) 56%, transparent) 52%,
-    color-mix(in srgb, var(--ink) 66%, transparent) 100%); }
+  .hero-scrim__zone { background: linear-gradient(to top,
+    color-mix(in srgb, var(--ink) 90%, transparent) 0%,
+    color-mix(in srgb, var(--ink) 80%, transparent) 40%,
+    color-mix(in srgb, var(--ink) 62%, transparent) 72%,
+    color-mix(in srgb, var(--ink) 30%, transparent) 100%); }
 }
 `;
 
@@ -440,9 +446,7 @@ function Scrim() {
     <>
       <style>{SCRIM_CSS}</style>
       <div className="hero-scrim" aria-hidden="true">
-        <div className="hero-scrim__directional" />
-        <div className="hero-scrim__head" />
-        <div className="hero-scrim__seat" />
+        <div className="hero-scrim__zone" />
         <div className="hero-scrim__tint" />
         {/* film grain — static, kills banding across the gradient stops */}
         <svg className="hero-scrim__grain" aria-hidden="true">
@@ -472,21 +476,30 @@ export default function HeroMedia({ media }: HeroMediaProps) {
   }
 
   const showScrim = resolvedMode === 'video' || resolvedMode === 'poster';
+  /* the video's own poster falls back to the generated photo */
+  const videoPoster = media.poster ?? media.photo ?? null;
 
   return (
     <div
       style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}
       data-hero-tone={media.tone ?? 'light'}
     >
-      {resolvedMode === 'ambient' && <AmbientBackground />}
+      {/* 1 · placeholder art — always present, night variant when the copy is Soft White */}
+      <AmbientBackground dark={showScrim && media.tone === 'dark'} />
+      {/* 2 · generated photograph — fades in once the file exists, renders nothing if it does not */}
+      {showScrim && media.photo && (
+        <PhotoBg src={media.photo} priority width={1920} height={1080} position="center" />
+      )}
+      {/* 3 · video / poster — only when it plays / exists */}
       {resolvedMode === 'poster' && media.poster && <PosterBackground src={media.poster} />}
       {resolvedMode === 'video' && (
         <VideoBackground
           webm={media.video?.webm}
           mp4={media.video?.mp4}
-          poster={media.poster}
+          poster={videoPoster}
         />
       )}
+      {/* 4 · scrim */}
       {showScrim && <Scrim />}
     </div>
   );

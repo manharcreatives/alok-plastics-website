@@ -21,6 +21,7 @@ export default function ProductSpecs({ product, groupName }: { product: Product;
   if (p.moq) cells.push({ label: 'MOQ', value: p.moq });
   if (p.packing) cells.push({ label: 'Packing', value: p.packing });
   if (p.fitment) cells.push({ label: 'Fitment', value: p.fitment, wide: true });
+  for (const sp of p.specs ?? []) cells.push({ label: sp.label, value: sp.value });
 
   return (
     <>

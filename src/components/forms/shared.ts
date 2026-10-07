@@ -3,6 +3,33 @@
  * Tokens only. No glass effects. 2px radius via --radius-card.
  */
 
+import { productGroups, publishedProducts } from '@/content/products';
+
+export interface ProductOptionGroup {
+  id: string;
+  label: string;
+  items: { slug: string; name: string }[];
+}
+
+/**
+ * Product choices for the enquiry selectors, one <optgroup> per product group (same order as the
+ * catalogue), minus hidden products. Owner-edited names (admin) win for label and submitted value.
+ */
+export function productOptionGroups(
+  hidden: ReadonlySet<string>,
+  edits?: { get(slug: string): { name?: string | null } | undefined } | null,
+): ProductOptionGroup[] {
+  return productGroups
+    .map(g => ({
+      id: g.id,
+      label: g.name,
+      items: publishedProducts
+        .filter(p => p.group === g.id && !hidden.has(p.slug))
+        .map(p => ({ slug: p.slug, name: edits?.get(p.slug)?.name ?? p.name })),
+    }))
+    .filter(g => g.items.length > 0);
+}
+
 export const BUYER_TYPES = [
   { value: 'oem',             label: 'OEM / Manufacturer' },
   { value: 'dealer',          label: 'Dealer' },

@@ -34,13 +34,14 @@ gsap.registerPlugin(ScrollTrigger);
    simply stays. An image already in cache is caught by the ref check, so it never flashes. */
 function PhotoOverArt({ image, children }: { image?: IndustryImage | null; children: ReactNode }) {
   const [loaded, setLoaded] = useState(false);
+  const [failed, setFailed] = useState(false);
   const imgRef = useCallback((el: HTMLImageElement | null) => {
     if (el?.complete && el.naturalWidth > 0) setLoaded(true);
   }, []);
   return (
     <>
       {children}
-      {image && (
+      {image && !failed && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           ref={imgRef}
@@ -53,11 +54,20 @@ function PhotoOverArt({ image, children }: { image?: IndustryImage | null; child
           className="ind-photo"
           data-loaded={loaded ? 'true' : 'false'}
           onLoad={() => setLoaded(true)}
+          onError={() => setFailed(true)}
         />
       )}
     </>
   );
 }
+
+/* Photo slot per industry: the supplied image if any, else the agreed path /images/industries/<slug>.webp.
+   The file may not exist yet; PhotoOverArt then renders nothing and the drawn scene stays. */
+const photoFor = (industry: Industry): IndustryImage =>
+  industry.image ?? { src: `/images/industries/${industry.slug}.webp`, alt: `${industry.name} application`, w: 1200, h: 900 };
+const CORE_PHOTO: IndustryImage = coreMarket.image ?? {
+  src: '/images/industries/core-market.webp', alt: `${coreMarket.name} spare parts`, w: 1200, h: 900,
+};
 
 /* Mixed-size bento: spans on the 12-col desktop grid, in source order. */
 const SPANS = ['w7', 'w5', 'w4', 'w4', 'w4', 'w5', 'w7'] as const;
@@ -68,7 +78,7 @@ function IndustryCard({ industry, span }: { industry: Industry; span: string }) 
       <div className="ind-mw">
         <div className="ind-media">
           <div className="ind-art">
-            <PhotoOverArt image={industry.image}>
+            <PhotoOverArt image={photoFor(industry)}>
               {industry.scene && <IndustryScene scene={industry.scene} />}
             </PhotoOverArt>
           </div>
@@ -91,7 +101,7 @@ function IndustryCard({ industry, span }: { industry: Industry; span: string }) 
 }
 
 const CSS = `${FOLD_SECTION_CSS}
-.ind-sec { --pad-top: calc(var(--section-y) + 8px); background: var(--surface); padding-left: var(--grid-page-padding); padding-right: var(--grid-page-padding); padding-bottom: calc(var(--section-y) + 16px); }
+.ind-sec { --pad-top: calc(var(--section-y) * 0.6); background: var(--canvas); padding-left: var(--grid-page-padding); padding-right: var(--grid-page-padding); padding-bottom: calc(var(--section-y) + 16px); }
 .ind-head { display: flex; flex-direction: column; gap: var(--space-sm); }
 .ind-label { display: flex; align-items: center; gap: 10px; font-size: var(--fs-label); text-transform: uppercase; letter-spacing: var(--tr-label); color: var(--muted); font-weight: 600; font-family: var(--font-archivo), sans-serif; line-height: var(--lh-label); }
 .ind-head h2 { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-h2); line-height: var(--lh-h2); letter-spacing: var(--tr-h2); font-weight: 650; color: var(--ink); max-width: 22ch; text-wrap: balance; }
@@ -188,8 +198,8 @@ export default function IndustriesBento() {
       <FoldEdge />
       <div style={{ maxWidth: 'calc(var(--grid-max) + 2 * var(--grid-page-padding))', margin: '0 auto' }}>
         <div className="ind-head">
-          <div className="ind-label">Industries</div>
-          <h2 id="industries-heading" ref={headingRef}>Built for the industries that build India.</h2>
+          <div className="ind-label">Industries we serve</div>
+          <h2 id="industries-heading" ref={headingRef}>Wherever a machine needs a moulded part.</h2>
         </div>
 
         <div className="ind-grid">
@@ -207,7 +217,7 @@ export default function IndustriesBento() {
               </Link>
             </div>
             <div className="ind-core-art">
-              <PhotoOverArt image={coreMarket.image}>
+              <PhotoOverArt image={CORE_PHOTO}>
                 <CoreMarketScene />
               </PhotoOverArt>
             </div>

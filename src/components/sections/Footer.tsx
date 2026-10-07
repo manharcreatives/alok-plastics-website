@@ -4,8 +4,8 @@
  * under the previous section. One balanced four-column grid: brand (logo, tagline, quote link),
  * Products, Company, Visit and contact. Then a single legal bar.
  * Address is a link to Google Maps (site.contact.mapsUrl, else a search URL built from the address).
- * Phone / email / GSTIN / social render only when they exist (§19). No WhatsApp here (FAB only).
- * Client component only for analytics click tracking.
+ * Phone(s) / WhatsApp / email / GSTIN / social render only when they exist (§19).
+ * Blogs link is footer-only (navigation.footer). Client component only for analytics click tracking.
  */
 
 'use client';
@@ -15,6 +15,7 @@ import { ArrowUpRight } from '@phosphor-icons/react/dist/ssr/ArrowUpRight';
 import { MapPin } from '@phosphor-icons/react/dist/ssr/MapPin';
 import { Phone } from '@phosphor-icons/react/dist/ssr/Phone';
 import { EnvelopeSimple } from '@phosphor-icons/react/dist/ssr/EnvelopeSimple';
+import { WhatsappLogo } from '@phosphor-icons/react/dist/ssr/WhatsappLogo';
 import { InstagramLogo } from '@phosphor-icons/react/dist/ssr/InstagramLogo';
 import { LinkedinLogo } from '@phosphor-icons/react/dist/ssr/LinkedinLogo';
 import { FacebookLogo } from '@phosphor-icons/react/dist/ssr/FacebookLogo';
@@ -22,7 +23,8 @@ import { YoutubeLogo } from '@phosphor-icons/react/dist/ssr/YoutubeLogo';
 import { site, formatAddressLines, telHref, mapsHref, MAPS_ARIA_LABEL } from '@/content/site';
 import { navigation, footerProductLinks, footerCompanyLinks } from '@/content/navigation';
 import Logo from '@/components/brand/Logo';
-import { trackPhoneClick, trackQuoteCtaClick } from '@/lib/analytics';
+import { waGeneral } from '@/lib/whatsapp';
+import { trackPhoneClick, trackQuoteCtaClick, trackWhatsAppClick } from '@/lib/analytics';
 import { useRuntimeContact, useRuntimeSocial } from '@/components/runtime/useRuntime';
 
 const FOOTER_CSS = `
@@ -87,6 +89,7 @@ export default function Footer() {
   const c = useRuntimeContact();
   const socialLinks = useRuntimeSocial();
   const [addrLine1, addrLine2] = formatAddressLines(c);
+  const waHref = waGeneral(c.whatsapp);
   const social = [
     { key: 'instagram', label: 'Instagram', Icon: InstagramLogo, href: socialLinks.instagram },
     { key: 'linkedin',  label: 'LinkedIn',  Icon: LinkedinLogo,  href: socialLinks.linkedin },
@@ -169,6 +172,12 @@ export default function Footer() {
             <ul className="ft__list" style={{ marginTop: 'var(--space-xs)' }}>
               {c.phone && (
                 <li><a href={telHref(c.phone)} onClick={() => trackPhoneClick('footer')} className="ft__link"><Phone size={18} weight="light" aria-hidden="true" />{c.phone}</a></li>
+              )}
+              {c.phone2 && (
+                <li><a href={telHref(c.phone2)} onClick={() => trackPhoneClick('footer-2')} className="ft__link"><Phone size={18} weight="light" aria-hidden="true" />{c.phone2}</a></li>
+              )}
+              {waHref && (
+                <li><a href={waHref} target="_blank" rel="noopener noreferrer" onClick={() => trackWhatsAppClick({ source: 'footer' })} className="ft__link"><WhatsappLogo size={18} weight="light" aria-hidden="true" />WhatsApp us</a></li>
               )}
               {c.email && (
                 <li><a href={`mailto:${c.email}`} className="ft__link" style={{ overflowWrap: 'anywhere' }}><EnvelopeSimple size={18} weight="light" aria-hidden="true" />{c.email}</a></li>

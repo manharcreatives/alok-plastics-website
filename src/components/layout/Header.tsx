@@ -4,6 +4,9 @@
  * firms up its glass), 
  * NavMegaPanel (products) and Drawer (mobile).
  *
+ * Products: the label is a link to /products/ (hover still opens the mega panel); a separate chevron
+ * button is the disclosure control (aria-expanded / aria-haspopup / aria-controls live on it).
+ *
  * Round 2:
  * - Utility bar removed — the pill floats at top:16px.
  * - Mega-panel hover-intent is shared between trigger and panel (150ms close
@@ -154,6 +157,17 @@ export default function Header() {
     }
   };
 
+  /* ArrowDown on the Products link or its chevron opens the panel and moves focus into it */
+  const onProductsKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key !== 'ArrowDown') return;
+    e.preventDefault();
+    clearTimer();
+    pinnedRef.current = true;
+    setMegaOpen(true);
+    requestAnimationFrame(() =>
+      document.getElementById(megaId)?.querySelector<HTMLElement>('a:not([tabindex="-1"])')?.focus());
+  };
+
   /* Click outside closes a pinned panel */
   useEffect(() => {
     if (!megaOpen) return;
@@ -214,38 +228,48 @@ export default function Header() {
                 const isActive = i === activeIndex;
                 const cls = `glass-nav__link${isActive ? ' glass-nav__link--active' : ''}`;
                 return (
-                  <li key={item.href} data-mega-zone={isProducts ? '' : undefined}>
+                  <li
+                    key={item.href}
+                    data-mega-zone={isProducts ? '' : undefined}
+                    className={isProducts ? 'glass-nav__item glass-nav__item--products' : 'glass-nav__item'}
+                    /* hover-intent covers the link AND its chevron (one zone) */
+                    onPointerEnter={isProducts ? (e => { if (e.pointerType === 'mouse') hoverOpen(); }) : undefined}
+                    onPointerLeave={isProducts ? (e => { if (e.pointerType === 'mouse') hoverClose(); }) : undefined}
+                  >
                     {isProducts ? (
-                      <button
-                        id={productsTrigId}
-                        type="button"
-                        className={`${cls} glass-nav__link--products${megaOpen ? ' glass-nav__link--open' : ''}`}
-                        aria-expanded={megaOpen}
-                        aria-controls={megaId}
-                        aria-haspopup="true"
-                        aria-current={isActive ? 'page' : undefined}
-                        onPointerEnter={e => { if (e.pointerType === 'mouse') hoverOpen(); }}
-                        onPointerLeave={e => { if (e.pointerType === 'mouse') hoverClose(); }}
-                        onClick={onTriggerClick}
-                        onKeyDown={e => {
-                          if (e.key === 'ArrowDown') {
-                            e.preventDefault();
-                            pinnedRef.current = true;
-                            setMegaOpen(true);
-                            requestAnimationFrame(() =>
-                              document.getElementById(megaId)?.querySelector<HTMLElement>('a')?.focus());
-                          }
-                        }}
-                      >
-                        <span ref={el => { labelRefs.current[i] = el; }} className="glass-nav__label" data-label={item.label}>{item.label}</span>
-                        <CaretDown
-                          weight="light"
-                          size={14}
-                          aria-hidden="true"
-                          className="glass-nav__caret"
-                          style={{ transform: megaOpen ? 'rotate(180deg)' : 'none' }}
-                        />
-                      </button>
+                      <>
+                        {/* The label is a real link: click / Enter goes to /products/. Hover still opens the panel. */}
+                        <Link
+                          href={item.href}
+                          className={`${cls} glass-nav__link--products${megaOpen ? ' glass-nav__link--open' : ''}`}
+                          aria-current={isActive ? 'page' : undefined}
+                          onPointerDown={e => { if (e.button === 0) setIntentIndex(i); }}
+                          onClick={() => { setIntentIndex(i); closeMega(); }}
+                          onKeyDown={onProductsKeyDown}
+                        >
+                          <span ref={el => { labelRefs.current[i] = el; }} className="glass-nav__label" data-label={item.label}>{item.label}</span>
+                        </Link>
+                        {/* Separate disclosure control: click / Enter / Space toggles the panel; ArrowDown opens it. */}
+                        <button
+                          id={productsTrigId}
+                          type="button"
+                          className={`glass-nav__caret-btn${megaOpen ? ' glass-nav__caret-btn--open' : ''}`}
+                          aria-label="Products menu"
+                          aria-expanded={megaOpen}
+                          aria-controls={megaId}
+                          aria-haspopup="true"
+                          onClick={onTriggerClick}
+                          onKeyDown={onProductsKeyDown}
+                        >
+                          <CaretDown
+                            weight="light"
+                            size={14}
+                            aria-hidden="true"
+                            className="glass-nav__caret"
+                            style={{ transform: megaOpen ? 'rotate(180deg)' : 'none' }}
+                          />
+                        </button>
+                      </>
                     ) : (
                       <Link
                         href={item.href}
@@ -270,7 +294,11 @@ export default function Header() {
             <div className="glass-nav__ctas">
               <Link href="/enquiry" className="glass-nav__cta glass-nav__cta--quote">
                 <span className="glass-nav__cta-label">Get a Quote</span>
-                <ArrowUpRight weight="light" size={16} aria-hidden="true" className="glass-nav__cta-arrow" />
+                {/* Two arrows: the first leaves up-right on hover while the second arrives from the lower left */}
+                <span className="glass-nav__cta-chip" aria-hidden="true">
+                  <ArrowUpRight weight="light" size={16} className="glass-nav__cta-arrow glass-nav__cta-arrow--out" />
+                  <ArrowUpRight weight="light" size={16} className="glass-nav__cta-arrow glass-nav__cta-arrow--in" />
+                </span>
               </Link>
 
               <CartButton />

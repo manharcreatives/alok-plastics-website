@@ -141,7 +141,7 @@ export type RuntimeProductOverrides = z.output<typeof productOverridesSchema>;
 
 /* ── products.json ──────────────────────────────────────────────────────── */
 
-const MATERIAL_IDS = ['nylon', 'hdpe', 'ppcp', 'brass', 'ss'] as const;
+const MATERIAL_IDS = ['nylon', 'hdpe', 'ppcp', 'brass', 'ss', 'cast-iron'] as const;
 
 /** Trimmed, length-capped plain text, or null. Over-long values are dropped, not truncated. */
 const capped = (max: number) =>
@@ -154,7 +154,7 @@ const capped = (max: number) =>
     });
 
 const GROUP_IDS = ['01', '02', '03', '04', '05'] as const;
-const MACHINE_IDS = ['water-cooler', 'display-counter', 'deep-freezer'] as const;
+const MACHINE_IDS = ['water-cooler', 'display-counter', 'deep-freezer', 'gas-stove', 'commercial-kitchen'] as const;
 
 const machineList = z
   .array(z.unknown())

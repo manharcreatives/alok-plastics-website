@@ -19,7 +19,9 @@
   left: 50%;
   width: min(1360px, calc(100% - 32px));
   height: 64px;
-  background: rgba(255, 255, 255, 0.55);
+  /* Opacity is deliberately high: the logo's metal-grey wordmark needs a light, mostly-opaque ground
+     to stay readable over hero video and photography. See the dark-hero rule below. */
+  background: rgba(255, 255, 255, 0.74);
   -webkit-backdrop-filter: blur(14px) saturate(180%);
           backdrop-filter: blur(14px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.65);
@@ -43,10 +45,17 @@
 /* Fallback — browsers without backdrop-filter support */
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   .glass-nav {
-    background: rgba(248, 247, 247, 0.94);
+    background: rgba(248, 247, 247, 0.96);
     border-color: rgba(30, 17, 21, 0.08);
     border-bottom-color: color-mix(in srgb, var(--burgundy) 42%, transparent);
   }
+}
+
+/* Over a dark hero (video / photo) the pill firms up further, so the grey wordmark never sinks into the footage.
+   Pure CSS: the hero section carries data-tone='dark' when it sits on media. At 0.92 white the pill's effective
+   ground is a light grey even over a black frame. */
+body:has(.hero[data-tone='dark']) .glass-nav:not(.glass-nav--docked) {
+  background: rgba(255, 255, 255, 0.92);
 }
 
 /* ── State 2: Scrolled (past the first 40px) ────────────────────
@@ -54,7 +63,7 @@
    glass firms up (more opaque --canvas, a slightly deeper shadow) so it stays legible over
    whatever content scrolls beneath it. */
 .glass-nav--docked {
-  background: rgba(248, 247, 247, 0.9); /* --canvas at 90% */
+  background: rgba(248, 247, 247, 0.94); /* --canvas at 94% */
   box-shadow: 0 6px 24px rgba(30, 17, 21, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
@@ -70,10 +79,17 @@
   height: 100%;
   max-width: var(--grid-max);
   margin: 0 auto;
-  padding: 0 var(--space-md) 0 var(--space-md);
+  /* The pill's ends are 32px radii, so the logo (left) and the buttons (right) need room beyond the curve:
+     --space-lg (40px) from the border on wide screens, --space-md + --space-xs (32px) on tablets / small
+     laptops, --space-md (24px) on phones. */
+  padding: 0 var(--space-lg);
   display: flex;
   align-items: center;
   gap: var(--space-md);
+}
+
+@media (max-width: 1279px) {
+  .glass-nav__inner { padding: 0 calc(var(--space-md) + var(--space-xs)); }
 }
 
 @media (max-width: 639px) {
@@ -82,7 +98,7 @@
     top: 8px;
   }
   .glass-nav__inner {
-    padding: 0 var(--space-xs) 0 var(--space-sm);
+    padding: 0 var(--space-md);
     gap: var(--space-xs);
   }
 }
@@ -136,18 +152,25 @@ html.is-preloading .glass-nav__logo svg {
     display: none;
   }
 }
-/* 1024-1279: six links + Get a Quote + Cart only fit inside the pill with slightly tighter links */
+/* 1024-1279: six links + Get a Quote + Cart only fit inside the (now deeper-padded) pill with tighter links */
 @media (min-width: 1024px) and (max-width: 1279px) {
   .glass-nav__inner { gap: var(--space-sm); }
-  .glass-nav__link { padding: 0 12px; }
+  .glass-nav__links { gap: 0; }
+  .glass-nav__link { --link-px: 8px; font-size: 0.875rem; }
+  .glass-nav__cta-label { padding: 0 var(--space-xs) 0 var(--space-sm); }
+}
+@media (min-width: 1180px) and (max-width: 1279px) {
+  .glass-nav__link { --link-px: 12px; font-size: 0.9375rem; }
+  .glass-nav__cta-label { padding: 0 var(--space-sm) 0 var(--space-md); }
 }
 
 .glass-nav__link {
+  --link-px: var(--space-sm);
   position: relative;
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 0 var(--space-sm);
+  padding: 0 var(--link-px);
   font: inherit;
   font-size: 0.9375rem;
   font-weight: 500;
@@ -178,16 +201,62 @@ html.is-preloading .glass-nav__logo svg {
 .glass-nav__link--active { color: var(--burgundy); }
 .glass-nav__link--active .glass-nav__label { font-weight: 600; }
 
+/* Hover fill-in: a light rose bar sweeps in under the label left → right and retracts on leave
+   (origin flips, so it exits out of the right-hand end). It is a 4px underlay sitting on the same
+   baseline as the 2px burgundy active-ink rule (pill y 53–57 vs 54–56), so on the current page the
+   rule stays the only mark and this bar is omitted. Transform only. */
+.glass-nav__label::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(50% + 21px);
+  height: 4px;
+  border-radius: 2px;
+  background: var(--rose-pale);
+  transform: scaleX(0);
+  transform-origin: 100% 50%;
+  transition: transform 450ms cubic-bezier(.16, 1, .3, 1);
+  pointer-events: none;
+}
+.glass-nav__item:hover .glass-nav__label::before,
+.glass-nav__item:has(:focus-visible) .glass-nav__label::before,
+.glass-nav__link--open .glass-nav__label::before {
+  transform: scaleX(1);
+  transform-origin: 0 50%;
+}
+.glass-nav__link--active .glass-nav__label::before { display: none; }
+
 .glass-nav__link:hover,
 .glass-nav__link:focus-visible,
-.glass-nav__link--open {
+.glass-nav__link--open,
+.glass-nav__item--products:hover .glass-nav__link {
   color: var(--burgundy);
 }
-.glass-nav__link:focus-visible {
+.glass-nav__link:focus-visible,
+.glass-nav__caret-btn:focus-visible {
   outline: 2px solid var(--burgundy);
   outline-offset: -4px;
   border-radius: var(--radius-card);
 }
+
+/* Products = link + separate chevron button, visually one item (the caret hugs the label) */
+.glass-nav__item--products .glass-nav__link--products { padding-right: 4px; }
+.glass-nav__caret-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  padding: 0;
+  background: none;
+  border: 0;
+  color: var(--ink);
+  cursor: pointer;
+  transition: color 200ms cubic-bezier(.16, 1, .3, 1);
+}
+.glass-nav__caret-btn:hover,
+.glass-nav__caret-btn--open,
+.glass-nav__item--products:hover .glass-nav__caret-btn { color: var(--burgundy); }
 
 .glass-nav__caret {
   flex-shrink: 0;
@@ -221,11 +290,7 @@ html.is-preloading .glass-nav__logo svg {
   transition: transform 400ms cubic-bezier(.16, 1, .3, 1);
 }
 
-/* ── CTA: Get a Quote — burgundy glass, cut corners ───────────────
-   44° cuts on the top-right and bottom-left corners (the A-peak angle). A
-   clip-path can't carry a border, so the outer shape is the 1px light edge and
-   ::before is the same shape inset by 1px holding the tinted-glass face.
-   Contrast: white label on the face is ≥ 9:1 even at the face's lightest stop. */
+/* ── CTAs ─────────────────────────────────────────────────────── */
 .glass-nav__ctas {
   display: flex;
   align-items: center;
@@ -239,15 +304,20 @@ html.is-preloading .glass-nav__logo svg {
   }
 }
 
+/* Get a Quote — a machined "label + index chip" button.
+   Solid burgundy face with 10px 45° cuts on the top-right and bottom-left corners (the A-peak
+   angle), split by a hairline into the label and a square arrow chip. On hover the face is
+   re-cut in burgundy-deep by a left → right wipe, the chip turns rose-pale (the same rose as the
+   nav hover bar) and the arrow is replaced by a second one arriving from the lower left.
+   Contrast: white on burgundy 13:1, white on burgundy-deep 16:1; chip arrow burgundy on rose-pale 7.2:1. */
 .glass-nav__cta--quote {
-  --cut: 12px;
+  --cut: 10px;
   position: relative;
   isolation: isolate;
   display: inline-flex;
-  align-items: center;
-  gap: 8px;
+  align-items: stretch;
   height: 44px;
-  padding: 0 var(--space-md) 0 var(--space-md);
+  padding: 0;
   color: var(--surface);
   font-size: 0.875rem;
   font-weight: 600;
@@ -255,62 +325,101 @@ html.is-preloading .glass-nav__logo svg {
   text-decoration: none;
   cursor: pointer;
   overflow: hidden;
-  background: color-mix(in srgb, var(--surface) 85%, transparent); /* the 1px lit edge */
+  background: var(--burgundy);
   clip-path: polygon(0 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% 100%, var(--cut) 100%, 0 calc(100% - var(--cut)));
-  -webkit-backdrop-filter: blur(10px) saturate(160%);
-          backdrop-filter: blur(10px) saturate(160%);
   transition: transform 200ms cubic-bezier(.16, 1, .3, 1);
 }
-/* tinted glass face — top-lit, burgundy at ~97% (plus a lit top edge) so the brand colour leads and it still reads as glass */
+.glass-nav__cta-label {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 var(--space-sm) 0 var(--space-md);
+}
+/* wipe layer */
 .glass-nav__cta--quote::before {
   content: '';
   position: absolute;
-  inset: 1px;
-  z-index: -2;
-  --c: calc(var(--cut) - 0.42px);
-  clip-path: polygon(0 0, calc(100% - var(--c)) 0, 100% var(--c), 100% 100%, var(--c) 100%, 0 calc(100% - var(--c)));
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--surface) 16%, transparent) 0%, transparent 42%),
-    linear-gradient(0deg, color-mix(in srgb, var(--burgundy-deep) 55%, transparent) 0%, transparent 70%),
-    color-mix(in srgb, var(--burgundy) 97%, transparent);
-  transition: background-color 200ms cubic-bezier(.16, 1, .3, 1);
-}
-/* light sweep — one 45° pass on hover, transform only */
-.glass-nav__cta--quote::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 60%;
-  z-index: -1;
-  background: linear-gradient(100deg, transparent 0%, color-mix(in srgb, var(--surface) 38%, transparent) 50%, transparent 100%);
-  transform: translate3d(-120%, 0, 0) skewX(-24deg);
-  transition: none;
-}
-.glass-nav__cta--quote:hover::after,
-.glass-nav__cta--quote:focus-visible::after {
-  transform: translate3d(240%, 0, 0) skewX(-24deg);
-  transition: transform 700ms cubic-bezier(.16, 1, .3, 1);
+  inset: 0;
+  z-index: 0;
+  background: var(--burgundy-deep);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 450ms cubic-bezier(.16, 1, .3, 1);
 }
 .glass-nav__cta--quote:hover::before,
-.glass-nav__cta--quote:focus-visible::before {
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--surface) 12%, transparent) 0%, transparent 42%),
-    color-mix(in srgb, var(--burgundy-deep) 98%, transparent);
+.glass-nav__cta--quote:focus-visible::before { transform: scaleX(1); }
+
+.glass-nav__cta-chip {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  overflow: hidden;
+  border-left: 1px solid color-mix(in srgb, var(--surface) 22%, transparent);
+  background: var(--burgundy-deep);
+  color: var(--surface);
+  transition: background-color 250ms cubic-bezier(.16, 1, .3, 1), color 250ms cubic-bezier(.16, 1, .3, 1);
 }
+.glass-nav__cta-arrow {
+  grid-area: 1 / 1;
+  transition: transform 400ms cubic-bezier(.16, 1, .3, 1);
+}
+.glass-nav__cta-arrow--in { transform: translate3d(-150%, 150%, 0); }
+.glass-nav__cta--quote:hover .glass-nav__cta-chip,
+.glass-nav__cta--quote:focus-visible .glass-nav__cta-chip {
+  background: var(--rose-pale);
+  color: var(--burgundy);
+}
+.glass-nav__cta--quote:hover .glass-nav__cta-arrow--out,
+.glass-nav__cta--quote:focus-visible .glass-nav__cta-arrow--out { transform: translate3d(150%, -150%, 0); }
+.glass-nav__cta--quote:hover .glass-nav__cta-arrow--in,
+.glass-nav__cta--quote:focus-visible .glass-nav__cta-arrow--in { transform: translate3d(0, 0, 0); }
+
 .glass-nav__cta--quote:active { transform: translateY(1px); }
 .glass-nav__cta--quote:focus-visible {
   outline: 2px solid var(--burgundy);
   outline-offset: 3px;
   clip-path: none; /* let the focus ring show; shape returns on blur */
 }
-.glass-nav__cta-arrow {
-  transition: transform 200ms cubic-bezier(.16, 1, .3, 1);
+
+/* Cart — the quiet counterpart: a hairline frame, no fill. (Markup + base rules live in cart.css; the
+   header-specific skin is here so the two nav buttons are designed as a pair.)
+   Hover: the frame turns burgundy, a 2px burgundy base line draws in left → right (the same gesture as
+   the link bar and the sweep on Get a Quote), the face warms to blush and the cart icon rolls forward.
+   The count badge is a small square-cornered burgundy tab, consistent with the cut-corner language. */
+.glass-nav__ctas .cart-btn {
+  border-color: color-mix(in srgb, var(--burgundy) 28%, var(--grey-warm));
+  background: color-mix(in srgb, var(--surface) 60%, transparent);
+  color: var(--burgundy);
+  transition: color 200ms cubic-bezier(.16, 1, .3, 1), border-color 250ms cubic-bezier(.16, 1, .3, 1), background-color 250ms cubic-bezier(.16, 1, .3, 1);
 }
-.glass-nav__cta--quote:hover .glass-nav__cta-arrow,
-.glass-nav__cta--quote:focus-visible .glass-nav__cta-arrow {
-  transform: translate3d(2px, -2px, 0);
+.glass-nav__ctas .cart-btn::after {
+  content: '';
+  position: absolute;
+  left: var(--space-xs);
+  right: var(--space-xs);
+  bottom: -1px;
+  height: 2px;
+  background: var(--burgundy);
+  transform: scaleX(0);
+  transform-origin: 100% 50%;
+  transition: transform 450ms cubic-bezier(.16, 1, .3, 1);
+}
+.glass-nav__ctas .cart-btn svg { transition: transform 400ms cubic-bezier(.16, 1, .3, 1); }
+@media (hover: hover) {
+  .glass-nav__ctas .cart-btn:hover { color: var(--burgundy); border-color: var(--burgundy); background: var(--blush); }
+  .glass-nav__ctas .cart-btn:hover svg { transform: translate3d(2px, 0, 0); }
+}
+.glass-nav__ctas .cart-btn:hover::after,
+.glass-nav__ctas .cart-btn:focus-visible::after { transform: scaleX(1); transform-origin: 0 50%; }
+.glass-nav__ctas .cart-btn:focus-visible { outline-offset: 3px; }
+.glass-nav__ctas .cart-btn .cart-btn__badge {
+  top: -8px;
+  right: -8px;
+  border-radius: 2px;
+  box-shadow: 0 0 0 2px var(--surface);
 }
 
 /* ── Mobile menu button ───────────────────────────────────────── */
@@ -341,9 +450,15 @@ html.is-preloading .glass-nav__logo svg {
 @media (prefers-reduced-motion: reduce) {
   .glass-nav,
   .glass-nav__caret,
+  .glass-nav__label::before,
+  .glass-nav__cta--quote,
+  .glass-nav__cta--quote::before,
+  .glass-nav__cta-chip,
   .glass-nav__cta-arrow,
+  .glass-nav__ctas .cart-btn,
+  .glass-nav__ctas .cart-btn::after,
+  .glass-nav__ctas .cart-btn svg,
   .glass-nav__links[data-ink-ready='true'] .glass-nav__ink-rule {
     transition: none !important;
   }
-  .glass-nav__cta--quote:hover::after { transition: none; }
 }

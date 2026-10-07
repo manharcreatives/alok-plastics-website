@@ -70,3 +70,13 @@ Phone, WhatsApp, enquiry email, Google Maps place URL / lat-lng, opening hours, 
 ## 6. Deploy notes
 
 Upload the **contents** of `out/` to `public_html/` (including the dotfile `.htaccess`; enable "show hidden files" in File Manager). `postbuild` regenerates `sitemap.xml` and `llms*.txt` with the build date every time.
+
+## 7. Blogs (guides)
+
+- Routes: `/blogs/` (index, `Blog` + `BreadcrumbList` JSON-LD) and `/blogs/<slug>/` (five posts from `src/content/blogs.ts`; `BlogPosting` + `FAQPage` + `BreadcrumbList`). Not in the primary navbar; linked from the Home teaser (`BlogsSection`) and the footer.
+- Each post: keyword-first H1 (≤60 chars), unique `metaTitle` (≤60, brand included) and `metaDescription` (≤155), canonical, Open Graph `article`, author = "Alok Plastics Team" (organisation, no fictional person), publisher = Alok Plastics (name + logo inline), internal links to part pages, `/enquiry/` and `/contact/`.
+- Target topics: water cooler float valve / overflow / leakage, display counter sliding door parts, HDPE vs nylon vs PPCP vs brass, deep freezer gasket and hinge replacement, custom moulded parts sample to supply. Only catalogue products and materials are named; no statistics, prices or standards.
+- Cover images: `/images/blog/<slug>.webp` (16:9, 1600x900) are layered over a drawn placeholder. JSON-LD `image` and `og:image` use the cover only if the file exists in `public/` at build time, otherwise the site OG image, so nothing points at a 404.
+- `sitemap.xml` lists the index (weekly) and every post (lastmod = publish date); `llms.txt` lists the guides and `llms-full.txt` carries each guide's text and FAQs.
+- `check-seo` verifies the index and every post exist and are indexable, carry BlogPosting (headline, datePublished, author, publisher, image, mainEntityOfPage), BreadcrumbList and FAQPage, and og:type=article. A missing `/images/...` photo is a warning (photos are generated later), not an error.
+- Adding a post: append to `blogPosts` in `src/content/blogs.ts` (slug, dates, body blocks, FAQ, related) and add the cover to `docs/images/manifest.blogs.json`; routes, sitemap and llms update on the next build.

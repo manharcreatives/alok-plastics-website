@@ -4,7 +4,9 @@
  * faster, and the contact details that exist. No WhatsApp CTA (it lives in the floating button).
  */
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import EnquiryFormPrefilled from '@/components/products/EnquiryFormPrefilled';
+import { ArrowDown } from '@phosphor-icons/react/dist/ssr/ArrowDown';
 import PageHero from '@/components/page/PageHero';
 import { EnquiryArt } from '@/components/page/art';
 import Reveal from '@/components/ui/Reveal';
@@ -52,23 +54,26 @@ export default function EnquiryPage() {
       <style>{PAGE_CSS}</style>
       <PageHero
         crumbs={[{ label: 'Get a Quote' }]}
-        label="Enquiry"
+        label="Get a quote"
         title={
           <>
-            Tell us the part.{' '}
-            <span style={{ background: 'var(--metal-gradient)', WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent', color: 'transparent' }}>
-              We&rsquo;ll take it from there.
+            Name the part.{' '}
+            <span style={{ background: 'var(--metal-gradient-text)', WebkitBackgroundClip: 'text', backgroundClip: 'text', WebkitTextFillColor: 'transparent', color: 'transparent' }}>
+              We&rsquo;ll send the quote.
             </span>
           </>
         }
         lead="Tell us the part and the quantity. We manufacture and supply across India and reply with a quote."
         art={<EnquiryArt />}
+        photo={{ src: '/images/heroes/enquiry.webp', position: '30% center' }}
         enter="rise"
         layout="mirror-end"
-        scrollHint
-      />
+      >
+        <a href="#enquiry-form" className="ph__btn">Start your enquiry <ArrowDown size={18} weight="light" aria-hidden="true" /></a>
+        <Link href="/contact/" className="ph__btn ph__btn--ghost">Contact details</Link>
+      </PageHero>
 
-      <section aria-label="Enquiry form" className="cp-section eq-sec">
+      <section id="enquiry-form" aria-label="Enquiry form" className="cp-section eq-sec">
         <div style={WRAP_STYLE}>
           <div className="eq-grid">
             <Reveal>
@@ -80,7 +85,7 @@ export default function EnquiryPage() {
             <Reveal as="aside" delay={120} className="eq-side">
               <div>
                 <Eyebrow>For a faster quote</Eyebrow>
-                <h2>What helps us most.</h2>
+                <h2>Four details that speed up your quote.</h2>
                 <ul className="eq-list">
                   <li><span><b>Part name</b> and where it is used in your machine.</span></li>
                   <li><span><b>Material</b> and size, if you know them.</span></li>

@@ -14,6 +14,9 @@
 
 ## Contact
 - Address: Plot No-06, Industrial Area Phase II, Ram Darbar, Chandigarh 160003, India
+- Phone: +91 74794 97003
+- WhatsApp: 917479497003
+- Email: alokplastics24@gmail.com
 - Enquiries and quotes: https://alokplastics.com/enquiry/ (prices are shared on request, per part and quantity)
 
 ## Key pages
@@ -21,6 +24,7 @@
 - [Products](https://alokplastics.com/products/): part finder and all part groups
 - [About](https://alokplastics.com/about/)
 - [Industries](https://alokplastics.com/industries/)
+- [Blogs](https://alokplastics.com/blogs/): practical guides on cooler, display counter and deep freezer spare parts
 - [Contact](https://alokplastics.com/contact/)
 - [Get a quote](https://alokplastics.com/enquiry/)
 
@@ -32,9 +36,9 @@ Float valves, push cocks, waste pipes, couplings, ventilation jalli and adjustab
 
 ### Connecting Bush
 URL: https://alokplastics.com/products/water-cooler-spare-parts/connecting-bush/
-A connecting bush available in brass and nylon, used to join pipes and fittings in water cooler and deep freezer systems.
+A connecting bush in brass or nylon, available in 2, 2.5 and 3 inch sizes.
 - Material: Brass
-- Sizes / variants: 2"; 2.5"; 3"; Nylon variant
+- Sizes / variants: Brass connecting bush; Plastic (nylon) connecting bush
 
 ### Float Valve
 URL: https://alokplastics.com/products/water-cooler-spare-parts/float-valve/
@@ -44,7 +48,7 @@ A nylon float valve that controls the water level inside water coolers and dispe
 
 ### Push Cock
 URL: https://alokplastics.com/products/water-cooler-spare-parts/push-cock/
-A brass push-type tap for water dispensing on water coolers. Available in light and heavy duty.
+A brass push-type tap with an anti-leak seal for water dispensing on water coolers, in light and heavy versions.
 - Material: Brass
 - Used in: Water cooler
 - Sizes / variants: Light; Heavy
@@ -57,18 +61,24 @@ A PPCP waste pipe for draining overflow water from water coolers and display cou
 
 ### Waste Coupling
 URL: https://alokplastics.com/products/water-cooler-spare-parts/waste-coupling/
-A coupling connector for waste pipe assemblies.
+A stainless steel waste coupling for waste pipe assemblies.
+- Material: SS
+
+### Three Core Plug
+URL: https://alokplastics.com/products/water-cooler-spare-parts/three-core-plug/
+A three core plug with cable, supplied in 2.5 and 3 metre lengths.
+- Sizes / variants: 2.5 Meters; 3 Meters
 
 ### Ventilation Jalli
 URL: https://alokplastics.com/products/water-cooler-spare-parts/ventilation-jalli/
-A PPCP ventilation grille that fits water coolers, display counters and deep freezers to allow airflow while keeping out debris.
+A PPCP ventilation grille in four sizes for water coolers, display counters and deep freezers.
 - Material: PPCP
 - Used in: Water cooler, Display counter, Deep freezer
-- Sizes / variants: RS 60; RS 75; RS 80; RS 130
+- Sizes / variants: 11" x 11"; 14" x 14"; 14" x 17"; 18.5" x 10"
 
 ### Adjustable Leg Insert
 URL: https://alokplastics.com/products/water-cooler-spare-parts/adjustable-leg-insert/
-An HDPE adjustable insert for equipment legs, allowing fine height adjustment and protecting floors. Available in round and square tube sections, five sizes.
+An HDPE adjustable insert for hollow steel legs, with an adjustable foot for fine height adjustment. Round and square, five sizes.
 - Material: HDPE
 - Used in: Water cooler, Display counter, Deep freezer
 - Sizes / variants: 1" Round; 1" Square; 1.25" Round; 1.25" Square; 1.5" Round; 1.5" Square; 1.75" Round; 1.75" Square; 2" Round; 2" Square
@@ -84,8 +94,9 @@ A nylon sliding bush for display counter door channels, reducing friction and en
 
 ### Door Lock
 URL: https://alokplastics.com/products/deep-freezer-display-counter-parts/door-lock/
-A locking mechanism for display counter and deep freezer doors.
+A chrome handle latch for display counter and deep freezer doors, in big and small sizes.
 - Used in: Display counter, Deep freezer
+- Sizes / variants: Door lock big; Door lock small
 
 ### Hinge
 URL: https://alokplastics.com/products/deep-freezer-display-counter-parts/hinge/
@@ -94,37 +105,185 @@ Hinges for the doors of display counters and deep freezers.
 
 ### Handle Lock
 URL: https://alokplastics.com/products/deep-freezer-display-counter-parts/handle-lock/
-A combined handle and lock component.
+A nylon handle lock with a lever handle and a four-hole mounting plate.
+- Material: Nylon
 
 ### Bracket Handle
 URL: https://alokplastics.com/products/deep-freezer-display-counter-parts/bracket-handle/
-A bracket-style handle for equipment doors and panels.
+A PPCP bracket-style pull handle in four sizes, from 3 to 6 inch.
+- Material: PPCP
+- Sizes / variants: 3 Inch; 4 Inch; 5 Inch; 6 Inch
 
-### SS Kabja
+### SS Kabja 202
 URL: https://alokplastics.com/products/deep-freezer-display-counter-parts/ss-kabja/
-A stainless steel hinge (kabja) for equipment doors.
+A stainless steel SS Kabja 202 hinge in 3 inch and 4 inch sizes.
 - Material: SS
+- Sizes / variants: 3 Inch; 4 Inch
 
 ### L-Type Hinge
 URL: https://alokplastics.com/products/deep-freezer-display-counter-parts/l-type-hinge/
-An L-type hinge for door and panel applications.
+A stainless steel L-type hinge, supplied as a pivot pair for door and panel applications.
+- Material: SS
 
 ### U-Type Door Spring
 URL: https://alokplastics.com/products/deep-freezer-display-counter-parts/u-type-door-spring/
-A U-type spring for self-closing door mechanisms.
+A stainless steel U-type wire spring with a coil at each end, for self-closing door mechanisms.
+- Material: SS
 
 ### L-Hinge Door Spring
 URL: https://alokplastics.com/products/deep-freezer-display-counter-parts/l-hinge-door-spring/
-A spring mechanism for L-type hinged doors.
+A stainless steel L-hinge door spring set: L-shaped hinge plates, pin and coil spring.
+- Material: SS
 
 ### Gasket
 URL: https://alokplastics.com/products/deep-freezer-display-counter-parts/gasket/
-A door gasket that seals the frame of display counters and deep freezers, preventing heat exchange and moisture ingress.
+Door gaskets in a wide range of profiles for display counters and deep freezers. Send a sample or the profile code for a quote.
 - Used in: Display counter, Deep freezer
+- Sizes / variants: KMG II; CRG I; HOSHIZAKI; BIG II; BIG III; LWCG; CRG II; LMG; SNMG; LN PROFILE I; LWCG O; SR SOFT; ALTG; BMG; NF PROFILE; HLMG II; ARG IV; BIG VI; BSP 372; R PROFILE; BMG II; CRG III; LN PROFILE III; LWCG O III; ARE PROFILE II; BIG IV; BIG V; GNMG IV; GNMG V; LN PROFILE II; DD PROFILE; ARG; ARG II; ARE III; AMX; AMX II; AMX III; MMG; SRG; ST SOFT; ARE PROFILE; DF 15; NF PROFILE II; GDR PROFILE; DOOR BRUSH; BSP 368; BSP 369
+
+### PUF Chemical
+URL: https://alokplastics.com/products/deep-freezer-display-counter-parts/puf-chemical/
+PUF chemical supplied as two components, Polyol (POL) and Isocyanate (ISO).
+- Sizes / variants: Polyol (POL); Isocyanate (ISO)
+
+### Bright Chrome
+URL: https://alokplastics.com/products/deep-freezer-display-counter-parts/bright-chrome/
+Bright Chrome finish in an aerosol can, listed as 318 spray paint and as an acrylic lacquer.
+- Sizes / variants: 318 Bright Chrome spray paint; Bright Chrome acrylic lacquer aerosol
 
 ## Commercial Kitchen Spare parts
 URL: https://alokplastics.com/products/commercial-kitchen-spare-parts/
-Tell us the part and the equipment it belongs to, and we will confirm availability and quote.
+Jumbo and canteen burners, ring burners, brass canteen valves, pilot burners, gas adaptors and puffer plates, along with stainless steel commercial cooking stoves and bhattis.
+
+### Jumbo Lite Burner
+URL: https://alokplastics.com/products/commercial-kitchen-spare-parts/jumbo-lite-burner/
+A jumbo lite gas burner for 18x18 size heavy SS and MS commercial stoves (bhatti), packed 8 pcs.
+- Used in: Gas stove
+
+### Jumbo Heavy Burner
+URL: https://alokplastics.com/products/commercial-kitchen-spare-parts/jumbo-heavy-burner/
+A jumbo heavy gas burner for 18x18 MS and SS bhatti (commercial stoves), packed 8 pcs.
+- Used in: Gas stove
+
+### Delux Canteen Heavy With Ring
+URL: https://alokplastics.com/products/commercial-kitchen-spare-parts/delux-canteen-heavy-with-ring/
+A delux heavy canteen gas burner supplied with its pan ring, about 9.25 kg with the ring.
+- Used in: Gas stove
+
+### Jumbo Canteen Heavy With Ring
+URL: https://alokplastics.com/products/commercial-kitchen-spare-parts/jumbo-canteen-heavy-with-ring/
+A jumbo heavy canteen gas burner supplied with its pan ring, about 12.5 kg.
+- Used in: Gas stove
+
+### Korian Ring Burner 3pcs Set
+URL: https://alokplastics.com/products/commercial-kitchen-spare-parts/korian-ring-burner-3pcs-set/
+A Korian ring burner supplied as a set of three rings: 8, 14 and 21 inch.
+- Used in: Gas stove
+- Sizes / variants: 8" ring; 14" ring; 21" ring
+
+### Brass Canteen Nojal Valve
+URL: https://alokplastics.com/products/commercial-kitchen-spare-parts/brass-canteen-nojal-valve/
+A brass canteen valve with a nojal (nozzle) outlet and a red knob, in 65, 75 and 85 gm weights.
+- Material: Brass
+- Used in: Gas stove
+- Sizes / variants: 65 gm; 75 gm; 85 gm
+
+### Brass Canteen Valve 3/8 Nut
+URL: https://alokplastics.com/products/commercial-kitchen-spare-parts/brass-canteen-valve-3-8-nut/
+A brass canteen valve with a 3/8 nut outlet and a red knob, in 65, 75 and 85 gm weights.
+- Material: Brass
+- Used in: Gas stove
+- Sizes / variants: 65 gm; 75 gm; 85 gm
+
+### Pilot Burner (Full Brass)
+URL: https://alokplastics.com/products/commercial-kitchen-spare-parts/pilot-burner/
+A full brass pilot burner in lite, medium and heavy types, packed 100 pcs per pouch.
+- Material: Brass
+- Used in: Gas stove
+- Sizes / variants: Lite; Medium; Heavy
+
+### HP Adaptor CI Nojal
+URL: https://alokplastics.com/products/commercial-kitchen-spare-parts/hp-adaptor-ci-nojal/
+An HP adaptor with a CI nojal, 190 gm each, packed 200 pcs.
+- Material: Cast iron
+- Used in: Gas stove
+
+### SS Puffer Plate with SS Capsule
+URL: https://alokplastics.com/products/commercial-kitchen-spare-parts/ss-puffer-plate/
+A stainless steel puffer plate with SS capsules, made on a 3 mm heavy duty plate in seven sizes.
+- Material: SS
+- Used in: Gas stove
+- Sizes / variants: 10x15; 10x18; 10x22; 12x12; 12x15; 12x18; 12x24
+
+### Stainless Steel Square Lite
+URL: https://alokplastics.com/products/commercial-kitchen-spare-parts/ss-square-lite/
+A stainless steel square commercial cooking stove, Lite series, in 10x10x6 and 12x12x7 sizes.
+- Material: SS
+- Used in: Commercial kitchen
+- Sizes / variants: 10x10x6 Lite; 12x12x7 Lite
+
+### Stainless Steel Square Heavy
+URL: https://alokplastics.com/products/commercial-kitchen-spare-parts/ss-square-heavy/
+A stainless steel square commercial cooking stove, Heavy series, in four sizes from 10x10x8 to 18x18x10.
+- Material: SS
+- Used in: Commercial kitchen
+- Sizes / variants: 10x10x8 Heavy; 12x12x8.5 Heavy; 15x15x9.5 Heavy; 18x18x10 Heavy
+
+### Stainless Steel Square Heavy (Extra Height)
+URL: https://alokplastics.com/products/commercial-kitchen-spare-parts/ss-square-heavy-extra-height/
+A stainless steel square commercial cooking stove, Heavy series with extra height, in three sizes up to 18x18x18.
+- Material: SS
+- Used in: Commercial kitchen
+- Sizes / variants: 12x12x12 Heavy; 15x15x15 Heavy; 18x18x18 Heavy
+
+### Stainless Steel Round Casting
+URL: https://alokplastics.com/products/commercial-kitchen-spare-parts/ss-round-casting/
+A stainless steel round commercial cooking stove with a casting iron heavy ring, in three sizes.
+- Material: SS
+- Used in: Commercial kitchen
+- Sizes / variants: 10x10x8; 12x12x9; 15x15x10
+
+### Stainless Steel Round Stove
+URL: https://alokplastics.com/products/commercial-kitchen-spare-parts/ss-round-stove/
+A stainless steel round commercial cooking stove with a heavy stainless steel ring, in four sizes.
+- Material: SS
+- Used in: Commercial kitchen
+- Sizes / variants: 10x10x8; 12x12x9; 15x15x10; 18x18x11
+
+### Stainless Steel Bhatti (Twin Burner)
+URL: https://alokplastics.com/products/commercial-kitchen-spare-parts/ss-bhatti-twin-burner/
+A stainless steel bhatti with two burners and a flat plate between them, in three heavy sizes.
+- Material: SS
+- Used in: Commercial kitchen
+- Sizes / variants: 10x30x8 Heavy; 12x36x9 Heavy; 15x45x10 Heavy
+
+### Stainless Steel Bhatti (Twin Burner, Shelf)
+URL: https://alokplastics.com/products/commercial-kitchen-spare-parts/ss-bhatti-twin-burner-shelf/
+A stainless steel bhatti with two burners, a flat plate and a lower shelf on a tall stand, in three heavy sizes.
+- Material: SS
+- Used in: Commercial kitchen
+- Sizes / variants: 10x30x18 Heavy; 12x36x24 Heavy; 15x45x30 Heavy
+
+### Stainless Steel Bhatti (Round, Extra Heavy)
+URL: https://alokplastics.com/products/commercial-kitchen-spare-parts/ss-bhatti-round-extra-heavy/
+A round stainless steel bhatti with a heavy casting ring or a heavy SS ring, in three extra heavy sizes.
+- Material: SS
+- Used in: Commercial kitchen
+- Sizes / variants: 10x10x8.5 Extra Heavy, heavy casting ring; 12x12x9.5 Extra Heavy, heavy casting ring; 15x15x10.5 Extra Heavy, heavy casting ring; 10x10x8.5 Extra Heavy, heavy SS ring; 12x12x9.5 Extra Heavy, heavy SS ring; 15x15x10.5 Extra Heavy, heavy SS ring
+
+### Stainless Steel Dosa Bhatti
+URL: https://alokplastics.com/products/commercial-kitchen-spare-parts/ss-dosa-bhatti/
+A heavy 304 stainless steel dosa bhatti with a 10 mm plate and a 3RV burner, size 19x36x12.
+- Material: SS
+- Used in: Commercial kitchen
+- Sizes / variants: 19x36x12 Heavy
+
+### Stainless Steel Chapati Bhatti
+URL: https://alokplastics.com/products/commercial-kitchen-spare-parts/ss-chapati-bhatti/
+A stainless steel chapati bhatti with an SS puffer plate, a 10 mm MS plate and a 2RV burner, size 19x36x12.
+- Material: SS
+- Used in: Commercial kitchen
+- Sizes / variants: 19x36x12 Heavy
 
 ## Caster wheel
 URL: https://alokplastics.com/products/caster-wheel/
@@ -133,6 +292,270 @@ Share the size and load requirement and we will confirm availability and quote.
 ## On demand Customized Products
 URL: https://alokplastics.com/products/on-demand-customized-products/
 Parts made to your sample or drawing, from mould development to supply.
+
+# Guides (blog)
+
+### Custom Plastic Moulded Parts: Sample to Supply Guide
+URL: https://alokplastics.com/blogs/custom-plastic-moulded-parts-sample-to-supply/
+Published: 2026-10-05 · By Alok Plastics Team · Custom parts
+
+Every assembler and repair business eventually hits the same wall: a part that is broken, discontinued or simply not available from any catalogue. Often the machine around it is sound, and the missing piece is a small moulded plastic part. This is where a manufacturer that can develop parts on demand becomes useful. This guide explains how custom plastic moulded parts generally go from sample to regular supply, and what information to share so the process moves quickly.
+
+#### When a custom part makes sense
+- The part is not available anywhere, or the original supplier no longer makes it.
+- You use the same part regularly, so a one-time development effort is worth it.
+- You are an assembler or OEM that needs a part made to your own design.
+- A catalogue part nearly fits, but needs a different size, shape or feature.
+If a similar part already exists, check the catalogue first. You can browse our water cooler spare parts and deep freezer and display counter parts. If your part is different, the on demand customised products group is the place to start.
+
+#### The path from sample to supply
+The details differ from part to part, but moulded plastic parts generally move through the same stages. Treat this as a general outline. Exact steps, timing and costs depend on the part, and we confirm them for your requirement.
+- Enquiry: you describe the part and send a sample, drawing or photo.
+- Review: the manufacturer studies the part, the way it is used and what it needs to fit with, and confirms whether it can be made.
+- Specification: the key dimensions, material and any special features are agreed so that both sides are describing the same part.
+- Mould development: for a moulded part, a mould is made to the agreed shape.
+- Trial and approval: early parts are made and checked against the sample or drawing, and adjusted if needed.
+- Regular production: once the part is approved, it is made in the quantities you need.
+- Supply and repeat orders: the part is dispatched, and later orders can follow the same approved specification.
+Parts made to your sample or drawing. Our on demand group covers parts made to your sample or drawing, from mould development to supply. Moulding runs on automatic moulding machines from our Chandigarh unit. Tell us what you need and we will confirm how it can be done for your part.
+
+#### What information to share
+The more complete the first message, the faster the first answer. You do not need a finished drawing, but these points make a real difference.
+- A sample, even if it is broken or worn. Tell us which side or feature is most important.
+- A drawing or sketch, with the dimensions that matter to you marked.
+- Photos from several angles, with a ruler or scale in the picture.
+- Where the part is used: the machine or assembly, and what it fits with or moves against.
+- Material preference, if you have one, or what the original is made from if you know.
+- Colour or finish, if it matters for the application.
+- Quantity, both for the first order and, if you can estimate it, the repeat requirement.
+- Problems with the current part, such as where it breaks or wears. This helps improve the next version.
+
+#### Sample, drawing or photo: which is best?
+A physical sample is the most useful starting point, because it shows the real shape, wall thickness and fit in a way a photograph cannot. A drawing is the next best, particularly when the dimensions are marked. A photo alone can start the conversation, but expect follow-up questions about sizes. If you can send more than one of these, send them all.
+
+#### Questions to ask any manufacturer
+- Can you confirm the material for this part and why it suits the use?
+- How will you check the finished part against my sample or drawing?
+- What do you need from me to start, and what will you confirm in writing?
+- How are repeat orders handled once the part is approved?
+- What is the process for changes, if the first version needs adjusting?
+Ask the same questions of every manufacturer you speak to. Clear, specific answers are a good sign of a supplier you can plan around.
+
+#### Start with a short message
+The easiest way to begin is to send what you have. Use the enquiry form to attach photos and details, or reach us from the contact page. If you only have a broken part and a rough idea of its use, that is a perfectly good start. We will tell you what else we need.
+
+Questions and answers:
+- Q: Can you make a plastic part from my sample? A: Our on demand group covers parts made to your sample or drawing, from mould development to supply. Send the sample or photos with the use and quantity, and we will confirm how it can be done for your part.
+- Q: Do I need a drawing to start? A: No. A sample, a clear photo with a scale, or a rough sketch with the key dimensions is enough to begin. A drawing helps, but it is not required to start the conversation.
+- Q: What information speeds up a custom part enquiry? A: The sample or drawing, where the part is used, the material and colour you want, the quantity for the first order and the expected repeat requirement.
+- Q: Where are parts made? A: Alok Plastics is based in Chandigarh Industrial Area Phase II, and has been manufacturing since 1998 using automatic moulding machines.
+
+### Deep Freezer Door Gasket & Hinge: When to Replace
+URL: https://alokplastics.com/blogs/deep-freezer-door-gasket-hinge-replacement-guide/
+Published: 2026-10-02 · By Alok Plastics Team · Deep freezer parts
+
+A deep freezer depends on one thing above all: a door that closes fully and seals all the way round. When the gasket hardens or the hinge wears, the door stops doing that, and the machine pays for it in frost, wasted effort and unreliable cooling. This guide helps technicians, dealers and freezer owners recognise the signs, find out which part is responsible and order the correct replacement the first time.
+
+#### Signs the gasket needs replacing
+The gasket is the flexible seal between the door and the cabinet. It works by being slightly compressed when the door is shut, so wear shows up as a loss of that contact.
+- Frost or ice building up along the door edge or inside the opening.
+- Moisture or water around the door after it has been closed for some time.
+- Visible damage: cracks, splits, flattened sections or a gasket that has hardened and no longer springs back.
+- A gasket that has pulled out of its channel or has shrunk and left a gap at the corners.
+- The compressor running for long periods without the cabinet holding temperature.
+A simple seal check. Close the door on a strip of paper and try to pull it out. Try this at several points around the door. If the paper slides out easily at any spot, the seal is weak there. Note which corner or side it is, because that tells you whether the gasket or the door alignment is at fault.
+
+#### Signs the hinge needs replacing
+Hinges carry the weight of the door and set where it sits. Our catalogue includes the general hinge, the L-type hinge and the SS Kabja, along with the U-type door spring and the L-hinge door spring that help the door close.
+- The door sags, or one side sits lower than the other.
+- The door does not close on its own, or does not stay shut.
+- There is visible play or looseness in the hinge when you move the door.
+- The hinge is bent, rusted or has a cracked mounting point.
+- The door scrapes the frame or the gasket seats unevenly all the way round.
+
+#### Gasket or hinge: which one first?
+The two problems feed each other. A sagging hinge lets the gasket wear unevenly, and a worn gasket can make a good door look badly aligned. Check the hinge and door position before you fit a new gasket. If the door sits true and the gasket is damaged or hardened, replace the gasket. If the door is off-square, fix or replace the hinge first, then reassess the seal.
+What the pattern tells you:
+- Pattern: Frost or gap along one side only; More likely: Hinge or door alignment
+- Pattern: Frost or damage all the way round; More likely: Gasket
+- Pattern: Door will not stay shut by itself; More likely: Hinge or door spring
+- Pattern: Gasket worn at the hinge side first; More likely: Hinge play loading the gasket unevenly
+
+#### What to measure before you order
+Replacement parts need to match the old ones. A few simple measurements save an exchange later.
+- Gasket: the total length of the run, the width of the gasket and the shape of its cross-section. A clear photo of a cut end is very helpful.
+- Hinge: the overall length, the width of each leaf, the spacing between the mounting holes and the hole size.
+- Door spring: the overall length and the type (U-type or L-hinge), plus a photo of how it is fitted.
+- Machine: the freezer type and any marking on it, even if you are not sure it will help.
+
+#### What to send us
+You do not need exact drawings to begin. Any one of these is enough to start the conversation.
+- The old part itself, or a clean section of it.
+- Clear photos from the front, side and the mounting point, with a scale or ruler beside the part.
+- Measurements for the points above, if you can take them.
+- Quantity, and whether you expect to reorder.
+- Where you are and when you need it.
+Send these through the enquiry form or call us via the contact page. We confirm availability and quote. Where the catalogue does not list a specific size or shape, we will say so instead of guessing. You can see the whole range under deep freezer and display counter parts.
+
+#### Keep a small stock if you service many freezers
+Dealers and service workshops that handle many deep freezers often find that gaskets, hinges and springs are the parts they reach for most. Keeping a small stock of the shapes you meet most often saves a second visit. If you want to plan that stock, list the parts and expected quantities in one enquiry.
+
+Questions and answers:
+- Q: How do I know if my deep freezer gasket is worn out? A: Look for frost or moisture at the door edge, cracks or hardened sections, gaps at the corners and a compressor that runs for long periods. A paper strip closed in the door that pulls out easily at some point shows a weak seal there.
+- Q: Should I replace the gasket or the hinge first? A: Check the hinge and door alignment first. A sagging hinge makes the gasket wear unevenly. If the door sits true and the gasket is damaged, replace the gasket.
+- Q: What should I send to order a gasket or hinge? A: Send the old part or clear photos with a ruler beside it, the key measurements, the quantity you need and your location. We confirm availability and quote.
+- Q: Do you list door springs as well? A: Yes. The catalogue includes the U-type door spring and the L-hinge door spring, alongside hinges, the L-type hinge and the SS Kabja.
+
+### HDPE vs Nylon vs PPCP vs Brass: Cooler Spare Parts
+URL: https://alokplastics.com/blogs/hdpe-nylon-ppcp-brass-cooler-spare-parts/
+Published: 2026-09-26 · By Alok Plastics Team · Materials guide
+
+When you buy spare parts for water coolers, display counters and deep freezers, the material matters as much as the shape. A bush, a pipe, a tap and a levelling foot all work in different conditions, and each is made from the material that suits that job. This guide explains, in general terms, where nylon, HDPE, PPCP, brass and stainless steel are used and why. It is meant to help you choose and to read a catalogue with more confidence. It is not a technical datasheet, and it does not replace the specification of the machine you are repairing.
+
+#### Why material choice matters for spare parts
+Spare parts live in demanding places. Some touch water all day, some slide against a channel thousands of times, some carry the weight of the machine, and some sit in cold, damp air. A part in the wrong material can wear early, crack, swell or corrode, and the cooler comes back for repair. Matching the material to the job is one of the simplest ways to reduce repeat repairs.
+
+#### Nylon: moving and wearing parts
+Nylon is a widely used engineering plastic for parts that rub, slide or carry a moving load, because it is tough and has a naturally smooth surface. In our catalogue, the F-bush, the float valve and the nylon variant of the connecting bush are made in nylon. One general point worth knowing: nylon can take up some moisture over time, so for any wet application it is worth confirming the design with the part you are replacing.
+
+#### HDPE: tough, simple, durable shapes
+HDPE, or high-density polyethylene, is a tough, lightweight plastic known for good resistance to many common chemicals and to moisture. It is often chosen for simple, robust parts that take knocks and sit on or near the floor. Our adjustable leg insert is made in HDPE and is listed in round and square sections in five sizes, from 1 inch to 2 inches.
+
+#### PPCP: pipes, grilles and stiff moulded parts
+PPCP is polypropylene copolymer, a plastic that is widely used for moulded parts that need to hold their shape while still tolerating a knock. In our catalogue, the waste pipe and the ventilation jalli are made in PPCP. Both are shaped parts that are not under moving load, which is where this kind of plastic works well.
+
+#### Brass: taps and threaded fittings
+Brass is a metal alloy that has long been used for taps, valves and threaded fittings because it machines well, holds a thread and resists corrosion in contact with water. Our push cock is brass, and the connecting bush is listed in brass with a nylon alternative. Where a part is threaded, takes repeated tightening or is a tap that is used hundreds of times, brass is the common choice.
+
+#### Stainless steel: hinges that carry load
+Stainless steel is chosen where strength and corrosion resistance matter, such as door hinges that carry weight and face moisture. Our catalogue includes the SS Kabja for this kind of use.
+Materials in our catalogue, at a glance:
+- Material: Nylon; Where it appears in our catalogue: F-Bush, Float Valve, Connecting Bush (nylon variant); Typical role: Sliding and moving parts, water-contact fittings
+- Material: HDPE; Where it appears in our catalogue: Adjustable Leg Insert; Typical role: Tough, floor-level, load-bearing shapes
+- Material: PPCP; Where it appears in our catalogue: Waste Pipe, Ventilation Jalli; Typical role: Pipes and grilles that must keep their shape
+- Material: Brass; Where it appears in our catalogue: Push Cock, Connecting Bush; Typical role: Taps and threaded fittings
+- Material: Stainless steel; Where it appears in our catalogue: SS Kabja; Typical role: Hinges and load-carrying hardware
+This is a guide, not a specification. Material behaviour depends on the design, the grade and the use. If you are replacing a part on a specific machine, the safest approach is to match the old part, or tell us the application and we will confirm what suits.
+
+#### How to choose when you are unsure
+- Start from the job: does the part slide, hold water, carry weight, seal or move air?
+- Match the original: if the existing part is brass or nylon, replace it like for like unless you have a reason to change.
+- Think about the environment: is the part wet, cold, or exposed to cleaning chemicals?
+- Check what is offered: some parts, such as the connecting bush, come in more than one material. Ask which variant suits your assembly.
+- Ask before substituting: if you want a different material from the original, confirm the choice with us first.
+
+#### Buying in more than one material
+Assemblers and dealers who stock parts for several machines usually need a mix of materials in one order. You can list everything in a single enquiry, and we confirm availability and quote part by part. Start with the water cooler spare parts and the deep freezer and display counter parts, then send your list through the enquiry form.
+
+Questions and answers:
+- Q: Which material is used for the float valve? A: Our catalogue float valve is made in nylon, supplied as a set with the float ball, valve body and rod.
+- Q: What does PPCP stand for? A: PPCP is polypropylene copolymer. In our catalogue it is used for the waste pipe and the ventilation jalli.
+- Q: Why is the push cock made in brass? A: Brass is a long-established material for taps and threaded fittings because it holds a thread and resists corrosion in contact with water. Our push cock is brass, in light and heavy variants.
+- Q: Can I ask for a different material from the one listed? A: Some parts, such as the connecting bush, are listed in more than one material. For anything else, tell us the application and your requirement and we will confirm what is possible.
+
+### Display Counter Sliding Door Problems: Parts Guide
+URL: https://alokplastics.com/blogs/display-counter-sliding-door-parts-guide/
+Published: 2026-09-17 · By Alok Plastics Team · Display counter parts
+
+The doors of a display counter are opened and closed many times a day, so their small parts take more wear than almost anything else on the machine. When a door becomes stiff, noisy, loose or will not seal, the cause is rarely the glass or the frame. It is usually one of five small parts: the F-bush, the door lock, the hinges, the door spring or the gasket. This guide explains what each part does, how wear shows up and what to check before you order.
+
+#### F-bush: the part that decides how smoothly the door slides
+The F-bush is the display counter sliding door bush. In our catalogue it is made in nylon. It sits in the door channel and carries the door as it slides, so a worn one shows up as a door that drags, jumps or rattles in the track.
+- The door feels rough or needs a push to start moving.
+- You can hear a scraping or clicking sound along the channel.
+- The door sits lower on one side or no longer lines up with the frame.
+- The bush looks flattened, chipped or visibly shortened compared with a new one.
+Always replace bushes in pairs or as a full set for the door. A single new bush next to a worn one leaves the door uneven.
+
+#### Door lock and handle: security and alignment
+The door lock holds the door closed and secures the contents, and the handle lock and bracket handle are the parts the user actually touches. Lock faults are often misdiagnosed. A lock that will not engage may simply be out of line because the door has dropped, which brings you back to the bush. Check the door alignment first, then test the lock on its own.
+
+#### Hinges and door springs: swing doors and self-closing action
+Where the counter or freezer has a hinged door, hinges and springs control how it swings and closes. Our catalogue includes the general hinge, the L-type hinge, the SS Kabja, the U-type door spring and the L-hinge door spring.
+- Door will not stay closed or closes slowly: check the spring first, then the hinge.
+- Door sags or is hard to line up: look for a loose, bent or worn hinge.
+- Door squeaks or binds as it swings: check for a hinge pin that has worn or a hinge leaf that has bent.
+Hinge and spring styles differ, so the shape of the old part matters. Send a photo of both the part and the place where it mounts.
+
+#### Gasket: the seal that is easy to forget
+The gasket seals the door against the frame of display counters and deep freezers, helping keep the cold in and moisture out. A gasket that has hardened, split or flattened lets air through, so the machine works harder to hold temperature. Run your hand around the closed door and look for gaps, cracks, or sections that no longer spring back.
+Seal problems can look like a door problem. A door that will not close flush, or a gasket that seems loose, can be caused by a worn bush or hinge letting the door sit off-square. Fix alignment before you replace the gasket, otherwise the new gasket will wear unevenly.
+
+#### A simple order of checks
+- Open and close the door slowly and listen. Note where it sticks or rattles.
+- Check the F-bushes and channel for wear, dirt or damage.
+- Check the hinges and springs, if fitted, for play, bending or weakness.
+- Check the lock and handle once the door sits true.
+- Inspect the gasket around the whole door edge last.
+Symptom and likely part:
+- Symptom: Door drags or jumps in the channel; Likely part: F-bush
+- Symptom: Door will not latch or lock; Likely part: Door lock, or a door out of alignment
+- Symptom: Door sags or will not close by itself; Likely part: Hinge or door spring
+- Symptom: Cold air escapes at the door edge; Likely part: Gasket, or door alignment
+
+#### How to order the right part
+Most of these parts come in several shapes, and the catalogue does not list every machine fitment, so the quickest route is to send what you have. A photo of the old part, the machine it came from and the size that matters is enough to begin, and we confirm availability and quote.
+Browse the full range of deep freezer and display counter parts, then use the enquiry form or the contact page to send your requirement.
+
+Questions and answers:
+- Q: What does an F-bush do in a display counter? A: The F-bush is the sliding door bush. It sits in the door channel and carries the door as it slides. In our catalogue it is made in nylon.
+- Q: Why will my display counter door not close properly? A: Common causes are a worn F-bush that lets the door sit off-square, a weak door spring, a worn hinge or a hardened gasket. Check alignment first, then the spring and hinge, then the gasket.
+- Q: Should I replace bushes one at a time? A: It is better to replace them as a set for the door. A single new bush beside a worn one leaves the door uneven.
+- Q: Which hinge and spring types do you list? A: The catalogue includes hinge, L-type hinge, SS Kabja, U-type door spring and L-hinge door spring. Send a photo of the old part and we will help you match it.
+
+### Water Cooler Float Valve: Choosing & Fixing Overflow
+URL: https://alokplastics.com/blogs/water-cooler-float-valve-overflow-leakage/
+Published: 2026-09-08 · By Alok Plastics Team · Water cooler parts
+
+A water cooler that overflows, drips or leaves a pool under the cabinet is one of the most common repair calls for technicians and dealers. The good news is that the fault almost always sits in one of three small parts: the float valve at the inlet, the push cock at the tap, or the waste pipe at the drain. Knowing which one is responsible saves time on site and avoids replacing parts that were never the problem.
+
+#### Where water cooler leakage really comes from
+Start from the symptom, not from the part. Water shows up in different places depending on what has failed.
+- Water spills from the top or overflow outlet: the tank is filling past its normal level. Suspect the float valve.
+- Water drips from the tap after it is released: suspect the push cock.
+- Water collects below the cabinet or around the drain: suspect the waste pipe, the waste coupling or a joint between them.
+Quick diagnosis by symptom:
+- What you see: Tank keeps filling, water overflows; Likely part: Float valve; First thing to check: Lift the float by hand: does the inlet stop?
+- What you see: Tap drips after use; Likely part: Push cock; First thing to check: Does it close fully when released?
+- What you see: Pool under the cooler, tap and tank dry; Likely part: Waste pipe or coupling; First thing to check: Look for cracks, loose joints or a blocked run
+- What you see: Water level never reaches normal; Likely part: Float valve or supply; First thing to check: Is the valve opening fully? Is the supply on?
+
+#### Overflow: check the float valve first
+A float valve controls the water level inside a water cooler or dispenser. As the tank fills, the float rises and closes the inlet; as water is drawn off, the float drops and the inlet opens again. Our catalogue lists the float valve in nylon, supplied as a set with the float ball, valve body and rod.
+To find out whether the float valve is the cause, work through these steps with the supply switched on and the tank lid open.
+- Watch the tank fill and note where the float sits when the water stops rising, or whether it stops at all.
+- Lift the float ball gently by hand. If the inflow stops when the float is raised, the valve itself can still shut off, and the problem is the float position, a bent rod or a float that is not moving freely.
+- If water keeps flowing even with the float fully raised, the valve body or its sealing surface is worn or dirty, and the set needs replacing.
+- Check that the float and rod move without touching the tank wall or other fittings.
+- Look at the rod and float ball for cracks or water inside the float, which stops it from rising properly.
+Replace the set, not one piece. Because the float, rod and valve body work together, replacing the complete set is usually faster and more reliable than mixing an old float with a new valve body.
+
+#### How to choose the right float valve
+Float valves look similar but are not always interchangeable. Before ordering, compare the replacement against the old one on these points.
+- Inlet connection: the way the valve fits the tank and the supply line must match.
+- Rod length and float size: they set the water level, so they should suit the depth and layout of the tank.
+- Material: our catalogue float valve is nylon, a common choice for plastic fittings that sit in contact with water.
+- Quantity and repeat use: workshops that service many coolers often keep a small stock of sets.
+If you are unsure, send us the old valve or a clear photo with the cooler details. We will confirm what is available and quote. Measurements and fitment details that are not in the catalogue are confirmed per enquiry, not assumed.
+
+#### Dripping tap: the push cock
+The push cock is the tap the user presses to draw water. A tap that keeps dripping after release has usually lost its seal inside, or is not returning fully. Our push cock is made in brass and listed in light and heavy variants. Heavy variants are generally the better match for busy, high-use locations, while light variants suit lighter use. Match the variant to the way the cooler is used and to the fitting you are replacing.
+
+#### Water under the cooler: waste pipe and coupling
+If the tank and tap are dry but water still appears below the cabinet, follow the drain run. The waste pipe in our catalogue is made in PPCP, and the waste coupling joins the run to the drain connection. Check for hairline cracks, a coupling that has loosened, or a partial blockage that makes water back up and find another way out.
+
+#### What to send us for a replacement
+- The old part, or two or three clear photos from different sides.
+- The part name, if you know it, and the cooler it came from.
+- The size that matters, measured with a scale or calliper if you have one.
+- The quantity you need now, and whether it will repeat.
+Send these through the enquiry form or call us from the contact page. You can also browse the full range of water cooler spare parts.
+
+Questions and answers:
+- Q: Why does my water cooler keep overflowing? A: Overflow usually means the float valve is not shutting off the inlet. Lift the float by hand: if the inflow stops, the float or rod position needs correcting; if water keeps flowing, the valve body is worn or dirty and the set should be replaced.
+- Q: Is the float valve sold as a set? A: Yes. Our catalogue lists the float valve as a set, with the float ball, valve body and rod, made in nylon.
+- Q: Which push cock variants are available? A: The push cock is made in brass and is listed in light and heavy variants. Tell us how the cooler is used and we will help you match the variant.
+- Q: Can I send a photo instead of the part? A: Yes. Clear photos from several sides, along with the cooler details and the size that matters, are enough to start. We confirm availability and quote after reviewing them.
 
 ## Industries
 - OEM & Manufacturing

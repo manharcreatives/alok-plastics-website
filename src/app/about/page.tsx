@@ -18,9 +18,9 @@ import { brandIdea, story, vision, mission, coreValues } from '@/components/abou
 import { Eyebrow, SECTION_CSS, SectionHead, WRAP_STYLE } from '@/components/about/parts';
 
 export const metadata: Metadata = {
-  title: { absolute: 'About Alok Plastics | Moulded Plastic Parts Manufacturer Since 1998, Chandigarh' },
+  title: { absolute: 'About Alok Plastics | Chandigarh Parts Maker Since 1998' },
   description:
-    'Alok Plastics is a Chandigarh manufacturer of plastic & steel spare parts since 1998, based in Ram Darbar Industrial Area. Serving OEMs, dealers & distributors across India. Our story, vision, mission and values.',
+    'Alok Plastics is a Chandigarh manufacturer of plastic and steel spare parts since 1998, serving OEMs, dealers and distributors across India. Our story.',
   alternates: { canonical: '/about/' },
   robots: { index: true, follow: true },
 };
@@ -157,14 +157,24 @@ export default function AboutPage() {
       <style>{CSS}</style>
       <PageHero
         crumbs={[{ label: 'About' }]}
-        label="About"
-        title="About Alok Plastics, Chandigarh."
+        label="About Alok Plastics"
+        title="The small parts that hold coolers, counters and freezers together."
+        size="md"
         lead={<Highlight keywords={['moulded plastic and steel spare parts']}>Alok Plastics is a Chandigarh-based manufacturer, established in 1998, of moulded plastic and steel spare parts for water coolers, display counters and deep freezers.</Highlight>}
+        specs={[
+          { k: 'Since', v: '1998' },
+          { k: 'Works', v: `Industrial Area Phase II, ${site.contact.city}` },
+          { k: 'Process', v: 'Moulds + plastic granules' },
+          { k: 'Delivered', v: '20 Cr+ products' },
+        ]}
         art={<AboutArt />}
+        photo={{ src: '/images/heroes/about.webp', position: '68% center' }}
         enter="rise"
-        layout="center"
-        scrollHint
-      />
+        layout="spec"
+      >
+        <Link href="/enquiry/" className="ph__btn">Get a quote <ArrowUpRight size={18} weight="light" aria-hidden="true" /></Link>
+        <a href="#story-h" className="ph__btn ph__btn--ghost">Read our story</a>
+      </PageHero>
 
       {/* Brand idea */}
       <section aria-labelledby="idea-h" className="cp-section ab-idea">
@@ -182,7 +192,7 @@ export default function AboutPage() {
               </div>
             </Reveal>
             <Reveal>
-              <Eyebrow>The brand idea</Eyebrow>
+              <Eyebrow>Why we are called Alok</Eyebrow>
               <h2 id="idea-h" className="ab-idea__devname" lang="hi">आलोक</h2>
               <p className="ab-idea__means">means light.</p>
               <p className="ab-idea__p">{brandIdea}</p>
@@ -206,8 +216,8 @@ export default function AboutPage() {
         <div style={WRAP_STYLE}>
           <div className="ab-story__grid">
             <div className="ab-story__head">
-              <Eyebrow>Our story</Eyebrow>
-              <h2 id="story-h" className="cp-h2">Good products build business. Trust builds relationships.</h2>
+              <Eyebrow>Our story since 1998</Eyebrow>
+              <h2 id="story-h" className="cp-h2">Good products win the order. Trust wins the next one.</h2>
             </div>
             <div>
               <Reveal as="p" className="ab-story__lead">{renderStory(storyLead)}</Reveal>
@@ -224,15 +234,15 @@ export default function AboutPage() {
       <section aria-label="Vision and mission" className="ab-vm">
         <div className="ab-vm__panel ab-vm__panel--v">
           <Reveal className="ab-vm__in">
-            <Eyebrow>Where we are going</Eyebrow>
-            <h2 className="ab-vm__big">Vision</h2>
+            <Eyebrow>Vision</Eyebrow>
+            <h2 className="ab-vm__big">Where we are going.</h2>
             <p className="t">{vision}</p>
           </Reveal>
         </div>
         <div className="ab-vm__panel ab-vm__panel--m">
           <Reveal className="ab-vm__in" delay={120}>
-            <Eyebrow dark>How we work</Eyebrow>
-            <h2 className="ab-vm__big">Mission</h2>
+            <Eyebrow dark>Mission</Eyebrow>
+            <h2 className="ab-vm__big">How we get there.</h2>
             <p className="t">{mission}</p>
           </Reveal>
         </div>
@@ -241,7 +251,7 @@ export default function AboutPage() {
       {/* Values */}
       <section aria-labelledby="vals-h" className="cp-section ab-vals">
         <div style={WRAP_STYLE}>
-          <SectionHead id="vals-h" label="Core values" title="What we hold to." />
+          <SectionHead id="vals-h" label="Core values" title="Two values we build on." />
           <ul className="ab-vals__list" aria-label="Core values">
             {coreValues.map((v, i) => {
               const [a, b] = splitValue(v.title);
@@ -272,7 +282,7 @@ export default function AboutPage() {
       {/* Leadership */}
       <section aria-labelledby="lead-h" className="cp-section ab-lead">
         <div style={WRAP_STYLE}>
-          <SectionHead id="lead-h" label="Leadership" title="The people behind the company." />
+          <SectionHead id="lead-h" label="Leadership" title="The two people who run Alok Plastics." />
           <ul className="ab-plates">
             {owners.map((o, i) => (
               <li key={o.name}>
@@ -290,7 +300,7 @@ export default function AboutPage() {
       {/* Culture teaser */}
       <section aria-labelledby="culture-h" className="cp-section ab-culture">
         <div style={WRAP_STYLE}>
-          <Eyebrow>Our people</Eyebrow>
+          <Eyebrow>Work with us</Eyebrow>
           <Reveal>
             <Link href="/career/" className="ab-culture__link" aria-labelledby="culture-h">
               <h2 id="culture-h" className="ab-culture__t">Joyful, supportive, trustworthy.</h2>

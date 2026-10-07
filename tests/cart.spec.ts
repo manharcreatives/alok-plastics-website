@@ -71,16 +71,14 @@ test('no estimated total unless every line has a price', async ({ page }) => {
   await expect(page.getByText('Estimated total')).toHaveCount(0);
 });
 
-test('details are validated with accessible errors; honesty note is visible', async ({ page }) => {
+test('order is gated behind mobile verification; honesty note shows once details are open', async ({ page }) => {
   await seed(page, [{ slug: 'float-valve', qty: 1 }]);
   await page.goto('/cart/');
-  await expect(page.getByText(/not a confirmed order/)).toBeVisible();
-  const send = page.getByRole('button', { name: 'Send order request on WhatsApp' });
-  if (await send.count()) {
-    await send.click();
-    await expect(page.locator('#cf-name')).toHaveAttribute('aria-invalid', 'true');
-    await expect(page.getByRole('alert').filter({ hasText: /name/i }).first()).toBeVisible();
-  }
+  await expect(page.getByText('Sign in to order')).toBeVisible();
+  await expect(page.getByText('Verify your mobile number to place your order.')).toBeVisible();
+  // the order-request note and WhatsApp button only exist behind the verified-details step
+  const note = page.getByText(/not a confirmed order/);
+  if (await note.count()) await expect(note).toBeVisible();
 });
 
 test('clear cart asks for confirmation', async ({ page }) => {

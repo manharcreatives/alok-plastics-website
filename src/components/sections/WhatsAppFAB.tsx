@@ -3,7 +3,7 @@
  * Floating WhatsApp button — the ONLY WhatsApp control on the site. Fixed, bottom-right
  * on every viewport, 56px circle, 16px from the edges (products' sticky bar reserves 72px
  * on its right so the two never overlap).
- * Hides while #enquiry or the site footer is in the viewport (IntersectionObserver)
+ * Hides while #enquiry, #closing-note or the site footer is in the viewport (IntersectionObserver)
  * so it never covers the enquiry form or footer text.
  * Renders nothing if site.contact.whatsapp is null.
  * Attention ring (plays twice, then stops) is gated by @media (prefers-reduced-motion: no-preference).
@@ -18,7 +18,7 @@ import { useRuntimeContact } from '@/components/runtime/useRuntime';
 import { trackWhatsAppClick } from '@/lib/analytics';
 
 /* Elements that the FAB must never overlap */
-const AVOID_IDS = ['enquiry', 'site-footer'];
+const AVOID_IDS = ['enquiry', 'closing-note', 'site-footer'];
 
 const FAB_CSS = `
 .wa-fab {

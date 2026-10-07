@@ -32,7 +32,7 @@ final class AlokProducts
     public const COMMERCE = ['price', 'availability', 'stock', 'keywords', 'brand', 'featured', 'status'];
     public const AVAILABILITY = ['on-request' => 'On request', 'in-stock' => 'In stock', 'out-of-stock' => 'Out of stock'];
     public const STATUS = ['active' => 'Active', 'inactive' => 'Inactive', 'archived' => 'Archived'];
-    public const MACHINES = ['water-cooler' => 'Water cooler', 'display-counter' => 'Display counter', 'deep-freezer' => 'Deep freezer'];
+    public const MACHINES = ['water-cooler' => 'Water cooler', 'display-counter' => 'Display counter', 'deep-freezer' => 'Deep freezer', 'gas-stove' => 'Gas stove', 'commercial-kitchen' => 'Commercial kitchen'];
     public const PRICE_MAX = 9999999;
     public const STOCK_MAX = 100000;
     public const KEYWORDS_MAX = 20;

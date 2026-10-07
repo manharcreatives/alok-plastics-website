@@ -5,7 +5,9 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Trash } from '@phosphor-icons/react/dist/csr/Trash';
-import { productPath } from '@/content/products';
+import PartPicto, { pictogramFor } from '@/components/products/PartPicto';
+import PhotoBg from '@/components/ui/PhotoBg';
+import { productPath, productPhoto } from '@/content/products';
 import { formatPrice } from './cart-catalog';
 import QtyStepper from './QtyStepper';
 import { useCart, type ResolvedLine } from './useCart';
@@ -16,16 +18,23 @@ export default function CartLineRow({ line, onNavigate }: { line: ResolvedLine; 
   const [limit, setLimit] = useState(false);
   const p = line.product;
   const name = p?.name ?? line.slug.replace(/-/g, ' ');
-  const img = p?.images?.[0];
+  const img = p?.images?.[0]; // photos uploaded in the admin
+  const picto = p ? pictogramFor(p.slug) : null;
+  const photo = p ? productPhoto(p) : null;
   const href = p && !line.unavailable ? productPath(p) : null;
   const gone = line.unavailable;
 
   return (
     <li className={`cl${gone ? ' cl--gone' : ''}`}>
       <div className="cl__img" aria-hidden="true">
-        {img && (
+        {img ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={img.src} alt="" width={img.w || undefined} height={img.h || undefined} loading="lazy" decoding="async" />
+        ) : (
+          <>
+            {picto && <PartPicto slug={picto} size={32} />}
+            {photo && <PhotoBg src={photo} width={1200} height={1200} />}
+          </>
         )}
       </div>
       <div style={{ minWidth: 0 }}>

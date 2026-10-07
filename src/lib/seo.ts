@@ -21,9 +21,9 @@ export function absoluteUrl(path = '/'): string {
   return `${SITE_URL}${path.startsWith('/') ? path : `/${path}`}`;
 }
 
-export const HOME_TITLE = 'Alok Plastics, Chandigarh | Plastic Spare Parts Manufacturer for Coolers & Freezers';
+export const HOME_TITLE = 'Alok Plastics | Cooler & Freezer Spare Parts, Chandigarh';
 export const HOME_DESCRIPTION =
-  'Chandigarh manufacturer since 1998. Moulded plastic & steel spare parts for water coolers, display counters & deep freezers: float valves, F-bushes, gaskets, nylon & HDPE. OEM & B2B wholesale enquiries welcome.';
+  'Chandigarh manufacturer since 1998. Moulded spare parts for water coolers, display counters and deep freezers: float valves, bushes, gaskets. B2B welcome.';
 
 const ctx = { '@context': 'https://schema.org' } as const;
 
@@ -165,7 +165,8 @@ export function productJsonLd(p: Product, g: ProductGroup): Json {
     category: g.name,
     url: absoluteUrl(productPath(p)),
     brand: { '@type': 'Brand', name: site.name },
-    manufacturer: { '@id': ID.org },
+    // Group 03 (Commercial Kitchen) is a supplied range: no manufacturer claim until the client confirms it makes these parts.
+    ...(g.id === '03' ? {} : { manufacturer: { '@id': ID.org } }),
   };
 }
 
@@ -210,13 +211,21 @@ export function describe(base: string, suffix: string, max = 155): string {
 /** Title for a part page: longest candidate that fits 60 chars with no template suffix. */
 export function partTitle(p: Product, g: ProductGroup): string {
   const mat = p.material ? ` ${MATERIAL_LABELS[p.material]}` : '';
-  const candidates = [
-    `${p.name}${mat} Manufacturer | Alok Plastics, Chandigarh`,
-    `${p.name} | ${g.name} | Alok Plastics, Chandigarh`,
-    `${p.name} | ${g.name} | Alok Plastics`,
-    `${p.name} Spare Part | Alok Plastics, Chandigarh`,
-    `${p.name} Spare Part | Alok Plastics`,
-  ];
+  // Group 03 (Commercial Kitchen) is a supplied range: no "Manufacturer" claim and no "Spare Part" suffix (it includes whole stoves).
+  const candidates = g.id === '03'
+    ? [
+        `${p.name} | ${g.name} | Alok Plastics, Chandigarh`,
+        `${p.name} | ${g.name} | Alok Plastics`,
+        `${p.name} | Alok Plastics, Chandigarh`,
+        `${p.name} | Alok Plastics`,
+      ]
+    : [
+        `${p.name}${mat} Manufacturer | Alok Plastics, Chandigarh`,
+        `${p.name} | ${g.name} | Alok Plastics, Chandigarh`,
+        `${p.name} | ${g.name} | Alok Plastics`,
+        `${p.name} Spare Part | Alok Plastics, Chandigarh`,
+        `${p.name} Spare Part | Alok Plastics`,
+      ];
   return candidates.find(c => c.length <= 60) ?? candidates[candidates.length - 1];
 }
 
@@ -245,5 +254,71 @@ export function productOffer(opts: {
     url: opts.url,
     ...(avail ? { availability: avail } : {}),
     seller: { '@id': ID.org },
+  };
+}
+
+/* ── Blog (Blog / BlogPosting) ───────────────────────────────────────────────
+ * Author is the organisation (no individual is named); publisher is the Organization entity.
+ * `image` is passed in because it depends on whether the cover photo file exists at build time. */
+
+export type BlogSeoPost = {
+  slug: string;
+  title: string;
+  metaDescription: string;
+  publishDate: string;
+  author: string;
+  tags: string[];
+  category: string;
+};
+
+/** Self-contained publisher: the full Organization entity only lives on Home, so name + logo are repeated here. */
+const blogPublisher = (): Json => ({
+  '@type': 'Organization',
+  '@id': ID.org,
+  name: site.name,
+  url: SITE_URL,
+  logo: { '@type': 'ImageObject', url: absoluteUrl(LOGO_PATH) },
+});
+
+const blogUrl = (slug?: string): string => absoluteUrl(slug ? `/blogs/${slug}/` : '/blogs/');
+
+export function blogJsonLd(posts: BlogSeoPost[], name: string, description: string): Json {
+  return {
+    ...ctx,
+    '@type': 'Blog',
+    '@id': `${blogUrl()}#blog`,
+    name,
+    description,
+    url: blogUrl(),
+    inLanguage: 'en-IN',
+    publisher: blogPublisher(),
+    blogPost: posts.map(p => ({
+      '@type': 'BlogPosting',
+      headline: p.title,
+      url: blogUrl(p.slug),
+      datePublished: p.publishDate,
+      author: { '@type': 'Organization', name: p.author },
+    })),
+  };
+}
+
+export function blogPostingJsonLd(p: BlogSeoPost, image: string, wordCount?: number): Json {
+  return {
+    ...ctx,
+    '@type': 'BlogPosting',
+    headline: p.title,
+    description: p.metaDescription,
+    image: [absoluteUrl(image)],
+    datePublished: p.publishDate,
+    dateModified: p.publishDate,
+    author: { '@type': 'Organization', name: p.author, url: SITE_URL },
+    publisher: blogPublisher(),
+    mainEntityOfPage: { '@type': 'WebPage', '@id': blogUrl(p.slug) },
+    url: blogUrl(p.slug),
+    articleSection: p.category,
+    keywords: p.tags.join(', '),
+    inLanguage: 'en-IN',
+    isPartOf: { '@id': `${blogUrl()}#blog` },
+    ...(wordCount ? { wordCount } : {}),
   };
 }

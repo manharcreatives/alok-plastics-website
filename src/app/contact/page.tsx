@@ -5,6 +5,7 @@
  */
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { ArrowDown } from '@phosphor-icons/react/dist/ssr/ArrowDown';
 import PageHero from '@/components/page/PageHero';
 import { ContactArt } from '@/components/page/art';
 import FoldEdge, { FOLD_SECTION_CSS } from '@/components/sections/FoldEdge';
@@ -16,9 +17,9 @@ import { Eyebrow, SECTION_CSS, WRAP_STYLE } from '@/components/about/parts';
 import { site, isEmbeddableMapsUrl, mapsHref } from '@/content/site';
 
 export const metadata: Metadata = {
-  title: 'Contact Alok Plastics | Plastic Parts Manufacturer, Chandigarh',
+  title: { absolute: 'Contact Alok Plastics | Spare Parts Enquiry, Chandigarh' },
   description:
-    'Contact Alok Plastics at Plot No-06, Industrial Area Phase II, Ram Darbar, Chandigarh 160003. Enquire for water cooler, display counter & deep freezer spare parts. OEM & B2B orders welcome.',
+    'Contact Alok Plastics, Industrial Area Phase II, Ram Darbar, Chandigarh. Enquire for water cooler, display counter and deep freezer spare parts. B2B welcome.',
   alternates: { canonical: '/contact/' },
   robots: { index: true, follow: true },
 };
@@ -72,26 +73,30 @@ export default function ContactPage() {
       <style>{CSS}</style>
       <PageHero
         crumbs={[{ label: 'Contact' }]}
-        label="Contact"
-        title="Talk to Alok Plastics"
+        label="Contact Alok Plastics"
+        title="Got a part in mind? Let's talk it through."
+        size="md"
         lead="Tell us which part you need, in what quantity, and for which machine. We will come back to you with a quote."
         art={<ContactArt />}
+        photo={{ src: '/images/heroes/contact.webp', position: '30% center' }}
         enter="draw"
         layout="mirror"
-        scrollHint
-      />
+      >
+        <a href="#ct-form-h" className="ph__btn">Write to us <ArrowDown size={18} weight="light" aria-hidden="true" /></a>
+        <a href="#ct-map-h" className="ph__btn ph__btn--ghost">Plan a visit</a>
+      </PageHero>
 
       <section aria-labelledby="ct-details-h" className="cp-section ct-main">
         <div style={WRAP_STYLE}>
           <div className="ct-grid">
             <Reveal>
               <Eyebrow>Our details</Eyebrow>
-              <h2 id="ct-details-h" className="ct-h2">Where to find us.</h2>
+              <h2 id="ct-details-h" className="ct-h2">Find us in Chandigarh, or write to us.</h2>
               <ContactSheet />
             </Reveal>
             <Reveal delay={120}>
               <section aria-labelledby="ct-form-h" className="ct-form">
-                <h2 id="ct-form-h" className="ct-h2" style={{ marginBottom: 'var(--space-md)' }}>Send an enquiry</h2>
+                <h2 id="ct-form-h" className="ct-h2" style={{ marginBottom: 'var(--space-md)' }}>Describe the part. We will reply with a quote.</h2>
                 <ShortEnquiryForm source="enquiry-page" onLight />
                 <p className="ct-more">Several parts, or a custom part? <Link href="/enquiry/" className="ct-more__link">Use the full enquiry form</Link>.</p>
               </section>
@@ -107,7 +112,7 @@ export default function ContactPage() {
           <div className="ct-find__grid">
             <Reveal>
               <Eyebrow>Getting here</Eyebrow>
-              <h2 id="ct-map-h" className="ct-h2" style={{ marginBottom: 0 }}>Planning a visit?</h2>
+              <h2 id="ct-map-h" className="ct-h2" style={{ marginBottom: 0 }}>Planning a visit? Here is how to reach us.</h2>
               {/* TODO(client): visiting hours and any gate / landmark directions */}
               <dl className="ct-visit">
                 <div><dt>Directions</dt><dd>Open the map and the route starts from wherever you are.</dd></div>
