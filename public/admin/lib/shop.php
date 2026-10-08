@@ -132,7 +132,9 @@ final class AlokCollection
 
 final class AlokShop
 {
-    public const ORDER_STATUSES = ['pending', 'confirmed', 'processing', 'dispatched', 'completed', 'cancelled'];
+    /** Enquiry → order lifecycle, in order. 'cancelled' is reachable from any open stage. */
+    public const ORDER_STATUSES = ['pending', 'reviewing', 'quoted', 'confirmed', 'paid', 'dispatched', 'invoiced', 'closed', 'cancelled'];
+    public const ENQ_START = 1001;
     public const APPLICATION_STATUSES = ['new', 'reviewing', 'shortlisted', 'rejected', 'hired'];
     private const SESSION_DAYS = 30;
     private const OTP_TTL = 600;
@@ -407,6 +409,25 @@ final class AlokShop
         return AlokCollection::of('applications');
     }
 
+    public static function carts(): AlokCollection
+    {
+        return AlokCollection::of('carts');
+    }
+
+    /** Legacy status names (processing/completed) map onto the current lifecycle. */
+    public static function normStatus(string $s): string
+    {
+        return ['processing' => 'reviewing', 'completed' => 'closed'][$s] ?? $s;
+    }
+
+    /** The one forward step from a stage, or null when the order is finished or cancelled. */
+    public static function nextStatus(string $s): ?string
+    {
+        $flow = ['pending', 'reviewing', 'quoted', 'confirmed', 'paid', 'dispatched', 'invoiced', 'closed'];
+        $i = array_search(self::normStatus($s), $flow, true);
+        return $i === false || $i >= count($flow) - 1 ? null : $flow[$i + 1];
+    }
+
     public static function sessions(): AlokCollection
     {
         return AlokCollection::of('sessions');
@@ -468,13 +489,99 @@ final class AlokShop
         }
     }
 
+    /** Sequential, human-friendly enquiry ID (ENQ-1001, ENQ-1002 …). The counter is lock-protected. */
     public static function orderCode(): string
     {
-        $existing = array_column(self::orders()->all(), 'code');
-        do {
-            $code = 'AP-' . str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-        } while (in_array($code, $existing, true));
-        return $code;
+        $file = AlokConfig::dataDir() . '/enq-seq.json';
+        $n = (int) AlokFs::withLock($file . '.lock', static function () use ($file): int {
+            $last = max((int) ((AlokFs::readJson($file) ?? [])['last'] ?? 0), self::ENQ_START - 1);
+            foreach (self::orders()->all() as $o) {
+                if (preg_match('/^ENQ-(\d+)$/', (string) ($o['code'] ?? ''), $m)) {
+                    $last = max($last, (int) $m[1]);
+                }
+            }
+            $next = $last + 1;
+            AlokFs::atomicWrite($file, json_encode(['last' => $next]));
+            @chmod($file, 0640);
+            return $next;
+        });
+        return 'ENQ-' . $n;
+    }
+
+    /** Cart lines as the admin shows them (live carts). Prices are informational only. */
+    public static function cleanCartLines(mixed $raw): array
+    {
+        $out = [];
+        foreach (is_array($raw) ? array_slice($raw, 0, 60) : [] as $it) {
+            if (!is_array($it)) {
+                continue;
+            }
+            $qty = (int) ($it['qty'] ?? 0);
+            $name = self::clean($it['name'] ?? '', 140);
+            if ($name === '' || $qty < 1) {
+                continue;
+            }
+            $out[] = [
+                'slug' => self::clean($it['slug'] ?? '', 120),
+                'name' => $name,
+                'sku' => self::clean($it['sku'] ?? '', 60),
+                'qty' => min($qty, 999999),
+                'price' => isset($it['price']) && is_numeric($it['price']) ? max(0.0, (float) $it['price']) : null,
+                'availability' => in_array($it['availability'] ?? '', ['in-stock', 'out-of-stock', 'on-request'], true) ? $it['availability'] : 'on-request',
+            ];
+        }
+        return $out;
+    }
+
+    /** Customer-facing WhatsApp text for the order's current stage; the admin sends it from the order screen. */
+    public static function stageMessage(array $o): string
+    {
+        $c = (string) $o['code'];
+        $name = explode(' ', trim((string) $o['name']))[0];
+        $money = static fn($v): string => 'Rs. ' . number_format((float) $v, 0);
+        $has = static fn(string $k): bool => isset($o[$k]) && $o[$k] !== '' && $o[$k] !== null;
+        switch (self::normStatus((string) $o['status'])) {
+            case 'pending':
+                return "Hello {$name}, we have received your enquiry {$c}. Our team is reviewing it and will share the quote shortly. - Alok Plastics";
+            case 'reviewing':
+                return "Hello {$name}, your enquiry {$c} is under review. We will send you the quote / proforma invoice soon. - Alok Plastics";
+            case 'quoted':
+                return "Hello {$name}, please find the quote / proforma invoice for enquiry {$c}."
+                    . ($has('quote_amount') ? ' Quoted amount: ' . $money($o['quote_amount']) . '.' : '')
+                    . ($has('quote_note') ? ' ' . $o['quote_note'] : '')
+                    . ' Reply here to confirm the order. - Alok Plastics';
+            case 'confirmed':
+                return "Hello {$name}, your order {$c} is CONFIRMED. Please make the payment offline as per the proforma invoice and share the payment details here. - Alok Plastics";
+            case 'paid':
+                return "Hello {$name}, we have received your payment" . ($has('pay_amount') ? ' of ' . $money($o['pay_amount']) : '')
+                    . " for order {$c}. Thank you! We are preparing your dispatch. - Alok Plastics";
+            case 'dispatched':
+                return "Hello {$name}, your order {$c} has been dispatched."
+                    . ($has('lr_no') ? ' LR / tracking no: ' . $o['lr_no'] . ($has('transporter') ? ' (' . $o['transporter'] . ')' : '') . '.' : '')
+                    . ' - Alok Plastics';
+            case 'invoiced':
+                return "Hello {$name}, the GST invoice for order {$c} has been issued." . ($has('invoice_no') ? ' Invoice no: ' . $o['invoice_no'] . '.' : '') . ' - Alok Plastics';
+            case 'closed':
+                return "Hello {$name}, order {$c} is now closed. Thank you for choosing Alok Plastics!";
+        }
+        return "Hello {$name}, this is Alok Plastics regarding {$c}.";
+    }
+
+    /** Gapless GST-invoice number per financial year (April to March): AP/2026-27/0001. */
+    public static function nextInvoiceNo(): string
+    {
+        $now = new DateTimeImmutable('now', self::tz());
+        $start = (int) $now->format('n') >= 4 ? (int) $now->format('Y') : (int) $now->format('Y') - 1;
+        $fy = $start . '-' . substr((string) ($start + 1), 2);
+        $file = AlokConfig::dataDir() . '/invoice-seq.json';
+        $n = (int) AlokFs::withLock($file . '.lock', static function () use ($file, $fy): int {
+            $d = AlokFs::readJson($file) ?? [];
+            $d[$fy] = (int) ($d[$fy] ?? 0) + 1;
+            AlokFs::atomicWrite($file, json_encode($d));
+            @chmod($file, 0640);
+            return $d[$fy];
+        });
+        return 'AP/' . $fy . '/' . str_pad((string) $n, 4, '0', STR_PAD_LEFT);
     }
 
     public static function cleanItems(mixed $raw): array
@@ -516,7 +623,7 @@ final class AlokShop
 
     public static function orderText(array $o): string
     {
-        $lines = ['*New Order — Alok Plastics*', '', 'Order ID: ' . $o['code'], 'Date: ' . self::fmt((int) $o['created_at'], 'd M Y, h:i A'), 'Name: ' . $o['name'], 'Mobile: +' . $o['phone'], '', '*Items*'];
+        $lines = ['*New Enquiry — Alok Plastics*', '', 'Enquiry ID: ' . $o['code'], 'Date: ' . self::fmt((int) $o['created_at'], 'd M Y, h:i A'), 'Name: ' . $o['name'], 'Mobile: +' . $o['phone'], 'Address: ' . ($o['address'] ?? ''), '', '*Items*'];
         foreach ($o['items'] as $i => $it) {
             $lines[] = ($i + 1) . '. ' . $it['name'] . ($it['variant'] !== '' ? ' (' . $it['variant'] . ')' : '') . ' × ' . $it['qty'] . ' ' . $it['unit'];
         }
@@ -528,6 +635,8 @@ final class AlokShop
             $lines[] = '';
             $lines[] = 'Note: ' . $o['note'];
         }
+        $lines[] = '';
+        $lines[] = 'Please share the quote / proforma invoice.';
         return implode("\n", $lines);
     }
 
@@ -676,11 +785,14 @@ final class AlokShop
 }
 
 const ALOK_ORDER_LABELS = [
-    'pending' => 'Pending',
-    'confirmed' => 'Confirmed',
-    'processing' => 'Processing',
+    'pending' => 'New enquiry',
+    'reviewing' => 'Under review',
+    'quoted' => 'Quote sent',
+    'confirmed' => 'Order confirmed',
+    'paid' => 'Payment received',
     'dispatched' => 'Dispatched',
-    'completed' => 'Completed',
+    'invoiced' => 'GST invoice issued',
+    'closed' => 'Closed',
     'cancelled' => 'Cancelled',
 ];
 

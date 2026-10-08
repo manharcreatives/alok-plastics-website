@@ -68,6 +68,7 @@ function route(): void
         'enquiry_delete' => 'page_enquiry_delete',
         'orders'         => 'page_orders',
         'order'          => 'page_order',
+        'carts'          => 'page_carts',
         'applications'   => 'page_applications',
         'application'    => 'page_application',
         'resume'         => 'page_resume',

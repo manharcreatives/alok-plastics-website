@@ -1,5 +1,13 @@
 # Changelog
 
+## Enquiry → order flow wired website ⇄ admin (see connection.md)
+
+- Live carts: cart syncs to `/api/cart.php`; admin "Live carts" page shows customer, products, qty, availability, abandoned state.
+- Enquiry: OTP login, required delivery address, sequential `ENQ-1001+` IDs, prefilled WhatsApp redirect.
+- Admin lifecycle: new → review → quote → confirmed → payment → dispatch → GST invoice no. → closed (+ cancel), audit-logged, click-to-send WhatsApp message per stage.
+- `connection.md` added as the wiring reference.
+
+
 ## Premium revamp: five product groups, customer sign-in orders, careers form, admin additions
 
 - Five product groups, simplified product cards, catalogue and custom-part block, manufacturer snapshot in About, Why-choose layout fix, rebalanced footer, one icon set (Phosphor).

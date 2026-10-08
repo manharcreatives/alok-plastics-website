@@ -9,6 +9,8 @@
 <meta name="color-scheme" content="light">
 <meta name="theme-color" content="#2E0A0F">
 <title><?= e($title) ?> · Alok Plastics admin</title>
+<?php if (!empty($refresh)): ?><meta http-equiv="refresh" content="<?= (int) $refresh ?>">
+<?php endif; ?>
 <link rel="icon" href="/icon-192.png">
 <link rel="preload" href="<?= e(asset('fonts/archivo-latin-wdth.woff2')) ?>" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="<?= e(asset('admin.css')) ?>">
@@ -27,6 +29,7 @@ $items = [
   'dashboard' => ['Dashboard', u(), 'grid'],
   'enquiries' => ['Enquiries', u('enquiries'), 'mail'],
   'orders'    => ['Orders', u('orders'), 'cart'],
+  'carts'     => ['Live carts', u('carts'), 'cart'],
   'products'  => ['Products', u('products'), 'box'],
   'applications' => ['Applications', u('applications'), 'file'],
   'customers' => ['Customers', u('customers'), 'users'],

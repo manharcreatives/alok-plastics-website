@@ -18,12 +18,19 @@ try {
     if (!$items) {
         AlokShop::respond(422, ['ok' => false, 'error' => 'Your cart is empty.']);
     }
+    $address = AlokShop::clean($body['address'] ?? '', 300, true);
+    if (mb_strlen($address) < 8) {
+        AlokShop::respond(422, ['ok' => false, 'errors' => ['address' => 'Enter your full delivery address.'], 'error' => 'Enter your full delivery address.']);
+    }
+    AlokShop::customers()->update((int) $customer['id'], ['address' => $address]);
     $note = AlokShop::clean($body['note'] ?? '', 1000, true);
     $order = AlokShop::orders()->insert([
         'code' => AlokShop::orderCode(),
         'customer_id' => (int) $customer['id'],
         'name' => $customer['name'],
         'phone' => $customer['phone'],
+        'address' => $address,
+        'verified' => (int) (AlokShop::customers()->find((int) $customer['id'])['verified'] ?? 1),
         'items' => $items,
         'total' => AlokShop::orderTotal($items),
         'note' => $note,
@@ -31,8 +38,17 @@ try {
         'notes' => [],
         'ip' => $ip,
     ]);
+    // The visitor's live cart becomes this enquiry: mark it submitted so admin stops listing it as open.
+    $visitor = (string) ($body['visitor'] ?? '');
+    if (preg_match('/^[a-zA-Z0-9_-]{16,64}$/', $visitor)) {
+        foreach (AlokShop::carts()->where('visitor', $visitor) as $c) {
+            if (($c['status'] ?? '') === 'open') {
+                AlokShop::carts()->update((int) $c['id'], ['status' => 'submitted', 'order_code' => $order['code'], 'name' => $customer['name'], 'phone' => $customer['phone']]);
+            }
+        }
+    }
     $text = AlokShop::orderText($order);
-    $mailed = AlokShop::mailClient('New order ' . $order['code'] . ' — ' . $order['name'], str_replace('*', '', $text) . "\n", '');
+    $mailed = AlokShop::mailClient('New enquiry ' . $order['code'] . ' — ' . $order['name'], str_replace('*', '', $text) . "\n", '');
     $sheeted = AlokShop::postToGas(['type' => 'order', 'code' => $order['code'], 'name' => $order['name'], 'phone' => '+' . $order['phone'], 'items' => $text, 'total' => $order['total'], 'time' => AlokShop::fmt((int) $order['created_at'], 'Y-m-d H:i:s'), 'ip' => $ip]);
     AlokShop::orders()->update((int) $order['id'], ['mail_ok' => $mailed ? 1 : 0, 'gas_ok' => $sheeted ? 1 : 0]);
     $number = AlokShop::waNumber();
