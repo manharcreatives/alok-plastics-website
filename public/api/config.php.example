@@ -43,4 +43,5 @@ $ALOK_OTP = [
     'template' => '',
     'webhook' => '',
     'dev_mode' => false,
+    'skip' => false, // true = no OTP at all: name + mobile signs in directly (orders are flagged "not verified" in the admin)
 ];

@@ -25,6 +25,13 @@ try {
         if (!AlokShop::rateLimit('otp:' . $phone, 5, 3600) || !AlokShop::rateLimit('otpip:' . $ip, 15, 3600)) {
             AlokShop::respond(429, ['ok' => false, 'error' => 'Too many attempts. Please try again later.']);
         }
+        if (!empty(AlokShop::cfg('ALOK_OTP')['skip'])) {
+            // OTP switched off in config: sign in with name + mobile directly. Flagged unverified for the admin.
+            $customer = AlokShop::upsertCustomer((string) $phone, $name);
+            AlokShop::customers()->update((int) $customer['id'], ['verified' => 0]);
+            $token = AlokShop::startSession($customer);
+            AlokShop::respond(200, ['ok' => true, 'skipped' => true, 'token' => $token, 'user' => ['name' => $customer['name'], 'phone' => $customer['phone']]]);
+        }
         $res = AlokShop::sendOtp((string) $phone, $name);
         if (!$res['ok']) {
             $status = ($res['code'] ?? '') === 'cooldown' ? 429 : 503;
@@ -51,6 +58,7 @@ try {
             AlokShop::respond(401, ['ok' => false, 'error' => 'That code is incorrect or has expired.']);
         }
         $customer = AlokShop::upsertCustomer($phone, $name);
+        AlokShop::customers()->update((int) $customer['id'], ['verified' => 1]);
         $token = AlokShop::startSession($customer);
         AlokShop::respond(200, ['ok' => true, 'token' => $token, 'user' => ['name' => $customer['name'], 'phone' => $customer['phone']]]);
     }

@@ -49,6 +49,10 @@ export default function CartAuth({ onUnavailable }: Props) {
     setNotice('');
     const res = await requestOtp(fullName, ten);
     setBusy(false);
+    if (res.ok && res.session) {
+      setSession(res.session);
+      return;
+    }
     if (res.ok) {
       setName(fullName);
       setPhone(ten);
@@ -151,7 +155,7 @@ export default function CartAuth({ onUnavailable }: Props) {
 
   return (
     <form className="cf" onSubmit={onDetails} noValidate aria-label="Sign in to place your order">
-      <p className="ca__lead">Verify your mobile number to place your order.</p>
+      <p className="ca__lead">Enter your name and mobile number to continue.</p>
       <div className="cf__field">
         <label htmlFor="ca-name">Full name *</label>
         <input
@@ -187,7 +191,7 @@ export default function CartAuth({ onUnavailable }: Props) {
         {errors.phone && <p id="ca-phone-err" className="cf__err" role="alert">{errors.phone}</p>}
       </div>
       {errors.form && <p className="cf__err" role="alert">{errors.form}</p>}
-      <button type="submit" className="cbtn cbtn--block" disabled={busy}>{busy ? 'Sending code…' : 'Send verification code'}</button>
+      <button type="submit" className="cbtn cbtn--block" disabled={busy}>{busy ? 'Please wait…' : 'Continue'}</button>
     </form>
   );
 }

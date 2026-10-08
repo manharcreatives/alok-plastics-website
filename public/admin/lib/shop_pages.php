@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 defined('ALOK_ADMIN') || exit;
 
-const ALOK_ORDER_TONES = ['pending' => 'tone-warn', 'confirmed' => 'tone-info', 'processing' => 'tone-brand', 'dispatched' => 'tone-info', 'completed' => 'tone-ok', 'cancelled' => 'tone-muted'];
+const ALOK_ORDER_TONES = ['pending' => 'tone-warn', 'reviewing' => 'tone-brand', 'quoted' => 'tone-info', 'confirmed' => 'tone-info', 'paid' => 'tone-ok', 'dispatched' => 'tone-info', 'invoiced' => 'tone-brand', 'closed' => 'tone-ok', 'cancelled' => 'tone-muted'];
 const ALOK_APPLICATION_TONES = ['new' => 'tone-brand', 'reviewing' => 'tone-info', 'shortlisted' => 'tone-warn', 'hired' => 'tone-ok', 'rejected' => 'tone-muted'];
 
 function shop_badge(string $status, array $labels, array $tones): string
@@ -57,7 +57,10 @@ function page_orders(array $user, bool $isPost): never
     $status = (string) ($_GET['status'] ?? '');
     $q = mb_substr(trim((string) ($_GET['q'] ?? '')), 0, 100);
     $page = (int) ($_GET['page'] ?? 1);
-    $all = AlokShop::orders()->all();
+    $all = array_map(static function (array $o): array {
+        $o['status'] = AlokShop::normStatus((string) $o['status']);
+        return $o;
+    }, AlokShop::orders()->all());
     $counts = array_fill_keys(AlokShop::ORDER_STATUSES, 0);
     foreach ($all as $o) {
         $counts[$o['status']] = ($counts[$o['status']] ?? 0) + 1;
@@ -73,6 +76,7 @@ function order_or_404(array $user): array
     if ($o === null) {
         render('error', ['title' => 'Order not found', 'user' => $user, 'message' => 'That order does not exist.'], 404);
     }
+    $o['status'] = AlokShop::normStatus((string) $o['status']);
     return $o;
 }
 
@@ -82,20 +86,57 @@ function page_order(array $user, bool $isPost): never
     $self = u('order', ['id' => $o['id']]);
     if ($isPost) {
         $do = (string) ($_POST['do'] ?? '');
-        if ($do === 'status') {
-            $new = (string) ($_POST['status'] ?? '');
-            if (!in_array($new, AlokShop::ORDER_STATUSES, true)) {
-                flash_set('err', 'Unknown status.');
-            } else {
-                $note = shop_add_note($user, (string) ($_POST['note'] ?? ''));
-                $patch = ['status' => $new];
-                if ($note !== null) {
-                    $patch['notes'] = array_merge($o['notes'] ?? [], [$note]);
-                }
-                AlokShop::orders()->update((int) $o['id'], $patch);
-                AlokStore::open()->audit($user['username'], 'order_status', $o['code'], $o['status'] . ' → ' . $new, AlokAuth::clientIp());
-                flash_set('ok', 'Order ' . $o['code'] . ' is now ' . ALOK_ORDER_LABELS[$new] . '.');
+        if ($do === 'advance' || $do === 'cancel') {
+            $new = $do === 'cancel' ? 'cancelled' : AlokShop::nextStatus($o['status']);
+            if ($new === null || in_array($o['status'], ['closed', 'cancelled'], true)) {
+                flash_set('err', 'This order cannot move any further.');
+                redirect($self);
             }
+            $f = static fn(string $k, int $max = 120): string => AlokShop::clean($_POST[$k] ?? '', $max);
+            $patch = ['status' => $new];
+            $err = null;
+            $cancelReason = '';
+            if ($do === 'cancel') {
+                $cancelReason = $f('reason', 300);
+                if ($cancelReason === '') {
+                    $err = 'Add a reason for cancelling.';
+                }
+                $patch['cancel_reason'] = $cancelReason;
+            } elseif ($new === 'quoted') {
+                $amt = trim((string) ($_POST['quote_amount'] ?? ''));
+                if ($amt !== '' && !is_numeric($amt)) {
+                    $err = 'Quote amount must be a number.';
+                }
+                $patch += ['quote_amount' => $amt === '' ? null : max(0.0, (float) $amt), 'quote_note' => $f('quote_note', 300), 'quoted_at' => time()];
+            } elseif ($new === 'confirmed') {
+                $patch['confirmed_at'] = time();
+            } elseif ($new === 'paid') {
+                $amt = trim((string) ($_POST['pay_amount'] ?? ''));
+                if ($amt === '' || !is_numeric($amt) || (float) $amt <= 0) {
+                    $err = 'Enter the amount received.';
+                }
+                $patch += ['pay_amount' => $err ? null : (float) $amt, 'pay_mode' => $f('pay_mode', 30), 'pay_ref' => $f('pay_ref', 80), 'paid_at' => time()];
+            } elseif ($new === 'dispatched') {
+                $patch += ['transporter' => $f('transporter', 80), 'lr_no' => $f('lr_no', 60), 'dispatched_at' => time()];
+            } elseif ($new === 'invoiced') {
+                $patch += ['invoice_no' => AlokShop::nextInvoiceNo(), 'invoiced_at' => time()];
+            } elseif ($new === 'closed') {
+                $patch['closed_at'] = time();
+            }
+            if ($err !== null) {
+                flash_set('err', $err);
+                redirect($self);
+            }
+            $note = shop_add_note($user, $do === 'cancel' ? 'Cancelled: ' . $cancelReason : (string) ($_POST['note'] ?? ''));
+            if ($note !== null) {
+                $patch['notes'] = array_merge($o['notes'] ?? [], [$note]);
+            }
+            $history = $o['history'] ?? [];
+            $history[] = ['at' => time(), 'by' => $user['name'], 'from' => $o['status'], 'to' => $new];
+            $patch['history'] = $history;
+            $updated = AlokShop::orders()->update((int) $o['id'], $patch);
+            AlokStore::open()->audit($user['username'], 'order_status', $o['code'], $o['status'] . ' → ' . $new, AlokAuth::clientIp());
+            flash_set('ok', $o['code'] . ' is now "' . ALOK_ORDER_LABELS[$new] . '". Use the WhatsApp button to message the customer.' . ($new === 'invoiced' && $updated ? ' Invoice ' . $updated['invoice_no'] . '.' : ''));
         } elseif ($do === 'note') {
             $note = shop_add_note($user, (string) ($_POST['note'] ?? ''));
             if ($note === null) {
@@ -107,8 +148,9 @@ function page_order(array $user, bool $isPost): never
         }
         redirect($self);
     }
-    $wa = 'https://wa.me/' . $o['phone'] . '?text=' . rawurlencode('Hello ' . $o['name'] . ', this is Alok Plastics regarding your order ' . $o['code'] . '.');
-    render('order', ['title' => 'Order ' . $o['code'], 'nav' => 'orders', 'user' => $user, 'o' => $o, 'wa' => $wa]);
+    $msg = AlokShop::stageMessage($o);
+    $wa = 'https://wa.me/' . $o['phone'] . '?text=' . rawurlencode($msg);
+    render('order', ['title' => 'Enquiry ' . $o['code'], 'nav' => 'orders', 'user' => $user, 'o' => $o, 'wa' => $wa, 'waText' => $msg, 'next' => AlokShop::nextStatus($o['status'])]);
 }
 
 function page_applications(array $user, bool $isPost): never
@@ -194,4 +236,13 @@ function page_customers(array $user, bool $isPost): never
     unset($c);
     [$pageRows, $total, $pages, $page] = shop_page($rows, $page);
     render('customers', ['title' => 'Customers', 'nav' => 'customers', 'user' => $user, 'rows' => $pageRows, 'total' => $total, 'pages' => $pages, 'page' => $page, 'q' => $q]);
+}
+
+function page_carts(array $user, bool $isPost): never
+{
+    $all = AlokShop::carts()->all();
+    $open = array_values(array_filter($all, static fn(array $c): bool => ($c['status'] ?? '') === 'open'));
+    usort($open, static fn(array $a, array $b): int => ((int) $b['updated_at']) <=> ((int) $a['updated_at']));
+    $done = array_values(array_filter($all, static fn(array $c): bool => ($c['status'] ?? '') === 'submitted'));
+    render('carts', ['title' => 'Live carts', 'nav' => 'carts', 'user' => $user, 'open' => $open, 'submitted' => array_slice($done, 0, 10), 'refresh' => 8]);
 }

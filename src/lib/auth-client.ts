@@ -2,6 +2,8 @@ import { useSyncExternalStore } from 'react';
 
 export const AUTH_ENDPOINT = '/api/auth.php';
 export const ORDER_ENDPOINT = '/api/order.php';
+export const CART_ENDPOINT = '/api/cart.php';
+const VISITOR_KEY = 'alok:visitor:v1';
 const SESSION_KEY = 'alok:session:v1';
 
 export interface Session {
@@ -77,9 +79,13 @@ function failure(status: number, json: RawReply): ApiFailure {
   return { ok: false, kind: 'unavailable', message };
 }
 
-export async function requestOtp(name: string, phone: string): Promise<ApiResult<{ devCode?: string }>> {
+export async function requestOtp(name: string, phone: string): Promise<ApiResult<{ devCode?: string; session?: Session }>> {
   const r = await post(AUTH_ENDPOINT, { action: 'request', name, phone });
   if (!r) return UNAVAILABLE;
+  if (r.status === 200 && r.json.ok === true && r.json.skipped === true && typeof r.json.token === 'string') {
+    const u = r.json.user as { name?: string; phone?: string } | undefined;
+    if (u?.name && u.phone) return { ok: true, session: { token: r.json.token, name: u.name, phone: u.phone } };
+  }
   if (r.status === 200 && r.json.ok === true) {
     return { ok: true, devCode: typeof r.json.devCode === 'string' ? r.json.devCode : undefined };
   }
@@ -103,8 +109,37 @@ export async function checkSession(token: string): Promise<'valid' | 'expired' |
   return r.status === 401 ? 'expired' : 'unknown';
 }
 
-export async function placeOrder(token: string, items: OrderPayloadItem[], note: string): Promise<ApiResult<{ order: PlacedOrder }>> {
-  const r = await post(ORDER_ENDPOINT, { items, note }, token);
+/** Random anonymous id that ties a browser's cart to one row in the admin "Live carts" page. */
+export function getVisitorId(): string {
+  try {
+    const stored = window.localStorage.getItem(VISITOR_KEY);
+    if (stored && /^[a-zA-Z0-9_-]{16,64}$/.test(stored)) return stored;
+    const id = Array.from(crypto.getRandomValues(new Uint8Array(16)), b => b.toString(16).padStart(2, '0')).join('');
+    window.localStorage.setItem(VISITOR_KEY, id);
+    return id;
+  } catch {
+    return '';
+  }
+}
+
+export interface CartSyncLine {
+  slug: string;
+  name: string;
+  sku: string;
+  qty: number;
+  price: number | null;
+  availability: string;
+}
+
+/** Best-effort: the cart never depends on this succeeding (static preview, offline, no PHP). */
+export async function syncCart(items: CartSyncLine[], token?: string): Promise<void> {
+  const visitor = getVisitorId();
+  if (!visitor) return;
+  await post(CART_ENDPOINT, { visitor, items }, token);
+}
+
+export async function placeOrder(token: string, items: OrderPayloadItem[], note: string, address: string): Promise<ApiResult<{ order: PlacedOrder }>> {
+  const r = await post(ORDER_ENDPOINT, { items, note, address, visitor: getVisitorId() }, token);
   if (!r) return UNAVAILABLE;
   const order = r.json.order as { code?: string; createdAt?: number; total?: number | null } | undefined;
   const wa = r.json.wa as { number?: string; text?: string } | undefined;

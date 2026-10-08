@@ -2,7 +2,7 @@
 <?php
 $pageHref = static fn(int $p): string => u('orders', array_filter(['status' => $status, 'q' => $q, 'page' => $p > 1 ? $p : null], static fn($v) => $v !== null && $v !== ''));
 ?>
-<?= page_head('Orders', [['Dashboard', u()], ['Orders', null]], 'Orders placed from the website cart by signed-in customers, newest first.', '', ' <span class="meta">' . (int) $total . ' ' . ($total === 1 ? 'result' : 'results') . '</span>') ?>
+<?= page_head('Orders', [['Dashboard', u()], ['Orders', null]], 'Enquiries and orders from the website cart (OTP-verified customers), newest first.', '', ' <span class="meta">' . (int) $total . ' ' . ($total === 1 ? 'result' : 'results') . '</span>') ?>
 
 <form class="card flush" method="get" action="index.php" role="search" aria-label="Filter orders">
   <input type="hidden" name="r" value="orders">

@@ -6,13 +6,14 @@
  * the localStorage-backed store in useCart.ts.
  */
 
-import { useCallback, useMemo, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ShoppingCart } from '@phosphor-icons/react/dist/csr/ShoppingCart';
 import { trackCartOpen } from '@/lib/analytics';
+import { syncCart, useSession } from '@/lib/auth-client';
 import MiniCart from './MiniCart';
-import { CartUiContext, useCart } from './useCart';
+import { CartUiContext, useCart, useCartLines } from './useCart';
 import './cart.css';
 
 function CartBar() {
@@ -33,6 +34,35 @@ function CartBar() {
   );
 }
 
+/** Mirrors the cart to the server (debounced) so the admin panel's "Live carts" page can see it. */
+function CartSync() {
+  const lines = useCartLines();
+  const session = useSession();
+  const token = session?.token;
+  const payload = useMemo(
+    () => lines.filter(l => l.product && !l.unavailable).map(l => ({
+      slug: l.slug,
+      name: l.product?.name ?? l.slug,
+      sku: l.product?.sku ?? '',
+      qty: l.qty,
+      price: l.price,
+      availability: l.availability,
+    })),
+    [lines],
+  );
+  const key = JSON.stringify(payload);
+  const first = useRef(true);
+  useEffect(() => {
+    /* Skip the empty initial render so opening the site never wipes a stored server cart. */
+    const isFirst = first.current;
+    first.current = false;
+    if (isFirst && payload.length === 0) return;
+    const t = setTimeout(() => { void syncCart(payload, token); }, 1200);
+    return () => clearTimeout(t);
+  }, [key, token]); // eslint-disable-line react-hooks/exhaustive-deps
+  return null;
+}
+
 export default function CartProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [isOpen, setOpen] = useState(false);
@@ -49,6 +79,7 @@ export default function CartProvider({ children }: { children: ReactNode }) {
     <CartUiContext.Provider value={ui}>
       {children}
       <MiniCart />
+      <CartSync />
       <CartBar />
     </CartUiContext.Provider>
   );

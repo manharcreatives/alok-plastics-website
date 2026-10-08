@@ -104,11 +104,11 @@ function CartBody() {
     return (
       <div className="cp__done" role="status" aria-live="polite">
         <span className="cp__done-mark"><CheckCircle weight="light" size={32} aria-hidden="true" /></span>
-        <h2>Thank you, {placed.name.split(' ')[0]}. Your order is placed.</h2>
-        <div className="cp__done-id"><span>Order ID</span><strong>{placed.order.code}</strong></div>
+        <h2>Thank you, {placed.name.split(' ')[0]}. Your enquiry is submitted.</h2>
+        <div className="cp__done-id"><span>Enquiry ID</span><strong>{placed.order.code}</strong></div>
         <p>
           {placed.href
-            ? 'We have opened WhatsApp with your order summary. Send it to us so the team can confirm availability, price and delivery.'
+            ? 'We have opened WhatsApp with your enquiry summary. Press Send so our team can review it and share the quote / proforma invoice.'
             : 'Our team will contact you on your registered mobile number to confirm availability, price and delivery.'}
         </p>
         <ul className="cp__done-list">
@@ -118,7 +118,7 @@ function CartBody() {
           {placed.href && (
             <a className="cbtn cbtn--wa" href={placed.href} target="_blank" rel="noopener noreferrer">
               <WhatsappLogo weight="fill" size={22} aria-hidden="true" />
-              Send order on WhatsApp
+              Send enquiry on WhatsApp
             </a>
           )}
           <Link href="/products/" className="cbtn cbtn--ghost">Continue shopping</Link>
@@ -203,17 +203,20 @@ function CartBody() {
   const onPlace = async (e: FormEvent) => {
     e.preventDefault();
     if (blocked || placing || !session) return;
+    if (address.trim().length < 8) {
+      setOrderError('Enter your full delivery address (house / street, city, pincode).');
+      document.getElementById('cf-address')?.focus();
+      return;
+    }
     const popup = typeof window !== 'undefined' ? window.open('', '_blank') : null;
     if (popup) popup.opener = null;
     setPlacing(true);
     setOrderError('');
-    const noteParts: string[] = [];
-    if (address.trim()) noteParts.push(`Delivery: ${address.trim()}`);
-    if (orderNote.trim()) noteParts.push(orderNote.trim());
     const res = await placeOrder(
       session.token,
       lines.map(l => ({ slug: l.slug, name: l.product?.name ?? l.slug, qty: l.qty, price: l.price })),
-      noteParts.join('\n'),
+      orderNote.trim(),
+      address.trim(),
     );
     setPlacing(false);
     if (!res.ok) {
@@ -350,7 +353,7 @@ function CartBody() {
           </>
         ) : session ? (
           <>
-            <h2 className="cp__h2">Place your order</h2>
+            <h2 className="cp__h2">Submit your enquiry</h2>
             <div className="cp__who">
               <div>
                 <p className="cp__who-name">{session.name}</p>
@@ -360,8 +363,8 @@ function CartBody() {
             </div>
             <form className="cf" onSubmit={onPlace} noValidate>
               <div className="cf__field">
-                <label htmlFor="cf-address">Delivery address / city <span className="cf__opt">(optional)</span></label>
-                <textarea id="cf-address" rows={2} autoComplete="street-address" value={address} onChange={e => setAddress(e.target.value)} maxLength={300} />
+                <label htmlFor="cf-address">Delivery address *</label>
+                <textarea id="cf-address" rows={3} autoComplete="street-address" value={address} onChange={e => setAddress(e.target.value)} maxLength={300} required aria-required="true" placeholder="House / street, city, state, pincode" />
               </div>
               <div className="cf__field">
                 <label htmlFor="cf-note">Message <span className="cf__opt">(optional)</span></label>
@@ -369,16 +372,16 @@ function CartBody() {
               </div>
               {blocked && (
                 <p className="cf__blocked" role="alert">
-                  Fix the items marked above before placing your order: remove unavailable products or lower the quantity.
+                  Fix the items marked above before submitting your enquiry: remove unavailable products or lower the quantity.
                 </p>
               )}
               {orderError && <p className="cf__blocked" role="alert">{orderError}</p>}
               <button type="submit" className="cbtn cbtn--block" disabled={blocked || placing}>
-                {placing ? 'Placing order…' : 'Place order'}
+                {placing ? 'Submitting…' : 'Submit enquiry'}
               </button>
             </form>
             <p className="cp__note">
-              Your order is saved with us and a WhatsApp message is prepared for you. Price, stock, delivery and payment are confirmed by Alok Plastics. No payment is taken on this site.
+              Your enquiry is saved with us and a WhatsApp message is prepared for you. Price, stock, delivery and payment are confirmed by Alok Plastics. No payment is taken on this site.
             </p>
           </>
         ) : (
