@@ -77,3 +77,7 @@ scripts/.cache/
 # stray npm lockfile — this repo is pnpm-only (packageManager in package.json)
 /package-lock.json
 /public/data/products.json
+
+# local dev-server scratch logs
+/.deverr.txt
+/.devlog.txt
