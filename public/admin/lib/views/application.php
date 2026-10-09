@@ -11,7 +11,7 @@ $meta = 'Received ' . AlokShop::fmt((int) $a['created_at'], 'l, d M Y, H:i:s') .
       <div class="card-head"><h2 class="card-title" id="h-app">Application</h2></div>
       <dl class="dl">
         <dt>Position</dt><dd><?= e($a['position']) ?></dd>
-        <dt>Resume</dt>
+        <dt>Resume / LinkedIn</dt>
         <dd>
           <?php if ($a['resume_file'] !== ''): ?>
             <a href="<?= e(u('resume', ['id' => $a['id']])) ?>"><?= e($a['resume_name'] ?: 'Download resume') ?></a> <span class="meta">(<?= e(number_format(((int) $a['resume_size']) / 1024, 0)) ?> KB)</span>

@@ -53,7 +53,7 @@ function Block({ b }: { b: BlogBlock }) {
           <table>
             <caption>{b.caption}</caption>
             <thead><tr>{b.head.map(h => <th key={h} scope="col">{h}</th>)}</tr></thead>
-            <tbody>{b.rows.map((r, i) => <tr key={i}>{r.map((c, j) => <td key={j}>{c}</td>)}</tr>)}</tbody>
+            <tbody>{b.rows.map((r, i) => <tr key={i}>{r.map((c, j) => <td key={j} data-label={b.head[j]}>{c}</td>)}</tr>)}</tbody>
           </table>
         </div>
       );

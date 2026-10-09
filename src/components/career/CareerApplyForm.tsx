@@ -22,7 +22,6 @@ const CSS = `
 .ca-field [aria-invalid="true"] { border-color: var(--error); }
 .ca-field__err { margin: 4px 0 0; font-size: 0.8125rem; color: var(--error); }
 .ca-field__help { margin: 4px 0 0; font-size: 0.8125rem; color: var(--muted); }
-.ca-form__or { margin: 0; font-size: 0.8125rem; color: var(--muted); text-align: center; }
 .ca-form__error { margin: 0; padding: var(--space-xs) var(--space-sm); border-left: 3px solid var(--error); background: var(--surface); color: var(--error); font-size: 0.9375rem; line-height: 1.45; }
 .ca-form__submit { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-xs); min-height: 52px; padding: 0 var(--space-lg); border-radius: var(--radius-card); border: 1px solid var(--burgundy); background: var(--burgundy); color: var(--surface); font: inherit; font-weight: 600; font-size: 0.9375rem; cursor: pointer; transition: background-color 200ms ease-out; width: fit-content; }
 .ca-form__submit:hover:not(:disabled) { background: var(--burgundy-deep); border-color: var(--burgundy-deep); }
@@ -44,15 +43,22 @@ function tenDigits(raw: string): boolean {
   return /^[6-9]\d{9}$/.test(d);
 }
 
-function validUrl(raw: string): boolean {
+function parseUrl(raw: string): URL | null {
   const v = raw.trim();
-  if (!v) return true;
+  if (!v) return null;
   try {
     const u = new URL(/^https?:\/\//i.test(v) ? v : `https://${v}`);
-    return u.hostname.includes('.');
+    return u.hostname.includes('.') ? u : null;
   } catch {
-    return false;
+    return null;
   }
+}
+
+function isLinkedIn(raw: string): boolean {
+  const u = parseUrl(raw);
+  if (!u) return false;
+  const host = u.hostname.toLowerCase();
+  return (host === 'linkedin.com' || host.endsWith('.linkedin.com')) && /^\/(in|company)\/[^/]+/i.test(u.pathname);
 }
 
 export default function CareerApplyForm() {
@@ -91,13 +97,12 @@ export default function CareerApplyForm() {
     if (!tenDigits(text('phone'))) next.phone = 'Enter a valid 10-digit mobile number.';
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(text('email'))) next.email = 'Enter a valid email address.';
     if (!text('position')) next.position = 'Select a position.';
-    if (!validUrl(text('resumeUrl'))) next.resumeUrl = 'Enter a valid link.';
+    if (!isLinkedIn(text('resumeUrl'))) next.resumeUrl = 'Enter your LinkedIn profile link.';
     if (hasFile) {
       const f = file as File;
       if (!/\.(pdf|docx?)$/i.test(f.name)) next.resume = 'Upload a PDF, DOC or DOCX file.';
       else if (f.size > MAX_RESUME_BYTES) next.resume = 'The file must be under 3 MB.';
     }
-    if (!next.resume && !next.resumeUrl && !hasFile && !text('resumeUrl')) next.resume = 'Attach your resume or share a link to it.';
     setErrors(next);
     setFormError('');
     const first = Object.keys(next)[0];
@@ -180,12 +185,11 @@ export default function CareerApplyForm() {
             <input {...attrs('resume')} type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
             {err('resume')}
           </div>
-          <p className="ca-form__or ca-form__full">or share a link to your resume</p>
           <div className="ca-field ca-form__full">
-            <label htmlFor={id('resumeUrl')}>Resume link</label>
-            <input {...attrs('resumeUrl')} type="url" inputMode="url" placeholder="https://" maxLength={400} />
+            <label htmlFor={id('resumeUrl')}>LinkedIn profile</label>
+            <input {...attrs('resumeUrl')} type="url" inputMode="url" placeholder="https://www.linkedin.com/in/your-profile" maxLength={400} aria-required="true" />
             {err('resumeUrl')}
-            <p className="ca-field__help">Google Drive, LinkedIn or any public link.</p>
+            <p className="ca-field__help">Your LinkedIn profile link.</p>
           </div>
           <div className="ca-field ca-form__full">
             <label htmlFor={id('message')}>Message <span style={{ fontWeight: 400, color: 'var(--muted)' }}>(optional)</span></label>

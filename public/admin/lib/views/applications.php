@@ -35,7 +35,7 @@ $pageHref = static fn(int $p): string => u('applications', array_filter(['status
 <div class="card flush"><div class="table-wrap">
 <table class="table stack">
   <thead><tr>
-    <th scope="col">Received</th><th scope="col">Applicant</th><th scope="col">Position</th><th scope="col">Resume</th><th scope="col">Status</th><th scope="col"><span class="sr-only">Open</span></th>
+    <th scope="col">Received</th><th scope="col">Applicant</th><th scope="col">Position</th><th scope="col">Resume / LinkedIn</th><th scope="col">Status</th><th scope="col"><span class="sr-only">Open</span></th>
   </tr></thead>
   <tbody>
   <?php foreach ($rows as $a): ?>
@@ -43,7 +43,7 @@ $pageHref = static fn(int $p): string => u('applications', array_filter(['status
       <td data-label="Received" class="nowrap"><?= e(AlokShop::fmt((int) $a['created_at'], 'd M, H:i')) ?></td>
       <td data-label="Applicant"><span><span class="cell-main"><?= e($a['name']) ?></span><span class="cell-sub"><?= e($a['phone']) ?></span></span></td>
       <td data-label="Position"><?= e($a['position']) ?></td>
-      <td data-label="Resume"><?= $a['resume_file'] !== '' ? 'File' : ($a['resume_link'] !== '' ? 'Link' : '—') ?></td>
+      <td data-label="Resume / LinkedIn"><?= $a['resume_file'] !== '' ? 'File' : ($a['resume_link'] !== '' ? 'LinkedIn' : '—') ?></td>
       <td data-label="Status"><?= shop_badge($a['status'], ALOK_APPLICATION_LABELS, ALOK_APPLICATION_TONES) ?></td>
       <td class="cell-go"><a class="btn btn-secondary btn-sm" href="<?= e(u('application', ['id' => $a['id']])) ?>">Open<span class="sr-only"> application from <?= e($a['name']) ?></span></a></td>
     </tr>

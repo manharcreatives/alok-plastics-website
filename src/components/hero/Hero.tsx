@@ -64,7 +64,8 @@ const HERO_STYLES = `
 .hero[data-tone='dark'] .hero__h1 { text-shadow: 0 2px 24px color-mix(in srgb, var(--ink) 28%, transparent); }
 .hero[data-tone='dark'] .hero__accent { text-shadow: none; }
 
-.hero__sub { font-size: 1rem; line-height: 1.6; max-width: 52ch; margin: 0 0 var(--space-md); text-wrap: pretty; }
+.hero__sub { font-family: var(--font-inter), system-ui, sans-serif; font-weight: 450; font-size: clamp(1rem, 1.4vw, 1.25rem);
+  line-height: 1.68; letter-spacing: -0.005em; max-width: 52ch; margin: 0 0 var(--space-md); text-wrap: pretty; }
 
 /* Tagline lockup: left-aligned on the same edge as everything else, no rules. Devanagari over English. */
 .hero__tagline { margin: 0 0 var(--space-md); }
@@ -126,11 +127,11 @@ html.hero-arm .hero__btn { opacity: 0; }
 @media (min-width: 768px) {
   .hero__line { white-space: nowrap; }
   .hero__h1 { font-size: clamp(2.5rem, min(6.4vw, 9svh), 4.5rem); }
-  .hero__sub { font-size: 1.0625rem; }
+  .hero__sub { font-size: 1.125rem; }
 }
 @media (min-width: 1024px) {
   .hero__h1 { font-size: clamp(3rem, min(5.4vw, 9.6svh), 5rem); margin-bottom: var(--space-md); }
-  .hero__sub { font-size: 1.125rem; }
+  .hero__sub { font-size: 1.25rem; }
 }
 @media (max-width: 479px) {
   .hero__ctas { flex-direction: column; align-items: stretch; }
