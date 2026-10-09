@@ -44,6 +44,9 @@ const ALLOWED_HEX = new Set([
   '#8A5A00', // --warning
   '#B3261E', // --error
   '#1F5F8B', // --info
+  // Chart-only hues (Pan Bharat map). Pending client approval — Brand Colour Guide v1.0
+  '#C96A12', // --map-amber
+  '#2F4A5E', // --map-steel
   // Gradient stops (allowed ONLY inside the gradient strings in tokens.css)
   '#C9A0A4',
   '#6E6C6C',

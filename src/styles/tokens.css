@@ -95,6 +95,21 @@
   --fs-stat:       clamp(2.5rem, 5.6vw, 5rem);     --lh-stat: 1;          --tr-stat: -0.04em;
   --fs-stat-unit:  clamp(1.25rem, 2.2vw, 2rem);
 
+  /* ── Chart-only palette (Pan Bharat map) ─────────────────────────
+     Concept: "molten to cooled", the life of a moulded part. Resin amber at the origin (hot), cooling
+     through burgundy into mould-steel blue. Two new hues only, pending client sign-off; burgundy stays
+     the hero. Used by src/components/sections/PanIndiaMap.tsx ONLY. */
+  --map-amber: #C96A12;         /* resin amber: the molten origin */
+  --map-steel: #2F4A5E;         /* mould steel: India landmass, ambition arcs */
+  --map-land: var(--map-steel);
+  --map-land-alt: color-mix(in srgb, var(--map-steel) 50%, var(--surface-alt));
+  --map-world: color-mix(in srgb, var(--map-steel) 30%, var(--silver));
+  --map-arc-hot: var(--map-amber);
+  --map-arc-domestic: var(--burgundy-bright);
+  --map-arc-world: color-mix(in srgb, var(--map-steel) 55%, var(--silver));
+  --map-origin: var(--map-amber);
+  --map-node: var(--map-steel);
+
   /* ── Layout ──────────────────────────────────────────────────── */
   --radius-card: 6px;   /* buttons, inputs, cards: a soft, engineered corner (rounded-md). No rounded-xl/2xl, no pills. */
   --radius-pill: 999px; /* ONLY for the glass navbar — §9 */

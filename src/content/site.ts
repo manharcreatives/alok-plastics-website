@@ -111,6 +111,11 @@ export const site: SiteConfig = {
       label: 'Consistent quality & faster production',
       isNumeric: false,
     },
+    {
+      value: 'Zero Defect Tolerance',
+      label: 'Rigorous quality assurance & testing',
+      isNumeric: false,
+    },
   ],
 
   analytics: {

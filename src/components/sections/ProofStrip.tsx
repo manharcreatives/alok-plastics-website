@@ -116,7 +116,7 @@ export default function ProofStrip() {
         }
         .proof-frame { border-top: 1px solid var(--grey-warm); border-bottom: 1px solid var(--grey-warm); position: relative; }
         .proof-primary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
-        .proof-secondary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--grey-warm); }
+        .proof-secondary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--grey-warm); }
         .proof-stat {
           position: relative; display: flex; flex-direction: column; align-items: flex-start;
           gap: var(--space-xs); min-width: 0; overflow: hidden;

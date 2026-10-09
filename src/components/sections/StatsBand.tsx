@@ -118,12 +118,12 @@ const CSS = FOLD_SECTION_CSS + `
   .sb-word { display: flex; flex-direction: column; gap: 4px; min-width: 0; padding: var(--space-sm) 0; border-bottom: 1px solid var(--grey-warm); }
   .sb-word strong { display: flex; align-items: center; gap: var(--space-xs); font-family: var(--font-archivo); font-size: 0.9375rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink); font-weight: 650; }
   .sb-word strong::before { content: ""; width: 12px; height: 2px; background: var(--burgundy); flex-shrink: 0; }
-  .sb-word span { font-size: 0.875rem; color: var(--muted); padding-left: var(--space-md); }
+  .sb-word span { font-size: 0.875rem; color: var(--muted); padding-left: calc(12px + var(--space-xs)); }
 
   @media (min-width: 768px) {
     .sb-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-md); }
     .sb-cell { padding: var(--space-md); }
-    .sb-words { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-md); border-top: 0; }
+    .sb-words { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-md); border-top: 0; }
     .sb-word { border-top: 1px solid var(--ink); border-bottom: 0; padding-top: var(--space-sm); }
   }
   @media (min-width: 1024px) {

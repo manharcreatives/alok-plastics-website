@@ -57,16 +57,6 @@ ${FOLD_SECTION_CSS}
 .cr-empty h3 { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-weight: 650; font-size: var(--fs-h3); letter-spacing: var(--tr-h3); line-height: var(--lh-h3); color: var(--ink); margin: 0; }
 .cr-empty p { color: var(--body); line-height: 1.65; margin: var(--space-sm) 0 0; max-width: 44ch; }
 
-/* Hero team sheet (in document flow below lead text) */
-.cr-hero-sheet { background: color-mix(in srgb, var(--surface) 86%, transparent); font-family: var(--font-mono, monospace); border: 1px solid color-mix(in srgb, var(--grey-metal) 38%, transparent); max-width: min(100%, 580px); font-size: 0.6875rem; letter-spacing: 0.13em; text-transform: uppercase; }
-.cr-hero-sheet__head { display: flex; justify-content: space-between; align-items: center; padding: 5px 10px; border-bottom: 1px solid color-mix(in srgb, var(--grey-metal) 38%, transparent); color: var(--grey-metal); }
-.cr-hero-sheet__cells { display: grid; grid-template-columns: repeat(2, 1fr); }
-.cr-hero-sheet__cell { padding: 9px 10px; border-right: 1px solid color-mix(in srgb, var(--grey-metal) 38%, transparent); color: var(--ink); font-weight: 700; line-height: 1.3; }
-.cr-hero-sheet__cell:nth-child(2n) { border-right: none; }
-.cr-hero-sheet__cell:nth-child(-n+2) { border-bottom: 1px solid color-mix(in srgb, var(--grey-metal) 38%, transparent); }
-.cr-hero-sheet__cell--accent { color: var(--burgundy); background: color-mix(in srgb, var(--burgundy) 6%, transparent); }
-.cr-hero-sheet__foot { display: flex; justify-content: space-between; padding: 4px 10px; border-top: 1px solid color-mix(in srgb, var(--grey-metal) 38%, transparent); color: var(--grey-metal); }
-
 /* Hero action row */
 .cr-hero-actions { display: flex; flex-wrap: wrap; gap: var(--space-sm); margin-top: var(--space-sm); }
 /* Closing */
@@ -101,19 +91,6 @@ export default function CareerPage() {
         enter="wipe"
         layout="stack"
       >
-        <div className="cr-hero-sheet">
-          <div className="cr-hero-sheet__head">
-            <span>Four teams</span>
-            <span>Alok Plastics</span>
-          </div>
-          <div className="cr-hero-sheet__cells">
-            {teams.map((t, i) => (
-              <div key={t.id} className={`cr-hero-sheet__cell${i === 0 ? ' cr-hero-sheet__cell--accent' : ''}`}>
-                <b>{t.name}</b>
-              </div>
-            ))}
-          </div>
-        </div>
         <div className="cr-hero-actions">
           <a href="#roles-h" className="ph__btn">See open roles <ArrowUpRight size={18} weight="light" aria-hidden="true" /></a>
           <a href="#apply" className="ph__btn ph__btn--ghost">Send your CV</a>
