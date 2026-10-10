@@ -273,7 +273,7 @@ function PosterBackground({ src, alt }: { src: string; alt?: string }) {
 }
 
 /* ── Video mode ──────────────────────────────────────────────── */
-function VideoBackground({ webm, mp4, poster }: { webm?: string | null; mp4?: string | null; poster?: string | null }) {
+function VideoBackground({ webm, mp4, mobileMp4, poster }: { webm?: string | null; mp4?: string | null; mobileMp4?: string | null; poster?: string | null }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying] = useState(true); // pause/play button removed; video autoplays + loops
   /* the video stays invisible until it is genuinely playing, so a missing / failed file never
@@ -354,6 +354,7 @@ function VideoBackground({ webm, mp4, poster }: { webm?: string | null; mp4?: st
           opacity: live ? 1 : 0, transition: 'opacity 600ms ease',
         }}
       >
+        {mobileMp4 && <source src={mobileMp4} media="(max-width: 767px)" type="video/mp4" />}
         {webm && <source src={webm} type="video/webm" />}
         {mp4 && <source src={mp4} type="video/mp4" />}
       </video>
@@ -461,6 +462,7 @@ export default function HeroMedia({ media }: HeroMediaProps) {
         <VideoBackground
           webm={media.video?.webm}
           mp4={media.video?.mp4}
+          mobileMp4={media.video?.mobileMp4}
           poster={videoPoster}
         />
       )}

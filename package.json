@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "cross-env NEXT_PUBLIC_SHOW_LAB=1 next dev --turbopack",
+    "prebuild": "node scripts/runtime-data.mjs save",
     "build": "next build",
-    "postbuild": "node scripts/prune-lab.mjs && node scripts/generate-sitemap.mjs && node scripts/generate-llms.mjs && node scripts/generate-catalogue.mjs",
+    "postbuild": "node scripts/runtime-data.mjs restore && node scripts/prune-lab.mjs && node scripts/generate-sitemap.mjs && node scripts/generate-llms.mjs && node scripts/generate-catalogue.mjs",
     "start": "npx serve out",
     "typecheck": "tsc --noEmit",
     "lint": "eslint && node scripts/check-hex.mjs && node scripts/check-spacing.mjs && node scripts/check-glass.mjs && node scripts/check-forbidden.mjs",

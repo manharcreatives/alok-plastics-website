@@ -161,7 +161,7 @@ $host = (string) ($_SERVER['HTTP_HOST'] ?? 'alokplastics.com');
   <fieldset>
     <legend>Images</legend>
     <?php if (!$gd): ?>
-    <div class="flash flash-warn" role="note">Image upload is switched off because the PHP “GD” extension is not enabled on this server. Ask your host to enable it. Text editing still works.</div>
+    <div class="flash flash-info" role="note">The PHP &ldquo;GD&rdquo; extension is not enabled on this server. Images will be stored as uploaded (no automatic resize or rotation). Ask your host to enable GD for best results.</div>
     <?php endif; ?>
     <?php if (isset($errors['images'])): ?><p class="field-error"><?= e($errors['images']) ?></p><?php endif; ?>
     <?php if ($c['image']): ?>
@@ -191,18 +191,19 @@ $host = (string) ($_SERVER['HTTP_HOST'] ?? 'alokplastics.com');
     </ol>
     <p class="meta">The image in position 1 is the main one. Change the numbers (or use the buttons) and save to reorder.</p>
     <?php endif; ?>
-    <?php if ($gd && count($images) < AlokProducts::MAX_IMAGES): ?>
+    <?php if (count($images) < AlokProducts::MAX_IMAGES): ?>
     <div class="field">
       <label for="new_images">Add images</label>
       <input id="new_images" type="file" name="new_images[]" accept="image/jpeg,image/png,image/webp" multiple>
-      <p class="meta">JPEG, PNG or WebP, up to 8 MB each, <?= AlokProducts::MAX_IMAGES ?> images per product. Large photos are resized to 2400 pixels and cleaned of camera data. Pick a few at a time.</p>
+      <p class="meta">JPEG, PNG or WebP, up to 8 MB each, <?= AlokProducts::MAX_IMAGES ?> images per product.<?= $gd ? ' Large photos are resized to 2400 pixels and cleaned of camera data.' : '' ?> Pick a few at a time.</p>
     </div>
     <div class="field">
       <label for="new_alt">Description for the new images</label>
-      <input id="new_alt" type="text" name="new_alt" maxlength="<?= AlokProducts::ALT_MAX + 40 ?>" placeholder="<?= e($c['name']) ?>"<?= aria_inv($errors, 'new_alt') ?>>
+      <input id="new_alt" type="text" name="new_alt" maxlength="<?= AlokProducts::ALT_MAX + 40 ?>" placeholder="<?= e($isNew ? ($form['name'] ?? $c['name']) : $c['name']) ?>"<?= aria_inv($errors, 'new_alt') ?>>
+      <p class="meta">Used as the accessible description for the uploaded images. Up to <?= AlokProducts::ALT_MAX ?> characters.</p>
       <?= field_err($errors, 'new_alt') ?>
     </div>
-    <?php elseif ($gd): ?><p class="meta">This product already has <?= AlokProducts::MAX_IMAGES ?> images. Delete one to add another.</p><?php endif; ?>
+    <?php else: ?><p class="meta">This product already has <?= AlokProducts::MAX_IMAGES ?> images. Delete one to add another.</p><?php endif; ?>
   </fieldset>
 
   <fieldset>

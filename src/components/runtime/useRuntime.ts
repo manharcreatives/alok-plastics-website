@@ -205,7 +205,7 @@ export function useCatalogProducts(): Product[] {
   const customs = useRuntimeCustomProducts();
   const hidden = useHiddenProductSlugs();
   return useMemo(
-    () => [...merged, ...customs].filter(p => p.group !== null && isListable(p) && !hidden.has(p.slug)),
+    () => [...customs, ...merged].filter(p => p.group !== null && isListable(p) && !hidden.has(p.slug)),
     [merged, customs, hidden],
   );
 }

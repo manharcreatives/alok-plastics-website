@@ -60,7 +60,7 @@ export default function CeoQuote() {
     <section aria-label="A word from our CEO" className="fold-sec fold-sec--diag cq">
       <style>{CSS}</style>
       <div aria-hidden="true" className="cq-art" />
-      <PhotoBg src="/images/backgrounds/ceo-quote.webp" opacity={0.28} position="center 30%" />
+      <PhotoBg src="/images/backgrounds/ceo-quote.webp" opacity={0.4} position="center 30%" />
       <div aria-hidden="true" className="cq-shade" />
       <FoldEdge variant="diag" />
       <div className="cq-in">

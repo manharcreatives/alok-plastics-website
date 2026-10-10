@@ -14,7 +14,7 @@ import { ContactSheet, VisitingHours } from '@/components/contact/ContactSheet';
 import MapLoader from '@/components/contact/MapLoader';
 import Reveal from '@/components/ui/Reveal';
 import { Eyebrow, SECTION_CSS, WRAP_STYLE } from '@/components/about/parts';
-import { site, isEmbeddableMapsUrl, mapsHref } from '@/content/site';
+import { site, mapsEmbedHref, mapsHref } from '@/content/site';
 
 export const metadata: Metadata = {
   title: { absolute: 'Contact Alok Plastics | Spare Parts Enquiry, Chandigarh' },
@@ -66,7 +66,7 @@ ${FOLD_SECTION_CSS}
 export default function ContactPage() {
   const c = site.contact;
   const openUrl = mapsHref(c);
-  const embedUrl = c.mapsUrl && isEmbeddableMapsUrl(c.mapsUrl) ? c.mapsUrl : null;
+  const embedUrl = mapsEmbedHref(c);
 
   return (
     <>

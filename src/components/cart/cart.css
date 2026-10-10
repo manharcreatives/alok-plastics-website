@@ -142,3 +142,23 @@
 .cp__done-list { list-style: none; margin: 0; padding: 0; width: 100%; text-align: left; border-top: 1px solid var(--grey-cloud); }
 .cp__done-list li { display: flex; justify-content: space-between; gap: var(--space-sm); padding: var(--space-xs) 0; border-bottom: 1px solid var(--grey-cloud); font-size: 0.9375rem; color: var(--ink); }
 .cp__done-list li span:last-child { color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* ── Order history ───────────────────────────────────────── */
+.cp__history { margin-top: var(--space-md); padding-top: var(--space-sm); border-top: 1px solid var(--grey-cloud); }
+.cp__h3 { margin: 0 0 var(--space-xs); font-family: var(--font-archivo); font-size: var(--fs-body); font-weight: 650; color: var(--ink); }
+.cp__hist-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.cp__hist-item { padding: var(--space-xs) 0; border-bottom: 1px solid var(--grey-cloud); }
+.cp__hist-item:last-child { border-bottom: 0; }
+.cp__hist-row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-xs); margin-bottom: 2px; }
+.cp__hist-code { font-size: 0.8125rem; font-weight: 650; font-variant-numeric: tabular-nums; color: var(--ink); letter-spacing: 0.02em; }
+.cp__hist-sub { display: flex; align-items: center; gap: var(--space-sm); font-size: 0.8125rem; color: var(--muted); flex-wrap: wrap; }
+.cp__hist-badge { display: inline-block; padding: 1px 8px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; text-transform: capitalize; background: var(--grey-cloud); color: var(--muted); }
+.cp__hist-badge--pending { background: color-mix(in srgb, var(--burgundy) 10%, transparent); color: var(--burgundy); }
+.cp__hist-badge--confirmed, .cp__hist-badge--processing { background: color-mix(in srgb, #22c55e 12%, transparent); color: #166534; }
+.cp__hist-badge--shipped { background: color-mix(in srgb, #3b82f6 10%, transparent); color: #1d4ed8; }
+.cp__hist-badge--delivered { background: color-mix(in srgb, #22c55e 15%, transparent); color: #166534; }
+.cp__hist-badge--cancelled { background: color-mix(in srgb, var(--error) 10%, transparent); color: var(--error); }
+
+.cp__histbtn { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; }
+.cp__tools + .cp__history { margin-top: var(--space-sm); padding: var(--space-sm); border: 1px solid var(--grey-cloud); }
+.cp__empty .cp__history { text-align: left; max-width: 32rem; margin: var(--space-sm) auto 0; }

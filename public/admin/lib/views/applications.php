@@ -4,6 +4,17 @@ $pageHref = static fn(int $p): string => u('applications', array_filter(['status
 ?>
 <?= page_head('Applications', [['Dashboard', u()], ['Applications', null]], 'Career applications sent from the website, newest first.', '', ' <span class="meta">' . (int) $total . ' ' . ($total === 1 ? 'result' : 'results') . '</span>') ?>
 
+<?php if ($all): ?>
+<div class="card app-summary" aria-label="Applicant summary">
+  <p class="app-sum__line"><strong><?= (int) $all ?></strong> <?= $all === 1 ? 'applicant' : 'applicants' ?> in total
+    <?php foreach (ALOK_APPLICATION_LABELS as $k => $l): if (!empty($byStatus[$k])): ?> · <?= e($l) ?>: <strong><?= (int) $byStatus[$k] ?></strong><?php endif; endforeach; ?>
+  </p>
+  <p class="app-sum__line meta">By position:
+    <?php foreach ($byPosition as $pos => $n): ?><span class="app-chip"><?= e($pos) ?> <strong><?= (int) $n ?></strong></span> <?php endforeach; ?>
+  </p>
+</div>
+<?php endif; ?>
+
 <form class="card flush" method="get" action="index.php" role="search" aria-label="Filter applications">
   <input type="hidden" name="r" value="applications">
   <div class="toolbar">
@@ -41,7 +52,7 @@ $pageHref = static fn(int $p): string => u('applications', array_filter(['status
   <?php foreach ($rows as $a): ?>
     <tr>
       <td data-label="Received" class="nowrap"><?= e(AlokShop::fmt((int) $a['created_at'], 'd M, H:i')) ?></td>
-      <td data-label="Applicant"><span><span class="cell-main"><?= e($a['name']) ?></span><span class="cell-sub"><?= e($a['phone']) ?></span></span></td>
+      <td data-label="Applicant"><span><span class="cell-main"><?= e($a['name']) ?></span><span class="cell-sub"><?= e($a['phone']) ?><?php $times = $byPhone[preg_replace('/\D+/', '', (string) $a['phone'])] ?? 1; if ($times > 1): ?> · applied <?= (int) $times ?> times<?php endif; ?></span></span></td>
       <td data-label="Position"><?= e($a['position']) ?></td>
       <td data-label="Resume / LinkedIn"><?= $a['resume_file'] !== '' ? 'File' : ($a['resume_link'] !== '' ? 'LinkedIn' : '—') ?></td>
       <td data-label="Status"><?= shop_badge($a['status'], ALOK_APPLICATION_LABELS, ALOK_APPLICATION_TONES) ?></td>

@@ -25,6 +25,7 @@ import { gsap, ScrollTrigger, DURATIONS, EASINGS } from '@/lib/motion';
 import { useMaskRise } from '@/hooks/useMotion';
 import { journeyMarkers } from '@/content/journey';
 import JourneyBackdrop from '@/components/art/JourneyBackdrop';
+import PhotoBg from '@/components/ui/PhotoBg';
 import type { JourneyMarker } from '@/content/types';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -144,13 +145,14 @@ function runOdometer(root: Element | null) {
 
 const CSS = `
 .jrn { position: relative; isolation: isolate; background: linear-gradient(180deg, var(--canvas) 0%, var(--surface-alt) 100%); overflow: hidden; border-top: 1px solid var(--grey-warm); }
+.jrn-photo-bg { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; -webkit-mask-image: radial-gradient(ellipse 90% 80% at 65% 40%, var(--ink) 0%, transparent 70%); mask-image: radial-gradient(ellipse 90% 80% at 65% 40%, var(--ink) 0%, transparent 70%); }
 .jrn-inner { position: relative; z-index: 2; max-width: calc(var(--grid-max) + 2 * var(--grid-page-padding)); margin: 0 auto; padding: calc(var(--section-y) + 24px) var(--grid-page-padding) 0; }
 .jrn-label { display: flex; align-items: center; gap: 10px; font-size: var(--fs-label); text-transform: uppercase; letter-spacing: var(--tr-label); color: var(--muted); font-weight: 600; font-family: var(--font-archivo), sans-serif; margin-bottom: var(--space-sm); line-height: var(--lh-label); }
 .jrn-h2 { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-h2); font-weight: 650; line-height: var(--lh-h2); letter-spacing: var(--tr-h2); color: var(--ink); max-width: 18ch; text-wrap: balance; }
 
 /* shared milestone typography */
 .jrn-year { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-weight: 650; letter-spacing: -0.04em; line-height: 1; }
-.jrn-year .jrn-rise { display: inline-block; background: linear-gradient(175deg, var(--burgundy-night) 0%, var(--burgundy) 55%, var(--burgundy-bright) 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; padding-bottom: 0.1em; }
+.jrn-year .jrn-rise { display: inline-block; background: linear-gradient(135deg, var(--burgundy-night) 0%, var(--burgundy) 42%, var(--burgundy-bright) 78%, color-mix(in srgb, var(--burgundy-bright) 80%, white) 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; padding-bottom: 0.1em; }
 .jrn-title { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-size: var(--fs-h3); font-weight: 650; letter-spacing: var(--tr-h3); color: var(--ink); line-height: var(--lh-h3); }
 .jrn-line { font-size: 1.0625rem; line-height: 1.65; color: var(--body); max-width: 42ch; }
 .mk { display: block; overflow: hidden; }
@@ -199,8 +201,8 @@ const CSS = `
   .jrn-texts { position: absolute; left: max(var(--grid-page-padding), calc((100% - var(--grid-max)) / 2)); top: clamp(300px, 38svh, 400px); width: min(34vw, 520px); }
   .jrn-ms { position: absolute; left: 0; top: 0; width: 100%; visibility: hidden; display: flex; flex-direction: column; gap: var(--space-xs); }
   .jrn-ms:first-child { visibility: visible; }
-  .jrn-ms .jrn-year { --y: clamp(4.5rem, min(8.2vw, 17svh), 8rem); font-size: var(--y); }
-  .jrn-ms .jrn-year[data-long] { font-size: calc(var(--y) * 0.62); }
+  .jrn-ms .jrn-year { --y: clamp(5rem, min(9.2vw, 18svh), 9rem); font-size: var(--y); }
+  .jrn-ms .jrn-year[data-long] { font-size: calc(var(--y) * 0.63); }
 }
 `;
 
@@ -360,6 +362,9 @@ export default function JourneyOrbit() {
     <section ref={sectionRef} className="jrn" aria-labelledby="journey-heading">
       <style>{CSS}</style>
       <JourneyBackdrop />
+      <div className="jrn-photo-bg" aria-hidden="true">
+        <PhotoBg src="/images/backgrounds/journey-3d.webp" opacity={0.3} />
+      </div>
 
       {/* Desktop stage: the road and the credits-style text, no box */}
       <div className="jrn-stage">

@@ -235,4 +235,78 @@ final class AlokAuth
         }
         return true;
     }
+
+    /* ── Password Reset ─────────────────────────────────────────────────────────── */
+
+    /**
+     * Generate a one-time reset token for $username (15-minute expiry).
+     * Returns the raw 64-hex token, or null if the username is unknown.
+     */
+    public static function generateResetToken(string $username): ?string
+    {
+        $users = array_change_key_case((array) AlokConfig::get('users', []), CASE_LOWER);
+        if (!isset($users[$username])) {
+            return null;
+        }
+        try {
+            $token   = bin2hex(random_bytes(32)); // 64-char hex
+            $hash    = hash('sha256', $token);
+            $expires = time() + 900; // 15 minutes
+            $file    = AlokConfig::dataDir() . '/reset_tokens.json';
+            AlokFs::withLock($file . '.lock', function () use ($hash, $username, $expires, $file): void {
+                $d   = AlokFs::readJson($file) ?? [];
+                $now = time();
+                foreach ($d as $k => $v) { // prune expired
+                    if (($v['expires'] ?? 0) < $now) unset($d[$k]);
+                }
+                $d[$hash] = ['username' => $username, 'expires' => $expires];
+                AlokFs::atomicWrite($file, json_encode($d));
+                @chmod($file, 0640);
+            });
+            return $token;
+        } catch (Throwable) {
+            return null;
+        }
+    }
+
+    /**
+     * Peek: return username for a valid token without consuming it (to show the form).
+     * Returns null if the token is missing or expired.
+     */
+    public static function peekResetToken(string $token): ?string
+    {
+        $hash = hash('sha256', $token);
+        $file = AlokConfig::dataDir() . '/reset_tokens.json';
+        $d    = AlokFs::readJson($file) ?? [];
+        $e    = $d[$hash] ?? null;
+        return ($e && ($e['expires'] ?? 0) > time()) ? (string) $e['username'] : null;
+    }
+
+    /**
+     * Consume a reset token (one-time use).
+     * Returns the username it belonged to, or null if invalid/expired.
+     */
+    public static function consumeResetToken(string $token): ?string
+    {
+        $hash   = hash('sha256', $token);
+        $file   = AlokConfig::dataDir() . '/reset_tokens.json';
+        $result = null;
+        try {
+            AlokFs::withLock($file . '.lock', function () use ($hash, $file, &$result): void {
+                $d   = AlokFs::readJson($file) ?? [];
+                $now = time();
+                $e   = $d[$hash] ?? null;
+                if ($e && ($e['expires'] ?? 0) > $now) {
+                    $result = (string) $e['username'];
+                }
+                foreach ($d as $k => $v) { // remove used + expired tokens
+                    if ($k === $hash || ($v['expires'] ?? 0) < $now) unset($d[$k]);
+                }
+                AlokFs::atomicWrite($file, json_encode($d));
+            });
+        } catch (Throwable) {
+            return null;
+        }
+        return $result;
+    }
 }

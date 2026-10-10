@@ -161,7 +161,20 @@ function page_applications(array $user, bool $isPost): never
     $all = AlokShop::applications()->all();
     $rows = array_values(array_filter($all, static fn(array $a): bool => ($status === '' || $a['status'] === $status) && shop_match($a, $q, ['name', 'phone', 'email', 'position'])));
     [$pageRows, $total, $pages, $page] = shop_page($rows, $page);
-    render('applications', ['title' => 'Applications', 'nav' => 'applications', 'user' => $user, 'rows' => $pageRows, 'total' => $total, 'pages' => $pages, 'page' => $page, 'status' => $status, 'q' => $q, 'all' => count($all)]);
+    // Summary: totals by status and by position, plus how many times each phone has applied.
+    $byStatus = [];
+    $byPosition = [];
+    $byPhone = [];
+    foreach ($all as $a) {
+        $byStatus[$a['status']] = ($byStatus[$a['status']] ?? 0) + 1;
+        $pos = trim((string) $a['position']) !== '' ? (string) $a['position'] : 'General application';
+        $byPosition[$pos] = ($byPosition[$pos] ?? 0) + 1;
+        $ph = preg_replace('/\D+/', '', (string) $a['phone']);
+        if ($ph !== '') $byPhone[$ph] = ($byPhone[$ph] ?? 0) + 1;
+    }
+    arsort($byPosition);
+    render('applications', ['title' => 'Applications', 'nav' => 'applications', 'user' => $user, 'rows' => $pageRows, 'total' => $total, 'pages' => $pages, 'page' => $page, 'status' => $status, 'q' => $q, 'all' => count($all),
+        'byStatus' => $byStatus, 'byPosition' => $byPosition, 'byPhone' => $byPhone]);
 }
 
 function application_or_404(array $user): array

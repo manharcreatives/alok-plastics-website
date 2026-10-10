@@ -11,6 +11,26 @@ try {
         AlokShop::respond(401, ['ok' => false, 'code' => 'auth', 'error' => 'Please sign in to place your order.']);
     }
     $ip = AlokShop::clientIp();
+    $action = (string) ($body['action'] ?? '');
+
+    // --- list: return this customer's recent enquiries ---
+    if ($action === 'list') {
+        $orders = AlokShop::orders()->where('customer_id', (int) $customer['id']);
+        usort($orders, static fn($a, $b) => (int) ($b['created_at'] ?? 0) - (int) ($a['created_at'] ?? 0));
+        $orders = array_slice($orders, 0, 50);
+        $result = array_map(static function ($o): array {
+            $items = is_array($o['items']) ? $o['items'] : [];
+            return [
+                'code'      => (string) ($o['code'] ?? ''),
+                'createdAt' => (int) ($o['created_at'] ?? 0),
+                'total'     => isset($o['total']) ? (float) $o['total'] : null,
+                'status'    => (string) ($o['status'] ?? 'pending'),
+                'itemCount' => count($items),
+            ];
+        }, $orders);
+        AlokShop::respond(200, ['ok' => true, 'orders' => $result]);
+    }
+
     if (!AlokShop::rateLimit('order:' . $customer['id'], 10, 3600) || !AlokShop::rateLimit('orderip:' . $ip, 30, 3600)) {
         AlokShop::respond(429, ['ok' => false, 'error' => 'Too many orders in a short time. Please try again later.']);
     }

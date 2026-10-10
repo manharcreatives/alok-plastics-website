@@ -374,6 +374,8 @@ final class AlokProducts
 
     /**
      * Validate + re-encode one upload and store it. Returns [id, null] or [null, message].
+     * When GD is available the image is resized, rotated per EXIF, and re-encoded (metadata stripped).
+     * When GD is unavailable the file is validated by MIME type and stored as-is (fallback path).
      * @param array{name:string,tmp_name:string,error:int,size:int} $file
      * @return array{0:?string,1:?string}
      */
@@ -388,52 +390,14 @@ final class AlokProducts
         }
         if (!is_uploaded_file($file['tmp_name'])) return [null, $label . ': not a valid upload.'];
         if ($file['size'] > self::MAX_UPLOAD || filesize($file['tmp_name']) > self::MAX_UPLOAD) return [null, $label . ': the file is larger than 8 MB.'];
-        if (!self::gdOk()) return [null, 'Image upload is not available on this server (PHP GD is missing).'];
 
+        // getimagesize() works without the GD extension — use it for format + dimension validation.
         $info = @getimagesize($file['tmp_name']);
         $map = [IMAGETYPE_JPEG => 'jpg', IMAGETYPE_PNG => 'png', IMAGETYPE_WEBP => 'webp'];
         if ($info === false || !isset($map[$info[2]])) return [null, $label . ': only JPEG, PNG or WebP images are accepted.'];
         [$w, $h] = [(int) $info[0], (int) $info[1]];
         if ($w < 1 || $h < 1 || $w * $h > self::MAX_PIXELS) return [null, $label . ': the image dimensions are not supported.'];
         $ext = $map[$info[2]];
-        if ($ext === 'webp' && !function_exists('imagewebp')) $ext = 'jpg';
-
-        $raw = @file_get_contents($file['tmp_name']);
-        $src = $raw !== false ? @imagecreatefromstring($raw) : false;
-        unset($raw);
-        if ($src === false) return [null, $label . ': the file could not be read as an image.'];
-
-        // Respect camera orientation, then drop all metadata by re-encoding pixels only.
-        if ($info[2] === IMAGETYPE_JPEG && function_exists('exif_read_data')) {
-            $ex = @exif_read_data($file['tmp_name']);
-            $rot = [3 => 180, 6 => -90, 8 => 90][(int) ($ex['Orientation'] ?? 1)] ?? 0;
-            if ($rot !== 0 && ($r = @imagerotate($src, $rot, 0)) !== false) {
-                $src = $r;
-                [$w, $h] = [imagesx($src), imagesy($src)];
-            }
-        }
-        $scale = min(1.0, self::MAX_SIDE / max($w, $h));
-        if ($scale < 1.0) {
-            $nw = max(1, (int) round($w * $scale));
-            $nh = max(1, (int) round($h * $scale));
-            $dst = imagecreatetruecolor($nw, $nh);
-            if ($ext !== 'jpg') {
-                imagealphablending($dst, false);
-                imagesavealpha($dst, true);
-                imagefill($dst, 0, 0, imagecolorallocatealpha($dst, 0, 0, 0, 127));
-            }
-            imagecopyresampled($dst, $src, 0, 0, 0, 0, $nw, $nh, $w, $h);
-            $src = $dst;
-        }
-        if ($ext === 'jpg') { // flatten any transparency onto white (JPEG has no alpha)
-            $flat = imagecreatetruecolor(imagesx($src), imagesy($src));
-            imagefill($flat, 0, 0, imagecolorallocate($flat, 255, 255, 255));
-            imagecopy($flat, $src, 0, 0, 0, 0, imagesx($src), imagesy($src));
-            $src = $flat;
-        } else {
-            imagealphablending($src, false);
-            imagesavealpha($src, true);
-        }
 
         $id = bin2hex(random_bytes(8));
         $dir = self::uploadsDir() . '/' . gmdate('Y-m');
@@ -442,12 +406,65 @@ final class AlokProducts
             if (!is_file($p)) @file_put_contents($p, $c);
         }
         $path = $dir . '/' . $slug . '-' . $id . '.' . $ext;
-        $ok = match ($ext) {
-            'png'   => imagepng($src, $path, 6),
-            'webp'  => imagewebp($src, $path, 85),
-            default => imagejpeg($src, $path, 85),
-        };
-        if (!$ok || !is_file($path)) return [null, $label . ': the image could not be saved.'];
+
+        if (self::gdOk()) {
+            // GD path: resize to max 2400 px, fix EXIF rotation, strip metadata, re-encode.
+            if ($ext === 'webp' && !function_exists('imagewebp')) $ext = 'jpg';
+            $raw = @file_get_contents($file['tmp_name']);
+            $src = $raw !== false ? @imagecreatefromstring($raw) : false;
+            unset($raw);
+            if ($src === false) return [null, $label . ': the file could not be read as an image.'];
+
+            if ($info[2] === IMAGETYPE_JPEG && function_exists('exif_read_data')) {
+                $ex = @exif_read_data($file['tmp_name']);
+                $rot = [3 => 180, 6 => -90, 8 => 90][(int) ($ex['Orientation'] ?? 1)] ?? 0;
+                if ($rot !== 0 && ($r = @imagerotate($src, $rot, 0)) !== false) {
+                    $src = $r;
+                    [$w, $h] = [imagesx($src), imagesy($src)];
+                }
+            }
+            $scale = min(1.0, self::MAX_SIDE / max($w, $h));
+            if ($scale < 1.0) {
+                $nw = max(1, (int) round($w * $scale));
+                $nh = max(1, (int) round($h * $scale));
+                $dst = imagecreatetruecolor($nw, $nh);
+                if ($ext !== 'jpg') {
+                    imagealphablending($dst, false);
+                    imagesavealpha($dst, true);
+                    imagefill($dst, 0, 0, imagecolorallocatealpha($dst, 0, 0, 0, 127));
+                }
+                imagecopyresampled($dst, $src, 0, 0, 0, 0, $nw, $nh, $w, $h);
+                $src = $dst;
+            }
+            if ($ext === 'jpg') {
+                $flat = imagecreatetruecolor(imagesx($src), imagesy($src));
+                imagefill($flat, 0, 0, imagecolorallocate($flat, 255, 255, 255));
+                imagecopy($flat, $src, 0, 0, 0, 0, imagesx($src), imagesy($src));
+                $src = $flat;
+            } else {
+                imagealphablending($src, false);
+                imagesavealpha($src, true);
+            }
+            $ok = match ($ext) {
+                'png'   => imagepng($src, $path, 6),
+                'webp'  => imagewebp($src, $path, 85),
+                default => imagejpeg($src, $path, 85),
+            };
+            if (!$ok || !is_file($path)) return [null, $label . ': the image could not be saved.'];
+        } else {
+            // Fallback path (no GD): validate MIME via finfo and store the raw file as-is.
+            if (function_exists('finfo_open')) {
+                $fi = @finfo_open(FILEINFO_MIME_TYPE);
+                if ($fi !== false) {
+                    $mime = @finfo_file($fi, $file['tmp_name']);
+                    @finfo_close($fi);
+                    if (!$mime || !in_array($mime, self::TYPES, true)) {
+                        return [null, $label . ': only JPEG, PNG or WebP images are accepted.'];
+                    }
+                }
+            }
+            if (!@copy($file['tmp_name'], $path)) return [null, $label . ': the image could not be saved.'];
+        }
         @chmod($path, 0640);
         return [$id, null];
     }
@@ -739,9 +756,7 @@ function page_product(array $user, bool $isPost): never
         $newIds = [];
         $uploadNotes = [];
         $files = array_filter(AlokProducts::incomingFiles(), static fn($f) => $f['error'] !== UPLOAD_ERR_NO_FILE);
-        if ($files && !$gd) {
-            $errors['images'] = 'Image upload is not available on this server (PHP GD is missing). Text changes can still be saved.';
-        } elseif ($files) {
+        if ($files) {
             $newAlt = AlokProducts::cleanAlt($_POST['new_alt'] ?? '');
             if (mb_strlen($newAlt) > AlokProducts::ALT_MAX) $errors['new_alt'] = 'Image description can be at most ' . AlokProducts::ALT_MAX . ' characters.';
             foreach ($files as $f) {
@@ -750,7 +765,7 @@ function page_product(array $user, bool $isPost): never
                 [$id, $msg] = AlokProducts::storeUpload($f, $slug);
                 if ($id === null) { $uploadNotes[] = (string) $msg; continue; }
                 $newIds[] = $id;
-                $keepImgs[] = ['id' => $id, 'url' => '/api/media.php?id=' . $id, 'alt' => $newAlt !== '' ? $newAlt : (string) $c['name']];
+                $keepImgs[] = ['id' => $id, 'url' => '/api/media.php?id=' . $id, 'alt' => $newAlt !== '' ? $newAlt : (string) ($clean['name'] ?? $c['name'])];
             }
         }
 
