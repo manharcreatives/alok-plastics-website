@@ -4,10 +4,10 @@ import bundleAnalyzer from '@next/bundle-analyzer';
 const withBundleAnalyzer = bundleAnalyzer({ enabled: process.env.ANALYZE === 'true' });
 
 /* `npm run dev` (port 3000) has no PHP, so the admin panel, the API and the data the panel writes
-   (careers.json, products.json, uploads) are proxied to the PHP server from `npm run admin`
-   (port 8080). Without this, roles and products added in the admin never show on the dev site and
+   (careers.json, products.json, uploads) are proxied to the PHP server (`php -S 127.0.0.1:8000 -t public`)
+   (port 8000). Without this, roles and products added in the admin never show on the dev site and
    login / cart / enquiry calls fail. Dev only: the static export (`next build`) is unaffected. */
-const PHP_ORIGIN = process.env.PHP_ORIGIN || 'http://127.0.0.1:8080';
+const PHP_ORIGIN = process.env.PHP_ORIGIN || 'http://127.0.0.1:8000';
 const devProxy = process.env.NODE_ENV === 'development';
 
 const nextConfig: NextConfig = {
@@ -28,12 +28,18 @@ const nextConfig: NextConfig = {
 
   ...(devProxy && {
     async rewrites() {
-      return [
-        { source: '/data/:path*', destination: `${PHP_ORIGIN}/data/:path*` },
-        { source: '/api/:path*', destination: `${PHP_ORIGIN}/api/:path*` },
-        { source: '/admin', destination: `${PHP_ORIGIN}/admin/` },
-        { source: '/admin/:path*', destination: `${PHP_ORIGIN}/admin/:path*` },
-      ];
+      /* beforeFiles: these must win over the static-export page handling, which otherwise answers
+         POST requests with 405 before the proxy is reached. */
+      return {
+        beforeFiles: [
+          { source: '/data/:path*', destination: `${PHP_ORIGIN}/data/:path*` },
+          { source: '/api/:path*', destination: `${PHP_ORIGIN}/api/:path*` },
+          { source: '/admin', destination: `${PHP_ORIGIN}/admin/` },
+          { source: '/admin/:path*', destination: `${PHP_ORIGIN}/admin/:path*` },
+        ],
+        afterFiles: [],
+        fallback: [],
+      };
     },
   }),
 

@@ -5,7 +5,7 @@
  * order request. The cart is never cleared automatically after sending.
  */
 
-import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent } from 'react';
+import { Fragment, useEffect, useRef, useState, useSyncExternalStore, type FormEvent } from 'react';
 import Link from 'next/link';
 import { z } from 'zod';
 import { WhatsappLogo } from '@phosphor-icons/react/dist/csr/WhatsappLogo';
@@ -14,6 +14,7 @@ import { CheckCircle } from '@phosphor-icons/react/dist/csr/CheckCircle';
 import { flattenZodErrors, messageField, nameField, phoneField } from '@/lib/enquiry-schema';
 import { orderMessage, waLink, waOrder, type OrderCustomer, type OrderLine } from '@/lib/whatsapp';
 import { checkSession, fetchOrders, maskPhone, placeOrder, setSession, signOut, useSession, type OrderHistoryItem, type PlacedOrder } from '@/lib/auth-client';
+import { CaretDown } from '@phosphor-icons/react/dist/ssr/CaretDown';
 import { ClockCounterClockwise } from '@phosphor-icons/react/dist/ssr/ClockCounterClockwise';
 import { trackCartOpen, trackOrderRequestWhatsApp } from '@/lib/analytics';
 import { useRuntimeContact } from '@/components/runtime/useRuntime';
@@ -75,13 +76,22 @@ export default function CartPageClient() {
 
 const STATUS_LABEL: Record<string, string> = {
   pending: 'Received', reviewing: 'Under review', quoted: 'Quote sent', confirmed: 'Confirmed',
-  paid: 'Payment received', dispatched: 'Dispatched', delivered: 'Delivered', closed: 'Closed', cancelled: 'Cancelled',
+  paid: 'Payment received', dispatched: 'Dispatched', invoiced: 'Invoiced', delivered: 'Delivered', closed: 'Closed', cancelled: 'Cancelled',
+};
+/* The order's journey, in order. A cancelled order shows its own state instead. */
+const STATUS_FLOW = ['pending', 'reviewing', 'quoted', 'confirmed', 'paid', 'dispatched', 'invoiced', 'closed'];
+const STATUS_TONE: Record<string, string> = {
+  pending: 'new', reviewing: 'new', quoted: 'wait', confirmed: 'ok', paid: 'ok', dispatched: 'ok', invoiced: 'ok', delivered: 'ok', closed: 'done', cancelled: 'bad',
 };
 
-function OrderHistoryPanel({ signedIn, orders }: { signedIn: boolean; orders: OrderHistoryItem[] | null }) {
+const fmtDate = (t: number) => new Date(t * 1000).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+const fmtTime = (t: number) => new Date(t * 1000).toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' });
+
+function OrderHistoryPanel({ signedIn, orders, name }: { signedIn: boolean; orders: OrderHistoryItem[] | null; name: string }) {
+  const [open, setOpen] = useState<string | null>(null);
   return (
-    <section className="cp__history" aria-label="Order history">
-      <h3 className="cp__h3">Your order history</h3>
+    <section className="oh" aria-label="Order history">
+      <h3 className="cp__h3">Your order history{name ? ` · ${name}` : ''}</h3>
       {!signedIn ? (
         <p className="cp__note">Sign in with your mobile number (the form on this page) to see your past orders.</p>
       ) : orders === null ? (
@@ -89,21 +99,94 @@ function OrderHistoryPanel({ signedIn, orders }: { signedIn: boolean; orders: Or
       ) : orders.length === 0 ? (
         <p className="cp__note">No orders yet. Your enquiries will show up here once you submit one.</p>
       ) : (
-        <ul className="cp__hist-list">
-          {orders.map(o => (
-            <li key={o.code} className="cp__hist-item">
-              <div className="cp__hist-row">
-                <span className="cp__hist-code">{o.code}</span>
-                <span className={`cp__hist-badge cp__hist-badge--${o.status}`}>{STATUS_LABEL[o.status] ?? o.status}</span>
-              </div>
-              <div className="cp__hist-sub">
-                <span>{o.itemCount} {o.itemCount === 1 ? 'product' : 'products'}</span>
-                {o.total !== null && <span>{formatPrice(o.total)}</span>}
-                <span>{new Date(o.createdAt * 1000).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <>
+          <p className="oh-count">{orders.length} {orders.length === 1 ? 'order' : 'orders'}</p>
+          <div className="oh-scroll">
+            <table className="oh-table">
+              <caption className="sr-only">Your orders with Alok Plastics</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Order</th>
+                  <th scope="col">Date</th>
+                  <th scope="col">Ordered by</th>
+                  <th scope="col">What you ordered</th>
+                  <th scope="col">Status</th>
+                  <th scope="col"><span className="sr-only">Details</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                {orders.map(o => {
+                  const items = o.items ?? [];
+                  const isOpen = open === o.code;
+                  const first = items[0];
+                  const more = items.length - 1;
+                  const flowIdx = STATUS_FLOW.indexOf(o.status === 'delivered' ? 'closed' : o.status);
+                  return (
+                    <Fragment key={o.code}>
+                      <tr className={`oh-row${isOpen ? ' is-open' : ''}`}>
+                        <td data-label="Order" className="oh-code">{o.code}</td>
+                        <td data-label="Date"><span className="oh-val">{fmtDate(o.createdAt)}<span className="oh-sub">{fmtTime(o.createdAt)}</span></span></td>
+                        <td data-label="Ordered by">{o.name || name || '-'}</td>
+                        <td data-label="What you ordered">
+                          <span className="oh-val">
+                            {first ? <>{first.name} <span className="oh-qty">× {first.qty}</span>{more > 0 && <span className="oh-more"> +{more} more</span>}</> : <>{o.itemCount} {o.itemCount === 1 ? 'product' : 'products'}</>}
+                          </span>
+                        </td>
+                        <td data-label="Status"><span className={`oh-badge oh-badge--${STATUS_TONE[o.status] ?? 'new'}`}>{STATUS_LABEL[o.status] ?? o.status}</span></td>
+                        <td className="oh-act">
+                          <button type="button" className="oh-btn" aria-expanded={isOpen} aria-controls={`oh-d-${o.code}`} onClick={() => setOpen(isOpen ? null : o.code)}>
+                            {isOpen ? 'Hide' : 'Details'} <CaretDown size={14} weight="bold" aria-hidden="true" />
+                          </button>
+                        </td>
+                      </tr>
+                      {isOpen && (
+                        <tr className="oh-detail" id={`oh-d-${o.code}`}>
+                          <td colSpan={6}>
+                            <div className="oh-grid">
+                              <div>
+                                <h4 className="oh-h4">Items</h4>
+                                <table className="oh-items">
+                                  <thead><tr><th scope="col">Product</th><th scope="col">Qty</th></tr></thead>
+                                  <tbody>
+                                    {items.map((it, i) => (
+                                      <tr key={i}><td>{it.name}{it.variant ? <span className="oh-sub">{it.variant}</span> : null}</td><td>{it.qty} {it.unit}</td></tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                                {o.total !== null && o.total !== undefined && <p className="oh-fact">Estimated total: {formatPrice(o.total)}</p>}
+                                {o.quoteAmount ? <p className="oh-fact">Quote: {formatPrice(o.quoteAmount)}</p> : null}
+                              </div>
+                              <div>
+                                <h4 className="oh-h4">Delivery</h4>
+                                <p className="oh-text">{o.address || 'No address saved'}</p>
+                                {o.note ? <><h4 className="oh-h4">Your note</h4><p className="oh-text">{o.note}</p></> : null}
+                                {(o.transporter || o.lrNo) ? <p className="oh-fact">Dispatch: {[o.transporter, o.lrNo ? `LR ${o.lrNo}` : ''].filter(Boolean).join(' · ')}</p> : null}
+                                {o.invoiceNo ? <p className="oh-fact">Invoice: {o.invoiceNo}</p> : null}
+                              </div>
+                              <div>
+                                <h4 className="oh-h4">Progress</h4>
+                                {o.status === 'cancelled' ? (
+                                  <p className="oh-text">Cancelled{o.cancelReason ? `: ${o.cancelReason}` : ''}</p>
+                                ) : (
+                                  <ol className="oh-steps">
+                                    {STATUS_FLOW.map((st, i) => (
+                                      <li key={st} className={i <= flowIdx ? 'is-done' : undefined} aria-current={i === flowIdx ? 'step' : undefined}>{STATUS_LABEL[st]}</li>
+                                    ))}
+                                  </ol>
+                                )}
+                                {o.updatedAt ? <p className="oh-fact">Last update: {fmtDate(o.updatedAt)}, {fmtTime(o.updatedAt)}</p> : null}
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </Fragment>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
     </section>
   );
@@ -180,7 +263,7 @@ function CartBody() {
         <p style={{ marginTop: 'var(--space-sm)' }}>
           <button type="button" className="clink" onClick={() => setShowHistory(v => !v)} aria-expanded={showHistory}>Order history</button>
         </p>
-        {showHistory && <OrderHistoryPanel signedIn={!!token} orders={orderHistory} />}
+        {showHistory && <OrderHistoryPanel signedIn={!!token} orders={orderHistory} name={session?.name ?? ''} />}
       </div>
     );
   }
@@ -257,8 +340,9 @@ function CartBody() {
       document.getElementById('cf-address')?.focus();
       return;
     }
+    /* Opened now, inside the click, so the browser's popup blocker allows it; sent to WhatsApp once the order is saved.
+       Do not null `popup.opener`: that makes the tab cross-origin and the later navigation throws a SecurityError. */
     const popup = typeof window !== 'undefined' ? window.open('', '_blank') : null;
-    if (popup) popup.opener = null;
     setPlacing(true);
     setOrderError('');
     const res = await placeOrder(
@@ -275,8 +359,13 @@ function CartBody() {
       return;
     }
     const href = res.order.waText ? waLink(res.order.waText, res.order.waNumber || whatsapp) : null;
-    if (popup && href) popup.location.href = href;
-    else popup?.close();
+    /* If the tab cannot be navigated (blocked, or closed by the visitor), close it quietly: the success screen
+       below still has the "Send enquiry on WhatsApp" button for the same link. */
+    if (popup && href) {
+      try { popup.location.href = href; } catch { popup.close(); }
+    } else {
+      popup?.close();
+    }
     trackOrderRequestWhatsApp({ lineCount: lines.length, unitCount: units });
     setPlaced({ order: res.order, href, name: session.name, items: lines.map(l => ({ name: l.product?.name ?? l.slug, qty: l.qty })) });
     cart.clear();
@@ -321,7 +410,7 @@ function CartBody() {
             <ClockCounterClockwise size={18} weight="light" aria-hidden="true" /> Order history
           </button>
         </div>
-        {showHistory && <OrderHistoryPanel signedIn={!!token} orders={orderHistory} />}
+        {showHistory && <OrderHistoryPanel signedIn={!!token} orders={orderHistory} name={session?.name ?? ''} />}
       </div>
 
       <aside className="cp__aside cp__panel" aria-label="Your details">

@@ -38,7 +38,6 @@ export default function ProductSpecs({ product, groupName }: { product: Product;
             </div>
           ))}
         </dl>
-        <div className="tb__foot" aria-hidden="true"><span>Not to scale</span><span>Alok Plastics</span></div>
       </div>
       {(p.description || commerce.keywords.length > 0) && (
         <section aria-labelledby="desc-h" className="p-about">

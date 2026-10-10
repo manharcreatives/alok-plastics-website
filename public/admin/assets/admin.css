@@ -488,3 +488,11 @@ p.card.empty { text-align: center; padding: var(--s6) var(--s5); }
 .app-sum__line { margin: 0 0 8px; }
 .app-sum__line:last-child { margin-bottom: 0; }
 .app-chip { display: inline-block; margin: 2px 6px 2px 0; padding: 2px 10px; border: 1px solid var(--line, #ddd); border-radius: 999px; font-size: 0.8125rem; }
+
+/* Team + account */
+.row-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.inline-form { display: inline-flex; gap: 8px; align-items: center; margin: 0; }
+.inline-form input[type="email"] { min-width: 12rem; }
+.badge.tone-info { background: #e8eef7; color: #26405f; }
+a.side-user-role { text-decoration: none; }
+a.side-user-role:hover { text-decoration: underline; }

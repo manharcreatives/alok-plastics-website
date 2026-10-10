@@ -30,7 +30,15 @@ try {
 } catch (Throwable $ex) {
     error_log('[alok-admin] ' . $ex::class . ': ' . $ex->getMessage() . ' @ ' . basename($ex->getFile()) . ':' . $ex->getLine());
     if (!headers_sent()) {
-        render('error', ['title' => 'Something went wrong', 'message' => 'The panel hit an unexpected problem. Nothing was lost. Ask your developer to read the server error log.', 'bare' => true], 500);
+        // On the owner's own computer, or while 'debug' => true is set in admin/config.php, show what failed.
+        // Leave 'debug' off on the live site: the message can name server paths.
+        $local = in_array($_SERVER['REMOTE_ADDR'] ?? '', ['127.0.0.1', '::1'], true) || AlokConfig::get('debug') === true;
+        render('error', [
+            'title' => 'Something went wrong',
+            'message' => 'The panel hit an unexpected problem. Nothing was lost. Ask your developer to read the server error log.',
+            'detail' => $local ? $ex::class . ': ' . $ex->getMessage() . ' (' . basename($ex->getFile()) . ':' . $ex->getLine() . ')' : null,
+            'bare' => true,
+        ], 500);
     }
 }
 
@@ -74,6 +82,7 @@ function route(): void
         'enquiry_delete' => 'page_enquiry_delete',
         'orders'         => 'page_orders',
         'order'          => 'page_order',
+        'order_delete'   => 'page_order_delete',
         'carts'          => 'page_carts',
         'applications'   => 'page_applications',
         'application'    => 'page_application',
@@ -130,7 +139,7 @@ function action_forgot_password(bool $isPost): never
             $error = 'The form expired. Please try again.';
         } else {
             $username = mb_strtolower(mb_substr(trim((string) ($_POST['username'] ?? '')), 0, 60));
-            // Always appear to "submit" — never reveal whether a username exists
+            // Always answer the same way: never reveal whether a username exists.
             if ($username !== '') {
                 $token = AlokAuth::generateResetToken($username);
                 if ($token !== null) {
@@ -141,12 +150,7 @@ function action_forgot_password(bool $isPost): never
                     // otherwise anyone who knows a username could take over the account.
                     $sent = AlokShop::mailClient(
                         'Alok Plastics admin: password reset',
-                        "A password reset was requested for admin user \"{$username}\".
-
-Open this link within 15 minutes to choose a new password:
-{$abs}
-
-If you did not ask for this, ignore this email; nothing changes.",
+                        "A password reset was requested for admin user \"{$username}\".\n\nOpen this link within 15 minutes to choose a new password:\n{$abs}\n\nIf you did not ask for this, ignore this email; nothing changes."
                     );
                     // Local development only (no mail server): show the link on screen.
                     if (!$sent && in_array(AlokAuth::clientIp(), ['127.0.0.1', '::1'], true)) {

@@ -84,7 +84,6 @@ $meta = 'Received ' . AlokShop::fmt((int) $o['created_at'], 'l, d M Y, H:i:s') .
         </form>
       </details>
     </section>
-    <?php endif; ?>
 
     <section class="card" aria-labelledby="h-msg">
       <div class="card-head"><h2 class="card-title" id="h-msg">Message the customer</h2><span class="card-sub">Opens WhatsApp with this text ready; you press Send</span></div>
@@ -113,6 +112,35 @@ $meta = 'Received ' . AlokShop::fmt((int) $o['created_at'], 'l, d M Y, H:i:s') .
         <button class="btn btn-primary" type="submit"><?= icon('plus') ?>Save note</button>
       </form>
     </section>
+
+    <section class="card" id="edit" aria-labelledby="h-edit">
+      <div class="card-head"><h2 class="card-title" id="h-edit">Edit details</h2><span class="card-sub">Fix a typo, address or quantity. Logged in the notes.</span></div>
+      <form method="post" action="<?= e($self) ?>">
+        <?= csrf_field() ?><input type="hidden" name="do" value="edit">
+        <div class="form-grid">
+          <div class="field"><label for="ed-name">Customer name</label><input id="ed-name" name="name" type="text" maxlength="80" required value="<?= e($o['name']) ?>"></div>
+          <div class="field"><label for="ed-phone">Mobile</label><input id="ed-phone" name="phone" type="tel" inputmode="tel" maxlength="30" required value="<?= e(preg_replace('/^91/', '', (string) $o['phone'])) ?>"></div>
+          <div class="field field-wide"><label for="ed-address">Delivery address</label><textarea id="ed-address" name="address" rows="3" maxlength="300" required><?= e($o['address'] ?? '') ?></textarea></div>
+          <div class="field field-wide"><label for="ed-note">Customer's note</label><textarea id="ed-note" name="order_note" rows="2" maxlength="600"><?= e($o['note'] ?? '') ?></textarea></div>
+        </div>
+        <div class="table-wrap"><table class="table">
+          <thead><tr><th scope="col">Product</th><th scope="col">Quantity <span class="meta">(0 removes the line)</span></th></tr></thead>
+          <tbody>
+          <?php foreach ($o['items'] as $i => $it): ?>
+            <tr><td><span class="cell-main"><?= e($it['name']) ?></span></td><td><input type="number" name="qty[<?= (int) $i ?>]" min="0" max="100000" value="<?= (int) $it['qty'] ?>" aria-label="Quantity of <?= e($it['name']) ?>"></td></tr>
+          <?php endforeach; ?>
+          </tbody>
+        </table></div>
+        <button class="btn btn-primary" type="submit"><?= icon('check') ?>Save changes</button>
+      </form>
+    </section>
+
+    <section class="card" aria-labelledby="h-danger">
+      <div class="card-head"><h2 class="card-title" id="h-danger">Delete this order</h2></div>
+      <p class="meta">Wrong or test order? Deleting removes it permanently. To keep a record instead, use "Cancel" above.</p>
+      <a class="btn btn-danger" href="<?= e(u('order_delete', ['id' => $o['id']])) ?>"><?= icon('trash') ?>Delete order</a>
+    </section>
+    <?php endif; ?>
   </div>
 
   <div class="detail-side">

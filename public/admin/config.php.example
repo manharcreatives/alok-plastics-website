@@ -22,6 +22,9 @@ return [
     // Private folder for enquiries, audit log, sessions, login throttling.
     // Best: an absolute path above public_html, e.g. '/home/u123456789/alok-private'.
     // null = use admin/data/ (protected by .htaccess, but inside the web root).
+    // Set true ONLY while diagnosing a "Something went wrong" page: it then shows the real error text.
+    'debug' => false,
+
     'data_dir' => null,
 
     // Where careers.json / product-overrides.json are written.

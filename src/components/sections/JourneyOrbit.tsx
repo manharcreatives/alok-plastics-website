@@ -240,6 +240,35 @@ export default function JourneyOrbit() {
       });
       gsap.set(prog, { strokeDasharray: L1, strokeDashoffset: L1 });
 
+      /* 2020s: lift its label off the road, to the side of the band that faces away from it (upward
+         on screen), keeping the dot on the road and a short pointer from the dot to the label */
+      const liftIdx = journeyMarkers.findIndex(m => m.year === '2020s');
+      if (liftIdx >= 0 && stones[liftIdx]) {
+        const sLen = (liftIdx / 4) * L1;
+        const pa = main.getPointAtLength(Math.max(0, sLen - 3));
+        const pb = main.getPointAtLength(Math.min(L1, sLen + 3));
+        const tx = pb.x - pa.x, ty = pb.y - pa.y, tl = Math.hypot(tx, ty) || 1;
+        let nx = -ty / tl, ny = tx / tl;
+        if (ny > 0) { nx = -nx; ny = -ny; }
+        const D = 58;
+        const g = stones[liftIdx];
+        const tick = g.querySelector('.stone-tick');
+        const txt = g.querySelector('.stone-tx');
+        if (tick) {
+          tick.setAttribute('x1', String(nx * 26));
+          tick.setAttribute('y1', String(ny * 26));
+          tick.setAttribute('x2', String(nx * (D - 14)));
+          tick.setAttribute('y2', String(ny * (D - 14)));
+        }
+        if (txt) {
+          const side = nx > 0.3 ? 'start' : nx < -0.3 ? 'end' : 'middle';
+          const ox = side === 'start' ? 4 : side === 'end' ? -4 : 0;
+          txt.setAttribute('x', String(nx * D + ox));
+          txt.setAttribute('y', String(ny * D + 7));
+          txt.setAttribute('text-anchor', side);
+        }
+      }
+
       let active = 0;
       const paintStones = (n: number) => {
         stones.forEach((s, i) => s.classList.toggle('on', i <= n));
@@ -371,7 +400,7 @@ export default function JourneyOrbit() {
         .jrn-line { color: var(--pink-soft); }
         .jrn-year .jrn-rise { background: linear-gradient(135deg, var(--surface) 0%, var(--rose-pale) 55%, var(--rose) 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
         #jrn-progress { stroke: var(--rose); }
-        .jrn .stone-tx { fill: var(--surface); stroke: var(--burgundy-night); stroke-width: 6px; }
+        .jrn .stone-tx { fill: var(--surface); stroke: none; stroke-width: 0; paint-order: normal; }
         .jrn .jrn-stone.on .stone-tx { fill: var(--rose-pale); }
         .jrn .stone-dot { fill: var(--surface); stroke: var(--rose-pale); }
         .jrn .jrn-stone.on .stone-dot { fill: var(--rose); stroke: var(--rose); }
@@ -432,7 +461,7 @@ export default function JourneyOrbit() {
           </g>
         </svg>
         <style>{`
-          .stone-tx { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-weight: 650; font-size: 22px; fill: var(--body); letter-spacing: -0.01em; paint-order: stroke; stroke: var(--canvas); stroke-width: 5px; stroke-linejoin: round; transition: fill 400ms cubic-bezier(.16,1,.3,1); }
+          .stone-tx { font-family: var(--font-archivo); font-variation-settings: "wdth" 125; font-weight: 650; font-size: 22px; fill: var(--body); letter-spacing: -0.01em; paint-order: normal; stroke: none; stroke-width: 0; transition: fill 400ms cubic-bezier(.16,1,.3,1); }
           .stone-ring { fill: none; stroke: var(--grey-metal); stroke-opacity: .35; stroke-width: 1.2; transition: stroke 400ms cubic-bezier(.16,1,.3,1), stroke-opacity 400ms; }
           .stone-dot { fill: var(--surface); stroke: var(--grey-metal); stroke-width: 2.5; transition: fill 400ms, stroke 400ms; }
           .stone-tick { stroke: var(--grey-metal); stroke-opacity: .5; stroke-width: 1.5; transition: stroke 400ms; }
