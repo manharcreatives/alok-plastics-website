@@ -344,7 +344,15 @@ export default function PanIndiaMap() {
               {/* faint graticule, behind everything */}
               <path d={GRATICULE} stroke="var(--grey-metal)" strokeOpacity="0.1" strokeWidth="0.6" />
               {/* satellite base map, calibrated to the same 760x420 space as the vector layers */}
-              <image href="/images/backgrounds/india-map-realistic.webp" x={0} y={0} width={760} height={420} preserveAspectRatio="none" />
+              <defs>
+                <filter id="pim-sat-feather" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="14" />
+                </filter>
+                <mask id="pim-sat-mask" maskUnits="userSpaceOnUse" x="0" y="0" width={MAP_W} height={MAP_H}>
+                  <rect x="70" y="28" width="599" height="366" fill="#fff" filter="url(#pim-sat-feather)" />
+                </mask>
+              </defs>
+              <image href="/images/backgrounds/india-map-realistic.webp" x={52} y={10} width={635} height={402} preserveAspectRatio="none" mask="url(#pim-sat-mask)" />
               {/* neighbouring land: outline only, so the satellite shows through */}
               <path className="pim-world-dots" d={LAND_PATH} fill="none" stroke="var(--surface)" strokeOpacity="0.35" strokeWidth="0.6" strokeLinejoin="round" />
               {/* India: every state and UT with its true border, lifted off the page by a soft shadow */}

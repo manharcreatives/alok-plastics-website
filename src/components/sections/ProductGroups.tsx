@@ -113,15 +113,23 @@ export default function ProductGroups() {
   return (
     <section aria-labelledby="pg-heading" className="fold-sec fold-sec--diag pg-sec">
       <style>{CSS}</style>
+      <style>{`
+        .pg-sec { background: var(--burgundy-night); }
+        .pg-bg { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .pg-bg::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+          background: linear-gradient(180deg, color-mix(in srgb, var(--burgundy-night) 70%, transparent) 0%, color-mix(in srgb, var(--burgundy-night) 30%, transparent) 50%, color-mix(in srgb, var(--burgundy-night) 70%, transparent) 100%); }
+        .pg-in { position: relative; z-index: 1; }
+      `}</style>
       <FoldEdge variant="diag" />
       <div aria-hidden="true" className="pg-bg">
-        <PhotoBg src="/images/backgrounds/products-section.webp" opacity={0.22} />
+        <PhotoBg src="/images/backgrounds/products-section.webp" opacity={0.55} />
       </div>
       <div className="pg-in">
         <SectionHeader
           label="Products"
           heading="Find the part by the machine it goes into."
           headingId="pg-heading"
+          tone="dark"
           lead="Moulded plastic and steel parts for water coolers, display counters and deep freezers, plus parts made to your sample."
           link={{ href: '/products/', label: 'All products' }}
         />

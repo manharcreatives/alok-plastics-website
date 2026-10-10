@@ -11,13 +11,16 @@ interface MicroLabelProps {
   number?: string | number;
   showRule?: boolean;
   className?: string;
+  tone?: 'light' | 'dark';
 }
 
 export default function MicroLabel({
   children,
   showRule = false, /* labels read as plain text; the rule is opt-in */
   className = '',
+  tone = 'light',
 }: MicroLabelProps) {
+  const isDark = tone === 'dark';
   return (
     <div
       className={className}
@@ -33,7 +36,7 @@ export default function MicroLabel({
           style={{
             width: 24,
             height: 2,
-            background: 'var(--burgundy)',
+            background: isDark ? 'var(--rose)' : 'var(--burgundy)',
             display: 'inline-block',
             flexShrink: 0,
           }}
@@ -44,7 +47,7 @@ export default function MicroLabel({
           fontSize: '0.75rem',
           textTransform: 'uppercase',
           letterSpacing: '0.16em',
-          color: 'var(--muted)',
+          color: isDark ? 'var(--rose-pale)' : 'var(--muted)',
           fontWeight: 600,
           fontFamily: 'var(--font-archivo, sans-serif)',
         }}
