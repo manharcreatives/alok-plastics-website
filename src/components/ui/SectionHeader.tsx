@@ -18,6 +18,8 @@ interface SectionHeaderProps {
   headingAs?: 'h2' | 'h3';
   headingId?: string;
   className?: string;
+  /** 'dark' for sections on a burgundy-night backdrop (light text) */
+  tone?: 'light' | 'dark';
 }
 
 export default function SectionHeader({
@@ -30,7 +32,9 @@ export default function SectionHeader({
   headingAs: H = 'h2',
   headingId,
   className = '',
+  tone = 'light',
 }: SectionHeaderProps) {
+  const isDark = tone === 'dark';
   const textAlign = align === 'center' ? 'center' : 'left';
   const alignItems = align === 'center' ? 'center' : 'flex-start';
 
@@ -52,7 +56,7 @@ export default function SectionHeader({
         width: '100%',
         marginBottom: 16,
       }}>
-        <MicroLabel number={labelNumber} showRule={align !== 'center'}>
+        <MicroLabel number={labelNumber} showRule={align !== 'center'} tone={tone}>
           {label}
         </MicroLabel>
 
@@ -83,7 +87,7 @@ export default function SectionHeader({
           lineHeight: 1.1,
           letterSpacing: '-0.025em',
           fontWeight: 650,
-          color: 'var(--ink)',
+          color: isDark ? 'var(--surface)' : 'var(--ink)',
           maxWidth: '22ch',
           marginBottom: lead ? 24 : 0,
         }}
@@ -95,7 +99,7 @@ export default function SectionHeader({
         <p style={{
           fontSize: '1.0625rem',
           lineHeight: 1.65,
-          color: 'var(--body)',
+          color: isDark ? 'var(--pink-soft)' : 'var(--body)',
           maxWidth: '60ch',
         }}>
           {lead}

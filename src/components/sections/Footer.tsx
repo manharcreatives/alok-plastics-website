@@ -10,7 +10,9 @@
 
 'use client';
 
-import Link from 'next/link';
+import NextLink from 'next/link';
+import { usePathname } from 'next/navigation';
+import type { ComponentProps, MouseEvent } from 'react';
 import { ArrowUpRight } from '@phosphor-icons/react/dist/ssr/ArrowUpRight';
 import { MapPin } from '@phosphor-icons/react/dist/ssr/MapPin';
 import { Phone } from '@phosphor-icons/react/dist/ssr/Phone';
@@ -82,6 +84,26 @@ body:has(.eb, #enquiry) .ft__cta { display: none; }
 @media (min-width: 1100px) { .ft__cols { grid-template-columns: 1.3fr 1fr 1fr 1.3fr; column-gap: var(--space-xl); } }
 @media (prefers-reduced-motion: reduce) { .ft__cta svg, .ft__ar { transition: none; } }
 `;
+
+/* Footer links: a link to the page you are already on does not navigate, so it would leave the
+   visitor parked at the bottom. Scroll to the top instead (Lenis keeps its own target, so reset it too). */
+function Link({ href, onClick, ...rest }: ComponentProps<typeof NextLink>) {
+  const pathname = usePathname();
+  const handle = (e: MouseEvent<HTMLAnchorElement>) => {
+    onClick?.(e);
+    const target = typeof href === 'string' ? href : href.pathname ?? '';
+    const norm = (v: string) => (v.length > 1 ? v.replace(/\/+$/, '') : v);
+    if (!e.defaultPrevented && !e.metaKey && !e.ctrlKey && !e.shiftKey && !target.includes('#') && norm(target) === norm(pathname ?? '')) {
+      e.preventDefault();
+      const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      import('@/lib/motion').then(m => {
+        if (m.lenis) m.lenis.scrollTo(0, { immediate: !smooth, force: true });
+        else window.scrollTo({ top: 0, behavior: smooth ? 'smooth' : 'auto' });
+      });
+    }
+  };
+  return <NextLink href={href} onClick={handle} {...rest} />;
+}
 
 export default function Footer() {
   const year = new Date().getFullYear();

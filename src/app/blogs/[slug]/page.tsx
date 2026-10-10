@@ -12,6 +12,7 @@ import BlogCover from '@/components/blogs/BlogCover';
 import BlogMeta from '@/components/blogs/BlogMeta';
 import BlogBody from '@/components/blogs/BlogBody';
 import BlogToc from '@/components/blogs/BlogToc';
+import BlogAside from '@/components/blogs/BlogAside';
 import BlogFaq from '@/components/blogs/BlogFaq';
 import BlogShare from '@/components/blogs/BlogShare';
 import BlogCta from '@/components/blogs/BlogCta';
@@ -97,11 +98,12 @@ export default async function BlogPostPage({ params }: Params) {
       <article className="bl-article">
         <div className="bl-pw bl-article__in">
           <BlogToc items={toc} variant="rail" />
-          <div>
+          <div className="bl-article__main">
             <BlogToc items={toc} variant="inline" />
             <BlogBody blocks={post.body} />
             <BlogShare url={absoluteUrl(blogPath(post.slug))} title={post.title} />
           </div>
+          <BlogAside post={post} />
         </div>
       </article>
 

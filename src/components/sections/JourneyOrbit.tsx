@@ -361,9 +361,25 @@ export default function JourneyOrbit() {
   return (
     <section ref={sectionRef} className="jrn" aria-labelledby="journey-heading">
       <style>{CSS}</style>
+      <style>{`
+        .jrn { background: var(--burgundy-night); }
+        .jrn-bg { display: none; }
+        .jrn-photo-bg::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+          background: linear-gradient(180deg, color-mix(in srgb, var(--burgundy-night) 70%, transparent) 0%, color-mix(in srgb, var(--burgundy-night) 25%, transparent) 50%, color-mix(in srgb, var(--burgundy-night) 70%, transparent) 100%); }
+        .jrn-label, .jrn-odo-label, .jrn-future-tag { color: var(--rose-pale); }
+        .jrn-h2, .jrn-title, .jrn-odo-num { color: var(--surface); }
+        .jrn-line { color: var(--pink-soft); }
+        .jrn-year .jrn-rise { background: linear-gradient(135deg, var(--surface) 0%, var(--rose-pale) 55%, var(--rose) 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        #jrn-progress { stroke: var(--rose); }
+        .jrn .stone-tx { fill: var(--surface); stroke: var(--burgundy-night); stroke-width: 6px; }
+        .jrn .jrn-stone.on .stone-tx { fill: var(--rose-pale); }
+        .jrn .stone-dot { fill: var(--surface); stroke: var(--rose-pale); }
+        .jrn .jrn-stone.on .stone-dot { fill: var(--rose); stroke: var(--rose); }
+        .jrn .jrn-stone.on .stone-tick, .jrn .jrn-stone.on .stone-ring { stroke: var(--rose); }
+      `}</style>
       <JourneyBackdrop />
       <div className="jrn-photo-bg" aria-hidden="true">
-        <PhotoBg src="/images/backgrounds/journey-3d.webp" opacity={0.3} />
+        <PhotoBg src="/images/backgrounds/journey-3d.webp" opacity={0.5} />
       </div>
 
       {/* Desktop stage: the road and the credits-style text, no box */}
