@@ -115,8 +115,8 @@ const CSS = `
 .pim-legend button[aria-pressed="true"] span { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
 .pim-legend button:focus-visible { outline: 2px solid var(--burgundy); outline-offset: 4px; }
 .pim-legend svg { flex: none; }
-.pim-frame { position: relative; margin-top: var(--space-xl); overflow: hidden; border-top: 1px solid var(--grey-warm); border-bottom: 1px solid var(--grey-warm); background: radial-gradient(ellipse 60% 90% at 50% 45%, color-mix(in srgb, var(--surface) 90%, transparent), transparent 75%), linear-gradient(180deg, color-mix(in srgb, var(--map-steel) 7%, var(--surface-alt)), var(--surface-alt)); }
-.pim-stage { position: relative; z-index: 1; overflow: hidden; -webkit-mask-image: linear-gradient(to right, transparent, var(--ink) 9%, var(--ink) 91%, transparent), linear-gradient(to bottom, transparent, var(--ink) 7%, var(--ink) 93%, transparent); -webkit-mask-composite: source-in; mask-image: linear-gradient(to right, transparent, var(--ink) 9%, var(--ink) 91%, transparent), linear-gradient(to bottom, transparent, var(--ink) 7%, var(--ink) 93%, transparent); mask-composite: intersect; }
+.pim-frame { position: relative; margin-top: var(--space-xl); overflow: hidden; border-top: 1px solid var(--grey-warm); border-bottom: 1px solid var(--grey-warm); background: var(--surface-alt); }
+.pim-stage { position: relative; z-index: 1; overflow: hidden; }
 .pim-svg { display: block; width: 175%; height: auto; margin-left: -41%; }
 .pim-reg { position: absolute; width: 9px; height: 9px; border: solid var(--grey-warm); }
 .pim-reg.tl { top: 8px; left: 8px; border-width: 1px 0 0 1px; } .pim-reg.tr { top: 8px; right: 8px; border-width: 1px 1px 0 0; }
@@ -341,17 +341,7 @@ export default function PanIndiaMap() {
               {/* faint graticule, behind everything */}
               <path d={GRATICULE} stroke="var(--grey-metal)" strokeOpacity="0.1" strokeWidth="0.6" />
               {/* satellite base map: calibrated to the vector India and Sri Lanka outlines (SAT_MATRIX) */}
-              <defs>
-                {/* soft radial fade centred on India: the photo dissolves into the frame at every edge */}
-                <radialGradient id="pim-sat-fade" gradientUnits="userSpaceOnUse" cx="362" cy="210" r="292">
-                  <stop offset="0.5" stopColor="white" />
-                  <stop offset="1" stopColor="black" />
-                </radialGradient>
-                <mask id="pim-sat-mask" maskUnits="userSpaceOnUse" x="0" y="0" width={MAP_W} height={MAP_H}>
-                  <rect x="0" y="0" width={MAP_W} height={MAP_H} fill="url(#pim-sat-fade)" />
-                </mask>
-              </defs>
-              <g mask="url(#pim-sat-mask)">
+              <g>
                 <image
                   href="/images/backgrounds/india-map-realistic.webp"
                   width={1672}
