@@ -7,7 +7,7 @@ import { FinderProvider, FinderHeroBar, FinderResults } from '@/components/produ
 import CatalogueFaq from '@/components/products/CatalogueFaq';
 import GroupSection from '@/components/products/GroupSection';
 import { CatalogueSheetArt } from '@/components/products/art';
-import { productGroups, productsByGroup } from '@/content/products';
+import { productGroups } from '@/content/products';
 
 export const metadata: Metadata = {
   title: { absolute: 'Spare Parts Catalogue | Coolers, Freezers | Alok Plastics' },
@@ -17,7 +17,8 @@ export const metadata: Metadata = {
 };
 
 export default function ProductsPage() {
-  const groups = productGroups.filter(g => productsByGroup(g.id).length > 0);
+  /* Every group is listed, including ones with no parts yet (caster wheel, made to order): they link to a quote. */
+  const groups = productGroups;
   return (
     <FinderProvider>
       <PageHero

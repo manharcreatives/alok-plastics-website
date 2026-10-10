@@ -20,12 +20,28 @@ try {
         $orders = array_slice($orders, 0, 50);
         $result = array_map(static function ($o): array {
             $items = is_array($o['items']) ? $o['items'] : [];
+            // Only what the customer needs to see: never the team's internal notes or the IP address.
             return [
                 'code'      => (string) ($o['code'] ?? ''),
                 'createdAt' => (int) ($o['created_at'] ?? 0),
+                'updatedAt' => (int) ($o['updated_at'] ?? 0),
                 'total'     => isset($o['total']) ? (float) $o['total'] : null,
                 'status'    => (string) ($o['status'] ?? 'pending'),
                 'itemCount' => count($items),
+                'name'      => (string) ($o['name'] ?? ''),
+                'address'   => (string) ($o['address'] ?? ''),
+                'note'      => (string) ($o['note'] ?? ''),
+                'items'     => array_map(static fn($it): array => [
+                    'name'    => (string) ($it['name'] ?? ''),
+                    'variant' => (string) ($it['variant'] ?? ''),
+                    'qty'     => (int) ($it['qty'] ?? 0),
+                    'unit'    => (string) ($it['unit'] ?? 'pcs'),
+                ], $items),
+                'quoteAmount' => isset($o['quote_amount']) && $o['quote_amount'] !== '' && $o['quote_amount'] !== null ? (float) $o['quote_amount'] : null,
+                'transporter' => (string) ($o['transporter'] ?? ''),
+                'lrNo'        => (string) ($o['lr_no'] ?? ''),
+                'invoiceNo'   => (string) ($o['invoice_no'] ?? ''),
+                'cancelReason' => (string) ($o['cancel_reason'] ?? ''),
             ];
         }, $orders);
         AlokShop::respond(200, ['ok' => true, 'orders' => $result]);

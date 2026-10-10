@@ -647,9 +647,14 @@ final class AlokShop
 
     public static function mailClient(string $subject, string $body, string $replyTo = ''): bool
     {
-        $to = (string) self::cfg('ALOK_TO_EMAIL');
+        return self::mailTo((string) self::cfg('ALOK_TO_EMAIL'), $subject, $body, $replyTo);
+    }
+
+    /** Plain-text email from the website's sender address. False when no sender/recipient or the host refuses. */
+    public static function mailTo(string $to, string $subject, string $body, string $replyTo = ''): bool
+    {
         $from = (string) self::cfg('ALOK_FROM_EMAIL');
-        if ($to === '' || $from === '') {
+        if ($to === '' || $from === '' || filter_var($to, FILTER_VALIDATE_EMAIL) === false) {
             return false;
         }
         $subject = preg_replace('/[\r\n]+/', ' ', $subject) ?? $subject;

@@ -24,8 +24,8 @@ import ProductText from '@/components/runtime/ProductText';
 import Pictogram from '@/components/brand/Pictogram';
 import type { PictogramName } from '@/components/brand/Pictogram';
 import PhotoBg from '@/components/ui/PhotoBg';
-import { productGroups, productsByGroup, productPath } from '@/content/products';
-import { useHiddenProductSlugs } from '@/components/runtime/useRuntime';
+import { productGroups, productPath } from '@/content/products';
+import { useCatalogProducts } from '@/components/runtime/useRuntime';
 
 /** Image slot per product group (4:3). Files are generated later; the placeholder shows until then. */
 const GROUP_IMAGE: Record<string, string> = {
@@ -72,7 +72,8 @@ export default function NavMegaPanel({
   onPointerLeave,
 }: NavMegaPanelProps) {
   const panelRef = useRef<HTMLDivElement>(null);
-  const hidden = useHiddenProductSlugs();
+  /* Live catalogue: build-time parts plus anything the owner added or moved in the admin panel. */
+  const catalog = useCatalogProducts();
 
   /* Close on Esc, return focus to the trigger */
   useEffect(() => {
@@ -127,7 +128,7 @@ export default function NavMegaPanel({
       <div ref={panelRef} role="region" aria-label="Products navigation" className="mega__panel">
         <div className="mega__cols">
           {productGroups.map(group => {
-            const parts = productsByGroup(group.id).filter(p => !hidden.has(p.slug));
+            const parts = catalog.filter(p => p.group === group.id);
             const picto = GROUP_PICTOGRAM[group.id];
             const href = `/products/${group.slug}/`;
             const kicker = group.id === '05'
@@ -178,7 +179,17 @@ export default function NavMegaPanel({
                     )}
                   </ul>
                 ) : (
-                  <p className="mega__blurb">{group.tagline}</p>
+                  <>
+                    <p className="mega__blurb">{group.tagline}</p>
+                    <ul className="mega__list">
+                      <li>
+                        <Link href="/enquiry/" className="mega__part" onClick={onClose}>
+                          <span>{group.id === '05' ? 'Send a sample or drawing' : 'Ask for a quote'}</span>
+                          <ArrowUpRight weight="light" size={14} aria-hidden="true" className="mega__arrow" />
+                        </Link>
+                      </li>
+                    </ul>
+                  </>
                 )}
               </div>
             );

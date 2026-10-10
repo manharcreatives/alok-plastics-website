@@ -27,12 +27,29 @@ export interface PlacedOrder {
   waText: string;
 }
 
+export interface OrderHistoryLine {
+  name: string;
+  variant: string;
+  qty: number;
+  unit: string;
+}
+
 export interface OrderHistoryItem {
   code: string;
   createdAt: number;
+  updatedAt?: number;
   total: number | null;
   status: string;
   itemCount: number;
+  name?: string;
+  address?: string;
+  note?: string;
+  items?: OrderHistoryLine[];
+  quoteAmount?: number | null;
+  transporter?: string;
+  lrNo?: string;
+  invoiceNo?: string;
+  cancelReason?: string;
 }
 
 export type ApiFailure =

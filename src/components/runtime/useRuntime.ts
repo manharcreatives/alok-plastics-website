@@ -17,7 +17,7 @@
 
 import { useMemo } from 'react';
 import { site } from '@/content/site';
-import { publishedProducts } from '@/content/products';
+import { products as allProducts, publishedProducts } from '@/content/products';
 import { isListable } from '@/lib/catalog-search';
 import type { CareerRole, ContactInfo, Product, SiteConfig } from '@/content/types';
 import { useRuntime } from './RuntimeProvider';
@@ -158,8 +158,11 @@ export function applyProductOverride(p: Product, o: RuntimeProductOverride | und
 /** Products created in the admin panel (they have no static page), built from products.json. */
 export function customProductsFrom(map: RuntimeProducts['products'] | null): Product[] {
   const out: Product[] = [];
+  /* Any saved product that is not built in gets a page, whether or not the custom flag was ticked;
+     a missing group only keeps it out of the group lists (useCatalogProducts), never off its own page. */
+  const built = new Set(allProducts.map(p => p.slug));
   map?.forEach((o, slug) => {
-    if (!o.custom || !o.name || !o.group) return;
+    if (built.has(slug) || !o.name) return;
     out.push(applyProductOverride({ slug, name: o.name, group: o.group, machine: 'TODO', images: [], published: true, custom: true }, o));
   });
   return out;

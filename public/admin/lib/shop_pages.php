@@ -145,12 +145,68 @@ function page_order(array $user, bool $isPost): never
                 AlokShop::orders()->update((int) $o['id'], ['notes' => array_merge($o['notes'] ?? [], [$note])]);
                 flash_set('ok', 'Note added.');
             }
+        } elseif ($do === 'edit') {
+            // Correct the customer's details or quantities. Every change is logged in the notes and the audit log.
+            $name = AlokShop::clean($_POST['name'] ?? '', 80);
+            $phone = AlokShop::phone(AlokShop::clean($_POST['phone'] ?? '', 30));
+            $address = AlokShop::clean($_POST['address'] ?? '', 300, true);
+            $note = AlokShop::clean($_POST['order_note'] ?? '', 600, true);
+            $errs = [];
+            if (mb_strlen($name) < 2) $errs[] = 'Enter the customer name.';
+            if ($phone === null) $errs[] = 'Enter a valid 10-digit mobile number.';
+            if (mb_strlen($address) < 8) $errs[] = 'Enter the full delivery address (at least 8 characters).';
+            $items = $o['items'];
+            $qtys = (array) ($_POST['qty'] ?? []);
+            $removed = [];
+            foreach ($items as $i => $it) {
+                $q = isset($qtys[$i]) ? (int) $qtys[$i] : (int) $it['qty'];
+                if ($q < 0 || $q > 100000) { $errs[] = 'Quantity must be between 0 and 100,000.'; break; }
+                if ($q === 0) { $removed[] = $it['name']; unset($items[$i]); continue; }
+                $items[$i]['qty'] = $q;
+            }
+            $items = array_values($items);
+            if (!$items) $errs[] = 'An order needs at least one product. Delete the order instead.';
+            if ($errs) {
+                flash_set('err', implode(' ', array_unique($errs)));
+                redirect($self . '#edit');
+            }
+            $changes = [];
+            if ($name !== $o['name']) $changes[] = 'name';
+            if ($phone !== $o['phone']) $changes[] = 'mobile';
+            if ($address !== ($o['address'] ?? '')) $changes[] = 'address';
+            if ($note !== ($o['note'] ?? '')) $changes[] = 'customer note';
+            if ($items !== $o['items']) $changes[] = 'items' . ($removed ? ' (removed: ' . implode(', ', $removed) . ')' : '');
+            if (!$changes) {
+                flash_set('ok', 'Nothing changed.');
+                redirect($self);
+            }
+            $patch = ['name' => $name, 'phone' => $phone, 'address' => $address, 'note' => $note, 'items' => $items];
+            $n = shop_add_note($user, 'Edited by admin: ' . implode(', ', $changes) . '.');
+            if ($n !== null) $patch['notes'] = array_merge($o['notes'] ?? [], [$n]);
+            AlokShop::orders()->update((int) $o['id'], $patch);
+            AlokStore::open()->audit($user['username'], 'order_edit', $o['code'], implode(', ', $changes), AlokAuth::clientIp());
+            flash_set('ok', $o['code'] . ' updated (' . implode(', ', $changes) . ').');
         }
         redirect($self);
     }
     $msg = AlokShop::stageMessage($o);
     $wa = 'https://wa.me/' . $o['phone'] . '?text=' . rawurlencode($msg);
     render('order', ['title' => 'Enquiry ' . $o['code'], 'nav' => 'orders', 'user' => $user, 'o' => $o, 'wa' => $wa, 'waText' => $msg, 'next' => AlokShop::nextStatus($o['status'])]);
+}
+
+function page_order_delete(array $user, bool $isPost): never
+{
+    $o = order_or_404($user);
+    if ($isPost) {
+        if (($_POST['confirm'] ?? '') !== 'yes') {
+            redirect(u('order', ['id' => $o['id']]));
+        }
+        AlokShop::orders()->delete((int) $o['id']);
+        AlokStore::open()->audit($user['username'], 'order_delete', $o['code'], $o['name'] . ' · ' . $o['status'], AlokAuth::clientIp());
+        flash_set('ok', $o['code'] . ' was permanently deleted.');
+        redirect(u('orders'));
+    }
+    render('order_delete', ['title' => 'Delete ' . $o['code'], 'nav' => 'orders', 'user' => $user, 'o' => $o]);
 }
 
 function page_applications(array $user, bool $isPost): never

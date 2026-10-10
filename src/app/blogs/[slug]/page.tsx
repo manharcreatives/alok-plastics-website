@@ -2,12 +2,14 @@
  * /blogs/[slug]/: one guide. Article layout (68ch measure, contents rail), FAQ accordion with
  * FAQPage JSON-LD, BlogPosting + BreadcrumbList JSON-LD, closing action panel, related guides and
  * newer / older navigation. Pre-rendered for every post (dynamicParams = false).
+ * The guide sits on a light background of catalogue product photos (BlogBgPage).
  */
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import JsonLd from '@/components/seo/JsonLd';
 import Breadcrumbs from '@/components/page/Breadcrumbs';
+import BlogBgPage from '@/components/blogs/BlogBgPage';
 import BlogCover from '@/components/blogs/BlogCover';
 import BlogMeta from '@/components/blogs/BlogMeta';
 import BlogBody from '@/components/blogs/BlogBody';
@@ -83,51 +85,53 @@ export default async function BlogPostPage({ params }: Params) {
     <>
       <JsonLd data={blogPostingJsonLd(post, img.url, blogWordCount(post))} />
 
-      <header className="bl-ah">
-        <div className="bl-pw">
-          <div className="bl-ah__in">
-            <Breadcrumbs items={[{ label: 'Blogs', href: '/blogs/' }, { label: post.title }]} />
-            <BlogMeta post={post} showAuthor />
-            <h1 className="bl-ah__h1">{post.title}</h1>
-            <p className="bl-ah__x">{post.excerpt}</p>
+      <BlogBgPage slug={post.slug}>
+        <header className="bl-ah">
+          <div className="bl-pw">
+            <div className="bl-ah__in">
+              <Breadcrumbs items={[{ label: 'Blogs', href: '/blogs/' }, { label: post.title }]} />
+              <BlogMeta post={post} showAuthor />
+              <h1 className="bl-ah__h1">{post.title}</h1>
+              <p className="bl-ah__x">{post.excerpt}</p>
+            </div>
+            <div className="bl-hero"><BlogCover post={post} describe priority className="bl-cover--wide" /></div>
           </div>
-          <div className="bl-hero"><BlogCover post={post} describe priority className="bl-cover--wide" /></div>
-        </div>
-      </header>
+        </header>
 
-      <article className="bl-article">
-        <div className="bl-pw bl-article__in">
-          <BlogToc items={toc} variant="rail" />
-          <div className="bl-article__main">
-            <BlogToc items={toc} variant="inline" />
-            <BlogBody blocks={post.body} />
-            <BlogShare url={absoluteUrl(blogPath(post.slug))} title={post.title} />
+        <article className="bl-article">
+          <div className="bl-pw bl-article__in">
+            <BlogToc items={toc} variant="rail" />
+            <div className="bl-article__main">
+              <BlogToc items={toc} variant="inline" />
+              <BlogBody blocks={post.body} />
+              <BlogShare url={absoluteUrl(blogPath(post.slug))} title={post.title} />
+            </div>
+            <BlogAside post={post} />
           </div>
-          <BlogAside post={post} />
-        </div>
-      </article>
+        </article>
 
-      <BlogFaq items={post.faq} />
-      <BlogCta slug={post.slug} title={post.title} />
+        <BlogFaq items={post.faq} />
+        <BlogCta slug={post.slug} title={post.title} />
 
-      <section aria-labelledby="bl-more-h" className="bl-more">
-        <div className="bl-pw">
-          <p className="bl-eyebrow">Keep reading</p>
-          <h2 id="bl-more-h" className="bl-h2 bl-more__h">Related guides</h2>
-          <ul className="bl-grid">
-            {related.map(p => <li key={p.slug}><BlogCard post={p} /></li>)}
-          </ul>
-          <nav className="bl-pn" aria-label="More guides">
-            {newer ? (
-              <Link href={blogPath(newer.slug)}><small>Newer guide</small><strong>{newer.title}</strong></Link>
-            ) : <span aria-hidden="true" />}
-            {older ? (
-              <Link href={blogPath(older.slug)} className="bl-pn__next"><small>Older guide</small><strong>{older.title}</strong></Link>
-            ) : <span aria-hidden="true" />}
-          </nav>
-          <p className="bl-more__all"><Link href="/blogs/" className="bl-btn bl-btn--ghost">All guides</Link></p>
-        </div>
-      </section>
+        <section aria-labelledby="bl-more-h" className="bl-more">
+          <div className="bl-pw">
+            <p className="bl-eyebrow">Keep reading</p>
+            <h2 id="bl-more-h" className="bl-h2 bl-more__h">Related guides</h2>
+            <ul className="bl-grid">
+              {related.map(p => <li key={p.slug}><BlogCard post={p} /></li>)}
+            </ul>
+            <nav className="bl-pn" aria-label="More guides">
+              {newer ? (
+                <Link href={blogPath(newer.slug)}><small>Newer guide</small><strong>{newer.title}</strong></Link>
+              ) : <span aria-hidden="true" />}
+              {older ? (
+                <Link href={blogPath(older.slug)} className="bl-pn__next"><small>Older guide</small><strong>{older.title}</strong></Link>
+              ) : <span aria-hidden="true" />}
+            </nav>
+            <p className="bl-more__all"><Link href="/blogs/" className="bl-btn bl-btn--ghost">All guides</Link></p>
+          </div>
+        </section>
+      </BlogBgPage>
     </>
   );
 }

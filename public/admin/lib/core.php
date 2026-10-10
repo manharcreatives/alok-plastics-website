@@ -117,14 +117,14 @@ final class AlokConfig
         }
         $lower = strtolower($username);
         $found = false;
-        foreach ($cfg['users'] ?? [] as $k => &$u) {
-            if (strtolower((string) $k) === $lower && is_array($u)) {
-                $u['hash'] = $newHash;
-                $found     = true;
+        // Walk the real array by key: iterating `$cfg['users'] ?? []` by reference edits a temporary copy.
+        foreach (array_keys((array) ($cfg['users'] ?? [])) as $k) {
+            if (strtolower((string) $k) === $lower && is_array($cfg['users'][$k])) {
+                $cfg['users'][$k]['hash'] = $newHash;
+                $found = true;
                 break;
             }
         }
-        unset($u);
         if (!$found) {
             return false;
         }
