@@ -92,7 +92,6 @@ export default function Footer() {
   const waHref = waGeneral(c.whatsapp);
   const social = [
     { key: 'instagram', label: 'Instagram', Icon: InstagramLogo, href: socialLinks.instagram },
-    { key: 'linkedin',  label: 'LinkedIn',  Icon: LinkedinLogo,  href: socialLinks.linkedin },
     { key: 'facebook',  label: 'Facebook',  Icon: FacebookLogo,  href: socialLinks.facebook },
     { key: 'youtube',   label: 'YouTube',   Icon: YoutubeLogo,   href: socialLinks.youtube },
   ].filter(s => !!s.href);
@@ -178,6 +177,9 @@ export default function Footer() {
               )}
               {waHref && (
                 <li><a href={waHref} target="_blank" rel="noopener noreferrer" onClick={() => trackWhatsAppClick({ source: 'footer' })} className="ft__link"><WhatsappLogo size={18} weight="light" aria-hidden="true" />WhatsApp us</a></li>
+              )}
+              {socialLinks.linkedin && (
+                <li><a href={socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="ft__link"><LinkedinLogo size={18} weight="light" aria-hidden="true" />LinkedIn</a></li>
               )}
               {c.email && (
                 <li><a href={`mailto:${c.email}`} className="ft__link" style={{ overflowWrap: 'anywhere' }}><EnvelopeSimple size={18} weight="light" aria-hidden="true" />{c.email}</a></li>

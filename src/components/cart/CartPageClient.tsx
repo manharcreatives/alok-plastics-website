@@ -13,7 +13,8 @@ import { Copy } from '@phosphor-icons/react/dist/csr/Copy';
 import { CheckCircle } from '@phosphor-icons/react/dist/csr/CheckCircle';
 import { flattenZodErrors, messageField, nameField, phoneField } from '@/lib/enquiry-schema';
 import { orderMessage, waLink, waOrder, type OrderCustomer, type OrderLine } from '@/lib/whatsapp';
-import { checkSession, maskPhone, placeOrder, setSession, signOut, useSession, type PlacedOrder } from '@/lib/auth-client';
+import { checkSession, fetchOrders, maskPhone, placeOrder, setSession, signOut, useSession, type OrderHistoryItem, type PlacedOrder } from '@/lib/auth-client';
+import { ClockCounterClockwise } from '@phosphor-icons/react/dist/ssr/ClockCounterClockwise';
 import { trackCartOpen, trackOrderRequestWhatsApp } from '@/lib/analytics';
 import { useRuntimeContact } from '@/components/runtime/useRuntime';
 import { formatPrice } from './cart-catalog';
@@ -72,6 +73,42 @@ export default function CartPageClient() {
   );
 }
 
+const STATUS_LABEL: Record<string, string> = {
+  pending: 'Received', reviewing: 'Under review', quoted: 'Quote sent', confirmed: 'Confirmed',
+  paid: 'Payment received', dispatched: 'Dispatched', delivered: 'Delivered', closed: 'Closed', cancelled: 'Cancelled',
+};
+
+function OrderHistoryPanel({ signedIn, orders }: { signedIn: boolean; orders: OrderHistoryItem[] | null }) {
+  return (
+    <section className="cp__history" aria-label="Order history">
+      <h3 className="cp__h3">Your order history</h3>
+      {!signedIn ? (
+        <p className="cp__note">Sign in with your mobile number (the form on this page) to see your past orders.</p>
+      ) : orders === null ? (
+        <p className="cp__note">Loading your orders…</p>
+      ) : orders.length === 0 ? (
+        <p className="cp__note">No orders yet. Your enquiries will show up here once you submit one.</p>
+      ) : (
+        <ul className="cp__hist-list">
+          {orders.map(o => (
+            <li key={o.code} className="cp__hist-item">
+              <div className="cp__hist-row">
+                <span className="cp__hist-code">{o.code}</span>
+                <span className={`cp__hist-badge cp__hist-badge--${o.status}`}>{STATUS_LABEL[o.status] ?? o.status}</span>
+              </div>
+              <div className="cp__hist-sub">
+                <span>{o.itemCount} {o.itemCount === 1 ? 'product' : 'products'}</span>
+                {o.total !== null && <span>{formatPrice(o.total)}</span>}
+                <span>{new Date(o.createdAt * 1000).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
 function CartBody() {
   const cart = useCart();
   const lines = useCartLines();
@@ -88,6 +125,8 @@ function CartBody() {
   const [legacy, setLegacy] = useState(false);
   const [placing, setPlacing] = useState(false);
   const [orderError, setOrderError] = useState('');
+  const [orderHistory, setOrderHistory] = useState<OrderHistoryItem[] | null>(null);
+  const [showHistory, setShowHistory] = useState(false);
   const [address, setAddress] = useState(initial.address);
   const [orderNote, setOrderNote] = useState('');
   const [placed, setPlaced] = useState<{ order: PlacedOrder; href: string | null; items: { name: string; qty: number }[]; name: string } | null>(null);
@@ -96,6 +135,12 @@ function CartBody() {
     if (!token) return;
     let live = true;
     checkSession(token).then(r => { if (live && r === 'expired') setSession(null); });
+    return () => { live = false; };
+  }, [token]);
+  useEffect(() => {
+    if (!token) { setOrderHistory(null); return; }
+    let live = true;
+    fetchOrders(token).then(orders => { if (live) setOrderHistory(orders); });
     return () => { live = false; };
   }, [token]);
   useEffect(() => { trackCartOpen({ source: 'page', lineCount: lines.length }); }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -132,6 +177,10 @@ function CartBody() {
       <div className="cp__empty">
         <p>Your cart is empty.</p>
         <Link href="/products/" className="cbtn">Browse products</Link>
+        <p style={{ marginTop: 'var(--space-sm)' }}>
+          <button type="button" className="clink" onClick={() => setShowHistory(v => !v)} aria-expanded={showHistory}>Order history</button>
+        </p>
+        {showHistory && <OrderHistoryPanel signedIn={!!token} orders={orderHistory} />}
       </div>
     );
   }
@@ -268,7 +317,11 @@ function CartBody() {
           ) : (
             <button type="button" className="clink clink--muted" onClick={() => setConfirmClear(true)}>Clear cart</button>
           )}
+          <button type="button" className="clink cp__histbtn" onClick={() => setShowHistory(v => !v)} aria-expanded={showHistory}>
+            <ClockCounterClockwise size={18} weight="light" aria-hidden="true" /> Order history
+          </button>
         </div>
+        {showHistory && <OrderHistoryPanel signedIn={!!token} orders={orderHistory} />}
       </div>
 
       <aside className="cp__aside cp__panel" aria-label="Your details">

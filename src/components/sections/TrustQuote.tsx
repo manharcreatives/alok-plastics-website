@@ -108,7 +108,7 @@ export default function TrustQuote() {
       {/* placeholder grid + optional photo (generated later; renders nothing until it exists) */}
       <div className="tq-bg" aria-hidden="true">
         <div className="tq-bg-grid" />
-        <div className="tq-bg-photo"><PhotoBg src="/images/backgrounds/why-choose-us.webp" opacity={0.14} position="center right" /></div>
+        <div className="tq-bg-photo"><PhotoBg src="/images/backgrounds/why-choose-us.webp" opacity={0.35} position="center right" /></div>
       </div>
 
       <div className="tq-wrap">

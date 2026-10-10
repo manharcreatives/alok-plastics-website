@@ -67,6 +67,7 @@
 
 /* ───────────── part grid + plate card ───────────── */
 .p-grid { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-sm); grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 399px) { .p-grid { grid-template-columns: minmax(0, 1fr); } }
 @media (min-width: 720px) { .p-grid { gap: var(--space-md); grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (min-width: 1400px) { .p-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 .p-grid > li { min-width: 0; }

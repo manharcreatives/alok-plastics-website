@@ -99,6 +99,44 @@ final class AlokConfig
         $dir = self::get('public_data_dir');
         return is_string($dir) && $dir !== '' ? rtrim($dir, '/\\') : dirname(__DIR__, 2) . '/data';
     }
+
+    /**
+     * Update a user's bcrypt hash in config.php by re-exporting the config array.
+     * Returns true on success.
+     */
+    public static function updateUserHash(string $username, string $newHash): bool
+    {
+        $file = self::configFile();
+        if (!is_file($file) || !is_writable($file)) {
+            return false;
+        }
+        // Load the raw config array via isolated closure (avoids class method recursion)
+        $cfg = (static function (string $f) { return require $f; })($file);
+        if (!is_array($cfg)) {
+            return false;
+        }
+        $lower = strtolower($username);
+        $found = false;
+        foreach ($cfg['users'] ?? [] as $k => &$u) {
+            if (strtolower((string) $k) === $lower && is_array($u)) {
+                $u['hash'] = $newHash;
+                $found     = true;
+                break;
+            }
+        }
+        unset($u);
+        if (!$found) {
+            return false;
+        }
+        try {
+            $php = "<?php\nreturn " . var_export($cfg, true) . ";\n";
+            AlokFs::atomicWrite($file, $php);
+            self::$cfg = null; // invalidate cache
+            return true;
+        } catch (Throwable) {
+            return false;
+        }
+    }
 }
 
 /* ── Filesystem helpers ────────────────────────────────────────────────────── */

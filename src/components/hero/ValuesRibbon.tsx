@@ -126,7 +126,7 @@ const CSS = `
 }
 @media (max-width: 767px) {
   .ps { padding: var(--space-lg) 0; }
-  .ps__sheet { padding: 0 var(--space-sm); }
+  .ps__sheet { padding: 0 var(--grid-page-padding); }
   .ps__field { grid-template-columns: 64px 1fr; }
 }
 @media (prefers-reduced-motion: reduce) {

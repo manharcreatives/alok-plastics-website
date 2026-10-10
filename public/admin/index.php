@@ -49,6 +49,12 @@ function route(): void
     if ($r === 'login') {
         action_login($isPost);
     }
+    if ($r === 'forgot_password') {
+        action_forgot_password($isPost);
+    }
+    if ($r === 'reset_password') {
+        action_reset_password($isPost);
+    }
 
     $user = AlokAuth::user();
     if ($user === null) {
@@ -108,6 +114,106 @@ function action_login(bool $isPost): never
         }
     }
     render('login', ['title' => 'Sign in', 'bare' => true, 'error' => $error, 'username' => $username], $error ? 401 : 200);
+}
+
+function action_forgot_password(bool $isPost): never
+{
+    if (AlokAuth::user() !== null) {
+        redirect(u());
+    }
+    $error    = null;
+    $username = '';
+    $resetUrl = null;
+
+    if ($isPost) {
+        if (!AlokAuth::csrfOk()) {
+            $error = 'The form expired. Please try again.';
+        } else {
+            $username = mb_strtolower(mb_substr(trim((string) ($_POST['username'] ?? '')), 0, 60));
+            // Always appear to "submit" — never reveal whether a username exists
+            if ($username !== '') {
+                $token = AlokAuth::generateResetToken($username);
+                if ($token !== null) {
+                    $path = u('reset_password', ['t' => $token]);
+                    $site = rtrim((string) AlokShop::cfg('ALOK_SITE_URL'), '/');
+                    $abs  = ($site !== '' ? $site : '') . '/admin/' . ltrim($path, '/');
+                    // The link goes to the owner's inbox only. It is never shown to the requester,
+                    // otherwise anyone who knows a username could take over the account.
+                    $sent = AlokShop::mailClient(
+                        'Alok Plastics admin: password reset',
+                        "A password reset was requested for admin user \"{$username}\".
+
+Open this link within 15 minutes to choose a new password:
+{$abs}
+
+If you did not ask for this, ignore this email; nothing changes.",
+                    );
+                    // Local development only (no mail server): show the link on screen.
+                    if (!$sent && in_array(AlokAuth::clientIp(), ['127.0.0.1', '::1'], true)) {
+                        $resetUrl = $path;
+                    }
+                    AlokStore::open()->audit($username, 'pwd_reset_requested', '', $sent ? 'emailed' : 'mail not sent', AlokAuth::clientIp());
+                }
+            }
+        }
+    }
+
+    render('forgot_password', [
+        'title'    => 'Reset password', 'bare' => true,
+        'submitted' => $isPost && $error === null,
+        'error'    => $error, 'username' => $username, 'resetUrl' => $resetUrl,
+    ], $error ? 400 : 200);
+}
+
+function action_reset_password(bool $isPost): never
+{
+    if (AlokAuth::user() !== null) {
+        redirect(u());
+    }
+    $token    = mb_substr(trim((string) ($_GET['t'] ?? '')), 0, 128);
+    $error    = null;
+    $username = $token !== '' ? AlokAuth::peekResetToken($token) : null;
+
+    if ($username === null) {
+        render('reset_password', [
+            'title' => 'Reset password', 'bare' => true,
+            'invalid' => true, 'error' => null, 'username' => null, 'token' => '',
+        ]);
+    }
+
+    if ($isPost) {
+        if (!AlokAuth::csrfOk()) {
+            $error = 'The form expired. Please try again.';
+        } else {
+            $pw  = (string) ($_POST['password'] ?? '');
+            $pw2 = (string) ($_POST['password2'] ?? '');
+            if (strlen($pw) < 10) {
+                $error = 'Password must be at least 10 characters.';
+            } elseif ($pw !== $pw2) {
+                $error = 'Passwords do not match.';
+            } else {
+                $consumed = AlokAuth::consumeResetToken($token);
+                if ($consumed === null) {
+                    $error = 'This reset link has expired or has already been used. Please request a new one.';
+                } else {
+                    $newHash = password_hash($pw, PASSWORD_BCRYPT, ['cost' => 10]);
+                    if (!AlokConfig::updateUserHash($consumed, $newHash)) {
+                        $error = 'Could not update the password. Please ask your server administrator to reset it manually.';
+                    } else {
+                        AlokStore::open()->audit($consumed, 'password_reset', '', '', AlokAuth::clientIp());
+                        AlokAuth::start();
+                        flash_set('ok', 'Password updated. Please sign in with your new password.');
+                        redirect(u('login'));
+                    }
+                }
+            }
+        }
+    }
+
+    render('reset_password', [
+        'title'    => 'Reset password', 'bare' => true,
+        'invalid'  => false, 'error' => $error, 'username' => $username, 'token' => $token,
+    ], $error ? 400 : 200);
 }
 
 function action_logout(array $user, bool $isPost): never
@@ -358,5 +464,46 @@ function page_role_delete(array $user, bool $isPost): never
 
 function page_audit(array $user, bool $isPost): never
 {
-    render('audit', ['title' => 'Activity log', 'nav' => 'audit', 'user' => $user, 'entries' => AlokStore::open()->auditTail(200)]);
+    $q       = mb_substr(trim((string) ($_GET['q']      ?? '')), 0, 80);
+    $fAction = mb_substr(trim((string) ($_GET['action'] ?? '')), 0, 40);
+    $fUser   = mb_strtolower(mb_substr(trim((string) ($_GET['user'] ?? '')), 0, 60));
+    $fFrom   = preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) ($_GET['from'] ?? '')) === 1 ? (string) $_GET['from'] : '';
+    $fTo     = preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) ($_GET['to']   ?? '')) === 1 ? (string) $_GET['to']   : '';
+    $hasFilter = $q !== '' || $fAction !== '' || $fUser !== '' || $fFrom !== '' || $fTo !== '';
+
+    // Read a larger pool when a filter is active so we can match across more history.
+    $pool = AlokStore::open()->auditTail($hasFilter ? 2000 : 200);
+
+    // Collect distinct values for filter drop-downs (from the same pool).
+    $actionTypes = [];
+    $userNames   = [];
+    foreach ($pool as $en) {
+        if (($a = (string) ($en['action'] ?? '')) !== '') $actionTypes[$a] = true;
+        if (($u = (string) ($en['user']   ?? '')) !== '') $userNames[$u]   = true;
+    }
+    ksort($actionTypes);
+    ksort($userNames);
+
+    $entries = $pool;
+    if ($hasFilter) {
+        $fromTs = $fFrom !== '' ? (int) strtotime($fFrom . ' 00:00:00') : null;
+        $toTs   = $fTo   !== '' ? (int) strtotime($fTo   . ' 23:59:59') : null;
+        $entries = array_values(array_filter($pool, static function (array $en) use ($q, $fAction, $fUser, $fromTs, $toTs): bool {
+            $ts = (int) ($en['ts'] ?? 0);
+            if ($fromTs !== null && $ts < $fromTs) return false;
+            if ($toTs   !== null && $ts > $toTs)   return false;
+            if ($fUser !== '' && strtolower((string) ($en['user'] ?? '')) !== $fUser) return false;
+            if ($fAction !== '' && (string) ($en['action'] ?? '') !== $fAction) return false;
+            if ($q !== '') {
+                $hay = ($en['action'] ?? '') . ' ' . ($en['user'] ?? '') . ' ' . ($en['target'] ?? '') . ' ' . ($en['detail'] ?? '');
+                if (mb_stripos($hay, $q) === false) return false;
+            }
+            return true;
+        }));
+        $entries = array_slice($entries, 0, 200);
+    }
+
+    render('audit', ['title' => 'Activity log', 'nav' => 'audit', 'user' => $user, 'entries' => $entries,
+        'q' => $q, 'fAction' => $fAction, 'fUser' => $fUser, 'fFrom' => $fFrom, 'fTo' => $fTo,
+        'actionTypes' => array_keys($actionTypes), 'userNames' => array_keys($userNames), 'hasFilter' => $hasFilter]);
 }

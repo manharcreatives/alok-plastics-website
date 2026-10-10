@@ -27,6 +27,14 @@ export interface PlacedOrder {
   waText: string;
 }
 
+export interface OrderHistoryItem {
+  code: string;
+  createdAt: number;
+  total: number | null;
+  status: string;
+  itemCount: number;
+}
+
 export type ApiFailure =
   | { ok: false; kind: 'validation'; errors: Record<string, string>; message?: string }
   | { ok: false; kind: 'invalid'; message: string }
@@ -162,12 +170,20 @@ let current: Session | null = null;
 let loaded = false;
 const listeners = new Set<() => void>();
 
+interface StoredSession extends Session {
+  expiresAt?: number;
+}
+
 function readStored(): Session | null {
   try {
     const raw = window.localStorage.getItem(SESSION_KEY);
     if (!raw) return null;
-    const j = JSON.parse(raw) as Partial<Session> | null;
+    const j = JSON.parse(raw) as Partial<StoredSession> | null;
     if (j && typeof j.token === 'string' && /^[a-f0-9]{64}$/.test(j.token) && typeof j.name === 'string' && typeof j.phone === 'string') {
+      if (typeof j.expiresAt === 'number' && j.expiresAt < Date.now()) {
+        try { window.localStorage.removeItem(SESSION_KEY); } catch { /* ignore */ }
+        return null;
+      }
       return { token: j.token, name: j.name, phone: j.phone };
     }
   } catch {
@@ -194,8 +210,12 @@ function ensureLoaded(): void {
 export function setSession(s: Session | null): void {
   current = s;
   try {
-    if (s) window.localStorage.setItem(SESSION_KEY, JSON.stringify(s));
-    else window.localStorage.removeItem(SESSION_KEY);
+    if (s) {
+      const stored: StoredSession = { ...s, expiresAt: Date.now() + 30 * 24 * 60 * 60 * 1000 };
+      window.localStorage.setItem(SESSION_KEY, JSON.stringify(stored));
+    } else {
+      window.localStorage.removeItem(SESSION_KEY);
+    }
   } catch {
     current = s;
   }
@@ -221,6 +241,13 @@ function snapshot(): Session | null {
 
 export function useSession(): Session | null {
   return useSyncExternalStore(subscribe, snapshot, () => null);
+}
+
+export async function fetchOrders(token: string): Promise<OrderHistoryItem[]> {
+  const r = await post(ORDER_ENDPOINT, { action: 'list' }, token);
+  if (!r || r.status !== 200 || !r.json.ok) return [];
+  const orders = r.json.orders;
+  return Array.isArray(orders) ? (orders as OrderHistoryItem[]) : [];
 }
 
 export function maskPhone(phone: string): string {

@@ -23,6 +23,7 @@
       </div>
       <button class="btn btn-primary btn-block" type="submit">Sign in</button>
     </form>
+    <p class="meta"><a href="<?= e(u('forgot_password')) ?>">Forgot password?</a></p>
     <p class="meta">Private area for Alok Plastics staff. Activity is logged.</p>
   </div>
 </section>

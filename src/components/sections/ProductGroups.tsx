@@ -115,7 +115,7 @@ export default function ProductGroups() {
       <style>{CSS}</style>
       <FoldEdge variant="diag" />
       <div aria-hidden="true" className="pg-bg">
-        <PhotoBg src="/images/backgrounds/products-section.webp" opacity={0.14} />
+        <PhotoBg src="/images/backgrounds/products-section.webp" opacity={0.22} />
       </div>
       <div className="pg-in">
         <SectionHeader

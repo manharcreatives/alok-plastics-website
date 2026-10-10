@@ -30,7 +30,7 @@ export const site: SiteConfig = {
     phone2: '+91 99157 45414',  // client catalogue — secondary line
     whatsapp: process.env.NEXT_PUBLIC_CLIENT_WHATSAPP || '917479497003',
     email: 'alokplastics24@gmail.com', // client catalogue — verified
-    mapsUrl: null,     // TODO(client): Google Maps place URL or embed URL
+    mapsUrl: null,     // TODO(client): exact Google Maps place URL (the map falls back to an address search until set)
     gstin: null,       // TODO(client): GSTIN
     geo: null,         // TODO(client): { lat, lng } of the unit — JSON-LD omits geo until set
   },
@@ -44,12 +44,11 @@ export const site: SiteConfig = {
       mode: 'video',   // 'auto' | 'video' | 'poster' | 'ambient'
       // 'auto' → video if sources exist + device qualifies; else poster; else ambient
       video: {
-        webm: null, // no VP9 build of the 74s film; H.264 mp4 plays everywhere
-        // (old 40s hero.webm is stale - delete public/media/hero.webm)
-        mp4: '/media/hero.mp4',
-        mobileMp4: null,   // TODO(client): optional ≤800KB mobile version
+        webm: null, // H.264 mp4 plays everywhere
+        mp4: '/media/alok-hero.mp4',
+        mobileMp4: '/media/alok-hero-mobile.mp4', // 854px, ~5MB
       },
-      poster: '/media/hero-poster.jpg', // first frame of the hero film (Flow-generated, 1920x1080)
+      poster: '/media/alok-hero-poster.jpg', // first frame of the hero film, 1920px
       photo: '/images/hero/home.webp', // generated 16:9 still (1920x1080); see docs/images/manifest.hero-home.json
       // 'dark' = white text + bright logo in navbar. Required whenever footage plays:
       // measured across the full loop, --ink over the scrim lands between 1.25:1 and
@@ -59,7 +58,7 @@ export const site: SiteConfig = {
     eyebrow: 'Alok Plastics · Spare parts',
     headline: ['Every cold glass', 'starts with a part', 'you never see.'],
     headlineAccent: 'you never see.',
-    sub: 'We make the parts inside water coolers, display counters and deep freezers: float valves, F-bushes, connecting bushes, gaskets and more, in nylon, HDPE, PPCP and brass.',
+    sub: 'We make the parts inside water coolers, display counters and deep freezers: float valves, F-bushes, connecting bushes, gaskets and more, in nylon, HDPE, PPCP and brass. Need something specific? We also manufacture custom parts to your sample or drawing.',
     ctas: {
       primary: 'Send Your Requirement',
       tertiary: 'Browse products',
@@ -124,7 +123,7 @@ export const site: SiteConfig = {
 
   social: {
     instagram: null,  // TODO(client)
-    linkedin: null,   // TODO(client)
+    linkedin: 'https://www.linkedin.com/company/alokplastics/',
     facebook: null,   // TODO(client)
     youtube: null,    // TODO(client)
   },
@@ -181,6 +180,12 @@ export function isEmbeddableMapsUrl(url: string): boolean {
 export function mapsHref(c: Contact = site.contact): string {
   if (c.mapsUrl && !isEmbeddableMapsUrl(c.mapsUrl)) return c.mapsUrl;
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(formatAddress(c))}`;
+}
+
+/** Keyless Google Maps iframe URL built from the address (or the place URL's own embed form when set). */
+export function mapsEmbedHref(c: Contact = site.contact): string {
+  if (c.mapsUrl && isEmbeddableMapsUrl(c.mapsUrl)) return c.mapsUrl;
+  return `https://www.google.com/maps?q=${encodeURIComponent(`${site.name}, ${formatAddress(c)}`)}&z=16&output=embed`;
 }
 
 export const MAPS_ARIA_LABEL = 'Open Alok Plastics location in Google Maps';

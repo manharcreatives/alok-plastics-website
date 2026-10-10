@@ -1,6 +1,6 @@
 'use client';
 
-import { useId, useMemo, useRef, useState, type FormEvent } from 'react';
+import { useEffect, useId, useMemo, useRef, useState, type FormEvent } from 'react';
 import { CheckCircle } from '@phosphor-icons/react/dist/csr/CheckCircle';
 import { PaperPlaneTilt } from '@phosphor-icons/react/dist/csr/PaperPlaneTilt';
 import { careerConfig } from '@/content/career';
@@ -74,6 +74,20 @@ export default function CareerApplyForm() {
     const roles = runtimeRoles.length > 0 ? runtimeRoles.map(r => r.title) : careerConfig.openRoles.filter(r => r.published).map(r => r.title);
     return [...roles, GENERAL];
   }, [runtimeRoles]);
+
+  /* "Apply now" in the roles table preselects that role here and moves focus to the first field. */
+  useEffect(() => {
+    const onApply = (e: Event) => {
+      const title = (e as CustomEvent<{ title?: string }>).detail?.title;
+      const form = formRef.current;
+      if (!title || !form) return;
+      const sel = form.elements.namedItem('position');
+      if (sel instanceof HTMLSelectElement) sel.value = title;
+      window.setTimeout(() => form.querySelector<HTMLElement>('[name="name"]')?.focus({ preventScroll: true }), 500);
+    };
+    window.addEventListener('alok:apply-role', onApply);
+    return () => window.removeEventListener('alok:apply-role', onApply);
+  }, []);
 
   const id = (k: string) => `${uid}-${k}`;
   const attrs = (k: string) => ({
