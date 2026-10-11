@@ -71,6 +71,7 @@ try {
         'total' => AlokShop::orderTotal($items),
         'note' => $note,
         'status' => 'pending',
+        'auto_wa' => 1,
         'notes' => [],
         'ip' => $ip,
     ]);

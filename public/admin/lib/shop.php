@@ -116,6 +116,27 @@ final class AlokCollection
         });
     }
 
+    /** Read-modify-write one row under the collection lock; $fn gets the row and returns the new row (or null to leave it). */
+    public function mutate(int $id, callable $fn): ?array
+    {
+        return $this->lock(function () use ($id, $fn): ?array {
+            $rows = $this->read();
+            $hit = null;
+            foreach ($rows as $i => $r) {
+                if ((int) $r['id'] === $id) {
+                    $new = $fn($r);
+                    if (is_array($new)) {
+                        $rows[$i] = $hit = array_replace($new, ['id' => $id, 'updated_at' => time()]);
+                    }
+                }
+            }
+            if ($hit !== null) {
+                $this->write($rows);
+            }
+            return $hit;
+        });
+    }
+
     public function delete(int $id): bool
     {
         return (bool) $this->lock(function () use ($id): bool {
@@ -154,6 +175,8 @@ final class AlokShop
             'ALOK_WHATSAPP' => '',
             'ALOK_GAS_URL' => '',
             'ALOK_GAS_SECRET' => '',
+            'ALOK_WHATSAPP_API' => [],
+            'ALOK_BUSINESS' => [],
             'ALOK_OTP' => [],
         ];
         $file = dirname(__DIR__, 2) . '/api/config.php';
@@ -240,7 +263,7 @@ final class AlokShop
         $site = rtrim((string) self::cfg('ALOK_SITE_URL'), '/');
         $origin = rtrim((string) ($_SERVER['HTTP_ORIGIN'] ?? ''), '/');
         $referer = (string) ($_SERVER['HTTP_REFERER'] ?? '');
-        $allowed = array_filter([$site, 'http://localhost:3000', 'http://localhost:3001']);
+        $allowed = array_filter([$site, 'http://localhost:3000', 'http://localhost:3001', 'http://localhost:8080']);
         $okOrigin = in_array($origin, $allowed, true) || ($origin === '' && $site !== '' && str_starts_with($referer, $site));
         if ($origin !== '' && $okOrigin) {
             header('Access-Control-Allow-Origin: ' . $origin);
@@ -354,6 +377,21 @@ final class AlokShop
                     'numbers' => $ten,
                 ]), 'GET', [], null);
                 return $res !== null && $res['status'] >= 200 && $res['status'] < 300 && str_contains($res['body'], 'true');
+            case 'wasender':
+                $api = self::cfg('ALOK_WHATSAPP_API');
+                $apiKey = (string) (($api['key'] ?? '') !== '' ? $api['key'] : $key);
+                if ($apiKey === '') {
+                    return false;
+                }
+                $base = rtrim((string) ($api['base'] ?? 'https://wasenderapi.com'), '/');
+                $res = self::http($base . '/api/send-message', 'POST', [
+                    'Authorization: Bearer ' . $apiKey,
+                    'Content-Type: application/json',
+                ], json_encode([
+                    'to' => $phone,
+                    'text' => 'Your Alok Plastics verification code is ' . $code . '. It is valid for 10 minutes.',
+                ]));
+                return $res !== null && $res['status'] >= 200 && $res['status'] < 300;
             case 'webhook':
                 $url = (string) ($cfg['webhook'] ?? '');
                 if ($url === '') {
@@ -418,6 +456,23 @@ final class AlokShop
     public static function normStatus(string $s): string
     {
         return ['processing' => 'reviewing', 'completed' => 'closed'][$s] ?? $s;
+    }
+
+    /** The stage an order can step back to: the previous one, or for a cancelled order the stage it was cancelled from. */
+    public static function prevStatus(array $o): ?string
+    {
+        $flow = ['pending', 'reviewing', 'quoted', 'confirmed', 'paid', 'dispatched', 'invoiced', 'closed'];
+        $s = self::normStatus((string) $o['status']);
+        if ($s === 'cancelled') {
+            foreach (array_reverse($o['history'] ?? []) as $h) {
+                if (($h['to'] ?? '') === 'cancelled' && in_array(self::normStatus((string) ($h['from'] ?? '')), $flow, true)) {
+                    return self::normStatus((string) $h['from']);
+                }
+            }
+            return 'pending';
+        }
+        $i = array_search($s, $flow, true);
+        return $i === false || $i < 1 ? null : $flow[$i - 1];
     }
 
     /** The one forward step from a stage, or null when the order is finished or cancelled. */
@@ -563,6 +618,8 @@ final class AlokShop
                 return "Hello {$name}, the GST invoice for order {$c} has been issued." . ($has('invoice_no') ? ' Invoice no: ' . $o['invoice_no'] . '.' : '') . ' - Alok Plastics';
             case 'closed':
                 return "Hello {$name}, order {$c} is now closed. Thank you for choosing Alok Plastics!";
+            case 'cancelled':
+                return "Hello {$name}, your enquiry {$c} has been cancelled." . ($has('cancel_reason') ? ' Reason: ' . $o['cancel_reason'] . '.' : '') . ' Please contact us if you would like to place it again. - Alok Plastics';
         }
         return "Hello {$name}, this is Alok Plastics regarding {$c}.";
     }
@@ -645,6 +702,125 @@ final class AlokShop
         return preg_replace('/\D/', '', (string) self::cfg('ALOK_WHATSAPP')) ?? '';
     }
 
+    /** True when a WasenderAPI key is configured, so the admin can send WhatsApp without a phone. */
+    public static function waSendReady(): bool
+    {
+        $api = self::cfg('ALOK_WHATSAPP_API');
+        return is_array($api) && (string) ($api['key'] ?? '') !== '';
+    }
+
+    /** Master switch for sending a WhatsApp message on every status change ($ALOK_WHATSAPP_API['autosend'], on by default). */
+    public static function waAutoEnabled(): bool
+    {
+        $api = self::cfg('ALOK_WHATSAPP_API');
+        return self::waSendReady() && (!is_array($api) || ($api['autosend'] ?? true) !== false);
+    }
+
+    /** @return array{key:string,base:string} */
+    private static function waCredentials(): array
+    {
+        $api = self::cfg('ALOK_WHATSAPP_API');
+        $api = is_array($api) ? $api : [];
+        return ['key' => (string) ($api['key'] ?? ''), 'base' => rtrim((string) ($api['base'] ?? '') ?: 'https://wasenderapi.com', '/')];
+    }
+
+    /** @return array{ok:bool,status:int,msg_id:string,error:string} error is '', 'not_configured', 'network', 'rate_limited' or the gateway's message */
+    private static function waDeliver(array $body): array
+    {
+        $c = self::waCredentials();
+        if ($c['key'] === '' || ($body['to'] ?? '') === '') {
+            return ['ok' => false, 'status' => 0, 'msg_id' => '', 'error' => 'not_configured'];
+        }
+        $res = self::http($c['base'] . '/api/send-message', 'POST', [
+            'Authorization: Bearer ' . $c['key'],
+            'Content-Type: application/json',
+        ], json_encode($body, JSON_UNESCAPED_UNICODE), 30);
+        if ($res === null) {
+            return ['ok' => false, 'status' => 0, 'msg_id' => '', 'error' => 'network'];
+        }
+        $ok = $res['status'] >= 200 && $res['status'] < 300;
+        $j = json_decode($res['body'], true);
+        $j = is_array($j) ? $j : [];
+        $error = $ok ? '' : ($res['status'] === 429 ? 'rate_limited' : (string) ($j['message'] ?? 'HTTP ' . $res['status']));
+        return ['ok' => $ok, 'status' => $res['status'], 'msg_id' => (string) ($j['data']['msgId'] ?? ''), 'error' => $error];
+    }
+
+    /** Send a WhatsApp text through WasenderAPI. $to = digits with country code (e.g. 917435012637). */
+    public static function waSendResult(string $to, string $text): array
+    {
+        $text = trim($text);
+        if ($text === '') {
+            return ['ok' => false, 'status' => 0, 'msg_id' => '', 'error' => 'empty'];
+        }
+        return self::waDeliver(['to' => preg_replace('/\D/', '', $to) ?? '', 'text' => $text]);
+    }
+
+    public static function waSend(string $to, string $text): bool
+    {
+        return self::waSendResult($to, $text)['ok'];
+    }
+
+    /** Upload a PDF to WasenderAPI and send it as a WhatsApp document. $to may be a bare number or a JID. @return array{ok:bool,status:int,msg_id:string,error:string,url:string} */
+    public static function waSendDocument(string $to, string $pdf, string $fileName, string $caption): array
+    {
+        $c = self::waCredentials();
+        $fail = static fn(string $e): array => ['ok' => false, 'status' => 0, 'msg_id' => '', 'error' => $e, 'url' => ''];
+        if ($c['key'] === '') {
+            return $fail('not_configured');
+        }
+        $up = self::http($c['base'] . '/api/upload', 'POST', ['Authorization: Bearer ' . $c['key'], 'Content-Type: application/json'],
+            json_encode(['base64' => 'data:application/pdf;base64,' . base64_encode($pdf)]), 40);
+        $uj = $up !== null ? json_decode($up['body'], true) : null;
+        $url = is_array($uj) ? (string) ($uj['publicUrl'] ?? '') : '';
+        if ($url === '') {
+            error_log('[alok-wa] upload failed: ' . json_encode($up));
+            return $fail($up !== null && $up['status'] === 429 ? 'rate_limited' : 'upload_failed');
+        }
+        $to = str_contains($to, '@') ? $to : (preg_replace('/\D/', '', $to) ?? '');
+        $res = self::waDeliver(['to' => $to, 'text' => $caption, 'documentUrl' => $url, 'fileName' => $fileName]);
+        return $res + ['url' => $url];
+    }
+
+    /** One wa_sends row for an order. */
+    public static function waSendEntry(string $by, string $to, array $res, string $text, string $kind): array
+    {
+        $row = ['at' => time(), 'by' => $by, 'kind' => $kind, 'to' => $to, 'ok' => (bool) $res['ok']];
+        if (($res['msg_id'] ?? '') !== '') {
+            $row['msg_id'] = (string) $res['msg_id'];
+        }
+        $row['text'] = mb_substr($text, 0, 160);
+        return $row;
+    }
+
+    /** Append a send record, an optional sent-PDF record and an optional internal note to an order in one locked write. */
+    public static function logSend(int $orderId, array $send, ?array $pdf = null, ?array $note = null): ?array
+    {
+        return self::orders()->mutate($orderId, static function (array $o) use ($send, $pdf, $note): array {
+            $o['wa_sends'] = array_merge($o['wa_sends'] ?? [], [$send]);
+            if ($pdf !== null) {
+                $o['pdfs'] = array_merge($o['pdfs'] ?? [], [$pdf]);
+            }
+            if ($note !== null) {
+                $o['notes'] = array_merge($o['notes'] ?? [], [$note]);
+            }
+            return $o;
+        });
+    }
+
+    /** Short human reason for a failed send, for flashes and notes. */
+    public static function waReason(array $res): string
+    {
+        return match ($res['error'] ?? '') {
+            '' => '',
+            'not_configured' => 'the WasenderAPI key is not set',
+            'rate_limited' => 'WasenderAPI rate limit reached, try again in a minute',
+            'network' => 'could not reach WasenderAPI',
+            'empty' => 'the message is empty',
+            'upload_failed' => 'the PDF upload to WasenderAPI failed',
+            default => (string) $res['error'],
+        };
+    }
+
     public static function mailClient(string $subject, string $body, string $replyTo = ''): bool
     {
         return self::mailTo((string) self::cfg('ALOK_TO_EMAIL'), $subject, $body, $replyTo);
@@ -694,6 +870,10 @@ final class AlokShop
                 CURLOPT_TIMEOUT => $timeout,
                 CURLOPT_CONNECTTIMEOUT => 8,
             ]);
+            $caFile = dirname(__DIR__, 2) . '/api/lib/cacert.pem';
+            if (is_file($caFile)) {
+                curl_setopt($c, CURLOPT_CAINFO, $caFile);
+            }
             if ($body !== null) {
                 curl_setopt($c, CURLOPT_POSTFIELDS, $body);
                 if ($method === 'POST') {

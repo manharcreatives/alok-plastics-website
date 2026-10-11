@@ -496,3 +496,26 @@ p.card.empty { text-align: center; padding: var(--s6) var(--s5); }
 .badge.tone-info { background: #e8eef7; color: #26405f; }
 a.side-user-role { text-decoration: none; }
 a.side-user-role:hover { text-decoration: underline; }
+
+/* Order screen: auto-send switch, WhatsApp box actions, sent PDFs */
+[hidden] { display: none !important; }
+.auto-wa { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s4); margin: 0 0 var(--s3); }
+.actions { display: flex; flex-wrap: wrap; gap: var(--s2); margin: var(--s3) 0 0; }
+.pdf-list { list-style: none; margin: 0 0 var(--s3); padding: 0; display: grid; gap: var(--s3); }
+.pdf-item { border: 1px solid var(--grey-cloud); border-radius: 12px; padding: var(--s3); background: var(--surface); }
+.pdf-head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s3); }
+.pdf-no { font-weight: 700; }
+.pdf-form { margin-top: var(--s4); padding-top: var(--s4); border-top: 1px solid var(--grey-cloud); }
+.pdf-sec { font: 600 var(--fs-sm, .875rem)/1.4 var(--font-body); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: var(--s4) 0 var(--s2); display: flex; flex-wrap: wrap; gap: var(--s1, 4px) var(--s3); align-items: baseline; }
+.pdf-sec .meta { text-transform: none; letter-spacing: 0; }
+.pdf-form > .pdf-sec:first-of-type { margin-top: 0; font-size: var(--fs-md, 1rem); text-transform: none; letter-spacing: 0; color: var(--ink); }
+.pdf-grid { display: grid; gap: 0 var(--s4); grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); }
+.pdf-grid .pdf-wide { grid-column: 1 / -1; }
+.pdf-form .table-wrap { margin-bottom: var(--s3); }.pdf-lines { border-bottom: 1px solid var(--grey-cloud); margin-bottom: var(--s3); }
+.pdf-line { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--s2); padding: var(--s3) 0; border-top: 1px solid var(--grey-cloud); }
+.pdf-line input { min-width: 0; width: 100%; }
+.pdf-desc { grid-column: 1 / -1; display: flex; gap: var(--s2); align-items: center; }
+.pdf-desc input { flex: 1; }
+.pdf-rm:empty { display: none; }
+.pdf-form .pdf-lines + .btn { margin-bottom: var(--s4); }
+@media (max-width: 520px) { .pdf-line { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

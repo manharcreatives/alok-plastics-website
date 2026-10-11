@@ -66,6 +66,15 @@ next-env.d.ts
 /.claude/
 scripts/.cache/
 
+# the HTTPS CA bundle we vendor for Windows PHP is a known PUBLIC file —
+# allow it through the *.pem rule above so fresh clones keep working
+!public/api/lib/cacert.pem
+
+# client-supplied design reference (contains GSTIN + bank details) — local only
+/GST Invoice.html
+# large raw media (edit + commit an encoded/webm copy under public/media instead)
+/hero video.mp4
+
 # runtime data written by /admin/ — mutable, and holds real contact +
 # GSTIN once the client uses the panel. Commit the *.example.json
 # templates instead; runtime-data.ts falls back to src/content/site.ts

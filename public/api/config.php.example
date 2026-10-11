@@ -33,7 +33,39 @@ $ALOK_WHATSAPP = '91XXXXXXXXXX';
 $ALOK_GAS_URL = '';
 $ALOK_GAS_SECRET = '';
 
-// Customer sign-in code (OTP). provider: 'msg91' | 'fast2sms' | 'webhook'. Leave provider empty until an SMS account exists.
+// WasenderAPI — inbound-message webhook + outbound auto-reply (proforma PDF).
+// key    = session Bearer key (Wasender dashboard). secret = Webhook Secret you set in the dashboard.
+// Leave empty to disable the auto-reply webhook.
+$ALOK_WHATSAPP_API = [
+    'key' => '',
+    'secret' => '',
+    'base' => 'https://wasenderapi.com',
+    'autosend' => true, // true = message the customer on WhatsApp whenever an order's status changes (each order also has its own switch)
+];
+
+// Business identity printed on the GST invoice / proforma PDFs, the WhatsApp captions and the admin "send new proforma" form.
+// 'upiqr' = path to the payment QR image (relative to the site root, or absolute). Missing file = the PDF simply has no QR.
+// NOTE (public repo): GSTIN / bank account / IFSC below are PLACEHOLDERS. Real values live in the ignored config.php only.
+$ALOK_BUSINESS = [
+    'name' => 'ALOK PLASTICS',
+    'gstin' => 'XXXXXXXXXXXXXXXX',
+    'tagline' => ['Specialist in :', 'All Type of Plastic, L.D.P, H.H.P.S., A.B.S., Nilon, Rubber, Plastic Molding etc.'],
+    'address' => ['Plot No. 6, Industrial Area, Phase-II, Chandigarh-160002'],
+    'phones' => ['9000000000', '9000000001'],
+    'state' => 'Chandigarh',
+    'bank' => ['BANK DETAIL', 'PUNJAB NATIONAL BANK, Industrial Area, Ph-2, CHD.', 'Account No. : 0000000000000000', 'IFSC Code : PUNBXXXXXXX'],
+    'terms' => [
+        '1. All disputes subject to Chandigarh Jurisdiction only.',
+        '2. Interest @ 18% p.a. will be charged if the bill is not paid within 30 days.',
+        '3. Goods once sold will not be taken back.',
+    ],
+    'copies' => 'White : Original | Pink : Duplicate | Yellow : Triplicate',
+    'proforma_note' => 'This is a proforma invoice, not a tax invoice. Final price, stock and delivery are confirmed by Alok Plastics.',
+    'upiqr' => 'brand/upiqr.png',
+];
+
+// Customer sign-in code (OTP). provider: 'wasender' | 'msg91' | 'fast2sms' | 'webhook'. Leave provider empty until an account exists.
+// wasender: sends the code over WhatsApp using $ALOK_WHATSAPP_API above (no DLT/SMS needed).
 // msg91: key = authkey, template = DLT-approved OTP template id. fast2sms: key = API key.
 // webhook: your own endpoint (n8n, Make, WhatsApp provider) that receives {phone, otp, name, message}.
 // dev_mode true returns the code in the API response for testing ONLY. Never enable it on the live site.

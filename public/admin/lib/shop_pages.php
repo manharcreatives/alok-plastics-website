@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 defined('ALOK_ADMIN') || exit;
 
+require_once dirname(__DIR__, 2) . '/api/lib/proforma.php';
+
 const ALOK_ORDER_TONES = ['pending' => 'tone-warn', 'reviewing' => 'tone-brand', 'quoted' => 'tone-info', 'confirmed' => 'tone-info', 'paid' => 'tone-ok', 'dispatched' => 'tone-info', 'invoiced' => 'tone-brand', 'closed' => 'tone-ok', 'cancelled' => 'tone-muted'];
 const ALOK_APPLICATION_TONES = ['new' => 'tone-brand', 'reviewing' => 'tone-info', 'shortlisted' => 'tone-warn', 'hired' => 'tone-ok', 'rejected' => 'tone-muted'];
 
@@ -50,6 +52,150 @@ function shop_add_note(array $user, string $text): ?array
         return null;
     }
     return ['at' => time(), 'by' => $user['name'], 'text' => $text];
+}
+
+/** Send a WhatsApp text to the order's customer and record it (wa_sends, internal note, audit). $kind: 'manual' | 'auto'. */
+function shop_wa_text(array $user, array $o, string $text, string $kind): array
+{
+    $res = AlokShop::waSendResult((string) $o['phone'], $text);
+    $how = $kind === 'auto' ? 'automatically after the status change' : 'from the order screen';
+    $note = shop_add_note($user, $res['ok'] ? 'WhatsApp message sent ' . $how . '.' : 'WhatsApp message not sent ' . $how . ': ' . AlokShop::waReason($res) . '.');
+    AlokShop::logSend((int) $o['id'], AlokShop::waSendEntry((string) $user['name'], (string) $o['phone'], $res, $text, $kind), null, $note);
+    AlokStore::open()->audit($user['username'], 'order_whatsapp', $o['code'], $res['ok'] ? 'sent' : 'failed: ' . AlokShop::waReason($res), AlokAuth::clientIp());
+    return $res;
+}
+
+function shop_last_invoice_no(array $o): ?string
+{
+    foreach (array_reverse($o['pdfs'] ?? []) as $p) {
+        if (($p['type'] ?? '') === 'invoice' && ($p['no'] ?? '') !== '') {
+            return (string) $p['no'];
+        }
+    }
+    return null;
+}
+
+/** Starting values for the PDF form: the order's own data over the business defaults. */
+function shop_pdf_defaults(array $o, string $type): array
+{
+    $items = [];
+    foreach ($o['items'] as $it) {
+        $variant = trim((string) ($it['variant'] ?? ''));
+        $items[] = [
+            'name' => trim((string) $it['name'] . ($variant !== '' ? ' - ' . $variant : '')),
+            'hsn' => '',
+            'qty' => (int) $it['qty'],
+            'unit' => (string) ($it['unit'] ?? 'pcs'),
+            'price' => isset($it['price']) && is_numeric($it['price']) ? (float) $it['price'] : null,
+        ];
+    }
+    return [
+        'type' => $type,
+        'no' => $type === 'invoice' ? (string) ($o['invoice_no'] ?? '') : '',
+        'date' => AlokShop::fmt(time(), 'd-m-Y'),
+        'customer' => ['name' => (string) $o['name'], 'phone' => (string) $o['phone'], 'address' => (string) ($o['address'] ?? ''), 'state' => (string) alokBusiness()['state'], 'gstin' => ''],
+        'mode' => 'ut',
+        'rate' => 18.0,
+        'items' => $items,
+        'note' => '',
+        'transport' => [
+            'transporter' => (string) ($o['transporter'] ?? ''),
+            'gr_no' => (string) ($o['lr_no'] ?? ''),
+            'gr_dt' => !empty($o['dispatched_at']) ? AlokShop::fmt((int) $o['dispatched_at'], 'd-m-Y') : '',
+        ],
+    ];
+}
+
+/** @return array{error:string}|array{type:string,no:string,date:string,payload:array} */
+function shop_pdf_from_post(): array
+{
+    $c = static fn(string $k, int $max = 120, bool $multi = false): string => AlokShop::clean($_POST[$k] ?? '', $max, $multi);
+    $type = ($_POST['type'] ?? '') === 'invoice' ? 'invoice' : 'proforma';
+    $mode = in_array($_POST['mode'] ?? '', ['intra', 'inter', 'ut'], true) ? (string) $_POST['mode'] : 'ut';
+    $rate = trim((string) ($_POST['rate'] ?? '18'));
+    $name = $c('c_name', 80);
+    $phone = AlokShop::phone($c('c_phone', 30));
+    $errs = [];
+    if (mb_strlen($name) < 2) $errs[] = 'Enter the customer name.';
+    if ($phone === null) $errs[] = 'Enter a valid 10-digit WhatsApp number.';
+    if (!is_numeric($rate) || (float) $rate < 0 || (float) $rate > 40) $errs[] = 'GST % must be between 0 and 40.';
+    $date = $c('doc_date', 10);
+    if (preg_match('/^\d{2}-\d{2}-\d{4}$/', $date) !== 1) $date = AlokShop::fmt(time(), 'd-m-Y');
+    $no = $c('doc_no', 40);
+    if ($no !== '' && preg_match('#^[A-Za-z0-9/_.\- ]+$#', $no) !== 1) $errs[] = 'The document number may only use letters, digits, / - . and _.';
+
+    $names = (array) ($_POST['it_name'] ?? []);
+    $items = [];
+    foreach (array_slice($names, 0, 60, true) as $i => $n) {
+        $n = AlokShop::clean($n, 160);
+        if ($n === '') {
+            continue;
+        }
+        $qty = trim((string) (((array) ($_POST['it_qty'] ?? []))[$i] ?? ''));
+        $price = trim((string) (((array) ($_POST['it_price'] ?? []))[$i] ?? ''));
+        if (!is_numeric($qty) || (float) $qty <= 0 || (float) $qty > 10000000) {
+            $errs[] = 'Enter a quantity above 0 for "' . mb_substr($n, 0, 40) . '".';
+            continue;
+        }
+        if ($price !== '' && (!is_numeric($price) || (float) $price < 0)) {
+            $errs[] = 'The price for "' . mb_substr($n, 0, 40) . '" must be a number, or blank for "On request".';
+            continue;
+        }
+        $items[] = [
+            'name' => $n,
+            'hsn' => AlokShop::clean(((array) ($_POST['it_hsn'] ?? []))[$i] ?? '', 12),
+            'qty' => (float) $qty == (int) $qty ? (int) $qty : (float) $qty,
+            'unit' => AlokShop::clean(((array) ($_POST['it_unit'] ?? []))[$i] ?? '', 12) ?: 'pcs',
+            'price' => $price === '' ? null : (float) $price,
+        ];
+    }
+    if (!$items) $errs[] = 'Add at least one item.';
+    if ($type === 'invoice' && array_filter($items, static fn(array $it): bool => $it['price'] === null)) {
+        $errs[] = 'A GST invoice needs a price on every line.';
+    }
+    if ($errs) {
+        return ['error' => implode(' ', array_unique($errs))];
+    }
+    $payload = [
+        'customer' => ['name' => $name, 'phone' => $phone, 'address' => $c('c_address', 300, true), 'state' => $c('c_state', 40), 'gstin' => strtoupper($c('c_gstin', 15))],
+        'mode' => $mode,
+        'rate' => (float) $rate,
+        'items' => $items,
+        'note' => $c('note', 300, true),
+        'transport' => ['transporter' => $c('t_transporter', 60), 'gr_no' => $c('t_gr_no', 40), 'gr_dt' => $c('t_gr_dt', 20)],
+    ];
+    return ['type' => $type, 'no' => $no, 'date' => $date, 'payload' => $payload];
+}
+
+function shop_pdf_file(string $type, string $no): string
+{
+    return ($type === 'invoice' ? 'Invoice-' : 'Proforma-') . trim((string) preg_replace('/[^A-Za-z0-9]+/', '-', $no), '-') . '.pdf';
+}
+
+/** Render the PDF from the stored payload and send it to the customer; records the send either way. @return array{ok:bool,message:string} */
+function shop_pdf_send(array $user, array $o, array $doc): array
+{
+    $type = $doc['type'];
+    $label = $type === 'invoice' ? 'GST invoice' : 'proforma invoice';
+    $no = $doc['no'] !== '' ? $doc['no'] : ($type === 'invoice' ? alokInvoiceNo() : alokProformaNo());
+    $payload = $doc['payload'];
+    if ($type === 'invoice') {
+        $payload['invoice_no'] = $no;
+    }
+    $to = (string) $payload['customer']['phone'];
+    $pdf = alokInvoicePdf($payload + ['no' => $no, 'date' => $doc['date']], $type);
+    $caption = alokDocCaption($type, $no, (string) $payload['customer']['name'], (string) $o['code']);
+    $res = AlokShop::waSendDocument($to, $pdf, shop_pdf_file($type, $no), $caption);
+    $entry = null;
+    if ($res['ok']) {
+        $entry = ['type' => $type, 'no' => $no, 'date' => $doc['date'], 'created_at' => time(), 'sent_at' => time(), 'to' => $to, 'url' => $res['url'], 'msg_id' => $res['msg_id'], 'caption' => $caption, 'payload' => $payload];
+    }
+    $note = shop_add_note($user, $res['ok'] ? ucfirst($label) . ' ' . $no . ' sent to ' . $to . ' on WhatsApp.' : ucfirst($label) . ' ' . $no . ' was not sent: ' . AlokShop::waReason($res) . '.');
+    AlokShop::logSend((int) $o['id'], AlokShop::waSendEntry((string) $user['name'], $to, $res, '[PDF] ' . ucfirst($label) . ' ' . $no, 'pdf'), $entry, $note);
+    AlokStore::open()->audit($user['username'], 'order_whatsapp', $o['code'], $res['ok'] ? $label . ' ' . $no . ' sent' : $label . ' ' . $no . ' failed: ' . AlokShop::waReason($res), AlokAuth::clientIp());
+    return $res['ok']
+        ? ['ok' => true, 'message' => ucfirst($label) . ' ' . $no . ' sent to +' . $to . ' on WhatsApp.']
+        : ['ok' => false, 'message' => 'The ' . $label . ' was not sent: ' . AlokShop::waReason($res) . '.'];
 }
 
 function page_orders(array $user, bool $isPost): never
@@ -119,7 +265,7 @@ function page_order(array $user, bool $isPost): never
             } elseif ($new === 'dispatched') {
                 $patch += ['transporter' => $f('transporter', 80), 'lr_no' => $f('lr_no', 60), 'dispatched_at' => time()];
             } elseif ($new === 'invoiced') {
-                $patch += ['invoice_no' => AlokShop::nextInvoiceNo(), 'invoiced_at' => time()];
+                $patch += ['invoice_no' => ((string) ($o['invoice_no'] ?? '') !== '' ? (string) $o['invoice_no'] : (shop_last_invoice_no($o) ?? AlokShop::nextInvoiceNo())), 'invoiced_at' => time()];
             } elseif ($new === 'closed') {
                 $patch['closed_at'] = time();
             }
@@ -136,7 +282,38 @@ function page_order(array $user, bool $isPost): never
             $patch['history'] = $history;
             $updated = AlokShop::orders()->update((int) $o['id'], $patch);
             AlokStore::open()->audit($user['username'], 'order_status', $o['code'], $o['status'] . ' → ' . $new, AlokAuth::clientIp());
-            flash_set('ok', $o['code'] . ' is now "' . ALOK_ORDER_LABELS[$new] . '". Use the WhatsApp button to message the customer.' . ($new === 'invoiced' && $updated ? ' Invoice ' . $updated['invoice_no'] . '.' : ''));
+            $msg = $o['code'] . ' is now "' . ALOK_ORDER_LABELS[$new] . '".' . ($new === 'invoiced' && $updated ? ' Invoice ' . $updated['invoice_no'] . '.' : '');
+            $kind = 'ok';
+            if ($updated !== null && AlokShop::waAutoEnabled() && (int) ($updated['auto_wa'] ?? 1) === 1) {
+                $sent = shop_wa_text($user, $updated, AlokShop::stageMessage($updated), 'auto');
+                if ($sent['ok']) {
+                    $msg .= ' WhatsApp message sent to the customer.';
+                } else {
+                    $kind = 'warn';
+                    $msg .= ' The status is saved, but the WhatsApp message was not sent (' . AlokShop::waReason($sent) . '). Use "Send on WhatsApp" to retry.';
+                }
+            } else {
+                $msg .= ' Use "Send on WhatsApp" to message the customer.';
+            }
+            flash_set($kind, $msg);
+        } elseif ($do === 'back') {
+            $prev = AlokShop::prevStatus($o);
+            if ($prev === null) {
+                flash_set('err', 'This order is already at the first stage.');
+                redirect($self);
+            }
+            $reason = AlokShop::clean($_POST['reason'] ?? '', 300);
+            $patch = ['status' => $prev];
+            $history = $o['history'] ?? [];
+            $history[] = ['at' => time(), 'by' => $user['name'], 'from' => $o['status'], 'to' => $prev, 'back' => true];
+            $patch['history'] = $history;
+            $n = shop_add_note($user, 'Moved back from "' . ALOK_ORDER_LABELS[$o['status']] . '" to "' . ALOK_ORDER_LABELS[$prev] . '"' . ($reason !== '' ? ': ' . $reason : '.'));
+            if ($n !== null) {
+                $patch['notes'] = array_merge($o['notes'] ?? [], [$n]);
+            }
+            AlokShop::orders()->update((int) $o['id'], $patch);
+            AlokStore::open()->audit($user['username'], 'order_status', $o['code'], $o['status'] . ' → ' . $prev . ' (back)', AlokAuth::clientIp());
+            flash_set('ok', $o['code'] . ' moved back to "' . ALOK_ORDER_LABELS[$prev] . '". No WhatsApp message was sent.');
         } elseif ($do === 'note') {
             $note = shop_add_note($user, (string) ($_POST['note'] ?? ''));
             if ($note === null) {
@@ -186,12 +363,77 @@ function page_order(array $user, bool $isPost): never
             AlokShop::orders()->update((int) $o['id'], $patch);
             AlokStore::open()->audit($user['username'], 'order_edit', $o['code'], implode(', ', $changes), AlokAuth::clientIp());
             flash_set('ok', $o['code'] . ' updated (' . implode(', ', $changes) . ').');
+        } elseif ($do === 'wa') {
+            // Send the (edited) message to the customer from the business WhatsApp number via WasenderAPI.
+            $text = AlokShop::clean($_POST['text'] ?? '', 1000, true);
+            if ($text === '') {
+                $text = AlokShop::stageMessage($o);
+            }
+            if (strlen(preg_replace('/\D/', '', (string) $o['phone']) ?? '') < 10) {
+                flash_set('err', 'This order has no valid WhatsApp number. Fix the mobile number under "Edit details" first.');
+                redirect($self);
+            }
+            $res = shop_wa_text($user, $o, $text, 'manual');
+            flash_set($res['ok'] ? 'ok' : 'err', $res['ok']
+                ? 'WhatsApp message sent to ' . $o['name'] . ' (+' . $o['phone'] . ').'
+                : 'The WhatsApp message was not sent: ' . AlokShop::waReason($res) . '.');
+            redirect($self);
+        } elseif ($do === 'auto_wa') {
+            $on = ($_POST['auto_wa'] ?? '0') === '1';
+            if ((int) ($o['auto_wa'] ?? 1) !== (int) $on) {
+                AlokShop::orders()->update((int) $o['id'], ['auto_wa' => (int) $on]);
+                AlokStore::open()->audit($user['username'], 'order_auto_wa', $o['code'], $on ? 'on' : 'off', AlokAuth::clientIp());
+            }
+            flash_set('ok', 'Automatic WhatsApp messages are ' . ($on ? 'ON' : 'OFF') . ' for ' . $o['code'] . '.');
+            redirect($self);
+        } elseif ($do === 'pdf_send') {
+            $doc = shop_pdf_from_post();
+            if (isset($doc['error'])) {
+                flash_set('err', $doc['error']);
+                redirect($self . '#pdfs');
+            }
+            if (!AlokShop::waSendReady()) {
+                flash_set('err', 'The WasenderAPI key is not set, so the PDF cannot be sent.');
+                redirect($self . '#pdfs');
+            }
+            $sent = shop_pdf_send($user, $o, $doc);
+            flash_set($sent['ok'] ? 'ok' : 'err', $sent['message']);
+            redirect($self . '#pdfs');
         }
         redirect($self);
     }
-    $msg = AlokShop::stageMessage($o);
-    $wa = 'https://wa.me/' . $o['phone'] . '?text=' . rawurlencode($msg);
-    render('order', ['title' => 'Enquiry ' . $o['code'], 'nav' => 'orders', 'user' => $user, 'o' => $o, 'wa' => $wa, 'waText' => $msg, 'next' => AlokShop::nextStatus($o['status'])]);
+    $pdfForm = null;
+    $pdfTitle = '';
+    $pick = (string) ($_GET['pdf'] ?? '');
+    if ($pick === 'new' || $pick === 'inv') {
+        $pdfForm = shop_pdf_defaults($o, $pick === 'inv' ? 'invoice' : 'proforma');
+        $pdfTitle = $pick === 'inv' ? 'New GST invoice' : 'New proforma invoice';
+    } elseif (ctype_digit($pick) && is_array(($o['pdfs'] ?? [])[(int) $pick] ?? null)) {
+        $e = $o['pdfs'][(int) $pick];
+        $pdfForm = ['type' => $e['type'] ?? 'proforma', 'no' => $e['no'] ?? '', 'date' => $e['date'] ?? ''] + (array) ($e['payload'] ?? []);
+        $pdfTitle = 'Edit & resend ' . ($e['no'] ?? '');
+    }
+    render('order', ['title' => 'Enquiry ' . $o['code'], 'nav' => 'orders', 'user' => $user, 'o' => $o, 'wa' => 'https://wa.me/' . $o['phone'], 'waText' => AlokShop::stageMessage($o),
+        'waReady' => AlokShop::waSendReady(), 'waAuto' => AlokShop::waAutoEnabled(), 'next' => AlokShop::nextStatus($o['status']), 'prev' => AlokShop::prevStatus($o),
+        'pdfForm' => $pdfForm, 'pdfTitle' => $pdfTitle]);
+}
+
+function page_order_pdf(array $user, bool $isPost): never
+{
+    $o = order_or_404($user);
+    $e = ($o['pdfs'] ?? [])[(int) ($_GET['n'] ?? -1)] ?? null;
+    if (!is_array($e) || !is_array($e['payload'] ?? null)) {
+        render('error', ['title' => 'PDF not found', 'user' => $user, 'message' => 'That PDF is not stored on this order.'], 404);
+    }
+    $type = ($e['type'] ?? '') === 'invoice' ? 'invoice' : 'proforma';
+    $bytes = alokInvoicePdf($e['payload'] + ['no' => (string) $e['no'], 'date' => (string) $e['date']], $type);
+    header_remove('Content-Security-Policy');
+    header("Content-Security-Policy: default-src 'none'; object-src 'self'; style-src 'unsafe-inline'");
+    header('Content-Type: application/pdf');
+    header('Content-Disposition: ' . (isset($_GET['dl']) ? 'attachment' : 'inline') . '; filename="' . shop_pdf_file($type, (string) $e['no']) . '"');
+    header('Content-Length: ' . strlen($bytes));
+    echo $bytes;
+    exit;
 }
 
 function page_order_delete(array $user, bool $isPost): never

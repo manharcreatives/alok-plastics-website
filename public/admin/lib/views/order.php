@@ -29,6 +29,16 @@ $meta = 'Received ' . AlokShop::fmt((int) $o['created_at'], 'l, d M Y, H:i:s') .
 
     <section class="card" aria-labelledby="h-stage">
       <div class="card-head"><h2 class="card-title" id="h-stage">Progress</h2><span class="card-sub"><?= e(ALOK_ORDER_LABELS[$o['status']] ?? $o['status']) ?></span></div>
+      <?php if ($waReady): ?>
+      <form class="auto-wa" method="post" action="<?= e($self) ?>">
+        <?= csrf_field() ?><input type="hidden" name="do" value="auto_wa"><input type="hidden" name="auto_wa" value="0">
+        <label class="switch"><input type="checkbox" name="auto_wa" value="1" data-autosubmit<?= (int) ($o['auto_wa'] ?? 1) === 1 ? ' checked' : '' ?><?= $waAuto ? '' : ' disabled' ?>><span>Auto-send WhatsApp message when status changes</span></label>
+        <button class="btn btn-quiet btn-sm" type="submit"<?= $waAuto ? '' : ' disabled' ?>>Save</button>
+        <?php if (!$waAuto): ?><span class="meta">Switched off for the whole site in api/config.php.</span><?php endif; ?>
+      </form>
+      <?php else: ?>
+      <p class="meta">Automatic WhatsApp messages are off: set the WasenderAPI key in api/config.php.</p>
+      <?php endif; ?>
       <ol class="timeline">
       <?php
       $flow = ['pending', 'reviewing', 'quoted', 'confirmed', 'paid', 'dispatched', 'invoiced', 'closed'];
@@ -36,12 +46,22 @@ $meta = 'Received ' . AlokShop::fmt((int) $o['created_at'], 'l, d M Y, H:i:s') .
       $curIdx = array_search($o['status'], $flow, true);
       foreach ($flow as $i => $st):
           $done = $curIdx !== false && $i <= $curIdx;
-          $when = $st === 'pending' ? (int) $o['created_at'] : (int) ($at[$st] ?? 0);
+          $when = !$done ? 0 : ($st === 'pending' ? (int) $o['created_at'] : (int) ($at[$st] ?? 0));
       ?>
         <li><span class="tl-meta"><?= $when ? e(AlokShop::fmt($when)) : ($done ? '' : 'Not yet') ?></span><span class="tl-text"><?= $done ? '✔ ' : '○ ' ?><?= e(ALOK_ORDER_LABELS[$st]) ?></span></li>
       <?php endforeach; ?>
       <?php if ($o['status'] === 'cancelled'): ?><li><span class="tl-meta">Cancelled</span><span class="tl-text"><?= e($o['cancel_reason'] ?? '') ?></span></li><?php endif; ?>
       </ol>
+      <?php if ($prev !== null): ?>
+      <details class="step-back">
+        <summary class="meta">Go back to "<?= e(ALOK_ORDER_LABELS[$prev]) ?>"</summary>
+        <form method="post" action="<?= e($self) ?>" data-confirm="Move this order back to &quot;<?= e(ALOK_ORDER_LABELS[$prev]) ?>&quot;? The customer is not messaged.">
+          <?= csrf_field() ?><input type="hidden" name="do" value="back">
+          <div class="field"><label for="back-reason">Reason (optional)</label><input id="back-reason" name="reason" type="text" maxlength="300" placeholder="e.g. Moved by mistake"></div>
+          <button class="btn btn-secondary" type="submit">Move back to "<?= e(ALOK_ORDER_LABELS[$prev]) ?>"</button>
+        </form>
+      </details>
+      <?php endif; ?>
       <?php
       $facts = [];
       if (($o['quote_amount'] ?? null) !== null && $o['quote_amount'] !== '') $facts['Quote'] = 'Rs. ' . number_format((float) $o['quote_amount'], 0) . (($o['quote_note'] ?? '') !== '' ? ' · ' . $o['quote_note'] : '');
@@ -86,11 +106,126 @@ $meta = 'Received ' . AlokShop::fmt((int) $o['created_at'], 'l, d M Y, H:i:s') .
     </section>
 
     <section class="card" aria-labelledby="h-msg">
-      <div class="card-head"><h2 class="card-title" id="h-msg">Message the customer</h2><span class="card-sub">Opens WhatsApp with this text ready; you press Send</span></div>
-      <label for="wa-text" class="sr-only">Message</label>
-      <textarea id="wa-text" rows="4" readonly><?= e($waText) ?></textarea>
-      <p><a class="btn btn-wa" href="<?= e($wa) ?>" target="_blank" rel="noopener noreferrer"><?= icon('chat') ?>Send on WhatsApp</a></p>
+      <div class="card-head"><h2 class="card-title" id="h-msg">Message the customer</h2><span class="card-sub">Edit the text, then send it from the business WhatsApp</span></div>
+      <form method="post" action="<?= e($self) ?>" data-confirm="Send this message to +<?= e($o['phone']) ?> on WhatsApp now?">
+        <?= csrf_field() ?><input type="hidden" name="do" value="wa">
+        <label for="wa-text" class="sr-only">Message</label>
+        <textarea id="wa-text" name="text" rows="5" maxlength="1000" required><?= e($waText) ?></textarea>
+        <?php if (!$waReady): ?><p class="meta">Sending is off: set the WasenderAPI key in api/config.php.</p><?php endif; ?>
+        <p class="actions">
+          <button class="btn btn-wa" type="submit"<?= $waReady ? '' : ' disabled' ?>><?= icon('chat') ?>Send on WhatsApp</button>
+          <?php if (($o['transporter'] ?? '') !== '' || ($o['lr_no'] ?? '') !== ''): ?>
+          <button class="btn btn-secondary" type="button" data-append-to="wa-text" data-append="<?= e('Dispatch: ' . trim(($o['transporter'] ?? '') . ((($o['transporter'] ?? '') !== '' && ($o['lr_no'] ?? '') !== '') ? ', ' : '') . (($o['lr_no'] ?? '') !== '' ? 'LR ' . $o['lr_no'] : ''))) ?>">Add dispatch link</button>
+          <?php endif; ?>
+        </p>
+      </form>
+      <?php if (!empty($o['wa_sends'])): ?>
+      <details>
+        <summary class="meta">Recent WhatsApp sends (<?= count($o['wa_sends']) ?>)</summary>
+        <ol class="timeline">
+          <?php foreach (array_slice(array_reverse($o['wa_sends']), 0, 8) as $w): ?>
+            <li><span class="tl-meta"><?= e(AlokShop::fmt((int) ($w['at'] ?? 0))) ?> · <span class="tl-who"><?= e($w['by'] ?? '') ?></span> · <?= !empty($w['ok']) ? 'sent' : 'failed' ?></span><span class="tl-text"><?= e($w['text'] ?? '') ?></span></li>
+          <?php endforeach; ?>
+        </ol>
+      </details>
+      <?php endif; ?>
     </section>
+
+    <?php endif; ?>
+
+    <section class="card" id="pdfs" aria-labelledby="h-pdfs">
+      <div class="card-head"><h2 class="card-title" id="h-pdfs">Proforma &amp; GST invoices</h2><span class="card-sub">PDFs sent on WhatsApp</span></div>
+      <?php if (!($o['pdfs'] ?? [])): ?>
+        <p class="empty">No PDF has been sent for this order yet.</p>
+      <?php else: ?>
+      <ul class="pdf-list">
+        <?php foreach (array_reverse($o['pdfs'], true) as $n => $p): ?>
+        <li class="pdf-item">
+          <div class="pdf-head">
+            <span class="badge <?= ($p['type'] ?? '') === 'invoice' ? 'tone-brand' : 'tone-info' ?>"><?= ($p['type'] ?? '') === 'invoice' ? 'GST Invoice' : 'Proforma' ?></span>
+            <strong class="pdf-no"><?= e($p['no'] ?? '') ?></strong>
+          </div>
+          <p class="meta"><?= e($p['date'] ?? '') ?> · sent to +<?= e($p['to'] ?? '') ?> · <?= e(AlokShop::fmt((int) ($p['sent_at'] ?? 0))) ?></p>
+          <p class="actions">
+            <a class="btn btn-secondary btn-sm" href="<?= e(u('order_pdf', ['id' => $o['id'], 'n' => $n])) ?>" target="_blank" rel="noopener"><?= icon('eye') ?>View</a>
+            <a class="btn btn-secondary btn-sm" href="<?= e(u('order_pdf', ['id' => $o['id'], 'n' => $n, 'dl' => 1])) ?>"><?= icon('download') ?>Download</a>
+            <a class="btn btn-secondary btn-sm" href="<?= e($self . '&pdf=' . (int) $n . '#pdf-form') ?>"><?= icon('file') ?>Edit &amp; Resend</a>
+          </p>
+        </li>
+        <?php endforeach; ?>
+      </ul>
+      <?php endif; ?>
+
+      <?php if ($pdfForm === null): ?>
+      <p class="actions">
+        <a class="btn btn-primary" href="<?= e($self . '&pdf=new#pdf-form') ?>"><?= icon('plus') ?>New proforma</a>
+        <a class="btn btn-secondary" href="<?= e($self . '&pdf=inv#pdf-form') ?>"><?= icon('plus') ?>New GST invoice</a>
+      </p>
+      <?php else: ?>
+      <?php
+      $d = $pdfForm;
+      $c = $d['customer'] ?? [];
+      $t = $d['transport'] ?? [];
+      $rows = $d['items'] ?? [];
+      $rows[] = ['name' => '', 'hsn' => '', 'qty' => '', 'unit' => '', 'price' => null];
+      $rows[] = ['name' => '', 'hsn' => '', 'qty' => '', 'unit' => '', 'price' => null];
+      ?>
+      <form class="pdf-form" id="pdf-form" method="post" action="<?= e($self) ?>#pdfs" data-pdf-form data-confirm="Generate this PDF and send it to the customer on WhatsApp now?">
+        <?= csrf_field() ?><input type="hidden" name="do" value="pdf_send">
+        <h3 class="pdf-sec"><?= e($pdfTitle) ?></h3>
+
+        <div class="pdf-grid">
+          <div class="field"><label for="pf-type">Document</label>
+            <select id="pf-type" name="type" data-pdf-type><option value="proforma"<?= ($d['type'] ?? '') === 'proforma' ? ' selected' : '' ?>>Proforma invoice</option><option value="invoice"<?= ($d['type'] ?? '') === 'invoice' ? ' selected' : '' ?>>GST invoice</option></select></div>
+          <div class="field"><label for="pf-no">Document no.</label><input id="pf-no" name="doc_no" type="text" maxlength="40" value="<?= e($d['no'] ?? '') ?>" placeholder="Auto"></div>
+          <div class="field"><label for="pf-date">Date</label><input id="pf-date" name="doc_date" type="text" maxlength="10" pattern="\d{2}-\d{2}-\d{4}" placeholder="DD-MM-YYYY" value="<?= e($d['date'] ?? '') ?>"></div>
+          <div class="field" data-pdf-only="invoice"><label for="pf-mode">Sale type</label>
+            <select id="pf-mode" name="mode"><?php foreach (['ut' => 'UT (UTGST + CGST)', 'intra' => 'Same state (SGST + CGST)', 'inter' => 'Other state (IGST)'] as $k => $l): ?><option value="<?= $k ?>"<?= ($d['mode'] ?? 'ut') === $k ? ' selected' : '' ?>><?= e($l) ?></option><?php endforeach; ?></select></div>
+          <div class="field" data-pdf-only="invoice"><label for="pf-rate">GST %</label><input id="pf-rate" name="rate" type="number" min="0" max="40" step="0.5" value="<?= e((string) ($d['rate'] ?? 18)) ?>"></div>
+        </div>
+
+        <h3 class="pdf-sec">Bill to</h3>
+        <div class="pdf-grid">
+          <div class="field"><label for="pf-cname">Customer name</label><input id="pf-cname" name="c_name" type="text" maxlength="80" required value="<?= e($c['name'] ?? '') ?>"></div>
+          <div class="field"><label for="pf-cphone">WhatsApp number</label><input id="pf-cphone" name="c_phone" type="tel" inputmode="tel" maxlength="30" required value="<?= e(preg_replace('/^\+?91(?=\d{10}$)/', '', (string) ($c['phone'] ?? ''))) ?>"></div>
+          <div class="field"><label for="pf-cstate">State</label><input id="pf-cstate" name="c_state" type="text" maxlength="40" value="<?= e($c['state'] ?? '') ?>"></div>
+          <div class="field" data-pdf-only="invoice"><label for="pf-cgstin">Party GSTIN</label><input id="pf-cgstin" name="c_gstin" type="text" maxlength="15" value="<?= e($c['gstin'] ?? '') ?>"></div>
+          <div class="field pdf-wide"><label for="pf-caddr">Address</label><textarea id="pf-caddr" name="c_address" rows="2" maxlength="300"><?= e($c['address'] ?? '') ?></textarea></div>
+        </div>
+
+        <div data-pdf-only="invoice">
+          <h3 class="pdf-sec">Transport</h3>
+          <div class="pdf-grid">
+            <div class="field"><label for="pf-ttr">Transporter</label><input id="pf-ttr" name="t_transporter" type="text" maxlength="60" value="<?= e($t['transporter'] ?? '') ?>"></div>
+            <div class="field"><label for="pf-tgr">G.R. no.</label><input id="pf-tgr" name="t_gr_no" type="text" maxlength="40" value="<?= e($t['gr_no'] ?? '') ?>"></div>
+            <div class="field"><label for="pf-tdt">G.R. date</label><input id="pf-tdt" name="t_gr_dt" type="text" maxlength="20" value="<?= e($t['gr_dt'] ?? '') ?>"></div>
+          </div>
+        </div>
+
+        <h3 class="pdf-sec">Items <span class="meta">Leave the price blank to print "On request".</span></h3>
+        <div class="pdf-lines">
+        <?php foreach ($rows as $r): ?>
+          <div class="pdf-line">
+            <div class="pdf-desc"><input name="it_name[]" type="text" maxlength="160" placeholder="Description of goods" aria-label="Description" value="<?= e($r['name']) ?>"><span class="pdf-rm"></span></div>
+            <input name="it_hsn[]" type="text" maxlength="12" placeholder="HSN" aria-label="HSN code" value="<?= e($r['hsn'] ?? '') ?>">
+            <input name="it_qty[]" type="number" min="0" step="any" placeholder="Qty" aria-label="Quantity" value="<?= e((string) $r['qty']) ?>">
+            <input name="it_unit[]" type="text" maxlength="12" placeholder="Unit" aria-label="Unit" value="<?= e($r['unit'] ?? '') ?>">
+            <input name="it_price[]" type="number" min="0" step="0.01" placeholder="Price" aria-label="Price per unit" value="<?= isset($r['price']) && $r['price'] !== null ? e((string) $r['price']) : '' ?>">
+          </div>
+        <?php endforeach; ?>
+        </div>
+
+        <div class="field"><label for="pf-note">Note on the PDF (optional)</label><textarea id="pf-note" name="note" rows="2" maxlength="300"><?= e($d['note'] ?? '') ?></textarea></div>
+        <?php if (!$waReady): ?><p class="meta">Sending is off: set the WasenderAPI key in api/config.php.</p><?php endif; ?>
+        <p class="actions">
+          <button class="btn btn-wa" type="submit"<?= $waReady ? '' : ' disabled' ?>><?= icon('chat') ?>Create PDF &amp; send on WhatsApp</button>
+          <a class="btn btn-quiet" href="<?= e($self . '#pdfs') ?>">Cancel</a>
+        </p>
+      </form>
+      <?php endif; ?>
+    </section>
+
+    <?php if ($next !== null && $o['status'] !== 'cancelled'): ?>
 
     <section class="card" aria-labelledby="h-notes">
       <div class="card-head"><h2 class="card-title" id="h-notes">Internal notes</h2><span class="card-sub">Never shown to the customer</span></div>
@@ -149,7 +284,7 @@ $meta = 'Received ' . AlokShop::fmt((int) $o['created_at'], 'l, d M Y, H:i:s') .
       <p class="customer-name"><?= e($o['name']) ?></p>
       <div class="reach">
         <a class="btn btn-primary" href="tel:+<?= e($o['phone']) ?>"><?= icon('phone') ?>Call +<?= e($o['phone']) ?></a>
-        <a class="btn btn-wa" href="<?= e($wa) ?>" target="_blank" rel="noopener noreferrer"><?= icon('chat') ?>WhatsApp</a>
+        <a class="btn btn-wa" href="<?= e($wa) ?>" target="_blank" rel="noopener noreferrer"><?= icon('chat') ?>Open chat</a>
       </div>
       <dl class="dl">
         <dt>Mobile</dt><dd>+<?= e($o['phone']) ?> <?= ($o['verified'] ?? 1) ? '<span class="badge tone-ok">OTP verified</span>' : '<span class="badge tone-warn">Not verified</span>' ?></dd>
