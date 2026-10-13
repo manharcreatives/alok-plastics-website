@@ -28,7 +28,7 @@ export const site: SiteConfig = {
     country: 'India',
     phone: '+91 74794 97003',   // client catalogue — verified
     phone2: '+91 99157 45414',  // client catalogue — secondary line
-    whatsapp: process.env.NEXT_PUBLIC_CLIENT_WHATSAPP || '919714571522',
+    whatsapp: process.env.NEXT_PUBLIC_CLIENT_WHATSAPP || '917479497003',
     email: 'alokplastics24@gmail.com', // client catalogue — verified
     mapsUrl: null,     // TODO(client): exact Google Maps place URL (the map falls back to an address search until set)
     gstin: null,       // TODO(client): GSTIN

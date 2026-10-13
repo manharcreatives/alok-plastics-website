@@ -45,6 +45,15 @@ function postalAddress(): Json {
   };
 }
 
+/** Every public phone line, for NAP-consistent schema (schema.org accepts a list). */
+function phones(): string | string[] | undefined {
+  const list = [site.contact.phone, site.contact.phone2].filter((v): v is string => typeof v === 'string' && v.length > 0);
+  return list.length > 1 ? list : list[0];
+}
+
+/** GSTIN is public business data (printed on invoices); schema.org `taxID`. */
+const GSTIN = '04AATHPK8119J1ZK';
+
 function sameAs(): string[] {
   return Object.values(site.social).filter((v): v is string => typeof v === 'string' && v.length > 0);
 }
@@ -93,7 +102,8 @@ export function organizationJsonLd(): Json {
     ],
     ...(cp ? { contactPoint: cp } : {}),
     ...(site.contact.email ? { email: site.contact.email } : {}),
-    ...(site.contact.phone ? { telephone: site.contact.phone } : {}),
+    ...(phones() ? { telephone: phones() } : {}),
+    taxID: site.contact.gstin ?? GSTIN,
     ...(sa.length ? { sameAs: sa } : {}),
   };
 }
@@ -112,7 +122,7 @@ export function localBusinessJsonLd(): Json {
     address: postalAddress(),
     parentOrganization: { '@id': ID.org },
     areaServed: { '@type': 'Country', name: 'India' }, // client: "Pan Bharat delivery network"
-    ...(c.phone ? { telephone: c.phone } : {}),
+    ...(phones() ? { telephone: phones() } : {}),
     ...(c.email ? { email: c.email } : {}),
     ...(c.mapsUrl ? { hasMap: c.mapsUrl } : {}),
     ...(c.geo ? { geo: { '@type': 'GeoCoordinates', latitude: c.geo.lat, longitude: c.geo.lng } } : {}),

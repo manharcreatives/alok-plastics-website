@@ -61,7 +61,7 @@ function alokProformaPdf(array $d): string
     $pdf->SetTextColor(90, 90, 90);
     $pdf->Cell(110, 4.5, alokPdfText('Plot No-06, Industrial Area Phase II, Ram Darbar'), 0, 2, 'L');
     $pdf->Cell(110, 4.5, alokPdfText('Chandigarh 160003, India'), 0, 2, 'L');
-    $pdf->Cell(110, 4.5, alokPdfText('Phone: +91 74794 97003 / +91 97145 71522'), 0, 2, 'L');
+    $pdf->Cell(110, 4.5, alokPdfText('Phone: +91 74794 97003'), 0, 2, 'L');
     $pdf->Cell(110, 4.5, alokPdfText('Email: alokplastics24@gmail.com'), 0, 2, 'L');
 
     $pdf->SetXY(120, 16);
@@ -158,7 +158,7 @@ function alokProformaPdf(array $d): string
     $pdf->Ln(1);
     $pdf->SetFont('Helvetica', 'B', 9);
     $pdf->SetTextColor(120, 20, 40);
-    $pdf->MultiCell(0, 5, alokPdfText('For more information, please contact us: +91 74794 97003 / +91 97145 71522 (WhatsApp).'), 0, 'L');
+    $pdf->MultiCell(0, 5, alokPdfText('For more information, please contact us: +91 74794 97003 (WhatsApp).'), 0, 'L');
 
     return $pdf->Output('S');
 }
@@ -234,7 +234,7 @@ function alokPhoneDisplay(string $raw): string
     return strlen($d) === 10 ? '+91 ' . substr($d, 0, 5) . ' ' . substr($d, 5) : ($d !== '' ? '+' . $d : '');
 }
 
-/** "+91 99157 45414 / +91 78889 90913 (WhatsApp +91 97145 71522)" from the business settings. */
+/** "+91 99157 45414 / +91 78889 90913 (WhatsApp +91 74794 97003)" from the business settings. */
 function alokContactLine(): string
 {
     $line = implode(' / ', array_map('alokPhoneDisplay', alokBusiness()['phones']));

@@ -37,6 +37,19 @@
     });
   });
 
+  // "Open in WhatsApp" link follows the message textarea; the plain href already carries the starting text.
+  document.querySelectorAll('a[data-wa-link]').forEach(function (a) {
+    var box = document.getElementById(a.getAttribute('data-wa-link'));
+    if (!box) return;
+    var base = a.getAttribute('href').split('?')[0];
+    var sync = function () { a.setAttribute('href', base + '?text=' + encodeURIComponent(box.value)); };
+    box.addEventListener('input', sync);
+    a.addEventListener('click', sync);
+  });
+
+  // A freshly generated PDF downloads itself once.
+  document.querySelectorAll('a[data-autodownload]').forEach(function (a) { a.click(); });
+
   // PDF form: GST-only fields follow the document type; item lines can be added and removed.
   document.querySelectorAll('form[data-pdf-form]').forEach(function (form) {
     var type = form.querySelector('[data-pdf-type]');

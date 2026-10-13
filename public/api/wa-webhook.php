@@ -9,6 +9,13 @@ header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 header('X-Content-Type-Options: nosniff');
 
+// Manual mode: the inbound webhook is OFF unless $ALOK_WHATSAPP_API['webhook'] is true in config.php.
+$__waCfg = AlokShop::cfg('ALOK_WHATSAPP_API');
+if (!is_array($__waCfg) || empty($__waCfg['webhook'])) {
+    echo json_encode(['ok' => true, 'disabled' => true, 'service' => 'alok-wa-webhook']);
+    exit;
+}
+
 if (($_SERVER['REQUEST_METHOD'] ?? '') === 'GET') {
     echo json_encode(['ok' => true, 'service' => 'alok-wa-webhook']);
     exit;

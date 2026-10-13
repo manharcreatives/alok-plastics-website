@@ -40,7 +40,8 @@ $ALOK_WHATSAPP_API = [
     'key' => '',
     'secret' => '',
     'base' => 'https://wasenderapi.com',
-    'autosend' => true, // true = message the customer on WhatsApp whenever an order's status changes (each order also has its own switch)
+    'autosend' => false, // true = message the customer automatically whenever an order's status changes (manual mode: false)
+    'webhook' => false, // true = accept inbound WhatsApp webhook (wa-webhook.php); false = ignore it
 ];
 
 // Business identity printed on the GST invoice / proforma PDFs, the WhatsApp captions and the admin "send new proforma" form.
@@ -75,5 +76,5 @@ $ALOK_OTP = [
     'template' => '',
     'webhook' => '',
     'dev_mode' => false,
-    'skip' => false, // true = no OTP at all: name + mobile signs in directly (orders are flagged "not verified" in the admin)
+    'skip' => true, // true = no OTP at all: name + mobile signs in directly (orders are flagged "not verified" in the admin)
 ];

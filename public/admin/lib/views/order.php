@@ -29,16 +29,6 @@ $meta = 'Received ' . AlokShop::fmt((int) $o['created_at'], 'l, d M Y, H:i:s') .
 
     <section class="card" aria-labelledby="h-stage">
       <div class="card-head"><h2 class="card-title" id="h-stage">Progress</h2><span class="card-sub"><?= e(ALOK_ORDER_LABELS[$o['status']] ?? $o['status']) ?></span></div>
-      <?php if ($waReady): ?>
-      <form class="auto-wa" method="post" action="<?= e($self) ?>">
-        <?= csrf_field() ?><input type="hidden" name="do" value="auto_wa"><input type="hidden" name="auto_wa" value="0">
-        <label class="switch"><input type="checkbox" name="auto_wa" value="1" data-autosubmit<?= (int) ($o['auto_wa'] ?? 1) === 1 ? ' checked' : '' ?><?= $waAuto ? '' : ' disabled' ?>><span>Auto-send WhatsApp message when status changes</span></label>
-        <button class="btn btn-quiet btn-sm" type="submit"<?= $waAuto ? '' : ' disabled' ?>>Save</button>
-        <?php if (!$waAuto): ?><span class="meta">Switched off for the whole site in api/config.php.</span><?php endif; ?>
-      </form>
-      <?php else: ?>
-      <p class="meta">Automatic WhatsApp messages are off: set the WasenderAPI key in api/config.php.</p>
-      <?php endif; ?>
       <ol class="timeline">
       <?php
       $flow = ['pending', 'reviewing', 'quoted', 'confirmed', 'paid', 'dispatched', 'invoiced', 'closed'];
@@ -106,25 +96,21 @@ $meta = 'Received ' . AlokShop::fmt((int) $o['created_at'], 'l, d M Y, H:i:s') .
     </section>
 
     <section class="card" aria-labelledby="h-msg">
-      <div class="card-head"><h2 class="card-title" id="h-msg">Message the customer</h2><span class="card-sub">Edit the text, then send it from the business WhatsApp</span></div>
-      <form method="post" action="<?= e($self) ?>" data-confirm="Send this message to +<?= e($o['phone']) ?> on WhatsApp now?">
-        <?= csrf_field() ?><input type="hidden" name="do" value="wa">
-        <label for="wa-text" class="sr-only">Message</label>
-        <textarea id="wa-text" name="text" rows="5" maxlength="1000" required><?= e($waText) ?></textarea>
-        <?php if (!$waReady): ?><p class="meta">Sending is off: set the WasenderAPI key in api/config.php.</p><?php endif; ?>
-        <p class="actions">
-          <button class="btn btn-wa" type="submit"<?= $waReady ? '' : ' disabled' ?>><?= icon('chat') ?>Send on WhatsApp</button>
-          <?php if (($o['transporter'] ?? '') !== '' || ($o['lr_no'] ?? '') !== ''): ?>
-          <button class="btn btn-secondary" type="button" data-append-to="wa-text" data-append="<?= e('Dispatch: ' . trim(($o['transporter'] ?? '') . ((($o['transporter'] ?? '') !== '' && ($o['lr_no'] ?? '') !== '') ? ', ' : '') . (($o['lr_no'] ?? '') !== '' ? 'LR ' . $o['lr_no'] : ''))) ?>">Add dispatch link</button>
-          <?php endif; ?>
-        </p>
-      </form>
+      <div class="card-head"><h2 class="card-title" id="h-msg">Message the customer</h2><span class="card-sub">Edit the text, then send it yourself from WhatsApp</span></div>
+      <label for="wa-text" class="sr-only">Message</label>
+      <textarea id="wa-text" rows="5" maxlength="1000"><?= e($waText) ?></textarea>
+      <p class="actions">
+        <a class="btn btn-wa" id="wa-open" data-wa-link="wa-text" href="<?= e('https://wa.me/' . $o['phone'] . '?text=' . rawurlencode($waText)) ?>" target="_blank" rel="noopener noreferrer"><?= icon('chat') ?>Open in WhatsApp</a>
+        <?php if (($o['transporter'] ?? '') !== '' || ($o['lr_no'] ?? '') !== ''): ?>
+        <button class="btn btn-secondary" type="button" data-append-to="wa-text" data-append="<?= e('Dispatch: ' . trim(($o['transporter'] ?? '') . ((($o['transporter'] ?? '') !== '' && ($o['lr_no'] ?? '') !== '') ? ', ' : '') . (($o['lr_no'] ?? '') !== '' ? 'LR ' . $o['lr_no'] : ''))) ?>">Add dispatch link</button>
+        <?php endif; ?>
+      </p>
       <?php if (!empty($o['wa_sends'])): ?>
       <details>
-        <summary class="meta">Recent WhatsApp sends (<?= count($o['wa_sends']) ?>)</summary>
+        <summary class="meta">WhatsApp history (<?= count($o['wa_sends']) ?>)</summary>
         <ol class="timeline">
           <?php foreach (array_slice(array_reverse($o['wa_sends']), 0, 8) as $w): ?>
-            <li><span class="tl-meta"><?= e(AlokShop::fmt((int) ($w['at'] ?? 0))) ?> · <span class="tl-who"><?= e($w['by'] ?? '') ?></span> · <?= !empty($w['ok']) ? 'sent' : 'failed' ?></span><span class="tl-text"><?= e($w['text'] ?? '') ?></span></li>
+            <li><span class="tl-meta"><?= e(AlokShop::fmt((int) ($w['at'] ?? 0))) ?> · <span class="tl-who"><?= e($w['by'] ?? '') ?></span> · <?= !empty($w['ok']) ? 'sent' : 'not sent' ?></span><span class="tl-text"><?= e($w['text'] ?? '') ?></span></li>
           <?php endforeach; ?>
         </ol>
       </details>
@@ -134,9 +120,9 @@ $meta = 'Received ' . AlokShop::fmt((int) $o['created_at'], 'l, d M Y, H:i:s') .
     <?php endif; ?>
 
     <section class="card" id="pdfs" aria-labelledby="h-pdfs">
-      <div class="card-head"><h2 class="card-title" id="h-pdfs">Proforma &amp; GST invoices</h2><span class="card-sub">PDFs sent on WhatsApp</span></div>
+      <div class="card-head"><h2 class="card-title" id="h-pdfs">Proforma &amp; GST invoices</h2><span class="card-sub">Generate, download, then send from WhatsApp</span></div>
       <?php if (!($o['pdfs'] ?? [])): ?>
-        <p class="empty">No PDF has been sent for this order yet.</p>
+        <p class="empty">No PDF has been generated for this order yet.</p>
       <?php else: ?>
       <ul class="pdf-list">
         <?php foreach (array_reverse($o['pdfs'], true) as $n => $p): ?>
@@ -145,11 +131,13 @@ $meta = 'Received ' . AlokShop::fmt((int) $o['created_at'], 'l, d M Y, H:i:s') .
             <span class="badge <?= ($p['type'] ?? '') === 'invoice' ? 'tone-brand' : 'tone-info' ?>"><?= ($p['type'] ?? '') === 'invoice' ? 'GST Invoice' : 'Proforma' ?></span>
             <strong class="pdf-no"><?= e($p['no'] ?? '') ?></strong>
           </div>
-          <p class="meta"><?= e($p['date'] ?? '') ?> · sent to +<?= e($p['to'] ?? '') ?> · <?= e(AlokShop::fmt((int) ($p['sent_at'] ?? 0))) ?></p>
+          <p class="meta"><?= e($p['date'] ?? '') ?> · generated for +<?= e($p['to'] ?? '') ?> · <?= e(AlokShop::fmt((int) ($p['created_at'] ?? $p['sent_at'] ?? 0))) ?></p>
           <p class="actions">
             <a class="btn btn-secondary btn-sm" href="<?= e(u('order_pdf', ['id' => $o['id'], 'n' => $n])) ?>" target="_blank" rel="noopener"><?= icon('eye') ?>View</a>
             <a class="btn btn-secondary btn-sm" href="<?= e(u('order_pdf', ['id' => $o['id'], 'n' => $n, 'dl' => 1])) ?>"><?= icon('download') ?>Download</a>
-            <a class="btn btn-secondary btn-sm" href="<?= e($self . '&pdf=' . (int) $n . '#pdf-form') ?>"><?= icon('file') ?>Edit &amp; Resend</a>
+            <a class="btn btn-secondary btn-sm" href="<?= e($self . '&pdf=' . (int) $n . '#pdf-form') ?>"><?= icon('file') ?>Edit &amp; Regenerate</a>
+            <a class="btn btn-wa btn-sm" href="<?= e('https://wa.me/' . ($p['to'] ?? $o['phone'])) ?>" target="_blank" rel="noopener noreferrer"><?= icon('chat') ?>Open WhatsApp chat</a>
+            <?php if (isset($got) && (int) $got === (int) $n): ?><a hidden data-autodownload href="<?= e(u('order_pdf', ['id' => $o['id'], 'n' => $n, 'dl' => 1])) ?>">Download</a><?php endif; ?>
           </p>
         </li>
         <?php endforeach; ?>
@@ -170,8 +158,8 @@ $meta = 'Received ' . AlokShop::fmt((int) $o['created_at'], 'l, d M Y, H:i:s') .
       $rows[] = ['name' => '', 'hsn' => '', 'qty' => '', 'unit' => '', 'price' => null];
       $rows[] = ['name' => '', 'hsn' => '', 'qty' => '', 'unit' => '', 'price' => null];
       ?>
-      <form class="pdf-form" id="pdf-form" method="post" action="<?= e($self) ?>#pdfs" data-pdf-form data-confirm="Generate this PDF and send it to the customer on WhatsApp now?">
-        <?= csrf_field() ?><input type="hidden" name="do" value="pdf_send">
+      <form class="pdf-form" id="pdf-form" method="post" action="<?= e($self) ?>#pdfs" data-pdf-form>
+        <?= csrf_field() ?><input type="hidden" name="do" value="pdf_prepare">
         <h3 class="pdf-sec"><?= e($pdfTitle) ?></h3>
 
         <div class="pdf-grid">
@@ -216,9 +204,9 @@ $meta = 'Received ' . AlokShop::fmt((int) $o['created_at'], 'l, d M Y, H:i:s') .
         </div>
 
         <div class="field"><label for="pf-note">Note on the PDF (optional)</label><textarea id="pf-note" name="note" rows="2" maxlength="300"><?= e($d['note'] ?? '') ?></textarea></div>
-        <?php if (!$waReady): ?><p class="meta">Sending is off: set the WasenderAPI key in api/config.php.</p><?php endif; ?>
         <p class="actions">
-          <button class="btn btn-wa" type="submit"<?= $waReady ? '' : ' disabled' ?>><?= icon('chat') ?>Create PDF &amp; send on WhatsApp</button>
+          <button class="btn btn-wa" type="submit"><?= icon('download') ?>Generate PDF &amp; Download</button>
+          <a class="btn btn-secondary" href="<?= e('https://wa.me/' . ($c['phone'] ?? $o['phone'])) ?>" target="_blank" rel="noopener noreferrer"><?= icon('chat') ?>Open WhatsApp chat</a>
           <a class="btn btn-quiet" href="<?= e($self . '#pdfs') ?>">Cancel</a>
         </p>
       </form>

@@ -42,13 +42,6 @@ export const legalPages: Record<LegalSlug, LegalPageContent> = {
         ],
       },
       {
-        id: 'mobile-verification',
-        title: 'Mobile verification',
-        body: [
-          'Before an enquiry is sent, we may ask you to confirm your mobile number with a one-time code (OTP). The code is used only to confirm that the number is yours. {{Client to confirm: OTP route, SMS or WhatsApp}}',
-        ],
-      },
-      {
         id: 'cookies',
         title: 'Cookies and analytics',
         body: [

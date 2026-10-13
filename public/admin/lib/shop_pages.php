@@ -198,6 +198,31 @@ function shop_pdf_send(array $user, array $o, array $doc): array
         : ['ok' => false, 'message' => 'The ' . $label . ' was not sent: ' . AlokShop::waReason($res) . '.'];
 }
 
+/** Generate the PDF, store its record on the order and log it. Nothing is sent: the admin downloads it and sends it from WhatsApp. @return array{no:string,n:int} */
+function shop_pdf_prepare(array $user, array $o, array $doc): array
+{
+    $type = $doc['type'];
+    $label = $type === 'invoice' ? 'GST invoice' : 'proforma invoice';
+    $no = $doc['no'] !== '' ? $doc['no'] : ($type === 'invoice' ? alokInvoiceNo() : alokProformaNo());
+    $payload = $doc['payload'];
+    if ($type === 'invoice') {
+        $payload['invoice_no'] = $no;
+    }
+    $to = (string) $payload['customer']['phone'];
+    $caption = alokDocCaption($type, $no, (string) $payload['customer']['name'], (string) $o['code']);
+    $entry = ['type' => $type, 'no' => $no, 'date' => $doc['date'], 'created_at' => time(), 'to' => $to, 'caption' => $caption, 'payload' => $payload];
+    $note = shop_add_note($user, ucfirst($label) . ' ' . $no . ' generated for +' . $to . ' (sent manually from WhatsApp).');
+    $updated = AlokShop::orders()->mutate((int) $o['id'], static function (array $r) use ($entry, $note): array {
+        $r['pdfs'] = array_merge($r['pdfs'] ?? [], [$entry]);
+        if ($note !== null) {
+            $r['notes'] = array_merge($r['notes'] ?? [], [$note]);
+        }
+        return $r;
+    });
+    AlokStore::open()->audit($user['username'], 'order_pdf', $o['code'], $label . ' ' . $no . ' generated', AlokAuth::clientIp());
+    return ['no' => $no, 'n' => max(0, count($updated['pdfs'] ?? []) - 1)];
+}
+
 function page_orders(array $user, bool $isPost): never
 {
     $status = (string) ($_GET['status'] ?? '');
@@ -284,17 +309,8 @@ function page_order(array $user, bool $isPost): never
             AlokStore::open()->audit($user['username'], 'order_status', $o['code'], $o['status'] . ' → ' . $new, AlokAuth::clientIp());
             $msg = $o['code'] . ' is now "' . ALOK_ORDER_LABELS[$new] . '".' . ($new === 'invoiced' && $updated ? ' Invoice ' . $updated['invoice_no'] . '.' : '');
             $kind = 'ok';
-            if ($updated !== null && AlokShop::waAutoEnabled() && (int) ($updated['auto_wa'] ?? 1) === 1) {
-                $sent = shop_wa_text($user, $updated, AlokShop::stageMessage($updated), 'auto');
-                if ($sent['ok']) {
-                    $msg .= ' WhatsApp message sent to the customer.';
-                } else {
-                    $kind = 'warn';
-                    $msg .= ' The status is saved, but the WhatsApp message was not sent (' . AlokShop::waReason($sent) . '). Use "Send on WhatsApp" to retry.';
-                }
-            } else {
-                $msg .= ' Use "Send on WhatsApp" to message the customer.';
-            }
+            // Manual mode: nothing is sent on a status change; the admin messages the customer via "Open in WhatsApp".
+            $msg .= ' Status saved. Use "Open in WhatsApp" to message the customer.';
             flash_set($kind, $msg);
         } elseif ($do === 'back') {
             $prev = AlokShop::prevStatus($o);
@@ -363,42 +379,15 @@ function page_order(array $user, bool $isPost): never
             AlokShop::orders()->update((int) $o['id'], $patch);
             AlokStore::open()->audit($user['username'], 'order_edit', $o['code'], implode(', ', $changes), AlokAuth::clientIp());
             flash_set('ok', $o['code'] . ' updated (' . implode(', ', $changes) . ').');
-        } elseif ($do === 'wa') {
-            // Send the (edited) message to the customer from the business WhatsApp number via WasenderAPI.
-            $text = AlokShop::clean($_POST['text'] ?? '', 1000, true);
-            if ($text === '') {
-                $text = AlokShop::stageMessage($o);
-            }
-            if (strlen(preg_replace('/\D/', '', (string) $o['phone']) ?? '') < 10) {
-                flash_set('err', 'This order has no valid WhatsApp number. Fix the mobile number under "Edit details" first.');
-                redirect($self);
-            }
-            $res = shop_wa_text($user, $o, $text, 'manual');
-            flash_set($res['ok'] ? 'ok' : 'err', $res['ok']
-                ? 'WhatsApp message sent to ' . $o['name'] . ' (+' . $o['phone'] . ').'
-                : 'The WhatsApp message was not sent: ' . AlokShop::waReason($res) . '.');
-            redirect($self);
-        } elseif ($do === 'auto_wa') {
-            $on = ($_POST['auto_wa'] ?? '0') === '1';
-            if ((int) ($o['auto_wa'] ?? 1) !== (int) $on) {
-                AlokShop::orders()->update((int) $o['id'], ['auto_wa' => (int) $on]);
-                AlokStore::open()->audit($user['username'], 'order_auto_wa', $o['code'], $on ? 'on' : 'off', AlokAuth::clientIp());
-            }
-            flash_set('ok', 'Automatic WhatsApp messages are ' . ($on ? 'ON' : 'OFF') . ' for ' . $o['code'] . '.');
-            redirect($self);
-        } elseif ($do === 'pdf_send') {
+        } elseif ($do === 'pdf_prepare') {
             $doc = shop_pdf_from_post();
             if (isset($doc['error'])) {
                 flash_set('err', $doc['error']);
                 redirect($self . '#pdfs');
             }
-            if (!AlokShop::waSendReady()) {
-                flash_set('err', 'The WasenderAPI key is not set, so the PDF cannot be sent.');
-                redirect($self . '#pdfs');
-            }
-            $sent = shop_pdf_send($user, $o, $doc);
-            flash_set($sent['ok'] ? 'ok' : 'err', $sent['message']);
-            redirect($self . '#pdfs');
+            $made = shop_pdf_prepare($user, $o, $doc);
+            flash_set('ok', 'PDF ' . $made['no'] . ' generated. Download it and send from WhatsApp.');
+            redirect($self . '&got=' . $made['n'] . '#pdfs');
         }
         redirect($self);
     }
@@ -413,8 +402,8 @@ function page_order(array $user, bool $isPost): never
         $pdfForm = ['type' => $e['type'] ?? 'proforma', 'no' => $e['no'] ?? '', 'date' => $e['date'] ?? ''] + (array) ($e['payload'] ?? []);
         $pdfTitle = 'Edit & resend ' . ($e['no'] ?? '');
     }
-    render('order', ['title' => 'Enquiry ' . $o['code'], 'nav' => 'orders', 'user' => $user, 'o' => $o, 'wa' => 'https://wa.me/' . $o['phone'], 'waText' => AlokShop::stageMessage($o),
-        'waReady' => AlokShop::waSendReady(), 'waAuto' => AlokShop::waAutoEnabled(), 'next' => AlokShop::nextStatus($o['status']), 'prev' => AlokShop::prevStatus($o),
+    render('order', ['title' => 'Enquiry ' . $o['code'], 'nav' => 'orders', 'user' => $user, 'o' => $o, 'wa' => 'https://wa.me/' . $o['phone'], 'waText' => AlokShop::stageMessage($o), 'got' => ctype_digit((string) ($_GET['got'] ?? '')) ? (int) $_GET['got'] : null,
+        'next' => AlokShop::nextStatus($o['status']), 'prev' => AlokShop::prevStatus($o),
         'pdfForm' => $pdfForm, 'pdfTitle' => $pdfTitle]);
 }
 

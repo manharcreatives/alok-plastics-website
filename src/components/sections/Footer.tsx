@@ -77,6 +77,8 @@ body:has(.eb, #enquiry) .ft__cta { display: none; }
 /* Bottom bar */
 .ft__bottom { padding-top: var(--space-md); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-xs) var(--space-md); }
 .ft__bottom p { margin: 0; font-size: 0.8125rem; color: color-mix(in srgb, var(--surface) 80%, transparent); }
+.ft__credit a { color: inherit; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: color-mix(in srgb, var(--surface) 40%, transparent); }
+.ft__credit a:hover, .ft__credit a:focus-visible { color: var(--surface); text-decoration-color: currentColor; }
 .ft__legal { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 0 var(--space-md); }
 .ft__legal .ft__link { font-size: 0.8125rem; }
 
@@ -212,6 +214,7 @@ export default function Footer() {
 
         <div className="ft__bottom">
           <p>&copy; {year} {site.name}. All rights reserved.</p>
+          <p className="ft__credit">Website by <a href="https://manharcreatives.com" target="_blank" rel="noopener noreferrer" aria-label="Website by Manhar Creatives (opens in a new tab)">Manhar Creatives</a></p>
           <nav aria-label="Legal">
             <ul className="ft__legal">
               {navigation.legal.map(link => (

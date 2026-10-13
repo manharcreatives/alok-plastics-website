@@ -59,11 +59,11 @@ pnpm install
 
 ### a) `public/api/config.php`
 Copy `public/api/config.php.example` → `public/api/config.php` and fill real values. Utsav sends you:
-- `$ALOK_WHATSAPP` — business WhatsApp number (digits with country code, e.g. `919714571522`)
+- `$ALOK_WHATSAPP` — business WhatsApp number (digits with country code, e.g. `917479497003`)
 - `$ALOK_WHATSAPP_API['key']` — WasenderAPI session Bearer key
 - `$ALOK_WHATSAPP_API['secret']` — Wasender dashboard **Webhook Secret** (do NOT regenerate it in the dashboard)
 - `$ALOK_BUSINESS` — real GSTIN / bank details / QR path (the example file shows placeholders)
-- `$ALOK_OTP` — set `provider` to `wasender`
+- `$ALOK_OTP` — keep `skip` = `true` (OTP is off: customers enter name + mobile only)
 - `$ALOK_TO_EMAIL`, `$ALOK_GAS_URL`, `$ALOK_GAS_SECRET` if mail/Google Sheets are used
 
 ### b) `public/admin/config.php`
@@ -97,52 +97,35 @@ pnpm admin         # = php -S 127.0.0.1:8080 -t out  (keeps running)
 Verify in browser:
 - `http://localhost:8080` → website
 - `http://localhost:8080/admin/` → admin login (Utsav's credentials)
-- `http://localhost:8080/api/wa-webhook.php` → JSON `{"ok":true}` (health check)
+- `http://localhost:8080/api/wa-webhook.php` → JSON `{"ok":true,"disabled":true}` (webhook is off by default)
 
-From the admin: open an enquiry → "Send on WhatsApp" → message reaches the customer automatically.
-Status changes auto-send WhatsApp updates (toggle on each order).
-
----
-
-## 6. WhatsApp inbound automation (auto Proforma PDF reply) — make this PC "live"
-
-1. Download **cloudflared** (Windows exe) from https://github.com/cloudflare/cloudflared/releases
-   (`cloudflared-windows-amd64.exe` → rename to `cloudflared.exe`).
-2. Open a 2nd terminal (project folder) and run:
-   ```powershell
-   .\cloudflared.exe tunnel --url http://127.0.0.1:8080
-   ```
-3. Copy the printed URL, e.g. `https://consists-xxx.trycloudflare.com`
-4. Open `https://<url>/api/wa-webhook.php` → must return `{"ok":true}`.
-5. **Wasender dashboard** → Webhook settings ↓ set the webhook URL to:
-   ```
-   https://<url>/api/wa-webhook.php
-   ```
-   ⚠️ Webhook Secret ko **mat badalna** (config me jo `secret` hai wahi rahega).
-6. Test: `919714571522` par WhatsApp me ek order message bhejo ("2kg POM") → Proforma PDF reply aana chahiye.
-
-⚠️ Only ONE PC can be the live webhook (the dashboard points at one URL). If Utsav's PC is running a tunnel,
-either stop his webhook or run the dashboard at only one URL at a time.
+**Manual WhatsApp mode (default):** from the admin open an enquiry → "Open in WhatsApp" opens the customer chat
+on your own phone/WhatsApp Web with the message pre-filled; you press send yourself. Status changes send nothing.
+For PDFs use "Generate PDF & Download", then attach the file in the chat ("Open WhatsApp chat").
+OTP is off and the inbound webhook is off (`$ALOK_WHATSAPP_API['webhook'] = false`, `['autosend'] = false`).
 
 ---
 
-## 7. Switching the test number to the real client number
+## 6. Automation (OFF — optional, for later)
 
-`919714571522` is the **test** number. When the real client WhatsApp number is ready:
-1. Wasender dashboard → logout test session → **new session** with the real number → new **API key**. Note the new **Webhook Secret**.
-2. `public/api/config.php`: update `$ALOK_WHATSAPP`, `$ALOK_WHATSAPP_API['key']` + `['secret']`, `$ALOK_BUSINESS` (GSTIN/bank/phones).
-3. `public/data/settings.json`: `"whatsapp"` → new number.
-4. `src/content/site.ts` (line ~31): default `'919714571522'` → new number, then `pnpm build` again
-   (or build with env: `$env:NEXT_PUBLIC_CLIENT_WHATSAPP="91..." ; pnpm build`).
-5. Re-test OTP + send + webhook.
+The WasenderAPI code is kept but disabled. To re-enable later: set `$ALOK_WHATSAPP_API['webhook'] = true` (and `['autosend']`
+if wanted) in `public/api/config.php`, expose the PC with cloudflared, and set the webhook URL in the Wasender dashboard.
+Nothing here is needed for the manual flow.
+
+---
+
+## 7. WhatsApp number
+
+The client WhatsApp number is `917479497003` (+91 74794 97003). It lives in:
+1. `public/api/config.php` → `$ALOK_WHATSAPP` and `public/data/settings.json` → `"whatsapp"` (both git-ignored).
+2. `src/content/site.ts` default (or build with `$env:NEXT_PUBLIC_CLIENT_WHATSAPP="91..." ; pnpm build`).
+After any change run `pnpm build` again and test: place an order (name + mobile only), then use "Open in WhatsApp" in the admin.
 
 ---
 
 ## 8. Day-to-day + limits
 
-- Free Wasender plan: **1 message/minute** (HTTP 429) — wait ~1 min between sends; $6/mo removes this.
-- Cloudflared gives a **new URL every start** → after restarting the PC/tunnel, update the dashboard webhook URL.
-- Keep the server terminal + tunnel terminal open while you want the site live.
+- Keep the server terminal open while you want the site live.
 - Add/change products/site text → edit then `pnpm build` again (same as step 5).
 - Never put `config.php`, `settings.json` or any `data/` folder on GitHub or in a shared chat.
 - Meta (Facebook) WhatsApp Cloud API is **not used in production** — the sandbox token was a test only; keep Wasender.
