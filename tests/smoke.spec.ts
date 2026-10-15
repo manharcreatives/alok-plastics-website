@@ -26,7 +26,7 @@ test('no raw TODO / invented-claim strings on home', async ({ page }) => {
   }
 });
 
-// Round 2 (docs/round2-brief.md #6): the hero has exactly two buttons, the primary enquiry CTA (label from
+// The hero has exactly two buttons, the primary enquiry CTA (label from
 // site.ts) + Browse Products; WhatsApp lives only in the FAB.
 test('hero has the enquiry + Browse Products CTAs', async ({ page }) => {
   await page.addInitScript(() => sessionStorage.setItem('alok:preloaded', '1'));

@@ -15,7 +15,7 @@ import '@/components/products/products.css';
 
 export const dynamicParams = false;
 
-/** Hero copy + photo slot per group id. Kicker lines describe what the parts do (no claims); photo slugs match docs/images/manifest.hero-inner.json. */
+/** Hero copy + photo slot per group id. Kicker lines describe what the parts do (no claims). */
 const HERO: Record<string, { kicker: string; photo: string; position: string; cta: string }> = {
   '01': { kicker: 'The small parts behind every glass of cool water', photo: 'group-water-cooler', position: '68% center', cta: 'Get a quote' },
   '02': { kicker: 'Doors that slide, seal and stay shut', photo: 'group-deep-freezer-display-counter', position: '66% center', cta: 'Get a quote' },

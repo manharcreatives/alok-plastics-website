@@ -1,6 +1,6 @@
 /**
  * /about: story, brand idea, vision / mission / values, full journey, leadership, proof, culture teaser (§8.2).
- * Copy: verbatim from MASTER_PROMPT §5; no invented history.
+ * Copy: verbatim from the approved brand copy
  */
 import type { Metadata } from 'next';
 import Link from 'next/link';

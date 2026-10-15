@@ -2,7 +2,7 @@
  * S11 · EnquirySection (§13)
  * Light section (--surface-alt) with ONE burgundy accent panel (the "tell us the part" block).
  * The footer below is burgundy too, so this section stays light and the footer opens on a folded
- * edge: never two burgundy blocks adjacent (ADR in docs/decisions.md).
+ * edge: never two burgundy blocks adjacent (an architectural decision).
  * The address lives only in the footer (it used to repeat here). Form is ShortEnquiryForm (§14 single source).
  * The aside lists every direct line from the runtime contact: phone, second phone, email, WhatsApp.
  */

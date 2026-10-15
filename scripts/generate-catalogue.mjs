@@ -1,6 +1,6 @@
 /**
  * Regenerates the admin product catalogue snapshot from src/content/products.ts, so it can never
- * drift from the real catalogue. Runs after `next build` (postbuild) and from scripts/dev-sync.sh:
+ * drift from the real catalogue. Runs after `next build` (postbuild):
  * writes out/admin/lib/catalogue.php and refreshes the committed copy in public/admin/lib/.
  *
  * Each row is [slug, name, published, details]. Columns 0-2 are the original 3-column shape;

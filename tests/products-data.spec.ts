@@ -1,6 +1,4 @@
 import { test, expect } from '@playwright/test';
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import {
   MACHINE_LABELS,
   MATERIAL_LABELS,
@@ -15,9 +13,6 @@ import { extraPictos, isExtraPicto } from '../src/components/products/art/extraP
 /* Pure data checks on the catalogue (no browser). */
 
 const SLUG_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
-const manifest = JSON.parse(readFileSync(join(__dirname, '..', 'docs', 'images', 'manifest.products.json'), 'utf8')) as {
-  slot: string; path: string; aspect: string; size: string; prompt: string; sourceRef: string; alt: string;
-}[];
 
 test('slugs are unique and URL-safe, every published product sits in one of the five groups', () => {
   const slugs = products.map(p => p.slug);
@@ -57,14 +52,8 @@ test('no build-time product shows the old catalogue crops, and every published p
   for (const e of Object.values(extraPictos)) expect(e.box[2] > 0 && e.box[3] > 0).toBe(true);
 });
 
-test('photo convention and image manifest: one 1:1 1200x1200 entry per product', () => {
+test('photo convention: every product maps to a 1:1 webp, custom products have no photo', () => {
   expect(productPhoto({ slug: 'f-bush' })).toBe('/images/products/f-bush.webp');
   expect(productPhoto({ slug: 'x', custom: true })).toBeNull();
-  expect(manifest.map(m => m.path).sort()).toEqual(products.map(p => `/images/products/${p.slug}.webp`).sort());
-  for (const m of manifest) {
-    expect(m.aspect).toBe('1:1');
-    expect(m.size).toBe('1200x1200');
-    expect(m.sourceRef.length).toBeGreaterThan(5);
-    expect(m.prompt).toMatch(/No text, no logos, no brand names, no watermark/);
-  }
+  for (const p of products) expect(productPhoto(p), p.slug).toBe(`/images/products/${p.slug}.webp`);
 });

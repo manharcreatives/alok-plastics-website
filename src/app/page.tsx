@@ -3,7 +3,7 @@
 // RequirementToRepeat (how we work) · IndustriesBento · TrustQuote (why choose us) · PanIndiaMap ·
 // CeoQuote · StatsBand (the numbers) · BlogsSection · EnquirySection · ClosingNote.
 // Footer + WhatsApp FAB live in layout.tsx (shared by every route).
-// (JourneyOrbit lives on /about only. CultureTeaser cut from home, see docs/decisions.md)
+// (JourneyOrbit lives on /about only. CultureTeaser cut from home.)
 
 import type { Metadata } from 'next';
 import JsonLd from '@/components/seo/JsonLd';

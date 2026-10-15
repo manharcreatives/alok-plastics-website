@@ -8,8 +8,8 @@
  * gradients fitted to the sampled pixels. Gradient stops are expressed as color-mix() of
  * brand tokens, so no hex lives in this file.
  *
- * Fidelity test (colour SVG asset vs. original on white, 2620x957): see
- * docs/loop-log/fix-E.md (>=97% of pixels within 24/255 per channel).
+ * Fidelity test (colour SVG asset vs. original on white, 2620x957): >=97% of pixels within
+ * 24/255 per channel.
  *
  * Preloader hooks: group ids #A-ribbon, #LO-core, #K-arm, #plastics-group are preserved
  * (plus #A-fold / #K-fold overlay faces). Props are unchanged.

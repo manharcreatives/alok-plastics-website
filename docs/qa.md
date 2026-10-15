@@ -37,7 +37,7 @@
 | JS gzipped (all chunks loaded, home) | ~386 KB - **over the 170 KB budget** (no pre-round baseline was taken) |
 | Raw transfer, home | ~2.0 MB mobile viewport / ~3.7 MB desktop viewport - **over the 1.5 MB budget** |
 | Motion council (browser-tested) | 8.8/10, 0 CRITICAL, 0 MAJOR; console clean on 8 routes; reduced motion clean |
-| Art council | R2 7.0 -> R3 7.9 (0 CRITICAL); round-3 fixes applied, see docs/critique/r4-art-director.md |
+| Art council | R2 7.0 -> R3 7.9 (0 CRITICAL); round-3 fixes applied |
 
 ### Open
 - Home JS/transfer over budget: lazy-load below-fold GSAP sections (Journey, Map, Requirement chain) and trim Devanagari weights.

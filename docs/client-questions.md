@@ -35,7 +35,7 @@ All items here represent missing data. Nothing is invented. The site renders hon
 
 | # | Question | Impact |
 |---|---|---|
-| 14 | Hero video footage (or approval to commission AI-generated footage per `docs/hero-video-brief.md`) | Hero video mode; currently ships in ambient mode |
+| 14 | Hero video footage (or approval to commission the hero film per `docs/hero-video-brief.md`) | Hero video mode; currently ships in ambient mode |
 | 15 | Social media URLs (Instagram, LinkedIn, Facebook, YouTube, etc.) | Footer social icons; `Organization` JSON-LD `sameAs` |
 | 16 | Business hours (for LocalBusiness JSON-LD) | SEO structured data only; not displayed unless confirmed |
 | 17 | Real testimonials from customers (with permission to publish) | S10 TrustQuote — component is built but hidden while `testimonials: []` |

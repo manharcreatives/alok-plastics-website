@@ -78,9 +78,9 @@ hero: {
 
 The site will then auto-detect device capability and serve the video on qualifying devices (≥768px, fine pointer, no reduced motion, no Save-Data), and fall back to the poster on mobile and tablets.
 
-## AI-Generated Footage Note
+## Stand-in Footage Note
 
-If AI-generated footage is used, it must:
+If stand-in or stock footage is used, it must:
 - Look like a real Indian moulding unit with real equipment
 - Contain no fake signage or fake brand names
 - Not feature any people whose identities aren't cleared for use

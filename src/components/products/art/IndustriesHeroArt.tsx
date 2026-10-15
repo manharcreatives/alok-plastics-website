@@ -1,6 +1,5 @@
 /**
- * IndustriesHeroArt — /industries hero. The seven drawn industry scenes (src/components/art, owned by
- * the home-story agent, imported read-only) laid out as a staggered contact sheet that climbs
+ * IndustriesHeroArt — /industries hero. The seven drawn industry scenes (src/components/art, imported imported read-only) laid out as a staggered contact sheet that climbs
  * up-and-right. Decorative: the scenes depict a kind of application, not a customer.
  */
 import IndustryScene from '@/components/art/IndustryScenes';

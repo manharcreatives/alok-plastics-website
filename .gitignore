@@ -55,6 +55,9 @@ next-env.d.ts
 # client-supplied logo files (vector masters, high-res)
 /brand/
 
+# client-supplied brand kit, source docs + QA screenshots (confidential) — local only
+/client-kit/
+
 # Scratchpad
 # leftover empty scaffold directory (contains its own embedded .git)
 /alok-plastics/
@@ -62,8 +65,6 @@ next-env.d.ts
 /_backup/
 # local incoming archive drops (.tgz)
 /_incoming/
-# local agent/tooling config
-/.claude/
 scripts/.cache/
 
 # the HTTPS CA bundle we vendor for Windows PHP is a known PUBLIC file —

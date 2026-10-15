@@ -25,4 +25,4 @@ Upload the contents of `./out` (including `.htaccess`) to `public_html`. Copy `p
 Colours only from `src/styles/tokens.css`; backdrop-filter only in the navbar and mobile drawer; no 28–36px spacing; no `100vh`; no invented claims (honesty rule).
 
 ## Key docs
-`docs/MASTER_PROMPT.md` · `docs/decisions.md` · `docs/seo-geo.md` · `docs/qa.md` · `docs/loop-log/*` · `CHANGELOG.md`
+`docs/seo-geo.md` | `docs/qa.md` | `CHANGELOG.md`

@@ -14,7 +14,7 @@ Reconciles `src/content/products.ts` (40 products) with the client-supplied sour
 | S4 | Screenshot e7c56909 (catalogue p.4) | Brass canteen valves |
 | S5 | Screenshot 6f011728 (catalogue p.14) | Pilot burner, HP adaptor |
 
-Catalogue crops under `/catalogue/spares` are no longer used in the UI (`images: []` for every product). Product photos follow `/images/products/<slug>.webp` (1:1, 1200x1200) and are layered over the pictogram placeholder by `PhotoBg`. Prompts and source references are in `docs/images/manifest.products.json`.
+Catalogue crops under `/catalogue/spares` are no longer used in the UI (`images: []` for every product). Product photos follow `/images/products/<slug>.webp` (1:1, 1200x1200) and are layered over the pictogram placeholder by `PhotoBg`. Source references are in the product data.
 
 ## Group assignment
 
@@ -95,7 +95,7 @@ Corrections against the earlier (pre-catalogue) data:
 - "5year Guarantee" on the stove catalogue: not shown anywhere until the client confirms scope and terms (question 51).
 - Unlabelled price pairs, cut-off cards and probable weight typos (questions 52, 54, 55): kept out of the UI, either in `catalogNote` (never rendered) or omitted.
 - Materials not printed in the source: left unset (question 56).
-- Third-party branding visible in source photos: photo prompts forbid brands and text (question 61).
+- Third-party branding visible in source photos: photo guidelines forbid brands and text (question 61).
 - Prices are stored in data but not displayed while `site.showPrices` is false.
 
 ## Checks

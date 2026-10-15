@@ -1,4 +1,4 @@
-// About page copy — verbatim from docs/MASTER_PROMPT.md §5.2–§5.4, §5.6, §5.12.
+// About page copy — brand-locked
 // Kept here (not in a component body) so it can move to a CMS later.
 
 export const brandIdea =

@@ -49,7 +49,7 @@ export const site: SiteConfig = {
         mobileMp4: '/media/alok-hero-mobile.mp4', // 854px, ~5MB
       },
       poster: '/media/alok-hero-poster.jpg', // first frame of the hero film, 1920px
-      photo: '/images/hero/home.webp', // generated 16:9 still (1920x1080); see docs/images/manifest.hero-home.json
+      photo: '/images/hero/home.webp', // generated 16:9 still (1920x1080)
       // 'dark' = white text + bright logo in navbar. Required whenever footage plays:
       // measured across the full loop, --ink over the scrim lands between 1.25:1 and
       // 3.5:1 (illegible), while white holds 14:1 or better on every frame.

@@ -1,7 +1,6 @@
 /**
  * S11b · ClosingNote — the sign-off band between the enquiry section and the footer.
- * bg: --canvas (light), so the burgundy footer below never meets another burgundy block (ADR in
- * docs/decisions.md). Same drawn-grid + register-mark language as the footer's strip: the grid
+ * bg: --canvas (light), so the burgundy footer below never meets another burgundy block. Same drawn-grid + register-mark language as the footer's strip: the grid
  * continues, the burgundy arm on the top rule echoes the footer's fold highlight.
  *
  * Copy is a sincere sign-off built from facts already on the site (est. 1998, Chandigarh,

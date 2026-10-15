@@ -6,7 +6,7 @@
  *
  * Image slots: the existing artwork (pictogram on a burgundy-tint hatch) is the placeholder; the real
  * photo is layered over it with PhotoBg and simply fades in once the file exists (renders nothing on
- * error). Paths: /images/nav/*.webp — see docs/images/manifest.nav.json.
+ * error). Paths: /images/nav/*.webp — the nav art files
  *
  * Accessibility: aria-expanded/aria-controls on the chevron trigger, Esc, arrow keys.
  *

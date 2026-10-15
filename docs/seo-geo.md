@@ -1,6 +1,6 @@
 # SEO + GEO — what is built, and what the client does after launch
 
-Scope: master prompt §18. The site is a static export on Hostinger (Apache/LiteSpeed, no Node). Nothing here promises a ranking; it makes the business easy for search engines and AI answer engines to read, and makes every page a clean path to an enquiry.
+Scope: The site is a static export on Hostinger (Apache/LiteSpeed, no Node). Nothing here promises a ranking; it makes the business easy for search engines and AI answer engines to read, and makes every page a clean path to an enquiry.
 
 ## 1. Implemented
 
@@ -79,4 +79,4 @@ Upload the **contents** of `out/` to `public_html/` (including the dotfile `.hta
 - Cover images: `/images/blog/<slug>.webp` (16:9, 1600x900) are layered over a drawn placeholder. JSON-LD `image` and `og:image` use the cover only if the file exists in `public/` at build time, otherwise the site OG image, so nothing points at a 404.
 - `sitemap.xml` lists the index (weekly) and every post (lastmod = publish date); `llms.txt` lists the guides and `llms-full.txt` carries each guide's text and FAQs.
 - `check-seo` verifies the index and every post exist and are indexable, carry BlogPosting (headline, datePublished, author, publisher, image, mainEntityOfPage), BreadcrumbList and FAQPage, and og:type=article. A missing `/images/...` photo is a warning (photos are generated later), not an error.
-- Adding a post: append to `blogPosts` in `src/content/blogs.ts` (slug, dates, body blocks, FAQ, related) and add the cover to `docs/images/manifest.blogs.json`; routes, sitemap and llms update on the next build.
+- Adding a post: append to `blogPosts` in `src/content/blogs.ts` (slug, dates, body blocks, FAQ, related) and add the cover under `/images/blogs/`; routes, sitemap and llms update on the next build.
