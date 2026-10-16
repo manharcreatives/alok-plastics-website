@@ -1,7 +1,7 @@
 // Google Apps Script: Alok Plastics website forms
 // What it does for every POST from the website:
 //   1. checks the shared secret
-//   2. adds a row to a Google Sheet (tabs: Enquiries, Orders, Career; the Sheet is created automatically the first time)
+//   2. adds a row to a Google Sheet: enquiries and orders go to SHEET_ID (tabs Enquiries, Orders), career applications go to CAREER_SHEET_ID (tab Career)
 //   3. career applications: saves the resume in the Google Drive folder and puts the link in the row
 //   4. emails the details to TO_EMAILS
 //
@@ -11,6 +11,7 @@ const CONFIG = {
   SECRET: 'PASTE_SECRET',                 // same value as SCRIPT_SECRET on Vercel
   DRIVE_FOLDER_ID: 'PASTE_FOLDER_ID',     // the "Resumes" folder in Google Drive
   SHEET_ID: 'PASTE_SHEET_ID_OR_LEAVE_EMPTY',   // optional: your own Google Sheet; empty = the script creates one
+  CAREER_SHEET_ID: 'PASTE_CAREER_SHEET_ID_OR_LEAVE_EMPTY',   // separate Google Sheet for career applications; empty = same Sheet as above
   TO_EMAILS: ['PASTE_EMAIL'],             // who receives the notifications
 };
 
@@ -24,7 +25,8 @@ function json(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.JSON);
 }
 
-function spreadsheet() {
+function spreadsheet(type) {
+  if (type === 'career' && CONFIG.CAREER_SHEET_ID && CONFIG.CAREER_SHEET_ID.indexOf('PASTE') !== 0) return SpreadsheetApp.openById(CONFIG.CAREER_SHEET_ID);
   if (CONFIG.SHEET_ID && CONFIG.SHEET_ID.indexOf('PASTE') !== 0) return SpreadsheetApp.openById(CONFIG.SHEET_ID);
   const props = PropertiesService.getScriptProperties();
   let id = props.getProperty('SHEET_ID');
@@ -41,7 +43,7 @@ function spreadsheet() {
 
 function tab(type) {
   const t = TABS[type] || TABS.enquiry;
-  const ss = spreadsheet();
+  const ss = spreadsheet(type);
   let sh = ss.getSheetByName(t.name);
   if (!sh) {
     sh = ss.getSheets().length === 1 && ss.getSheets()[0].getLastRow() === 0 && ss.getSheets()[0].getName() !== t.name
@@ -103,6 +105,7 @@ function doPost(e) {
 // Run this once from the editor (Run > authorizeAll) so Google asks for Drive, Sheets and Gmail permission.
 function authorizeAll() {
   DriveApp.getFolderById(CONFIG.DRIVE_FOLDER_ID).getName();
-  spreadsheet();
+  spreadsheet('enquiry');
+  spreadsheet('career');
   MailApp.getRemainingDailyQuota();
 }
