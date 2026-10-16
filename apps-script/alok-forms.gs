@@ -10,6 +10,7 @@
 const CONFIG = {
   SECRET: 'PASTE_SECRET',                 // same value as SCRIPT_SECRET on Vercel
   DRIVE_FOLDER_ID: 'PASTE_FOLDER_ID',     // the "Resumes" folder in Google Drive
+  SHEET_ID: 'PASTE_SHEET_ID_OR_LEAVE_EMPTY',   // optional: your own Google Sheet; empty = the script creates one
   TO_EMAILS: ['PASTE_EMAIL'],             // who receives the notifications
 };
 
@@ -24,6 +25,7 @@ function json(obj) {
 }
 
 function spreadsheet() {
+  if (CONFIG.SHEET_ID && CONFIG.SHEET_ID.indexOf('PASTE') !== 0) return SpreadsheetApp.openById(CONFIG.SHEET_ID);
   const props = PropertiesService.getScriptProperties();
   let id = props.getProperty('SHEET_ID');
   if (id) {
