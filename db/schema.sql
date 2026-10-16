@@ -53,3 +53,29 @@ create table if not exists kv (
   key text primary key,
   value jsonb not null
 );
+
+-- admin panel: staff accounts and their sessions (token stored only as a sha256 hash)
+create table if not exists admin_users (
+  username text primary key,
+  name text not null,
+  hash text not null,
+  created_at bigint not null
+);
+
+create table if not exists admin_sessions (
+  token_hash text primary key,
+  username text not null,
+  created_at bigint not null,
+  last_seen bigint not null
+);
+
+create table if not exists audit_log (
+  id bigserial primary key,
+  at bigint not null,
+  actor text not null default '',
+  action text not null default '',
+  target text not null default '',
+  detail text not null default '',
+  ip text not null default ''
+);
+create index if not exists idx_audit_at on audit_log(at);
