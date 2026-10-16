@@ -86,6 +86,8 @@ export async function POST(req: NextRequest) {
     subject: `New Enquiry from ${name} (${company}) — Alok Plastics`,
     text,
     replyTo: email || undefined,
+    type: 'enquiry',
+    row: [name, company, phone, email, city, state, buyerType, product, quantity > 0 ? `${quantity} ${unit}` : '', message, source],
   });
 
   const t = now();

@@ -99,3 +99,6 @@ scripts/.cache/
 /.deverr.txt
 /.devlog.txt
 .runtime-backup/
+
+# Google Apps Script (apps-script/alok-forms.gs): email, Google Sheet and resume to Google Drive
+/apps-script/*.local.gs

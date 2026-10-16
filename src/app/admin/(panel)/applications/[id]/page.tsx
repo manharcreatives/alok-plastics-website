@@ -37,8 +37,9 @@ export default async function ApplicationPage({ params, searchParams }: Props) {
               <dt>Resume / LinkedIn</dt>
               <dd>
                 {a.resume_file ? <><a href={`/admin/applications/${a.id}/resume/`}>{a.resume_name || 'Download resume'}</a> <span className="meta">({Math.max(1, Math.round(a.resume_size / 1024))} KB)</span></> : null}
-                {a.resume_link ? <>{a.resume_file ? <br /> : null}<a href={a.resume_link} target="_blank" rel="noopener noreferrer nofollow">{a.resume_link.length > 70 ? `${a.resume_link.slice(0, 69)}…` : a.resume_link}</a></> : null}
-                {!a.resume_file && !a.resume_link ? '—' : null}
+                {a.resume_drive ? <>{a.resume_file ? <br /> : null}<a href={a.resume_drive} target="_blank" rel="noopener noreferrer">{a.resume_name || 'Resume'} (Google Drive)</a> <span className="meta">({Math.max(1, Math.round(a.resume_size / 1024))} KB)</span></> : null}
+                {a.resume_link ? <>{a.resume_file || a.resume_drive ? <br /> : null}<a href={a.resume_link} target="_blank" rel="noopener noreferrer nofollow">{a.resume_link.length > 70 ? `${a.resume_link.slice(0, 69)}…` : a.resume_link}</a></> : null}
+                {!a.resume_file && !a.resume_link && !a.resume_drive ? '—' : null}
               </dd>
             </dl>
             {a.message ? <p className="msg" style={{ whiteSpace: 'pre-wrap' }}>{a.message}</p> : <p className="meta">No message.</p>}

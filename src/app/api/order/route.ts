@@ -76,7 +76,10 @@ export async function POST(req: NextRequest) {
     }
 
     const text = orderText(order);
-    const mailed = await sendMail({ subject: `New enquiry ${order.code} — ${order.name}`, text: text.replace(/\*/g, '') });
+    const mailed = await sendMail({
+      subject: `New enquiry ${order.code} — ${order.name}`, text: text.replace(/\*/g, ''), type: 'order',
+      row: [order.code, order.name, `+${order.phone}`, address, items.map((i) => `${i.name}${i.variant ? ` (${i.variant})` : ''} x ${i.qty} ${i.unit}`).join('; '), order.total ?? '', note],
+    });
     await orders().update(order.id, { mail_ok: mailed ? 1 : 0 });
     const business = await getBusiness();
     return respond(200, {

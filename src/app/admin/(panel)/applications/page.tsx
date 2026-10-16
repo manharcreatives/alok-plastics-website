@@ -8,7 +8,7 @@ import { APPLICATION_LABELS, APPLICATION_STATUSES, fmtDateTime } from '@/server/
 export const metadata = { title: 'Applications' };
 
 type Props = { searchParams: Promise<{ status?: string; q?: string; page?: string; ok?: string; err?: string }> };
-type Row = { id: string; created_at: string; name: string; phone: string; email: string; position: string; status: string; has_resume: boolean; has_link: boolean };
+type Row = { id: string; created_at: string; name: string; phone: string; email: string; position: string; status: string; has_resume: boolean; has_drive: boolean; has_link: boolean };
 
 export default async function ApplicationsPage({ searchParams }: Props) {
   await requireAdmin();
@@ -24,7 +24,7 @@ export default async function ApplicationsPage({ searchParams }: Props) {
   const total = Number((await query<{ n: string }>(`select count(*) as n from docs where ${clause}`, args))[0]?.n ?? 0);
   const rows = await query<Row>(
     `select id, created_at, data->>'name' as name, data->>'phone' as phone, data->>'email' as email, data->>'position' as position,
-            data->>'status' as status, coalesce(data->>'resume_file', '') <> '' as has_resume, coalesce(data->>'resume_link', '') <> '' as has_link
+            data->>'status' as status, coalesce(data->>'resume_file', '') <> '' as has_resume, coalesce(data->>'resume_drive', '') <> '' as has_drive, coalesce(data->>'resume_link', '') <> '' as has_link
        from docs where ${clause} order by id desc limit ${PER_PAGE} offset ${(page - 1) * PER_PAGE}`,
     args,
   );
@@ -97,7 +97,7 @@ export default async function ApplicationsPage({ searchParams }: Props) {
                         <td data-label="Received" className="nowrap">{fmtDateTime(Number(a.created_at))}</td>
                         <td data-label="Applicant"><span><span className="cell-main">{a.name}</span><span className="cell-sub">{a.phone}{n > 1 ? ` · applied ${n} times` : ''}</span></span></td>
                         <td data-label="Position">{a.position}</td>
-                        <td data-label="Resume / LinkedIn">{a.has_resume ? 'File' : a.has_link ? 'LinkedIn' : '—'}</td>
+                        <td data-label="Resume / LinkedIn">{a.has_resume ? 'File' : a.has_drive ? 'Drive' : a.has_link ? 'Link' : '—'}</td>
                         <td data-label="Status"><ToneBadge tone={APPLICATION_TONES[a.status] ?? 'tone-muted'}>{APPLICATION_LABELS[a.status] ?? a.status}</ToneBadge></td>
                         <td className="cell-go"><Link className="btn btn-secondary btn-sm" href={`/admin/applications/${a.id}/`}>Open<span className="sr-only"> application from {a.name}</span></Link></td>
                       </tr>

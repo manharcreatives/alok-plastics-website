@@ -1,9 +1,9 @@
 import { randomBytes } from 'node:crypto';
-import type { NextRequest } from 'next/server';
+import { after, type NextRequest } from 'next/server';
 import { clean, clientIp, phone91, rateLimit, respond, sameSite } from '@/server/http';
 import { applications } from '@/server/collection';
-import { putFile } from '@/server/files';
-import { sendMail } from '@/server/mail';
+import { deleteFile, putFile } from '@/server/files';
+import { notify } from '@/server/mail';
 
 /* Career application: details + resume (PDF / DOC / DOCX up to 3 MB, or a LinkedIn link). */
 
@@ -80,13 +80,42 @@ export async function POST(req: NextRequest) {
       message, status: 'new', notes: [], ip,
     });
     const body =
-      `New career application received via the Alok Plastics website.\n\nName:      ${name}\nPhone:     +${phone}\nEmail:     ${email}\nPosition:  ${position}\n` +
-      (link ? `Resume link: ${link}\n` : '') +
-      (stored ? `Resume file: ${stored.original} (kept in the admin panel under Applications)\n` : '') +
-      (message ? `\nMessage:\n${message}\n` : '') +
-      `\nSubmitted: ${new Date().toLocaleString('en-GB', { timeZone: 'Asia/Kolkata' })} IST\n`;
-    const mailed = await sendMail({ subject: `Career application: ${name} — ${position}`, text: body, replyTo: email });
-    await applications().update(app.id, { mail_ok: mailed ? 1 : 0 });
+      `New career application received via the Alok Plastics website.
+
+Name:      ${name}
+Phone:     +${phone}
+Email:     ${email}
+Position:  ${position}
+` +
+      (link ? `Resume link: ${link}
+` : '') +
+      (message ? `
+Message:
+${message}
+` : '') +
+      `
+Submitted: ${new Date().toLocaleString('en-GB', { timeZone: 'Asia/Kolkata' })} IST
+`;
+    // Email, Sheet row and the Drive copy of the resume happen after the visitor has their answer. The resume stays in
+    // the database until Drive confirms it, so nothing is lost if the script is down.
+    after(async () => {
+      try {
+        const r = await notify({
+          subject: `Career application: ${name} — ${position}`, text: body, replyTo: email, type: 'career',
+          row: [name, `+${phone}`, email, position, message, link],
+          resume: stored ? { name: stored.original, mime: MIME[stored.ext]!, data: stored.data } : undefined,
+        });
+        const patch: Record<string, unknown> = { mail_ok: r.ok ? 1 : 0 };
+        if (stored && r.resumeLink) {
+          patch.resume_drive = r.resumeLink;
+          patch.resume_file = '';
+          await deleteFile(stored.id);
+        }
+        await applications().update(app.id, patch);
+      } catch (e) {
+        console.error('[alok-career] follow-up failed', e);
+      }
+    });
     return respond(200, { ok: true, message: 'Thank you. Your application has been received.' });
   } catch (e) {
     console.error('[alok-career]', e);

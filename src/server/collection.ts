@@ -108,7 +108,7 @@ export type Cart = { visitor: string; status: 'open' | 'submitted'; lines: CartL
 
 export type Application = {
   name: string; phone: string; email: string; position: string;
-  resume_link: string; resume_file: string; resume_name: string; resume_size: number;
+  resume_link: string; resume_file: string; resume_drive?: string; resume_name: string; resume_size: number;
   message: string; status: string; notes: Note[]; ip?: string; mail_ok?: number;
 };
 
