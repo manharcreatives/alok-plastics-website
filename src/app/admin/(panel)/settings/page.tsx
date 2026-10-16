@@ -1,7 +1,10 @@
-import { Card, Flash } from '@/components/admin/ui';
+import { Flash, PageHead } from '@/components/admin/ui';
+import { requireAdmin } from '@/server/admin-auth';
 import { HOURS_KEYS } from '@/server/content';
 import { kvGet } from '@/server/kv';
 import { changePassword, saveSettings } from './actions';
+
+export const metadata = { title: 'Settings' };
 
 type Props = { searchParams: Promise<{ ok?: string; err?: string }> };
 type Settings = {
@@ -16,6 +19,7 @@ type Settings = {
 const DAY: Record<string, string> = { mon: 'Monday', tue: 'Tuesday', wed: 'Wednesday', thu: 'Thursday', fri: 'Friday', sat: 'Saturday', sun: 'Sunday' };
 
 export default async function SettingsPage({ searchParams }: Props) {
+  await requireAdmin();
   const sp = await searchParams;
   const s = (await kvGet<Settings>('settings')) ?? {};
   const c = s.contact ?? {};
@@ -23,62 +27,77 @@ export default async function SettingsPage({ searchParams }: Props) {
   const b = s.banner ?? {};
   return (
     <>
-      <h1>Site settings</h1>
-      <p className="sub">Contact details, opening hours and the announcement bar shown on the website. Blank fields fall back to the built-in values.</p>
+      <PageHead
+        title="Site settings"
+        crumbs={[['Dashboard', '/admin/'], ['Settings', null]]}
+        lead="Contact details, opening hours and the announcement bar shown on the website. Blank fields fall back to the built-in values."
+      />
       <Flash ok={sp.ok} err={sp.err} />
-      <form action={saveSettings} className="adm-form">
-        <Card title="Contact">
-          <div className="adm-row">
-            <label>Phone<input type="text" name="phone" defaultValue={c.phone ?? ''} maxLength={40} /></label>
-            <label>WhatsApp number<input type="text" name="whatsapp" defaultValue={c.whatsapp ?? ''} maxLength={40} /></label>
-            <label>Email<input type="text" name="email" defaultValue={c.email ?? ''} maxLength={120} /></label>
-            <label>GSTIN<input type="text" name="gstin" defaultValue={c.gstin ?? ''} maxLength={20} /></label>
+
+      <form action={saveSettings}>
+        <section className="card" aria-labelledby="h-contact">
+          <div className="card-head"><h2 className="card-title" id="h-contact">Contact</h2></div>
+          <div className="form-grid">
+            <div className="field"><label htmlFor="phone">Phone</label><input id="phone" name="phone" type="text" maxLength={40} defaultValue={c.phone ?? ''} /></div>
+            <div className="field"><label htmlFor="whatsapp">WhatsApp number</label><input id="whatsapp" name="whatsapp" type="text" maxLength={40} defaultValue={c.whatsapp ?? ''} /></div>
+            <div className="field"><label htmlFor="email">Email</label><input id="email" name="email" type="text" maxLength={120} defaultValue={c.email ?? ''} /></div>
+            <div className="field"><label htmlFor="gstin">GSTIN</label><input id="gstin" name="gstin" type="text" maxLength={20} defaultValue={c.gstin ?? ''} /></div>
+            <div className="field field-wide"><label htmlFor="mapsUrl">Google Maps link</label><input id="mapsUrl" name="mapsUrl" type="text" maxLength={300} defaultValue={c.mapsUrl ?? ''} /></div>
+            <div className="field field-wide"><label htmlFor="replyTime">Typical reply time</label><input id="replyTime" name="replyTime" type="text" maxLength={120} defaultValue={s.replyTime ?? ''} placeholder="We reply within one business day" /></div>
           </div>
-          <label>Google Maps link<input type="text" name="mapsUrl" defaultValue={c.mapsUrl ?? ''} maxLength={300} /></label>
-          <label>Typical reply time<input type="text" name="replyTime" defaultValue={s.replyTime ?? ''} maxLength={120} placeholder="We reply within one business day" /></label>
-        </Card>
-        <Card title="Social links">
-          <div className="adm-row">
-            <label>Instagram<input type="text" name="instagram" defaultValue={so.instagram ?? ''} maxLength={300} /></label>
-            <label>LinkedIn<input type="text" name="linkedin" defaultValue={so.linkedin ?? ''} maxLength={300} /></label>
-            <label>Facebook<input type="text" name="facebook" defaultValue={so.facebook ?? ''} maxLength={300} /></label>
-            <label>YouTube<input type="text" name="youtube" defaultValue={so.youtube ?? ''} maxLength={300} /></label>
+        </section>
+
+        <section className="card" aria-labelledby="h-social">
+          <div className="card-head"><h2 className="card-title" id="h-social">Social links</h2></div>
+          <div className="form-grid">
+            <div className="field"><label htmlFor="instagram">Instagram</label><input id="instagram" name="instagram" type="text" maxLength={300} defaultValue={so.instagram ?? ''} /></div>
+            <div className="field"><label htmlFor="linkedin">LinkedIn</label><input id="linkedin" name="linkedin" type="text" maxLength={300} defaultValue={so.linkedin ?? ''} /></div>
+            <div className="field"><label htmlFor="facebook">Facebook</label><input id="facebook" name="facebook" type="text" maxLength={300} defaultValue={so.facebook ?? ''} /></div>
+            <div className="field"><label htmlFor="youtube">YouTube</label><input id="youtube" name="youtube" type="text" maxLength={300} defaultValue={so.youtube ?? ''} /></div>
           </div>
-        </Card>
-        <Card title="Opening hours (24-hour, like 09:30)">
-          <div className="adm-tablewrap">
-            <table>
-              <thead><tr><th>Day</th><th>Closed</th><th>Opens</th><th>Closes</th></tr></thead>
+        </section>
+
+        <section className="card" aria-labelledby="h-hours">
+          <div className="card-head"><h2 className="card-title" id="h-hours">Opening hours</h2><span className="card-sub">24-hour, like 09:30</span></div>
+          <div className="table-wrap">
+            <table className="table">
+              <thead><tr><th scope="col">Day</th><th scope="col">Closed</th><th scope="col">Opens</th><th scope="col">Closes</th></tr></thead>
               <tbody>
                 {HOURS_KEYS.map((d) => (
                   <tr key={d}>
-                    <td>{DAY[d]}</td>
+                    <td><span className="cell-main">{DAY[d]}</span></td>
                     <td><input type="checkbox" name={`${d}_closed`} defaultChecked={s.hours?.[d]?.closed ?? false} aria-label={`${DAY[d]} closed`} /></td>
-                    <td><input type="text" name={`${d}_open`} defaultValue={s.hours?.[d]?.open ?? ''} maxLength={5} style={{ width: 90 }} aria-label={`${DAY[d]} opens`} /></td>
-                    <td><input type="text" name={`${d}_close`} defaultValue={s.hours?.[d]?.close ?? ''} maxLength={5} style={{ width: 90 }} aria-label={`${DAY[d]} closes`} /></td>
+                    <td><input type="text" name={`${d}_open`} maxLength={5} defaultValue={s.hours?.[d]?.open ?? ''} aria-label={`${DAY[d]} opens`} style={{ maxWidth: 110 }} /></td>
+                    <td><input type="text" name={`${d}_close`} maxLength={5} defaultValue={s.hours?.[d]?.close ?? ''} aria-label={`${DAY[d]} closes`} style={{ maxWidth: 110 }} /></td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          <label>Note under the hours<input type="text" name="hoursNote" defaultValue={s.hoursNote ?? ''} maxLength={200} /></label>
-        </Card>
-        <Card title="Announcement bar">
-          <label style={{ display: 'flex', gap: 8, alignItems: 'center' }}><input type="checkbox" name="banner_on" defaultChecked={b.enabled ?? false} /> Show the bar at the top of the website</label>
-          <label>Text<input type="text" name="banner_text" defaultValue={b.text ?? ''} maxLength={200} /></label>
-          <label>Link (optional)<input type="text" name="banner_href" defaultValue={b.href ?? ''} maxLength={300} /></label>
-        </Card>
-        <p><button className="adm-btn" type="submit">Save settings</button></p>
+          <div className="field"><label htmlFor="hoursNote">Note under the hours</label><input id="hoursNote" name="hoursNote" type="text" maxLength={200} defaultValue={s.hoursNote ?? ''} /></div>
+        </section>
+
+        <section className="card" aria-labelledby="h-banner">
+          <div className="card-head"><h2 className="card-title" id="h-banner">Announcement bar</h2></div>
+          <label className="switch"><input type="checkbox" name="banner_on" defaultChecked={b.enabled ?? false} /><span>Show the bar at the top of the website</span></label>
+          <div className="form-grid">
+            <div className="field field-wide"><label htmlFor="banner_text">Text</label><input id="banner_text" name="banner_text" type="text" maxLength={200} defaultValue={b.text ?? ''} /></div>
+            <div className="field field-wide"><label htmlFor="banner_href">Link (optional)</label><input id="banner_href" name="banner_href" type="text" maxLength={300} defaultValue={b.href ?? ''} /></div>
+          </div>
+        </section>
+
+        <div className="sticky-actions"><button className="btn btn-primary" type="submit">Save settings</button></div>
       </form>
 
-      <Card title="Change your password" id="password">
-        <form action={changePassword} className="adm-form" style={{ maxWidth: 420 }}>
-          <label>Current password<input type="password" name="current" autoComplete="current-password" required /></label>
-          <label>New password (10+ characters)<input type="password" name="next" autoComplete="new-password" minLength={10} required /></label>
-          <label>New password again<input type="password" name="again" autoComplete="new-password" minLength={10} required /></label>
-          <p><button className="adm-btn" type="submit">Change password</button></p>
+      <section className="card narrow-form" id="password" aria-labelledby="h-pw">
+        <div className="card-head"><h2 className="card-title" id="h-pw">Change your password</h2></div>
+        <form action={changePassword}>
+          <div className="field"><label htmlFor="current">Current password</label><input id="current" name="current" type="password" autoComplete="current-password" required /></div>
+          <div className="field"><label htmlFor="next">New password (10+ characters)</label><input id="next" name="next" type="password" autoComplete="new-password" minLength={10} required /></div>
+          <div className="field"><label htmlFor="again">New password again</label><input id="again" name="again" type="password" autoComplete="new-password" minLength={10} required /></div>
+          <button className="btn btn-primary" type="submit">Change password</button>
         </form>
-      </Card>
+      </section>
     </>
   );
 }

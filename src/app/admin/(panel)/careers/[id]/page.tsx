@@ -1,13 +1,17 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Card, DeleteBox, Flash } from '@/components/admin/ui';
+import { Flash, PageHead } from '@/components/admin/ui';
+import { requireAdmin } from '@/server/admin-auth';
 import { getRoles, ROLE_TYPES, TEAMS, type Role } from '@/server/content';
-import { deleteRole, saveRole } from '../actions';
+import { saveRole } from '../actions';
+
+export const metadata = { title: 'Role' };
 
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ ok?: string; err?: string }> };
 
 /** /admin/careers/new/ adds a role; /admin/careers/<id>/ edits one. */
 export default async function RolePage({ params, searchParams }: Props) {
+  await requireAdmin();
   const { id } = await params;
   const sp = await searchParams;
   const roles = await getRoles();
@@ -16,36 +20,40 @@ export default async function RolePage({ params, searchParams }: Props) {
   const r: Pick<Role, 'title' | 'team' | 'type' | 'location' | 'description' | 'active'> = existing ?? { title: '', team: '', type: 'full-time', location: '', description: '', active: true };
   return (
     <>
-      <p><Link href="/admin/careers/">&larr; Open roles</Link></p>
-      <h1>{existing ? 'Edit role' : 'Add role'}</h1>
+      <PageHead title={existing ? 'Edit role' : 'Add a role'} crumbs={[['Dashboard', '/admin/'], ['Open roles', '/admin/careers/'], [existing ? 'Edit' : 'New', null]]} />
       <Flash ok={sp.ok} err={sp.err} />
-      <Card>
-        <form action={saveRole.bind(null, id)} className="adm-form">
-          <label>Role title *<input type="text" name="title" defaultValue={r.title} maxLength={80} required /></label>
-          <div className="adm-row">
-            <label>Team *
-              <select name="team" defaultValue={r.team} required>
-                <option value="">Choose...</option>
-                {Object.entries(TEAMS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
-              </select>
-            </label>
-            <label>Type *
-              <select name="type" defaultValue={r.type} required>
-                {Object.entries(ROLE_TYPES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
-              </select>
-            </label>
-            <label>Location *<input type="text" name="location" defaultValue={r.location} maxLength={80} required /></label>
+      <form className="card narrow-form" action={saveRole.bind(null, id)}>
+        <div className="form-grid">
+          <div className="field field-wide">
+            <label htmlFor="title">Role title</label>
+            <input id="title" name="title" type="text" maxLength={80} required defaultValue={r.title} />
           </div>
-          <label>Description<textarea name="description" defaultValue={r.description} maxLength={2000} rows={6} /></label>
-          <label style={{ display: 'flex', gap: 8, alignItems: 'center' }}><input type="checkbox" name="active" defaultChecked={r.active} /> Show on the Careers page</label>
-          <p><button className="adm-btn" type="submit">Save role</button></p>
-        </form>
-      </Card>
-      {existing ? (
-        <Card title="Danger zone">
-          <DeleteBox label="Delete this role" action={deleteRole.bind(null, id)}><p>The role is removed from the website. Applications already received are kept.</p></DeleteBox>
-        </Card>
-      ) : null}
+          <div className="field">
+            <label htmlFor="team">Team</label>
+            <select id="team" name="team" required defaultValue={r.team}>
+              <option value="">Choose a team</option>
+              {Object.entries(TEAMS).map(([k, l]) => <option key={k} value={k}>{l}</option>)}
+            </select>
+          </div>
+          <div className="field">
+            <label htmlFor="location">Location</label>
+            <input id="location" name="location" type="text" maxLength={80} required defaultValue={r.location} />
+          </div>
+          <div className="field">
+            <label htmlFor="type">Employment type</label>
+            <select id="type" name="type" required defaultValue={r.type}>
+              {Object.entries(ROLE_TYPES).map(([k, l]) => <option key={k} value={k}>{l}</option>)}
+            </select>
+          </div>
+          <div className="field field-wide">
+            <label htmlFor="description">Description</label>
+            <textarea id="description" name="description" rows={8} maxLength={2000} defaultValue={r.description} />
+            <p className="help">Plain text. What the person will do and what you are looking for. Do not publish a salary, qualification or benefit unless you have decided it.</p>
+          </div>
+        </div>
+        <label className="switch"><input type="checkbox" name="active" value="1" defaultChecked={r.active} /><span>Show this role on the Careers page</span></label>
+        <div className="sticky-actions"><button className="btn btn-primary" type="submit">Save role</button> <Link className="btn btn-quiet" href="/admin/careers/">Cancel</Link></div>
+      </form>
     </>
   );
 }

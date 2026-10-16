@@ -47,3 +47,11 @@ export async function deleteEnquiry(id: string): Promise<void> {
   await audit(user.username, 'enquiry_delete', `#${id}`);
   redirect('/admin/enquiries/');
 }
+
+export async function assignTo(id: string, form: FormData): Promise<void> {
+  const { user, row } = await load(id);
+  const who = String(form.get('assigned_to') ?? '').replace(/<[^>]*>/g, '').trim().slice(0, 60);
+  await query('update enquiries set assigned_to = $2, updated_at = $3 where id = $1', [id, who, now()]);
+  await audit(user.username, 'enquiry_assign', `#${id}`, `${row.assigned_to || '-'} -> ${who || '-'}`);
+  revalidatePath(`/admin/enquiries/${id}/`);
+}

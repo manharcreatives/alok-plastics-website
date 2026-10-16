@@ -16,6 +16,8 @@ const nextConfig: NextConfig = {
   // Admin product photos are shrunk in the browser first; 4 MB stays under the host's request limit.
   experimental: {
     serverActions: { bodySizeLimit: '4mb' },
+    // The public site and the admin have separate root layouts, so unmatched URLs use app/global-not-found.tsx.
+    globalNotFound: true,
   },
 
   // The GST invoice PDF reads the UPI QR image from disk.

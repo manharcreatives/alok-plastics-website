@@ -1,96 +1,109 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Badge, Card, DeleteBox, Flash, Notes } from '@/components/admin/ui';
 import { requireAdmin } from '@/server/admin-auth';
 import { rupees } from '@/server/admin-util';
 import type { Doc, Order } from '@/server/collection';
 import { getOrder, pdfDefaults } from '@/server/orders-admin';
 import { fmtDateTime, nextStatus, ORDER_LABELS, prevStatus, stageMessage } from '@/server/shop';
-import { addOrderNote, advanceOrder, backOrder, cancelOrder, deleteOrder, editOrder, prepareDoc } from './actions';
+import { Flash, Icon, NoteTimeline, ORDER_TONES, PageHead, ToneBadge } from '@/components/admin/ui';
+import { addOrderNote, advanceOrder, backOrder, cancelOrder, editOrder, prepareDoc } from './actions';
+
+export const metadata = { title: 'Order' };
 
 type Props = {
   params: Promise<{ id: string }>;
   searchParams: Promise<{ ok?: string; err?: string; pdf?: string; got?: string }>;
 };
 
-/** Extra fields the next stage asks for. */
+const FLOW = ['pending', 'reviewing', 'quoted', 'confirmed', 'paid', 'dispatched', 'invoiced', 'closed'];
+
 function StageFields({ next }: { next: string }) {
   if (next === 'quoted') {
     return (
       <>
-        <label>Quote amount (Rs.)<input type="text" name="quote_amount" inputMode="decimal" /></label>
-        <label>Note to customer<input type="text" name="quote_note" maxLength={300} /></label>
+        <div className="field"><label htmlFor="quote_amount">Quoted amount, Rs. (optional)</label><input id="quote_amount" name="quote_amount" type="number" min="0" step="0.01" inputMode="decimal" /></div>
+        <div className="field"><label htmlFor="quote_note">Quote note (optional)</label><input id="quote_note" name="quote_note" type="text" maxLength={300} placeholder="e.g. Valid for 7 days, freight extra" /></div>
       </>
     );
   }
   if (next === 'paid') {
     return (
       <>
-        <label>Amount received (Rs.) *<input type="text" name="pay_amount" inputMode="decimal" required /></label>
-        <label>Mode<input type="text" name="pay_mode" maxLength={30} placeholder="UPI / bank transfer / cash" /></label>
-        <label>Reference<input type="text" name="pay_ref" maxLength={80} /></label>
+        <div className="field"><label htmlFor="pay_amount">Amount received, Rs. *</label><input id="pay_amount" name="pay_amount" type="number" min="0" step="0.01" inputMode="decimal" required /></div>
+        <div className="field"><label htmlFor="pay_mode">Mode</label>
+          <select id="pay_mode" name="pay_mode"><option>NEFT / RTGS</option><option>UPI</option><option>Cheque</option><option>Cash</option></select></div>
+        <div className="field"><label htmlFor="pay_ref">UTR / reference (optional)</label><input id="pay_ref" name="pay_ref" type="text" maxLength={80} /></div>
       </>
     );
   }
   if (next === 'dispatched') {
     return (
       <>
-        <label>Transporter<input type="text" name="transporter" maxLength={80} /></label>
-        <label>LR / tracking no.<input type="text" name="lr_no" maxLength={60} /></label>
+        <div className="field"><label htmlFor="transporter">Transporter (optional)</label><input id="transporter" name="transporter" type="text" maxLength={80} /></div>
+        <div className="field"><label htmlFor="lr_no">LR / tracking no. (optional)</label><input id="lr_no" name="lr_no" type="text" maxLength={60} /></div>
       </>
     );
   }
+  if (next === 'invoiced') return <p className="meta">A gapless GST invoice number (financial-year series) is generated when you continue.</p>;
   return null;
 }
 
-function PdfForm({ id, title, d }: { id: string; title: string; d: Awaited<ReturnType<typeof pdfDefaults>> }) {
-  const rows = [...d.items, ...Array.from({ length: 3 }, () => ({ name: '', hsn: '', qty: 0, unit: 'pcs', price: null as number | null }))];
+function PdfForm({ id, title, d, o }: { id: string; title: string; d: Awaited<ReturnType<typeof pdfDefaults>>; o: Doc<Order> }) {
+  const rows = [...d.items, { name: '', hsn: '', qty: 0, unit: '', price: null as number | null }, { name: '', hsn: '', qty: 0, unit: '', price: null as number | null }];
+  const c = d.customer;
+  const t = d.transport;
   return (
-    <form action={prepareDoc.bind(null, id)} className="adm-form">
-      <h3>{title}</h3>
-      <input type="hidden" name="type" value={d.type} />
-      <div className="adm-row">
-        <label>Document no. (blank = next number)<input type="text" name="doc_no" defaultValue={d.no} maxLength={40} /></label>
-        <label>Date (dd-mm-yyyy)<input type="text" name="doc_date" defaultValue={d.date} maxLength={10} /></label>
-        <label>GST type
-          <select name="mode" defaultValue={d.mode}>
-            <option value="ut">UTGST + CGST (Union Territory)</option>
-            <option value="intra">SGST + CGST (same state)</option>
-            <option value="inter">IGST (other state)</option>
-          </select>
-        </label>
-        <label>GST %<input type="text" name="rate" defaultValue={String(d.rate)} inputMode="decimal" /></label>
+    <form className="pdf-form" id="pdf-form" action={prepareDoc.bind(null, id)} data-pdf-form="">
+      <h3 className="pdf-sec">{title}</h3>
+      <div className="pdf-grid">
+        <div className="field"><label htmlFor="pf-type">Document</label>
+          <select id="pf-type" name="type" defaultValue={d.type} data-pdf-type=""><option value="proforma">Proforma invoice</option><option value="invoice">GST invoice</option></select></div>
+        <div className="field"><label htmlFor="pf-no">Document no.</label><input id="pf-no" name="doc_no" type="text" maxLength={40} defaultValue={d.no} placeholder="Auto" /></div>
+        <div className="field"><label htmlFor="pf-date">Date</label><input id="pf-date" name="doc_date" type="text" maxLength={10} pattern="\d{2}-\d{2}-\d{4}" placeholder="DD-MM-YYYY" defaultValue={d.date} /></div>
+        <div className="field" data-pdf-only="invoice"><label htmlFor="pf-mode">Sale type</label>
+          <select id="pf-mode" name="mode" defaultValue={d.mode}>
+            <option value="ut">UT (UTGST + CGST)</option><option value="intra">Same state (SGST + CGST)</option><option value="inter">Other state (IGST)</option>
+          </select></div>
+        <div className="field" data-pdf-only="invoice"><label htmlFor="pf-rate">GST %</label><input id="pf-rate" name="rate" type="number" min="0" max="40" step="0.5" defaultValue={d.rate} /></div>
       </div>
-      <div className="adm-row">
-        <label>Customer name<input type="text" name="c_name" defaultValue={d.customer.name} maxLength={80} required /></label>
-        <label>WhatsApp no.<input type="text" name="c_phone" defaultValue={d.customer.phone} maxLength={30} required /></label>
-        <label>State<input type="text" name="c_state" defaultValue={d.customer.state} maxLength={40} /></label>
-        <label>Party GSTIN<input type="text" name="c_gstin" defaultValue={d.customer.gstin} maxLength={15} /></label>
+
+      <h3 className="pdf-sec">Bill to</h3>
+      <div className="pdf-grid">
+        <div className="field"><label htmlFor="pf-cname">Customer name</label><input id="pf-cname" name="c_name" type="text" maxLength={80} required defaultValue={c.name} /></div>
+        <div className="field"><label htmlFor="pf-cphone">WhatsApp number</label><input id="pf-cphone" name="c_phone" type="tel" inputMode="tel" maxLength={30} required defaultValue={c.phone.replace(/^\+?91(?=\d{10}$)/, '')} /></div>
+        <div className="field"><label htmlFor="pf-cstate">State</label><input id="pf-cstate" name="c_state" type="text" maxLength={40} defaultValue={c.state} /></div>
+        <div className="field" data-pdf-only="invoice"><label htmlFor="pf-cgstin">Party GSTIN</label><input id="pf-cgstin" name="c_gstin" type="text" maxLength={15} defaultValue={c.gstin} /></div>
+        <div className="field pdf-wide"><label htmlFor="pf-caddr">Address</label><textarea id="pf-caddr" name="c_address" rows={2} maxLength={300} defaultValue={c.address} /></div>
       </div>
-      <label>Address<textarea name="c_address" defaultValue={d.customer.address} maxLength={300} rows={2} /></label>
-      <div className="adm-tablewrap">
-        <table>
-          <thead><tr><th>Description</th><th>HSN</th><th>Qty</th><th>Unit</th><th>Price (blank = on request)</th></tr></thead>
-          <tbody>
-            {rows.map((it, i) => (
-              <tr key={i}>
-                <td><input type="text" name="it_name" defaultValue={it.name} maxLength={160} /></td>
-                <td><input type="text" name="it_hsn" defaultValue={it.hsn} maxLength={12} style={{ width: 90 }} /></td>
-                <td><input type="text" name="it_qty" defaultValue={it.qty ? String(it.qty) : ''} inputMode="decimal" style={{ width: 80 }} /></td>
-                <td><input type="text" name="it_unit" defaultValue={it.unit} maxLength={12} style={{ width: 70 }} /></td>
-                <td><input type="text" name="it_price" defaultValue={it.price === null ? '' : String(it.price)} inputMode="decimal" style={{ width: 110 }} /></td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+
+      <div data-pdf-only="invoice">
+        <h3 className="pdf-sec">Transport</h3>
+        <div className="pdf-grid">
+          <div className="field"><label htmlFor="pf-ttr">Transporter</label><input id="pf-ttr" name="t_transporter" type="text" maxLength={60} defaultValue={t.transporter} /></div>
+          <div className="field"><label htmlFor="pf-tgr">G.R. no.</label><input id="pf-tgr" name="t_gr_no" type="text" maxLength={40} defaultValue={t.gr_no} /></div>
+          <div className="field"><label htmlFor="pf-tdt">G.R. date</label><input id="pf-tdt" name="t_gr_dt" type="text" maxLength={20} defaultValue={t.gr_dt} /></div>
+        </div>
       </div>
-      <div className="adm-row">
-        <label>Transporter<input type="text" name="t_transporter" defaultValue={d.transport.transporter} maxLength={60} /></label>
-        <label>G.R. no.<input type="text" name="t_gr_no" defaultValue={d.transport.gr_no} maxLength={40} /></label>
-        <label>G.R. date<input type="text" name="t_gr_dt" defaultValue={d.transport.gr_dt} maxLength={20} /></label>
+
+      <h3 className="pdf-sec">Items <span className="meta">Leave the price blank to print &quot;On request&quot;.</span></h3>
+      <div className="pdf-lines">
+        {rows.map((r, i) => (
+          <div className="pdf-line" key={i}>
+            <div className="pdf-desc"><input name="it_name" type="text" maxLength={160} placeholder="Description of goods" aria-label="Description" defaultValue={r.name} /><span className="pdf-rm" /></div>
+            <input name="it_hsn" type="text" maxLength={12} placeholder="HSN" aria-label="HSN code" defaultValue={r.hsn} />
+            <input name="it_qty" type="number" min="0" step="any" placeholder="Qty" aria-label="Quantity" defaultValue={r.qty ? r.qty : ''} />
+            <input name="it_unit" type="text" maxLength={12} placeholder="Unit" aria-label="Unit" defaultValue={r.unit} />
+            <input name="it_price" type="number" min="0" step="0.01" placeholder="Price" aria-label="Price per unit" defaultValue={r.price === null ? '' : r.price} />
+          </div>
+        ))}
       </div>
-      <label>Note on the document<textarea name="note" defaultValue={d.note} maxLength={300} rows={2} /></label>
-      <p><button className="adm-btn" type="submit">Generate PDF</button></p>
+
+      <div className="field"><label htmlFor="pf-note">Note on the PDF (optional)</label><textarea id="pf-note" name="note" rows={2} maxLength={300} defaultValue={d.note} /></div>
+      <p className="actions">
+        <button className="btn btn-wa" type="submit"><Icon name="download" />Generate PDF &amp; Download</button>
+        <a className="btn btn-secondary" href={`https://wa.me/${c.phone || o.phone}`} target="_blank" rel="noopener noreferrer"><Icon name="chat" />Open WhatsApp chat</a>
+        <Link className="btn btn-quiet" href={`/admin/orders/${id}/#pdfs`}>Cancel</Link>
+      </p>
     </form>
   );
 }
@@ -105,7 +118,8 @@ export default async function OrderPage({ params, searchParams }: Props) {
   const next = nextStatus(o.status);
   const prev = prevStatus(o);
   const finished = ['closed', 'cancelled'].includes(o.status);
-  const wa = `https://wa.me/${o.phone}?text=${encodeURIComponent(stageMessage(o))}`;
+  const waText = stageMessage(o);
+  const wa = `https://wa.me/${o.phone}?text=${encodeURIComponent(waText)}`;
   const pick = sp.pdf ?? '';
   let pdfForm: Awaited<ReturnType<typeof pdfDefaults>> | null = null;
   let pdfTitle = '';
@@ -118,144 +132,200 @@ export default async function OrderPage({ params, searchParams }: Props) {
     pdfTitle = `Edit & regenerate ${e.no}`;
   }
 
-  const details: [string, string][] = [
-    ['Placed', fmtDateTime(o.created_at)],
-    ['Customer', o.name],
-    ['Mobile', `+${o.phone}${o.verified ? '' : ' (not verified)'}`],
-    ['Address', o.address || '-'],
-    ['Customer note', o.note || '-'],
-    ['Estimated total', rupees(o.total)],
-  ];
-  const stage: [string, string][] = [];
-  if (o.quote_amount != null || o.quote_note) stage.push(['Quote', `${rupees(o.quote_amount)}${o.quote_note ? ` - ${o.quote_note}` : ''}`]);
-  if (o.pay_amount != null) stage.push(['Payment', `${rupees(o.pay_amount)} ${[o.pay_mode, o.pay_ref].filter(Boolean).join(' / ')}`]);
-  if (o.transporter || o.lr_no) stage.push(['Dispatch', [o.transporter, o.lr_no && `LR ${o.lr_no}`].filter(Boolean).join(' / ')]);
-  if (o.invoice_no) stage.push(['Invoice no.', o.invoice_no]);
-  if (o.cancel_reason) stage.push(['Cancelled because', o.cancel_reason]);
+  const facts: [string, string][] = [];
+  if (o.quote_amount != null) facts.push(['Quote', `${rupees(o.quote_amount)}${o.quote_note ? ` · ${o.quote_note}` : ''}`]);
+  if (o.pay_amount != null) facts.push(['Payment', `${rupees(o.pay_amount)} · ${o.pay_mode ?? ''}${o.pay_ref ? ` · ref ${o.pay_ref}` : ''}`]);
+  if (o.lr_no || o.transporter) facts.push(['Dispatch', `${o.transporter ?? ''} · LR ${o.lr_no ?? ''}`.replace(/^ · /, '').replace(/ · LR $/, '')]);
+  if (o.invoice_no) facts.push(['GST invoice', o.invoice_no]);
+
+  const at: Record<string, number> = {};
+  for (const h of o.history ?? []) at[h.to] = h.at;
+  const curIdx = FLOW.indexOf(o.status);
 
   return (
     <>
-      <p><Link href="/admin/orders/">&larr; All orders</Link></p>
-      <h1>{o.code} <Badge s={o.status} label={ORDER_LABELS[o.status] ?? o.status} /></h1>
-      <p className="sub">{o.name} &middot; {fmtDateTime(o.created_at)}</p>
+      <PageHead
+        title={`Enquiry ${o.code}`}
+        crumbs={[['Dashboard', '/admin/'], ['Orders', '/admin/orders/'], [o.code, null]]}
+        lead={`Received ${fmtDateTime(o.created_at)}`}
+        extra={<> <ToneBadge tone={ORDER_TONES[o.status] ?? 'tone-muted'}>{ORDER_LABELS[o.status] ?? o.status}</ToneBadge></>}
+      />
       <Flash ok={sp.ok} err={sp.err} />
-      <div className="adm-cols">
-        <div>
-          <Card title="Order">
-            <dl className="adm-dl">
-              {details.map(([k, v]) => (<div key={k} style={{ display: 'contents' }}><dt>{k}</dt><dd>{v}</dd></div>))}
-              {stage.map(([k, v]) => (<div key={k} style={{ display: 'contents' }}><dt>{k}</dt><dd>{v}</dd></div>))}
-            </dl>
-            <div className="adm-tablewrap" style={{ marginTop: 14 }}>
-              <table>
-                <thead><tr><th>#</th><th>Product</th><th>Qty</th><th>Price</th></tr></thead>
+
+      <div className="detail">
+        <div className="detail-main">
+          <section className="card" aria-labelledby="h-items">
+            <div className="card-head"><h2 className="card-title" id="h-items">Items</h2><span className="card-sub">{o.items.length} {o.items.length === 1 ? 'line' : 'lines'}</span></div>
+            <div className="table-wrap">
+              <table className="table">
+                <thead><tr><th scope="col">Product</th><th scope="col">Quantity</th><th scope="col">Unit price</th></tr></thead>
                 <tbody>
                   {o.items.map((it, i) => (
                     <tr key={i}>
-                      <td>{i + 1}</td>
-                      <td>{it.name}{it.variant ? <><br /><small>{it.variant}</small></> : null}</td>
-                      <td>{it.qty} {it.unit}</td>
-                      <td>{it.price === null ? 'On request' : rupees(it.price)}</td>
+                      <td><span className="cell-main">{it.name}</span>{it.variant ? <span className="cell-sub">{it.variant}</span> : null}</td>
+                      <td className="nowrap">{it.qty.toLocaleString('en-IN')} {it.unit}</td>
+                      <td className="nowrap">{it.price !== null ? `Rs. ${Math.round(it.price).toLocaleString('en-IN')}` : '—'}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-            <details id="edit" open={Boolean(sp.err)} style={{ marginTop: 14 }}>
-              <summary>Edit customer details or quantities</summary>
-              <form action={editOrder.bind(null, id)} className="adm-form">
-                <div className="adm-row">
-                  <label>Name<input type="text" name="name" defaultValue={o.name} maxLength={80} required /></label>
-                  <label>Mobile<input type="text" name="phone" defaultValue={o.phone} maxLength={30} required /></label>
-                </div>
-                <label>Address<textarea name="address" defaultValue={o.address} maxLength={300} rows={2} required /></label>
-                <label>Customer note<textarea name="order_note" defaultValue={o.note} maxLength={600} rows={2} /></label>
-                {o.items.map((it, i) => (
-                  <label key={i}>{it.name} - quantity (0 removes it)<input type="text" name="qty" defaultValue={String(it.qty)} inputMode="numeric" style={{ width: 120 }} /></label>
-                ))}
-                <p><button className="adm-btn" type="submit">Save changes</button></p>
-              </form>
-            </details>
-          </Card>
+            {o.total !== null ? <p className="meta">Estimated total: Rs. {Math.round(o.total).toLocaleString('en-IN')} (catalogue prices, before taxes and freight)</p> : null}
+            {o.note ? <p className="msg" style={{ whiteSpace: 'pre-wrap' }}>{o.note}</p> : null}
+          </section>
 
-          <Card title="Documents (proforma / GST invoice)" id="pdfs">
-            {sp.got !== undefined && o.pdfs?.[Number(sp.got)] ? (
-              <p><a className="adm-btn" href={`/admin/orders/${id}/pdf/?n=${Number(sp.got)}&dl=1`}>Download {o.pdfs[Number(sp.got)]!.no}</a></p>
+          <section className="card" aria-labelledby="h-stage">
+            <div className="card-head"><h2 className="card-title" id="h-stage">Progress</h2><span className="card-sub">{ORDER_LABELS[o.status] ?? o.status}</span></div>
+            <ol className="timeline">
+              {FLOW.map((st, i) => {
+                const done = curIdx >= 0 && i <= curIdx;
+                const when = !done ? 0 : st === 'pending' ? o.created_at : at[st] ?? 0;
+                return (
+                  <li key={st}>
+                    <span className="tl-meta">{when ? fmtDateTime(when) : done ? '' : 'Not yet'}</span>
+                    <span className="tl-text">{done ? '✔ ' : '○ '}{ORDER_LABELS[st]}</span>
+                  </li>
+                );
+              })}
+              {o.status === 'cancelled' ? <li><span className="tl-meta">Cancelled</span><span className="tl-text">{o.cancel_reason ?? ''}</span></li> : null}
+            </ol>
+            {prev ? (
+              <details className="step-back">
+                <summary className="meta">Go back to &quot;{ORDER_LABELS[prev]}&quot;</summary>
+                <form action={backOrder.bind(null, id)} data-confirm={`Move this order back to "${ORDER_LABELS[prev]}"? The customer is not messaged.`}>
+                  <div className="field"><label htmlFor="back-reason">Reason (optional)</label><input id="back-reason" name="reason" type="text" maxLength={300} placeholder="e.g. Moved by mistake" /></div>
+                  <button className="btn btn-secondary" type="submit">Move back to &quot;{ORDER_LABELS[prev]}&quot;</button>
+                </form>
+              </details>
             ) : null}
-            {(o.pdfs ?? []).length === 0 ? <p className="adm-empty" style={{ padding: 0 }}>No documents yet.</p> : (
-              <ul className="adm-list">
-                {(o.pdfs ?? []).map((p, i) => (
-                  <li key={i}>
-                    <strong>{p.type === 'invoice' ? 'GST invoice' : 'Proforma'} {p.no}</strong> &middot; {p.date}{' '}
-                    <a href={`/admin/orders/${id}/pdf/?n=${i}`} target="_blank" rel="noreferrer">View</a>{' | '}
-                    <a href={`/admin/orders/${id}/pdf/?n=${i}&dl=1`}>Download</a>{' | '}
-                    <Link href={`/admin/orders/${id}/?pdf=${i}#pdfs`}>Edit</Link>
+            {facts.length > 0 ? <dl className="dl">{facts.map(([k, v]) => <><dt key={`t${k}`}>{k}</dt><dd key={`d${k}`}>{v}</dd></>)}</dl> : null}
+          </section>
+
+          {next !== null && o.status !== 'cancelled' ? (
+            <>
+              <section className="card" aria-labelledby="h-next">
+                <div className="card-head"><h2 className="card-title" id="h-next">Next step: {ORDER_LABELS[next]}</h2><span className="card-sub">Moves the order forward and logs it</span></div>
+                <form action={advanceOrder.bind(null, id)}>
+                  <StageFields next={next} />
+                  <div className="field"><label htmlFor="status-note">Internal note (optional)</label><textarea id="status-note" name="note" rows={2} maxLength={1000} /></div>
+                  <button className="btn btn-primary" type="submit">Mark as &quot;{ORDER_LABELS[next]}&quot;</button>
+                </form>
+                <details>
+                  <summary className="meta">Cancel this enquiry</summary>
+                  <form action={cancelOrder.bind(null, id)}>
+                    <div className="field"><label htmlFor="reason">Reason *</label><input id="reason" name="reason" type="text" maxLength={300} required /></div>
+                    <button className="btn btn-secondary" type="submit">Cancel enquiry</button>
+                  </form>
+                </details>
+              </section>
+
+              <section className="card" aria-labelledby="h-msg">
+                <div className="card-head"><h2 className="card-title" id="h-msg">Message the customer</h2><span className="card-sub">Edit the text, then send it yourself from WhatsApp</span></div>
+                <label htmlFor="wa-text" className="sr-only">Message</label>
+                <textarea id="wa-text" rows={5} maxLength={1000} defaultValue={waText} />
+                <p className="actions">
+                  <a className="btn btn-wa" id="wa-open" data-wa-link="wa-text" href={wa} target="_blank" rel="noopener noreferrer"><Icon name="chat" />Open in WhatsApp</a>
+                </p>
+              </section>
+            </>
+          ) : null}
+
+          <section className="card" id="pdfs" aria-labelledby="h-pdfs">
+            <div className="card-head"><h2 className="card-title" id="h-pdfs">Proforma &amp; GST invoices</h2><span className="card-sub">Generate, download, then send from WhatsApp</span></div>
+            {(o.pdfs ?? []).length === 0 ? (
+              <p className="empty">No PDF has been generated for this order yet.</p>
+            ) : (
+              <ul className="pdf-list">
+                {(o.pdfs ?? []).map((p, n) => ({ p, n })).reverse().map(({ p, n }) => (
+                  <li className="pdf-item" key={n}>
+                    <div className="pdf-head">
+                      <span className={`badge ${p.type === 'invoice' ? 'tone-brand' : 'tone-info'}`}>{p.type === 'invoice' ? 'GST Invoice' : 'Proforma'}</span>
+                      <strong className="pdf-no">{p.no}</strong>
+                    </div>
+                    <p className="meta">{p.date} · generated for +{p.to} · {fmtDateTime(p.created_at)}</p>
+                    <p className="actions">
+                      <a className="btn btn-secondary btn-sm" href={`/admin/orders/${id}/pdf/?n=${n}`} target="_blank" rel="noopener"><Icon name="eye" />View</a>
+                      <a className="btn btn-secondary btn-sm" href={`/admin/orders/${id}/pdf/?n=${n}&dl=1`}><Icon name="download" />Download</a>
+                      <Link className="btn btn-secondary btn-sm" href={`/admin/orders/${id}/?pdf=${n}#pdf-form`}><Icon name="file" />Edit &amp; Regenerate</Link>
+                      <a className="btn btn-wa btn-sm" href={`https://wa.me/${p.to || o.phone}`} target="_blank" rel="noopener noreferrer"><Icon name="chat" />Open WhatsApp chat</a>
+                      {sp.got !== undefined && Number(sp.got) === n ? <a hidden data-autodownload="" href={`/admin/orders/${id}/pdf/?n=${n}&dl=1`}>Download</a> : null}
+                    </p>
                   </li>
                 ))}
               </ul>
             )}
-            <p>
-              <Link className="adm-btn ghost" href={`/admin/orders/${id}/?pdf=new#pdfs`}>New proforma</Link>{' '}
-              <Link className="adm-btn ghost" href={`/admin/orders/${id}/?pdf=inv#pdfs`}>New GST invoice</Link>
-            </p>
-            {pdfForm ? <PdfForm id={id} title={pdfTitle} d={pdfForm} /> : null}
-          </Card>
+            {pdfForm === null ? (
+              <p className="actions">
+                <Link className="btn btn-primary" href={`/admin/orders/${id}/?pdf=new#pdf-form`}><Icon name="plus" />New proforma</Link>
+                <Link className="btn btn-secondary" href={`/admin/orders/${id}/?pdf=inv#pdf-form`}><Icon name="plus" />New GST invoice</Link>
+              </p>
+            ) : <PdfForm id={id} title={pdfTitle} d={pdfForm} o={o} />}
+          </section>
 
-          <Card title="Notes">
-            <Notes notes={o.notes} />
-            <form action={addOrderNote.bind(null, id)}>
-              <textarea name="note" maxLength={1000} placeholder="Add a note" aria-label="Note" required />
-              <p><button className="adm-btn" type="submit">Add note</button></p>
-            </form>
-          </Card>
+          {next !== null && o.status !== 'cancelled' ? (
+            <>
+              <section className="card" aria-labelledby="h-notes">
+                <div className="card-head"><h2 className="card-title" id="h-notes">Internal notes</h2><span className="card-sub">Never shown to the customer</span></div>
+                {o.notes.length === 0 ? <p className="empty">No notes yet.</p> : <NoteTimeline notes={o.notes} fmt={fmtDateTime} />}
+                <form action={addOrderNote.bind(null, id)}>
+                  <div className="field"><label htmlFor="note">Add a note</label><textarea id="note" name="note" rows={3} maxLength={1000} required /></div>
+                  <button className="btn btn-primary" type="submit"><Icon name="plus" />Save note</button>
+                </form>
+              </section>
 
-          {(o.history ?? []).length > 0 ? (
-            <Card title="History">
-              <ul className="adm-list">
-                {[...(o.history ?? [])].reverse().map((h, i) => (
-                  <li key={i}>{fmtDateTime(h.at)} &middot; {h.by}: {ORDER_LABELS[h.from] ?? h.from} &rarr; {ORDER_LABELS[h.to] ?? h.to}{h.back ? ' (moved back)' : ''}</li>
-                ))}
-              </ul>
-            </Card>
-          ) : null}
+              <section className="card" id="edit" aria-labelledby="h-edit">
+                <div className="card-head"><h2 className="card-title" id="h-edit">Edit details</h2><span className="card-sub">Fix a typo, address or quantity. Logged in the notes.</span></div>
+                <form action={editOrder.bind(null, id)}>
+                  <div className="form-grid">
+                    <div className="field"><label htmlFor="ed-name">Customer name</label><input id="ed-name" name="name" type="text" maxLength={80} required defaultValue={o.name} /></div>
+                    <div className="field"><label htmlFor="ed-phone">Mobile</label><input id="ed-phone" name="phone" type="tel" inputMode="tel" maxLength={30} required defaultValue={o.phone.replace(/^91/, '')} /></div>
+                    <div className="field field-wide"><label htmlFor="ed-address">Delivery address</label><textarea id="ed-address" name="address" rows={3} maxLength={300} required defaultValue={o.address} /></div>
+                    <div className="field field-wide"><label htmlFor="ed-note">Customer&apos;s note</label><textarea id="ed-note" name="order_note" rows={2} maxLength={600} defaultValue={o.note} /></div>
+                  </div>
+                  <div className="table-wrap">
+                    <table className="table">
+                      <thead><tr><th scope="col">Product</th><th scope="col">Quantity <span className="meta">(0 removes the line)</span></th></tr></thead>
+                      <tbody>
+                        {o.items.map((it, i) => (
+                          <tr key={i}><td><span className="cell-main">{it.name}</span></td><td><input type="number" name="qty" min="0" max="100000" defaultValue={it.qty} aria-label={`Quantity of ${it.name}`} /></td></tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <button className="btn btn-primary" type="submit"><Icon name="check" />Save changes</button>
+                </form>
+              </section>
+
+              <section className="card" aria-labelledby="h-danger">
+                <div className="card-head"><h2 className="card-title" id="h-danger">Delete this order</h2></div>
+                <p className="meta">Wrong or test order? Deleting removes it permanently. To keep a record instead, use &quot;Cancel&quot; above.</p>
+                <Link className="btn btn-danger" href={`/admin/orders/${id}/delete/`}><Icon name="trash" />Delete order</Link>
+              </section>
+            </>
+          ) : (
+            <section className="card" aria-labelledby="h-danger">
+              <div className="card-head"><h2 className="card-title" id="h-danger">Delete this order</h2></div>
+              <Link className="btn btn-danger" href={`/admin/orders/${id}/delete/`}><Icon name="trash" />Delete order</Link>
+            </section>
+          )}
         </div>
 
-        <div>
-          <Card title="Next step">
-            <p><a className="adm-btn" href={wa} target="_blank" rel="noreferrer">Open in WhatsApp</a></p>
-            <p className="sub" style={{ margin: '0 0 12px' }}>Opens a chat with the message for this stage. Nothing is sent automatically.</p>
-            {next && !finished ? (
-              <form action={advanceOrder.bind(null, id)} className="adm-form">
-                <p><strong>Move to: {ORDER_LABELS[next]}</strong></p>
-                <StageFields next={next} />
-                <label>Internal note (optional)<input type="text" name="note" maxLength={1000} /></label>
-                <p><button className="adm-btn" type="submit">Move to &ldquo;{ORDER_LABELS[next]}&rdquo;</button></p>
-              </form>
-            ) : <p className="sub">This order is {ORDER_LABELS[o.status]?.toLowerCase()}.</p>}
-            {prev ? (
-              <details style={{ marginTop: 10 }}>
-                <summary>Move back to &ldquo;{ORDER_LABELS[prev]}&rdquo;</summary>
-                <form action={backOrder.bind(null, id)} className="adm-form">
-                  <label>Reason (optional)<input type="text" name="reason" maxLength={300} /></label>
-                  <button className="adm-btn ghost" type="submit">Move back</button>
-                </form>
-              </details>
-            ) : null}
-            {!finished ? (
-              <details style={{ marginTop: 10 }}>
-                <summary>Cancel this order</summary>
-                <form action={cancelOrder.bind(null, id)} className="adm-form">
-                  <label>Reason *<input type="text" name="reason" maxLength={300} required /></label>
-                  <button className="adm-btn danger" type="submit">Cancel order</button>
-                </form>
-              </details>
-            ) : null}
-          </Card>
-          <Card title="Danger zone">
-            <DeleteBox label="Delete this order" action={deleteOrder.bind(null, id)}>
-              <p>This permanently removes {o.code}, its notes and documents.</p>
-            </DeleteBox>
-          </Card>
+        <div className="detail-side">
+          <section className="card customer" aria-labelledby="h-who">
+            <h2 className="sr-only" id="h-who">Customer</h2>
+            <p className="customer-name">{o.name}</p>
+            <div className="reach">
+              <a className="btn btn-primary" href={`tel:+${o.phone}`}><Icon name="phone" />Call +{o.phone}</a>
+              <a className="btn btn-wa" href={wa} target="_blank" rel="noopener noreferrer"><Icon name="chat" />Open chat</a>
+            </div>
+            <dl className="dl">
+              <dt>Mobile</dt><dd>+{o.phone}</dd>
+              <dt>Address</dt><dd style={{ whiteSpace: 'pre-wrap' }}>{o.address || '—'}</dd>
+              <dt>Received</dt><dd>{fmtDateTime(o.created_at)}</dd>
+              <dt>Last updated</dt><dd>{fmtDateTime(o.updated_at)}</dd>
+              <dt>IP address</dt><dd>{o.ip || '—'}</dd>
+            </dl>
+          </section>
         </div>
       </div>
     </>

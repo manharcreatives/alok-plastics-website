@@ -1,44 +1,54 @@
 import Link from 'next/link';
-import { Badge, Flash } from '@/components/admin/ui';
+import { EmptyState, Flash, Icon, PageHead } from '@/components/admin/ui';
+import { requireAdmin } from '@/server/admin-auth';
 import { getRoles, ROLE_TYPES, TEAMS } from '@/server/content';
 import { toggleRole } from './actions';
+
+export const metadata = { title: 'Open roles' };
 
 type Props = { searchParams: Promise<{ ok?: string; err?: string }> };
 
 export default async function CareersPage({ searchParams }: Props) {
+  await requireAdmin();
   const sp = await searchParams;
   const roles = await getRoles();
   return (
     <>
-      <h1>Open roles</h1>
-      <p className="sub">Roles shown on the website Careers page. Hidden roles stay saved.</p>
+      <PageHead
+        title="Open roles"
+        crumbs={[['Dashboard', '/admin/'], ['Open roles', null]]}
+        lead={<>Roles listed here appear on the Careers page. Roles marked <b>Live</b> are shown. When nothing is live, the page shows its normal “send your CV” message.</>}
+        actions={<Link className="btn btn-primary" href="/admin/careers/new/"><Icon name="plus" />Add a role</Link>}
+      />
       <Flash ok={sp.ok} err={sp.err} />
-      <p><Link className="adm-btn" href="/admin/careers/new/">Add a role</Link></p>
-      <section className="adm-card">
-        {roles.length === 0 ? <p className="adm-empty">No roles yet.</p> : (
-          <div className="adm-tablewrap">
-            <table>
-              <thead><tr><th>Role</th><th>Team</th><th>Type</th><th>Location</th><th>Shown</th><th /></tr></thead>
-              <tbody>
-                {roles.map((r) => (
-                  <tr key={r.id}>
-                    <td><Link href={`/admin/careers/${r.id}/`}>{r.title}</Link></td>
-                    <td>{TEAMS[r.team] ?? r.team}</td>
-                    <td>{ROLE_TYPES[r.type] ?? r.type}</td>
-                    <td>{r.location}</td>
-                    <td><Badge s={r.active ? 'active' : 'inactive'} label={r.active ? 'Shown' : 'Hidden'} /></td>
-                    <td>
-                      <form action={toggleRole.bind(null, r.id)}>
-                        <button className="adm-btn ghost" type="submit">{r.active ? 'Hide' : 'Show'}</button>
-                      </form>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </section>
+
+      {roles.length === 0 ? (
+        <EmptyState icon="briefcase" title="No roles yet">
+          <p>Add one when you are hiring. It appears on the Careers page as soon as it is set to Live.</p>
+          <Link className="btn btn-primary" href="/admin/careers/new/"><Icon name="plus" />Add a role</Link>
+        </EmptyState>
+      ) : (
+        <ul className="roles">
+          {roles.map((ro) => (
+            <li className="card" key={ro.id}>
+              <div className="row-between">
+                <div>
+                  <h2 className="role-title">{ro.title}</h2>
+                  <p className="meta">{TEAMS[ro.team] ?? ro.team} · {ro.location} · {ROLE_TYPES[ro.type] ?? ro.type}</p>
+                </div>
+                <span className={`badge ${ro.active ? 'badge-won' : 'badge-lost'}`}>{ro.active ? 'Live' : 'Hidden'}</span>
+              </div>
+              <div className="actions">
+                <form action={toggleRole.bind(null, ro.id)}>
+                  <button className="btn btn-secondary btn-sm" type="submit"><Icon name="eye" />{ro.active ? 'Hide from website' : 'Show on website'}</button>
+                </form>
+                <Link className="btn btn-secondary btn-sm" href={`/admin/careers/${ro.id}/`}><Icon name="edit" />Edit</Link>
+                <Link className="btn btn-quiet btn-sm" href={`/admin/careers/${ro.id}/delete/`}>Delete…</Link>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
     </>
   );
 }
