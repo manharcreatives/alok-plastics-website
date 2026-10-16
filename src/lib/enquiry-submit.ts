@@ -8,7 +8,7 @@
 
 import { site } from '@/content/site';
 
-export const ENQUIRY_ENDPOINT = '/api/enquiry.php';
+export const ENQUIRY_ENDPOINT = '/api/enquiry/';
 
 export type SubmitResult =
   | { ok: true }

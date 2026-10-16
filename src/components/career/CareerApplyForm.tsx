@@ -6,7 +6,7 @@ import { PaperPlaneTilt } from '@phosphor-icons/react/dist/csr/PaperPlaneTilt';
 import { careerConfig } from '@/content/career';
 import { useRuntimeRoles } from '@/components/runtime/useRuntime';
 
-export const CAREER_ENDPOINT = '/api/career.php';
+export const CAREER_ENDPOINT = '/api/career/';
 const MAX_RESUME_BYTES = 3 * 1024 * 1024;
 const GENERAL = 'General application';
 

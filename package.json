@@ -4,10 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "cross-env NEXT_PUBLIC_SHOW_LAB=1 next dev --webpack",
-    "prebuild": "node scripts/runtime-data.mjs save",
     "build": "next build --webpack",
-    "postbuild": "node scripts/runtime-data.mjs restore && node scripts/prune-lab.mjs && node scripts/generate-sitemap.mjs && node scripts/generate-llms.mjs && node scripts/generate-catalogue.mjs && node scripts/vercel-prune.mjs",
-    "start": "npx serve out",
+    "postbuild": "node scripts/generate-sitemap.mjs && node scripts/generate-llms.mjs",
+    "start": "next start",
+    "admin:user": "node --env-file=.env.local scripts/admin-user.mjs",
+    "db:seed": "node --env-file=.env.local scripts/seed-legacy.mjs",
+    "db:migrate": "node --env-file=.env.local scripts/db-migrate.mjs",
     "typecheck": "tsc --noEmit",
     "lint": "eslint && node scripts/check-hex.mjs && node scripts/check-spacing.mjs && node scripts/check-glass.mjs && node scripts/check-forbidden.mjs",
     "lint:hex": "node scripts/check-hex.mjs",
@@ -23,6 +25,7 @@
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
+    "@neondatabase/serverless": "^1.2.0",
     "@phosphor-icons/react": "^2.1.10",
     "clsx": "^2.1.1",
     "fuse.js": "^7.5.0",
@@ -30,6 +33,7 @@
     "lenis": "^1.3.26",
     "motion": "^13.4.6",
     "next": "16.3.7",
+    "pdf-lib": "^1.17.1",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "zod": "^4.6.5"

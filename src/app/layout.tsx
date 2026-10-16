@@ -7,6 +7,7 @@ import { site } from '@/content/site';
 import { HOME_DESCRIPTION, HOME_TITLE, OG_IMAGE_PATH } from '@/lib/seo';
 import Header from '@/components/layout/Header';
 import LenisProvider from '@/components/layout/LenisProvider';
+import SiteOnly from '@/components/layout/SiteOnly';
 import Preloader from '@/components/preloader/Preloader';
 import RuntimeProvider from '@/components/runtime/RuntimeProvider';
 import AnnouncementBanner from '@/components/runtime/AnnouncementBanner';
@@ -118,29 +119,37 @@ export default function RootLayout({ children }: Props) {
             (html.hero-arm: home only, never under reduced motion / without JS; auto-cleared after 7s) */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var d=document.documentElement;if(!sessionStorage.getItem('alok:preloaded')&&!navigator.webdriver&&location.search.indexOf('nopreload')<0&&!window.matchMedia('(prefers-reduced-motion:reduce)').matches&&navigator.connection?.saveData!==true&&!['slow-2g','2g'].includes(navigator.connection?.effectiveType)){d.classList.add('is-preloading');setTimeout(function(){d.classList.remove('is-preloading')},6000);}if(location.pathname==='/'&&(!navigator.webdriver||location.search.indexOf('heroanim')>=0)&&!window.matchMedia('(prefers-reduced-motion:reduce)').matches){d.classList.add('hero-arm');setTimeout(function(){d.classList.remove('hero-arm')},7000);}}catch(e){}})()`,
+            __html: `(function(){try{if(location.pathname.indexOf('/admin')===0)return;var d=document.documentElement;if(!sessionStorage.getItem('alok:preloaded')&&!navigator.webdriver&&location.search.indexOf('nopreload')<0&&!window.matchMedia('(prefers-reduced-motion:reduce)').matches&&navigator.connection?.saveData!==true&&!['slow-2g','2g'].includes(navigator.connection?.effectiveType)){d.classList.add('is-preloading');setTimeout(function(){d.classList.remove('is-preloading')},6000);}if(location.pathname==='/'&&(!navigator.webdriver||location.search.indexOf('heroanim')>=0)&&!window.matchMedia('(prefers-reduced-motion:reduce)').matches){d.classList.add('hero-arm');setTimeout(function(){d.classList.remove('hero-arm')},7000);}}catch(e){}})()`,
           }}
         />
       </head>
       <body className="min-h-screen bg-canvas text-ink">
         {/* Skip link — first tab stop (§17, §8.3) */}
-        <a href="#main" className="skip-link">
-          Skip to content
-        </a>
+        <SiteOnly>
+          <a href="#main" className="skip-link">
+            Skip to content
+          </a>
+        </SiteOnly>
         {/* Preloader — SSR markup is display:none unless html.is-preloading (set in <head>) */}
-        <Preloader />
-        <LenisProvider />
+        <SiteOnly>
+          <Preloader />
+          <LenisProvider />
+        </SiteOnly>
         {/* Runtime layer: one fetch of the JSON /admin/ writes, shared by every consumer below.
             Values land after hydration and only ever overlay a build-time value. */}
         <RuntimeProvider>
           <CartProvider>
-            <AnnouncementBanner />
-            <Header />
+            <SiteOnly>
+              <AnnouncementBanner />
+              <Header />
+            </SiteOnly>
             <main id="main">
               {children}
             </main>
-            <Footer />
-            <WhatsAppFAB />
+            <SiteOnly>
+              <Footer />
+              <WhatsAppFAB />
+            </SiteOnly>
           </CartProvider>
         </RuntimeProvider>
       </body>

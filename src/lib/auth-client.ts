@@ -1,8 +1,8 @@
 import { useSyncExternalStore } from 'react';
 
-export const AUTH_ENDPOINT = '/api/auth.php';
-export const ORDER_ENDPOINT = '/api/order.php';
-export const CART_ENDPOINT = '/api/cart.php';
+export const AUTH_ENDPOINT = '/api/auth/';
+export const ORDER_ENDPOINT = '/api/order/';
+export const CART_ENDPOINT = '/api/cart/';
 const VISITOR_KEY = 'alok:visitor:v1';
 const SESSION_KEY = 'alok:session:v1';
 
