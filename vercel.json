@@ -1,21 +1,11 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": null,
+  "framework": "nextjs",
   "installCommand": "pnpm install",
   "buildCommand": "pnpm build",
-  "outputDirectory": "out",
-  "trailingSlash": true,
   "rewrites": [
-    { "source": "/api/:path*", "destination": "https://floralwhite-rat-817088.hostingersite.com/api/:path*" },
+    { "source": "/api/:file(auth|cart|order|career|media)\.php", "destination": "https://floralwhite-rat-817088.hostingersite.com/api/:file.php" },
     { "source": "/admin/:path*", "destination": "https://floralwhite-rat-817088.hostingersite.com/admin/:path*" },
     { "source": "/data/:path*", "destination": "https://floralwhite-rat-817088.hostingersite.com/data/:path*" }
-  ],
-  "headers": [
-    { "source": "/_next/static/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }] },
-    { "source": "/(.*)", "headers": [
-      { "key": "X-Content-Type-Options", "value": "nosniff" },
-      { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
-      { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
-    ] }
   ]
 }

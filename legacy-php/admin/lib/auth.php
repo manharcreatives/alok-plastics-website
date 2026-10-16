@@ -223,11 +223,14 @@ final class AlokAuth
             return false;
         }
         $host = strtolower((string) ($_SERVER['HTTP_HOST'] ?? ''));
+        /* Behind a reverse proxy (the site on Vercel proxying /admin to this server) the browser's Origin is the
+           public host, while HTTP_HOST is this server's own. Accept the host the proxy says it was asked for. */
+        $fwd = strtolower(trim(explode(',', (string) ($_SERVER['HTTP_X_FORWARDED_HOST'] ?? ''))[0]));
         foreach (['HTTP_ORIGIN', 'HTTP_REFERER'] as $h) {
             if (!empty($_SERVER[$h])) {
                 $p = parse_url((string) $_SERVER[$h]);
                 $oh = strtolower((string) ($p['host'] ?? '') . (isset($p['port']) ? ':' . $p['port'] : ''));
-                if ($oh !== $host) {
+                if ($oh !== $host && ($fwd === '' || $oh !== $fwd)) {
                     return false;
                 }
                 break;

@@ -50,6 +50,9 @@ next-env.d.ts
 /.screenshots/
 # PHP SMTP config — never commit credentials
 /public/api/config.php
+/legacy-php/api/config.php
+/legacy-php/admin/config.php
+/legacy-php/admin/data/
 # client-supplied source documents (PDFs, catalogues)
 /content/source/
 # client-supplied logo files (vector masters, high-res)
@@ -81,7 +84,11 @@ scripts/.cache/
 # templates instead; runtime-data.ts falls back to src/content/site.ts
 # when the file is absent.
 /public/data/settings.json
+/legacy-php/data/settings.json
 /public/data/careers.json
+/legacy-php/data/careers.json
+/legacy-php/data/product-overrides.json
+/legacy-php/data/products.json
 /public/data/product-overrides.json
 
 # stray npm lockfile — this repo is pnpm-only (packageManager in package.json)
