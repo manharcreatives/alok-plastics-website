@@ -221,7 +221,7 @@ function CartBody() {
     return () => { live = false; };
   }, [token]);
   useEffect(() => {
-    if (!token) { setOrderHistory(null); return; }
+    if (!token) return;
     let live = true;
     fetchOrders(token).then(orders => { if (live) setOrderHistory(orders); });
     return () => { live = false; };
@@ -263,7 +263,7 @@ function CartBody() {
         <p style={{ marginTop: 'var(--space-sm)' }}>
           <button type="button" className="clink" onClick={() => setShowHistory(v => !v)} aria-expanded={showHistory}>Order history</button>
         </p>
-        {showHistory && <OrderHistoryPanel signedIn={!!token} orders={orderHistory} name={session?.name ?? ''} />}
+        {showHistory && <OrderHistoryPanel signedIn={!!token} orders={token ? orderHistory : null} name={session?.name ?? ''} />}
       </div>
     );
   }
@@ -410,7 +410,7 @@ function CartBody() {
             <ClockCounterClockwise size={18} weight="light" aria-hidden="true" /> Order history
           </button>
         </div>
-        {showHistory && <OrderHistoryPanel signedIn={!!token} orders={orderHistory} name={session?.name ?? ''} />}
+        {showHistory && <OrderHistoryPanel signedIn={!!token} orders={token ? orderHistory : null} name={session?.name ?? ''} />}
       </div>
 
       <aside className="cp__aside cp__panel" aria-label="Your details">

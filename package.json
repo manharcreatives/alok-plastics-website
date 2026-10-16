@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "cross-env NEXT_PUBLIC_SHOW_LAB=1 next dev --turbopack",
+    "dev": "cross-env NEXT_PUBLIC_SHOW_LAB=1 next dev --webpack",
     "prebuild": "node scripts/runtime-data.mjs save",
-    "build": "next build",
-    "postbuild": "node scripts/runtime-data.mjs restore && node scripts/prune-lab.mjs && node scripts/generate-sitemap.mjs && node scripts/generate-llms.mjs && node scripts/generate-catalogue.mjs",
+    "build": "next build --webpack",
+    "postbuild": "node scripts/runtime-data.mjs restore && node scripts/prune-lab.mjs && node scripts/generate-sitemap.mjs && node scripts/generate-llms.mjs && node scripts/generate-catalogue.mjs && node scripts/vercel-prune.mjs",
     "start": "npx serve out",
     "typecheck": "tsc --noEmit",
     "lint": "eslint && node scripts/check-hex.mjs && node scripts/check-spacing.mjs && node scripts/check-glass.mjs && node scripts/check-forbidden.mjs",
@@ -18,7 +18,7 @@
     "admin": "php -S 127.0.0.1:8080 -t out",
     "test:a11y": "playwright test tests/a11y.spec.ts",
     "test:screens": "playwright test tests/screens.spec.ts",
-    "analyze": "cross-env ANALYZE=true next build",
+    "analyze": "cross-env ANALYZE=true next build --webpack",
     "check:seo": "node scripts/check-seo.mjs"
   },
   "dependencies": {
