@@ -60,8 +60,15 @@ export async function rateLimit(key: string, max: number, windowSec: number): Pr
   return true;
 }
 
+/** Request body as a flat object. The site's forms post multipart / urlencoded FormData; the cart and auth calls post JSON. */
 export async function readBody(req: NextRequest): Promise<Record<string, unknown>> {
   try {
+    const type = req.headers.get('content-type') ?? '';
+    if (type.includes('multipart/form-data') || type.includes('application/x-www-form-urlencoded')) {
+      const out: Record<string, unknown> = {};
+      for (const [k, v] of (await req.formData()).entries()) if (typeof v === 'string' && !(k in out)) out[k] = v;
+      return out;
+    }
     const j: unknown = await req.json();
     return j && typeof j === 'object' && !Array.isArray(j) ? (j as Record<string, unknown>) : {};
   } catch {
