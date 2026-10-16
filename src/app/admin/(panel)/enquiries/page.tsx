@@ -22,7 +22,7 @@ export default async function EnquiriesPage({ searchParams }: Props) {
   return (
     <>
       <h1>{archived ? 'Archived enquiries' : 'Enquiries'}</h1>
-      <p className="sub">{total} {total === 1 ? 'enquiry' : 'enquiries'}</p>
+      <p className="sub">{total} {total === 1 ? 'enquiry' : 'enquiries'} &middot; <Link href="/admin/enquiries/export/" prefetch={false}>Download all as CSV</Link></p>
       <form className="adm-filters" method="get" action="/admin/enquiries/">
         <input type="text" name="q" defaultValue={q} placeholder="Search name, company, phone, product" aria-label="Search" style={{ minWidth: 260 }} />
         <select name="status" defaultValue={sp.status ?? ''} aria-label="Status">

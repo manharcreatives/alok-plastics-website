@@ -17,6 +17,13 @@ export default async function Dashboard() {
     query<Enquiry>('select * from enquiries where archived = 0 order by created_at desc, id desc limit 6'),
   ]);
   const c = counts[0];
+  const [shop] = await query<{ pending: string; active: string; carts: string; apps: string }>(
+    `select count(*) filter (where collection = 'orders' and data->>'status' = 'pending') as pending,
+            count(*) filter (where collection = 'orders' and data->>'status' not in ('closed', 'cancelled')) as active,
+            count(*) filter (where collection = 'carts' and data->>'status' = 'open') as carts,
+            count(*) filter (where collection = 'applications' and data->>'status' = 'new') as apps
+       from docs`,
+  );
   return (
     <>
       <h1>Dashboard</h1>
@@ -26,7 +33,11 @@ export default async function Dashboard() {
         <div className="adm-stat"><b>{c?.fresh ?? 0}</b><span>Status: new</span></div>
         <div className="adm-stat"><b>{c?.week ?? 0}</b><span>Last 7 days</span></div>
         <div className="adm-stat"><b>{c?.won ?? 0}</b><span>Won</span></div>
-        <div className="adm-stat"><b>{c?.total ?? 0}</b><span>Total</span></div>
+        <div className="adm-stat"><b>{c?.total ?? 0}</b><span>Total enquiries</span></div>
+        <Link className="adm-stat" href="/admin/orders/?status=pending" style={{ textDecoration: 'none', color: 'inherit' }}><b>{shop?.pending ?? 0}</b><span>New orders</span></Link>
+        <Link className="adm-stat" href="/admin/orders/" style={{ textDecoration: 'none', color: 'inherit' }}><b>{shop?.active ?? 0}</b><span>Orders in progress</span></Link>
+        <Link className="adm-stat" href="/admin/carts/" style={{ textDecoration: 'none', color: 'inherit' }}><b>{shop?.carts ?? 0}</b><span>Open carts</span></Link>
+        <Link className="adm-stat" href="/admin/applications/?status=new" style={{ textDecoration: 'none', color: 'inherit' }}><b>{shop?.apps ?? 0}</b><span>New applications</span></Link>
       </div>
       <section className="adm-card">
         <h2>Latest enquiries</h2>

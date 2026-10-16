@@ -29,6 +29,11 @@ function verifyPassword(password: string, stored: string): boolean {
   return timingSafeEqual(actual, expected);
 }
 
+export async function verifyAdminPassword(username: string, password: string): Promise<boolean> {
+  const r = (await query<{ hash: string }>('select hash from admin_users where username = $1', [username]))[0];
+  return r ? verifyPassword(password, r.hash) : false;
+}
+
 export async function requestIp(): Promise<string> {
   const h = await headers();
   return (h.get('x-forwarded-for') ?? '').split(',')[0]?.trim() || h.get('x-real-ip') || '';

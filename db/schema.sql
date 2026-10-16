@@ -79,3 +79,14 @@ create table if not exists audit_log (
   ip text not null default ''
 );
 create index if not exists idx_audit_at on audit_log(at);
+
+-- uploaded files (resumes, product photos), kept in Postgres so no extra storage service is needed
+create table if not exists files (
+  id text primary key,
+  kind text not null,
+  name text not null default '',
+  mime text not null default 'application/octet-stream',
+  size integer not null default 0,
+  data bytea not null,
+  created_at bigint not null
+);

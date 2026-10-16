@@ -2,10 +2,5 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
   "installCommand": "pnpm install",
-  "buildCommand": "pnpm build",
-  "rewrites": [
-    { "source": "/api/:file(auth|cart|order|career|media)\.php", "destination": "https://floralwhite-rat-817088.hostingersite.com/api/:file.php" },
-    { "source": "/admin/:path*", "destination": "https://floralwhite-rat-817088.hostingersite.com/admin/:path*" },
-    { "source": "/data/:path*", "destination": "https://floralwhite-rat-817088.hostingersite.com/data/:path*" }
-  ]
+  "buildCommand": "pnpm build"
 }

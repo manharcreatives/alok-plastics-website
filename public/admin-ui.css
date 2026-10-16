@@ -52,3 +52,30 @@
 .adm-login input { width:100%; }
 .adm-login .adm-btn { width:100%; margin-top:20px; }
 .adm-empty { color:var(--a-muted); padding:20px 0; text-align:center; }
+
+.adm-ok { background:#e2f4ea; color:var(--a-ok); padding:10px 12px; border-radius:8px; margin-bottom:14px; }
+.adm-chips { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px; }
+.adm-chips a { padding:5px 12px; border:1px solid var(--a-line); border-radius:999px; background:var(--a-card); text-decoration:none; font-size:13px; color:var(--a-ink); }
+.adm-chips a[aria-current="true"] { background:var(--a-brand); color:var(--a-brand-ink); border-color:var(--a-brand); }
+.adm-form label { display:block; font-weight:600; font-size:13px; margin:10px 0 4px; }
+.adm-form input[type=text], .adm-form input[type=password], .adm-form select, .adm-form textarea { width:100%; font-weight:400; }
+.adm-form table input { width:100%; }
+.adm-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:0 14px; }
+.adm-list { list-style:none; margin:0 0 12px; padding:0; }
+.adm-list li { padding:7px 0; border-bottom:1px solid var(--a-line); }
+.adm-list li:last-child { border-bottom:0; }
+.adm small { color:var(--a-muted); }
+.adm summary { cursor:pointer; color:var(--a-brand); font-weight:600; }
+.adm-badge[data-s="pending"] { background:#fff3d6; color:var(--a-warn); }
+.adm-badge[data-s="reviewing"], .adm-badge[data-s="shortlisted"] { background:#efe6f6; color:#6a2d8a; }
+.adm-badge[data-s="confirmed"], .adm-badge[data-s="dispatched"], .adm-badge[data-s="invoiced"] { background:#e8f0fc; color:var(--a-info); }
+.adm-badge[data-s="paid"], .adm-badge[data-s="hired"], .adm-badge[data-s="closed"], .adm-badge[data-s="active"], .adm-badge[data-s="in-stock"] { background:#e2f4ea; color:var(--a-ok); }
+.adm-badge[data-s="cancelled"], .adm-badge[data-s="rejected"], .adm-badge[data-s="archived"], .adm-badge[data-s="out-of-stock"] { background:#fbe6e4; color:var(--a-bad); }
+.adm-badge[data-s="open"] { background:#e8f0fc; color:var(--a-info); }
+.adm-badge[data-s="inactive"] { background:#eee; color:#666; }
+.adm-thumb { width:56px; height:56px; object-fit:cover; border-radius:8px; border:1px solid var(--a-line); background:#fff; }
+.adm-imgs { display:flex; flex-wrap:wrap; gap:14px; margin:8px 0 14px; }
+.adm-imgs figure { margin:0; width:130px; }
+.adm-imgs img { width:130px; height:130px; object-fit:cover; border-radius:8px; border:1px solid var(--a-line); }
+.adm-top { overflow-x:auto; white-space:nowrap; }
+.adm-top a { font-size:14px; }

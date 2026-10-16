@@ -13,6 +13,14 @@ export default async function PanelLayout({ children }: { children: ReactNode })
         <Link className="adm-brand" href="/admin/">Alok admin</Link>
         <Link href="/admin/">Dashboard</Link>
         <Link href="/admin/enquiries/">Enquiries</Link>
+        <Link href="/admin/orders/">Orders</Link>
+        <Link href="/admin/carts/">Carts</Link>
+        <Link href="/admin/customers/">Customers</Link>
+        <Link href="/admin/products/">Products</Link>
+        <Link href="/admin/careers/">Careers</Link>
+        <Link href="/admin/applications/">Applications</Link>
+        <Link href="/admin/settings/">Settings</Link>
+        <Link href="/admin/audit/">Log</Link>
         <span className="adm-sp" />
         <span className="adm-who">{user.name}</span>
         <form action={logoutAction}>
