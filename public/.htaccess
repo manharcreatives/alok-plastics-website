@@ -2,7 +2,7 @@
 # Alok Plastics — Hostinger (Apache / LiteSpeed) rules for the static export.
 # Upload next to index.html in public_html/. Every block is wrapped in <IfModule>
 # so a module that is missing on the plan degrades gracefully instead of 500-ing.
-# Canonical host: https://alok-plastics.com  (non-www, HTTPS, trailing slash)
+# Canonical host: https://www.alok-plastics.com  (www, HTTPS, trailing slash)
 # ─────────────────────────────────────────────────────────────────────────────
 
 Options -Indexes -MultiViews
@@ -10,17 +10,18 @@ DirectoryIndex index.html index.php
 ServerSignature Off
 AddDefaultCharset UTF-8
 
-# ── 1. HTTPS + non-www (single 301 hop) ─────────────────────────────────────
+# ── 1. HTTPS + www (single 301 hop) ─────────────────────────────────────────
 <IfModule mod_rewrite.c>
 RewriteEngine On
 
 # Behind Hostinger's proxy %{HTTPS} can read "off" even on TLS requests, so also honour X-Forwarded-Proto.
 RewriteCond %{HTTPS} !=on
 RewriteCond %{HTTP:X-Forwarded-Proto} !https [NC]
-RewriteRule ^ https://alok-plastics.com%{REQUEST_URI} [L,R=301]
+RewriteRule ^ https://www.alok-plastics.com%{REQUEST_URI} [L,R=301]
 
-RewriteCond %{HTTP_HOST} ^www\.alok-plastics\.com$ [NC]
-RewriteRule ^ https://alok-plastics.com%{REQUEST_URI} [L,R=301]
+# Non-www apex → www
+RewriteCond %{HTTP_HOST} ^alok-plastics\.com$ [NC]
+RewriteRule ^ https://www.alok-plastics.com%{REQUEST_URI} [L,R=301]
 
 # ── 2. Trailing-slash normalisation ───────────────────────────────────────
 # Static export (trailingSlash: true) writes /about/index.html. A request for /about
@@ -28,19 +29,19 @@ RewriteRule ^ https://alok-plastics.com%{REQUEST_URI} [L,R=301]
 RewriteCond %{REQUEST_URI} !/$
 RewriteCond %{REQUEST_URI} !\.[a-zA-Z0-9]{1,6}$
 RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI}/index.html -f
-RewriteRule ^(.*)$ https://alok-plastics.com/$1/ [L,R=301]
+RewriteRule ^(.*)$ https://www.alok-plastics.com/$1/ [L,R=301]
 
 # ── 3. Legacy WordPress URLs ──────────────────────────────────────────────
-# TODO(client): once the old alok-plastics.com URL list is exported, add one
+# TODO(client): once the old www.alok-plastics.com URL list is exported, add one
 # "RewriteRule ^old-path/?$ /new-path/ [R=301,L]" per line here (see docs/seo-geo.md).
 
 # Product groups were reorganised into five groups: keep every old product and group URL alive.
-RewriteRule ^products/sliding-door-systems/connecting-bush/?$ https://alok-plastics.com/products/water-cooler-spare-parts/connecting-bush/ [R=301,L]
-RewriteRule ^products/sliding-door-systems/([a-z0-9-]+)/?$ https://alok-plastics.com/products/deep-freezer-display-counter-parts/$1/ [R=301,L]
-RewriteRule ^products/sealing/([a-z0-9-]+)/?$ https://alok-plastics.com/products/deep-freezer-display-counter-parts/$1/ [R=301,L]
-RewriteRule ^products/(water-control|ventilation-levelling)/([a-z0-9-]+)/?$ https://alok-plastics.com/products/water-cooler-spare-parts/$2/ [R=301,L]
-RewriteRule ^products/(sliding-door-systems|sealing)/?$ https://alok-plastics.com/products/deep-freezer-display-counter-parts/ [R=301,L]
-RewriteRule ^products/(water-control|ventilation-levelling)/?$ https://alok-plastics.com/products/water-cooler-spare-parts/ [R=301,L]
+RewriteRule ^products/sliding-door-systems/connecting-bush/?$ https://www.alok-plastics.com/products/water-cooler-spare-parts/connecting-bush/ [R=301,L]
+RewriteRule ^products/sliding-door-systems/([a-z0-9-]+)/?$ https://www.alok-plastics.com/products/deep-freezer-display-counter-parts/$1/ [R=301,L]
+RewriteRule ^products/sealing/([a-z0-9-]+)/?$ https://www.alok-plastics.com/products/deep-freezer-display-counter-parts/$1/ [R=301,L]
+RewriteRule ^products/(water-control|ventilation-levelling)/([a-z0-9-]+)/?$ https://www.alok-plastics.com/products/water-cooler-spare-parts/$2/ [R=301,L]
+RewriteRule ^products/(sliding-door-systems|sealing)/?$ https://www.alok-plastics.com/products/deep-freezer-display-counter-parts/ [R=301,L]
+RewriteRule ^products/(water-control|ventilation-levelling)/?$ https://www.alok-plastics.com/products/water-cooler-spare-parts/ [R=301,L]
 </IfModule>
 
 # ── 4. Custom 404 (Next writes out/404.html) ────────────────────────────────

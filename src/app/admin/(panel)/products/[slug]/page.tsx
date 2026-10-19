@@ -38,7 +38,7 @@ export default async function ProductPage({ params, searchParams }: Props) {
   const images = edit.images ?? [];
   const groupName = productGroups.find((g) => g.id === groupId)?.name ?? 'No group yet';
   const groupSlug = productGroups.find((g) => g.id === groupId)?.slug ?? '';
-  const host = 'alok-plastics.com';
+  const host = 'www.alok-plastics.com';
   const status = row?.status ?? 'active';
 
   const field = (k: TextKey, hint = '') => {

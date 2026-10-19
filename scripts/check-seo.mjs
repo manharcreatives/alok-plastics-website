@@ -157,7 +157,7 @@ for (const f of htmlFiles) {
   const canon = (html.match(/<link\b[^>]*rel="canonical"[^>]*>/i) ?? [])[0];
   const canonHref = canon ? attr(canon, 'href') : null;
   if (!canonHref) err(url, 'missing canonical');
-  else if (!canonHref.startsWith('https://alok-plastics.com/') || canonHref !== `https://alok-plastics.com${url}`) err(url, `canonical "${canonHref}" does not match page URL`);
+  else if (!canonHref.startsWith('https://www.alok-plastics.com/') || canonHref !== `https://www.alok-plastics.com${url}`) err(url, `canonical "${canonHref}" does not match page URL`);
 
   // social
   if (!metaTag(html, 'property', 'og:title')) err(url, 'missing og:title');
@@ -184,7 +184,7 @@ for (const f of htmlFiles) {
     else {
       for (const k of ['headline', 'datePublished', 'author', 'publisher', 'image', 'mainEntityOfPage']) if (!posting[k]) err(url, `BlogPosting missing ${k}`);
       if (posting.headline !== b.title) err(url, 'BlogPosting headline does not match the post title');
-      if (String(posting.mainEntityOfPage?.['@id'] ?? '') !== `https://alok-plastics.com${url}`) err(url, 'BlogPosting mainEntityOfPage does not match the canonical URL');
+      if (String(posting.mainEntityOfPage?.['@id'] ?? '') !== `https://www.alok-plastics.com${url}`) err(url, 'BlogPosting mainEntityOfPage does not match the canonical URL');
     }
     if (!ofType(url, 'BreadcrumbList').length) err(url, 'missing BreadcrumbList JSON-LD');
     if (b.faq.length && !ofType(url, 'FAQPage').length) err(url, 'missing FAQPage JSON-LD');
@@ -199,7 +199,7 @@ const sitemapPath = join(OUT, 'sitemap.xml');
 if (!existsSync(sitemapPath)) err('/sitemap.xml', 'missing');
 else {
   const locs = [...readFileSync(sitemapPath, 'utf8').matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1]);
-  const listed = new Set(locs.map(l => l.replace('https://alok-plastics.com', '')));
+  const listed = new Set(locs.map(l => l.replace('https://www.alok-plastics.com', '')));
   if (listed.size !== locs.length) err('/sitemap.xml', 'duplicate <loc> entries');
   for (const u of indexable.keys()) if (!listed.has(u)) err('/sitemap.xml', `indexable page not listed: ${u}`);
   for (const u of listed) if (!indexable.has(u)) err('/sitemap.xml', `lists a URL that is not an indexable page: ${u}`);

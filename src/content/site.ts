@@ -12,7 +12,7 @@ export const site: SiteConfig = {
     english: 'Crafted in Bharat, made for the world.',
   },
 
-  domain: 'https://alok-plastics.com',
+  domain: 'https://www.alok-plastics.com',
   foundingYear: 1998,
 
   owners: [

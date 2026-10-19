@@ -38,7 +38,7 @@ On the server, create `public_html/api/config.php` with real values:
 <?php
 $ALOK_TO_EMAIL   = 'enquiry@alok-plastics.com';
 $ALOK_FROM_EMAIL = 'noreply@alok-plastics.com';
-$ALOK_SITE_URL   = 'https://alok-plastics.com';
+$ALOK_SITE_URL   = 'https://www.alok-plastics.com';
 $ALOK_SMTP_HOST  = 'smtp.hostinger.com';
 $ALOK_SMTP_PORT  = 465;
 $ALOK_SMTP_USER  = 'noreply@alok-plastics.com';
