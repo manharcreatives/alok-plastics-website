@@ -118,7 +118,8 @@ export const site: SiteConfig = {
   ],
 
   analytics: {
-    ga4Id: null,  // TODO(client): GA4 measurement ID — script loads only when set
+    ga4Id: 'G-MHWJV9XTKD',  // GA4 measurement ID — scripts load only when set
+    gtmId: 'GTM-TRD7C88T',  // GTM container ID — loads only when set
   },
 
   social: {

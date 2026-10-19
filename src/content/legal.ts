@@ -45,7 +45,7 @@ export const legalPages: Record<LegalSlug, LegalPageContent> = {
         id: 'cookies',
         title: 'Cookies and analytics',
         body: [
-          'Cookies are small files stored on your device. We use essential cookies to keep the site working and analytics cookies to measure visits. You can block or delete cookies in your browser settings. Blocking essential cookies may stop parts of the site from working. {{Client to confirm: analytics tools in use}}',
+          'Cookies are small files stored on your device. We use essential cookies to keep the site working and analytics cookies to measure visits. Analytics on this site is provided by Google Analytics 4 and Google Tag Manager (Google Ireland Ltd, Gordon House, Barrow Street, Dublin 4, Ireland). Analytics cookies are set only after you accept them in the cookie banner shown when you first visit; you can change your choice at any time by clearing this site\u2019s data in your browser settings. You can also block or delete cookies in your browser settings. Blocking essential cookies may stop parts of the site from working.',
         ],
       },
       {

@@ -15,9 +15,24 @@ type DataLayerEvent = {
   [key: string]: unknown;
 };
 
+function hasAnalyticsConsent(): boolean {
+  if (typeof window === 'undefined') return false;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const stored = (window as any).__alokConsent as string | undefined;
+  return stored === 'all';
+}
+
+/** Called by the consent banner / restore path — updates the event gate. */
+export function setAnalyticsConsent(granted: boolean): void {
+  if (typeof window === 'undefined') return;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (window as any).__alokConsent = granted ? 'all' : 'essential';
+}
+
 function push(payload: DataLayerEvent): void {
   if (typeof window === 'undefined') return;
   if (!analyticsEnabled) return;
+  if (!hasAnalyticsConsent()) return;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (window as any).dataLayer = (window as any).dataLayer ?? [];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

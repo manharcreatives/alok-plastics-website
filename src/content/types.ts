@@ -221,7 +221,8 @@ export type SiteConfig = {
   };
   proof: ProofPoint[];
   analytics: {
-    ga4Id: string | null;           // TODO(client) — loads only when set
+    ga4Id: string | null;           // GA4 measurement ID — scripts load only when set
+    gtmId: string | null;           // GTM container ID — loads only when set
   };
   social: {
     instagram: string | null;       // TODO(client)

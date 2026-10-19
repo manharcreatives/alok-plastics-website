@@ -7,6 +7,9 @@ import Preloader from '@/components/preloader/Preloader';
 import RuntimeProvider from '@/components/runtime/RuntimeProvider';
 import AnnouncementBanner from '@/components/runtime/AnnouncementBanner';
 import CartProvider from '@/components/cart/CartProvider';
+import GoogleTags from '@/components/analytics/GoogleTags';
+import ConsentBanner from '@/components/analytics/ConsentBanner';
+import { site } from '@/content/site';
 
 // ── Fonts — self-hosted woff2 in src/fonts (no Google request at build OR runtime) ──
 // §7.1: Archivo variable (wdth 62–125 + wght), Inter variable, Noto Sans Devanagari, JetBrains Mono
@@ -73,8 +76,22 @@ export default function SiteDocument({ children }: Props) {
             __html: `(function(){try{var d=document.documentElement;if(!sessionStorage.getItem('alok:preloaded')&&!navigator.webdriver&&location.search.indexOf('nopreload')<0&&!window.matchMedia('(prefers-reduced-motion:reduce)').matches&&navigator.connection?.saveData!==true&&!['slow-2g','2g'].includes(navigator.connection?.effectiveType)){d.classList.add('is-preloading');setTimeout(function(){d.classList.remove('is-preloading')},6000);}if(location.pathname==='/'&&(!navigator.webdriver||location.search.indexOf('heroanim')>=0)&&!window.matchMedia('(prefers-reduced-motion:reduce)').matches){d.classList.add('hero-arm');setTimeout(function(){d.classList.remove('hero-arm')},7000);}}catch(e){}})()`,
           }}
         />
+        {/* Google tags: GA4 + GTM (Consent Mode v2 — loads only when IDs are set in site.ts) */}
+        <GoogleTags />
       </head>
       <body className="min-h-screen bg-canvas text-ink">
+        {/* GTM noscript fallback — must sit immediately under <body> */}
+        {site.analytics.gtmId ? (
+          <noscript>
+            <iframe
+              src={`https://www.googletagmanager.com/ns.html?id=${site.analytics.gtmId}`}
+              height="0"
+              width="0"
+              style={{ display: 'none', visibility: 'hidden' }}
+              title="Google Tag Manager"
+            />
+          </noscript>
+        ) : null}
         {/* Skip link — first tab stop (§17, §8.3) */}
         <a href="#main" className="skip-link">
           Skip to content
@@ -93,6 +110,8 @@ export default function SiteDocument({ children }: Props) {
             </main>
             <Footer />
             <WhatsAppFAB />
+            {/* Cookie consent — Consent Mode v2 gate (hidden once a choice is stored) */}
+            <ConsentBanner />
           </CartProvider>
         </RuntimeProvider>
       </body>
