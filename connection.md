@@ -75,7 +75,7 @@ Admin → Products: add/edit products, price, **availability** (`in-stock`, `out
 
 | Key | Meaning |
 |---|---|
-| `$ALOK_SITE_URL` | allowed Origin (e.g. `https://alokplastics.com`; local demo `http://127.0.0.1:8080`) |
+| `$ALOK_SITE_URL` | allowed Origin (e.g. `https://alok-plastics.com`; local demo `http://127.0.0.1:8080`) |
 | `$ALOK_WHATSAPP` | number that receives enquiries, with country code |
 | `$ALOK_OTP['provider']` | `msg91` / `fast2sms` / `webhook`; empty = no SMS |
 | `$ALOK_OTP['dev_mode']` | **demo only:** returns the OTP in the response and pre-fills it. Never on the live site |

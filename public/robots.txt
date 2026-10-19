@@ -1,4 +1,4 @@
-# Alok Plastics, https://alokplastics.com
+# Alok Plastics, https://alok-plastics.com
 # Search engines and AI answer engines are welcome; the enquiry endpoint, the admin panel and the design lab are not for crawling.
 
 User-agent: *
@@ -38,4 +38,4 @@ Disallow: /api/
 Disallow: /admin/
 Disallow: /lab/
 
-Sitemap: https://alokplastics.com/sitemap.xml
+Sitemap: https://alok-plastics.com/sitemap.xml

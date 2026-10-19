@@ -26,7 +26,7 @@ ls out/
 
 ### 2a. Create the enquiry email address
 1. Log into your Hostinger control panel → **Emails** → **Email Accounts**
-2. Create: `enquiry@alokplastics.com` (or whatever email the client wants to receive enquiries at)
+2. Create: `enquiry@alok-plastics.com` (or whatever email the client wants to receive enquiries at)
 3. Note the password for the SMTP config below
 
 ### 2b. Upload `public/api/enquiry.php`
@@ -36,12 +36,12 @@ The PHP files in `public/api/` should be uploaded to `public_html/api/` on Hosti
 On the server, create `public_html/api/config.php` with real values:
 ```php
 <?php
-$ALOK_TO_EMAIL   = 'enquiry@alokplastics.com';
-$ALOK_FROM_EMAIL = 'noreply@alokplastics.com';
-$ALOK_SITE_URL   = 'https://alokplastics.com';
+$ALOK_TO_EMAIL   = 'enquiry@alok-plastics.com';
+$ALOK_FROM_EMAIL = 'noreply@alok-plastics.com';
+$ALOK_SITE_URL   = 'https://alok-plastics.com';
 $ALOK_SMTP_HOST  = 'smtp.hostinger.com';
 $ALOK_SMTP_PORT  = 465;
-$ALOK_SMTP_USER  = 'noreply@alokplastics.com';
+$ALOK_SMTP_USER  = 'noreply@alok-plastics.com';
 $ALOK_SMTP_PASS  = 'your_email_password_here';
 $ALOK_RATE_DIR   = sys_get_temp_dir();
 ```

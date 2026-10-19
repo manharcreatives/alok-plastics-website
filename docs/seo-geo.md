@@ -56,9 +56,9 @@ Phone, WhatsApp, enquiry email, Google Maps place URL / lat-lng, opening hours, 
 
 ## 5. Post-launch checklist (client / Manhar Creatives)
 
-1. Confirm the domain serves `https://alokplastics.com/` with a valid certificate; `http://` and `www.` must 301 to it (`.htaccess` handles it).
+1. Confirm the domain serves `https://alok-plastics.com/` with a valid certificate; `http://` and `www.` must 301 to it (`.htaccess` handles it).
 2. Open `/robots.txt`, `/sitemap.xml`, `/llms.txt` and `/og-image.png` in a browser.
-3. **Google Search Console**: add the property (Domain via DNS TXT, or URL-prefix with the HTML tag/file), submit `https://alokplastics.com/sitemap.xml`, inspect the home page and one part page, then request indexing.
+3. **Google Search Console**: add the property (Domain via DNS TXT, or URL-prefix with the HTML tag/file), submit `https://alok-plastics.com/sitemap.xml`, inspect the home page and one part page, then request indexing.
 4. **Bing Webmaster Tools**: import from Search Console, submit the same sitemap.
 5. **Google Business Profile**: claim/verify the Chandigarh unit; use the exact NAP from the site; add category, hours, phone, website link, photos.
 6. **GA4**: create a property, put the measurement ID in `site.analytics.ga4Id` (the script loads only when set), rebuild; mark `enquiry_submit`, WhatsApp and phone clicks as key events.
