@@ -286,17 +286,23 @@ function VideoBackground({ webm, mp4, mobileMp4, poster }: { webm?: string | nul
   // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional post-hydration mount flag
   useEffect(() => { setMounted(true); }, []);
 
-  /* No autoplay < 768px, coarse pointer or reduced motion (§11.2) */
-  const canAutoplay = mounted &&
-    window.innerWidth >= 768 &&
-    matchMedia('(pointer: fine)').matches &&
-    !prefersReducedMotion();
+  /* Mobile plays the lighter mobileMp4 source. Skipped only for reduced motion, Save-Data or a
+     2G connection, where the poster is shown instead. */
+  const conn = mounted
+    ? (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection
+    : undefined;
+  const lowData = !!conn?.saveData || (!!conn?.effectiveType && ['slow-2g', '2g'].includes(conn.effectiveType));
+  const canAutoplay = mounted && !lowData && !prefersReducedMotion();
 
   /* Pause when off-screen */
   useEffect(() => {
     const video = videoRef.current;
     const container = containerRef.current;
     if (!video || !container) return;
+
+    /* iOS Safari only autoplays when the muted *property* is set; React does not always reflect it */
+    video.muted = true;
+    video.play().catch(() => {});
 
     const io = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
