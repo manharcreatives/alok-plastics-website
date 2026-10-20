@@ -141,12 +141,8 @@ export function shouldShowPreloader(): boolean {
   if (typeof window === 'undefined') return false;
   if (tabSeen()) return false;
 
-  /* Save-Data / slow connection — skip entirely */
-  const conn = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
-  if (conn?.saveData) return false;
-  if (conn?.effectiveType && ['slow-2g', '2g'].includes(conn.effectiveType)) return false;
-
-  /* Reduced motion — handled by the component (still show, but simplified) */
+  /* Every visitor sees it: no Save-Data / slow-connection / reduced-motion opt-out (reduced motion gets
+     the short fade version from preloader.timeline.ts) */
   return true;
 }
 

@@ -79,8 +79,8 @@ export default function Preloader({ navLogoSlotRef, onComplete }: PreloaderProps
     const html = document.documentElement;
 
     /* The <head> script is the single source of truth: it only sets
-     * html.is-preloading when this is the first load in this tab, motion is
-     * allowed and the connection is not save-data/2g. Otherwise the CSS keeps
+     * html.is-preloading when this is the first load in this tab (every visitor,
+     * no motion / connection opt-out). Otherwise the CSS keeps
      * the overlay display:none and there is nothing to run. */
     if (!html.classList.contains('is-preloading') || !shouldShowPreloader()) {
       endNow();
