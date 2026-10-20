@@ -275,58 +275,71 @@ function PosterBackground({ src, alt }: { src: string; alt?: string }) {
 /* ── Video mode ──────────────────────────────────────────────── */
 function VideoBackground({ webm, mp4, mobileMp4, poster }: { webm?: string | null; mp4?: string | null; mobileMp4?: string | null; poster?: string | null }) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying] = useState(true); // pause/play button removed; video autoplays + loops
   /* the video stays invisible until it is genuinely playing, so a missing / failed file never
      paints a black box over the photo and placeholder art underneath */
   const [live, setLive] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   /* Inject video client-side after first paint (§11.2 — never competes with LCP) */
   const [mounted, setMounted] = useState(false);
   // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional post-hydration mount flag
   useEffect(() => { setMounted(true); }, []);
 
-  /* Mobile plays the lighter mobileMp4 source. Skipped only for reduced motion, Save-Data or a
-     2G connection, where the poster is shown instead. */
-  const conn = mounted
-    ? (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection
-    : undefined;
-  const lowData = !!conn?.saveData || (!!conn?.effectiveType && ['slow-2g', '2g'].includes(conn.effectiveType));
-  const canAutoplay = mounted && !lowData && !prefersReducedMotion();
-
-  /* Pause when off-screen */
+  /* The hero film is a muted ambient loop, so it always plays: no reduced-motion / Save-Data /
+     slow-connection opt-out. Anything that pauses it (browser power saving, tab switch, a stalled
+     buffer, iOS low-power mode) is undone by the keep-alive below, so it never freezes or stops. */
   useEffect(() => {
     const video = videoRef.current;
-    const container = containerRef.current;
-    if (!video || !container) return;
+    if (!video) return;
 
     /* iOS Safari only autoplays when the muted *property* is set; React does not always reflect it */
     video.muted = true;
-    video.play().catch(() => {});
+    video.defaultMuted = true;
+    video.loop = true;
 
-    const io = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        if (isPlaying) video.play().catch(() => {});
-      } else {
-        video.pause();
-      }
-    }, { threshold: 0 });
-
-    io.observe(container);
-
-    /* Pause on visibilitychange */
-    const handleVisibility = () => {
-      if (document.hidden) video.pause();
-      else if (isPlaying) video.play().catch(() => {});
+    const play = () => {
+      if (document.hidden) return;
+      if (video.ended) video.currentTime = 0;
+      if (video.paused || video.ended) video.play().catch(() => {});
     };
-    document.addEventListener('visibilitychange', handleVisibility);
 
+    /* retry on every event that can leave the video paused or stuck */
+    const events = ['pause', 'ended', 'stalled', 'suspend', 'waiting', 'canplay', 'loadeddata'] as const;
+    events.forEach((e) => video.addEventListener(e, play));
+    document.addEventListener('visibilitychange', play);
+    window.addEventListener('pageshow', play);
+    window.addEventListener('focus', play);
+
+    /* iOS low-power mode / strict autoplay policies only allow play() after a gesture:
+       the first touch, click, key or scroll anywhere starts it */
+    const gesture = ['touchstart', 'pointerdown', 'click', 'keydown', 'scroll'] as const;
+    gesture.forEach((e) => window.addEventListener(e, play, { passive: true }));
+
+    /* watchdog: if playback is paused, or the clock stopped advancing, kick it */
+    let lastTime = -1;
+    const timer = window.setInterval(() => {
+      if (document.hidden) return;
+      if (video.paused || video.ended) { play(); return; }
+      if (video.currentTime === lastTime && video.readyState < 3) video.load();
+      lastTime = video.currentTime;
+    }, 2000);
+
+    /* a failed load (network blip) retries the source once it is back */
+    const retry = () => { window.setTimeout(() => video.load(), 3000); };
+    video.addEventListener('error', retry);
+    window.addEventListener('online', retry);
+
+    play();
     return () => {
-      io.disconnect();
-      document.removeEventListener('visibilitychange', handleVisibility);
+      events.forEach((e) => video.removeEventListener(e, play));
+      document.removeEventListener('visibilitychange', play);
+      window.removeEventListener('pageshow', play);
+      window.removeEventListener('focus', play);
+      gesture.forEach((e) => window.removeEventListener(e, play));
+      video.removeEventListener('error', retry);
+      window.removeEventListener('online', retry);
+      window.clearInterval(timer);
     };
-  }, [isPlaying, canAutoplay]);
-
+  }, [mounted]);
 
   /* SSR: show poster img (LCP); the photo layer and placeholder art sit underneath either way */
   if (!mounted) {
@@ -337,26 +350,37 @@ function VideoBackground({ webm, mp4, mobileMp4, poster }: { webm?: string | nul
     ) : null;
   }
 
-  if (!canAutoplay) return poster ? <PosterBackground src={poster} /> : null;
-
   return (
-    <div ref={containerRef} style={{ position: 'absolute', inset: 0 }}>
+    <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+      {/* no native UI of any kind: no controls, PiP, cast, download or iOS play overlay */}
+      <style>{`
+        .hero-video::-webkit-media-controls,
+        .hero-video::-webkit-media-controls-start-playback-button,
+        .hero-video::-webkit-media-controls-overlay-play-button,
+        .hero-video::-webkit-media-controls-panel { display: none !important; -webkit-appearance: none; opacity: 0; }
+      `}</style>
       <video
         ref={videoRef}
+        className="hero-video"
         autoPlay
         muted
         loop
         playsInline
-        preload="metadata"
+        preload="auto"
         poster={poster ?? undefined}
         aria-hidden="true"
         tabIndex={-1}
+        disablePictureInPicture
+        disableRemotePlayback
+        controlsList="nodownload nofullscreen noremoteplayback noplaybackrate"
+        onContextMenu={(e) => e.preventDefault()}
         width={1920}
         height={1080}
         onPlaying={() => setLive(true)}
         onError={() => setLive(false)}
         style={{
           position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover',
+          pointerEvents: 'none',
           opacity: live ? 1 : 0, transition: 'opacity 600ms ease',
         }}
       >
@@ -438,11 +462,10 @@ export default function HeroMedia({ media }: HeroMediaProps) {
   /* Determine render mode */
   const hasVideo = !!(media.video?.webm || media.video?.mp4);
   const hasPoster = !!media.poster;
-  const isReducedMotion = typeof window !== 'undefined' ? prefersReducedMotion() : false;
 
   let resolvedMode = media.mode;
   if (resolvedMode === 'auto') {
-    if (hasVideo && !isReducedMotion) resolvedMode = 'video';
+    if (hasVideo) resolvedMode = 'video';
     else if (hasPoster) resolvedMode = 'poster';
     else resolvedMode = 'ambient';
   }
