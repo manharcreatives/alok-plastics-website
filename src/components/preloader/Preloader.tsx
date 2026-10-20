@@ -1,7 +1,7 @@
 /**
  * Preloader component — §10.2–§10.4
  *
- * Full-viewport overlay. Runs once per session (sessionStorage guard).
+ * Full-viewport overlay. Runs once per browser tab (window.name guard, see lib/preload.ts).
  * Construction sequence: sheet → construction → light sweep → PLASTICS inscription
  * → Devanagari inscription → FLIP to navbar → diagonal split exit.
  *
@@ -79,7 +79,7 @@ export default function Preloader({ navLogoSlotRef, onComplete }: PreloaderProps
     const html = document.documentElement;
 
     /* The <head> script is the single source of truth: it only sets
-     * html.is-preloading when this is the first visit in the session, motion is
+     * html.is-preloading when this is the first load in this tab, motion is
      * allowed and the connection is not save-data/2g. Otherwise the CSS keeps
      * the overlay display:none and there is nothing to run. */
     if (!html.classList.contains('is-preloading') || !shouldShowPreloader()) {

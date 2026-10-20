@@ -125,12 +125,21 @@ export function createPreloader(
   };
 }
 
-/* Session guard — one preloader run per session */
+/* Per-tab guard — the preloader runs once per browser tab, so a refresh or in-site navigation in the
+   same tab skips it, while every new tab (link, bookmark, typed URL, new window) plays it again.
+   The marker lives in window.name, which survives reloads and navigation within a tab but starts
+   empty in each new tab. sessionStorage is deliberately NOT used: browsers copy it into tabs opened
+   from the page (target=_blank, duplicate tab), which would wrongly skip the preloader there.
+   Keep the string in sync with the inline script in SiteDocument.tsx. */
 export const SESSION_KEY = 'alok:preloaded';
+
+function tabSeen(): boolean {
+  try { return window.name.indexOf(SESSION_KEY) >= 0; } catch (_) { return false; }
+}
 
 export function shouldShowPreloader(): boolean {
   if (typeof window === 'undefined') return false;
-  if (sessionStorage.getItem(SESSION_KEY)) return false;
+  if (tabSeen()) return false;
 
   /* Save-Data / slow connection — skip entirely */
   const conn = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
@@ -142,5 +151,10 @@ export function shouldShowPreloader(): boolean {
 }
 
 export function markPreloaderDone() {
-  try { sessionStorage.setItem(SESSION_KEY, '1'); } catch (_) {}
+  try { if (!tabSeen()) window.name = (window.name ? window.name + ' ' : '') + SESSION_KEY; } catch (_) {}
+}
+
+/** Lab only: forget this tab's mark so the preloader can be replayed. */
+export function resetPreloaderMark() {
+  try { window.name = window.name.split(SESSION_KEY).join('').trim(); } catch (_) {}
 }

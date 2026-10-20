@@ -7,7 +7,7 @@
 
 import { useState, useRef, useCallback } from 'react';
 import dynamic from 'next/dynamic';
-import { SESSION_KEY, markPreloaderDone } from '@/lib/preload';
+import { resetPreloaderMark, markPreloaderDone } from '@/lib/preload';
 
 const Preloader = dynamic(() => import('@/components/preloader/Preloader'), { ssr: false });
 
@@ -33,7 +33,7 @@ export default function PreloaderLabClient() {
 
   const handleReplay = useCallback(() => {
     /* Clear session so shouldShowPreloader() returns true */
-    try { sessionStorage.removeItem(SESSION_KEY); } catch (_) {}
+    resetPreloaderMark();
     setCurrentBeat(0);
     setMode('playing');
     setKey(k => k + 1);

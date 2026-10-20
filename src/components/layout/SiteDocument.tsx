@@ -73,7 +73,7 @@ export default function SiteDocument({ children }: Props) {
             (html.hero-arm: home only, never under reduced motion / without JS; auto-cleared after 7s) */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var d=document.documentElement;if(!sessionStorage.getItem('alok:preloaded')&&!navigator.webdriver&&location.search.indexOf('nopreload')<0&&!window.matchMedia('(prefers-reduced-motion:reduce)').matches&&navigator.connection?.saveData!==true&&!['slow-2g','2g'].includes(navigator.connection?.effectiveType)){d.classList.add('is-preloading');setTimeout(function(){d.classList.remove('is-preloading')},6000);}if(location.pathname==='/'&&(!navigator.webdriver||location.search.indexOf('heroanim')>=0)&&!window.matchMedia('(prefers-reduced-motion:reduce)').matches){d.classList.add('hero-arm');setTimeout(function(){d.classList.remove('hero-arm')},7000);}}catch(e){}})()`,
+            __html: `(function(){try{var d=document.documentElement;if(window.name.indexOf('alok:preloaded')<0&&!navigator.webdriver&&location.search.indexOf('nopreload')<0&&!window.matchMedia('(prefers-reduced-motion:reduce)').matches&&navigator.connection?.saveData!==true&&!['slow-2g','2g'].includes(navigator.connection?.effectiveType)){d.classList.add('is-preloading');setTimeout(function(){d.classList.remove('is-preloading')},6000);}if(location.pathname==='/'&&(!navigator.webdriver||location.search.indexOf('heroanim')>=0)&&!window.matchMedia('(prefers-reduced-motion:reduce)').matches){d.classList.add('hero-arm');setTimeout(function(){d.classList.remove('hero-arm')},7000);}}catch(e){}})()`,
           }}
         />
         {/* Google tags: GA4 + GTM (Consent Mode v2 — loads only when IDs are set in site.ts) */}
